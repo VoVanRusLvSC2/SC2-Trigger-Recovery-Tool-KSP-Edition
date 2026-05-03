@@ -27,9 +27,6 @@ Recommended build for most users:
 
 - `SC2-Trigger-Recovery-Tool-v1.1.3-secure-single.exe`
 
-Alternative package:
-
-- secure portable build `.zip`
 
 ## Quick start
 
