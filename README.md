@@ -28,6 +28,53 @@ The last strict registry is dated **2026-10-30**. Publication and source reorgan
 - Attribute, dependency and localized-string recovery when supported by confirmed source data.
 - Semantic safeguards for signatures, event arguments, initialization and exported program completeness.
 
+## How trigger recovery works
+
+```mermaid
+flowchart TB
+    archive["SC2 map or mod<br/>.SC2Map / .SC2Mod"] --> inputs["Read archive components<br/>Keep original source as reference"]
+    inputs --> source["MapScript.galaxy<br/>and owned Galaxy sources"]
+    inputs --> markup["Existing Triggers XML<br/>if available"]
+    inputs --> metadata["Libraries, SDK GUI definitions<br/>and localized strings"]
+    inputs --> attributes["Original attributes or verified recovery data<br/>when available"]
+
+    source --> ast["Shared Galaxy AST<br/>Symbols, types, ownership and initialization"]
+    ast --> bindings["Resolve GUI bindings and presets<br/>Check parameter and event contracts"]
+    metadata --> bindings
+    markup --> inventory["Inspect authored GUI<br/>Folders, identities and existing sections"]
+    attributes --> identity["Establish attribute identity<br/>and matching Galaxy references"]
+
+    bindings --> plan["Plan supported GUI reconstruction<br/>Apply guarded transformations when needed"]
+    inventory --> mode{"Authored markup exists?"}
+    mode -->|No| fresh["Build a new trigger tree"]
+    mode -->|Yes| incremental["Complete missing or changed sections<br/>Preserve unchanged GUI and folders"]
+    plan --> fresh
+    plan --> incremental
+    identity --> plan
+    fresh --> output["Assemble candidate components<br/>Triggers XML, strings and applicable attributes"]
+    incremental --> output
+
+    output --> safeguards["Offline semantic safeguards<br/>Signatures, initialization, events and attributes"]
+    source --> safeguards
+    safeguards -->|Unresolved or rejected| review["REVIEW / failure<br/>No equivalence claim"]
+    safeguards -->|Checks satisfied| candidate["Recovered candidate<br/>Not yet an Editor confirmation"]
+
+    candidate -.-> editor["External validation<br/>Editor compilation and Galaxy export"]
+    editor -.-> comparison["Compare exported behavior with original<br/>Including applicable attribute contracts"]
+    comparison -.-> result["Recorded result<br/>PASS / REVIEW / failure"]
+
+    classDef core fill:#eee6ff,stroke:#b9a0e3,color:#30204f;
+    classDef external fill:#eaf2ff,stroke:#86a9d7,color:#193858;
+    classDef attention fill:#fff3da,stroke:#d5ad5a,color:#62480b;
+    class archive,inputs,source,markup,metadata,attributes,ast,bindings,inventory,identity,plan,mode,fresh,incremental,output,safeguards,candidate core;
+    class editor,comparison,result external;
+    class review attention;
+```
+
+This is the logical data flow, not a promise that every input is convertible. Attribute identity is prepared before GUI recovery; original attribute absence does not authorize inventing definitions. The default `preserve-source` mode retains authored script and separate libraries; `full-gui` is an explicit mode. Dashed arrows show the external validation workflow, whose Editor service and benchmark distributions are not bundled here. A candidate or successful compilation alone is not a strict equivalence pass.
+
+See [Architecture](ARCHITECTURE.md#conversion-flow) for the implementation boundaries and [integration status](#integration-status) for the current build limitations.
+
 ## Source layout
 
 ```text
