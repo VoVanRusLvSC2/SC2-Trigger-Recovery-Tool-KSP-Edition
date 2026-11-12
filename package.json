@@ -1,0 +1,9 @@
+{
+  "name": "sc2-trigger-recovery-ksp",
+  "private": true,
+  "type": "module",
+  "description": "Shared-AST SC2 trigger recovery core and accepted map records",
+  "exports": {
+    ".": "./src/conversion/index.mjs"
+  }
+}

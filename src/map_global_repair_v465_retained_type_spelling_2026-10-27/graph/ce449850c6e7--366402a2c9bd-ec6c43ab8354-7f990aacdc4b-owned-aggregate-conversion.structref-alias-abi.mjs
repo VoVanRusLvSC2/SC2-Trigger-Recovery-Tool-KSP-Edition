@@ -1,1 +1,0 @@
-export {createSourcePreservingConversion as createOwnedAggregateConversion} from 'file:///K:/SC2_MAP_Workspace/sc2_editor_C%2B%2B/map_global_repair_v465_retained_type_spelling_2026-10-27/graph/cce3f44940f5-824644844b61-3337d8b68aff-117521b27e80-source-preserving-conversion.boundary.mjs';

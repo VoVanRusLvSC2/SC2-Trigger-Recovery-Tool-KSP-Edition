@@ -1,3 +1,0 @@
-void Change(structref<Data> target) {
-    target.value += 1;
-}

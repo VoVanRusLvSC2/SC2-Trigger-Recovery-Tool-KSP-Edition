@@ -1,85 +1,64 @@
-# SC2 Trigger Recovery Tool — KSP Edition
+# SC2 Trigger Recovery — KSP Edition
 
-**Новая переработанная версия Trigger Revizer, разработанная совместно с Vise.**
+**A reworked Trigger Revizer implementation, developed together with Vise.**
 
-Восстановление GUI-триггеров StarCraft II из Galaxy и дозаполнение существующей разметки с проверкой сохранения бизнес-логики.
-Это реализованное ядро с результатами на реальных картах: **325 из 339 архивных позиций имеют историю принятия**, причём уровни проверки явно разделены.
+Recover editable StarCraft II GUI triggers from Galaxy and complete existing trigger trees while preserving their structure and behavior.
 
-| Результат | Позиций | Список |
+## Accepted map records
+
+| Verification level | Archive records | Complete list |
 | --- | ---: | --- |
-| Последний сохранённый строгий root-business PASS | **103** | [Все 103 с названиями, ID и SHA256](maps/confirmed-103.md) |
-| Ранее принятый исторический реестр | **222** | [Все 222 с названиями, ID и SHA256](maps/historical-222.md) |
-| REVIEW | 12 | [Список](maps/review-12.md) |
-| SKIP / UNCONFIRMED | 1 / 1 | [Список](maps/skip-and-unconfirmed.md) |
+| Last recorded strict MapScript pass | **103** | [Verified maps](maps/verified.md) |
+| Accepted in the earlier registry | **222** | [Previously accepted maps](maps/previously-accepted.md) |
 
-103 + 222 — разные уровни доказательства, а не 325 новых строгих PASS. Это архивные позиции из основной выборки 339, не гарантированно разные названия или последние версии публикаций.
-Дата последнего реестра строгих результатов — **2026-10-30**. При этой публикации новый прогон Editor не выполнялся.
+These are **325 accepted records from the main 339-record corpus**, with two explicitly different verification levels. They are not 325 new strict passes or necessarily 325 distinct publications. Original map names, archive IDs and SHA256 values are preserved in the lists and [machine-readable catalog](maps/catalog.json).
 
-## Что уже реализовано
+The last strict registry is dated **2026-10-30**. Publication and source reorganization do not constitute a new Editor run. Full gameplay, lobby and attribute acceptance is not claimed for every record.
 
-- Общая AST для анализа Galaxy, функций, типов, исходных файлов и инициализации.
-- Разрешение GUI-привязок по библиотеке, типу, идентификатору и области видимости.
-- Восстановление отсутствующего дерева и дозаполнение изменённых участков существующей разметки.
-- Сохранение структуры GUI и отдельных исходников в режиме `preserve-source`.
-- Работа с атрибутами, зависимостями и локализованными строками при наличии подтверждённых исходных данных.
-- Проверки полной программы, порядка инициализации и реального экспорта Galaxy.
-- Неизменённый независимый oracle: **304 файла с исходными SHA256**.
+## Core capabilities
 
-## Готовность и ограничения
+- A shared Galaxy AST for functions, types, scopes and initialization.
+- GUI binding resolution using library identity, element type, ID and ownership.
+- Reconstruction of missing markup and incremental completion of existing trees.
+- Preservation of original folders, separate Galaxy libraries and authored script in `preserve-source` mode.
+- Attribute, dependency and localized-string recovery when supported by confirmed source data.
+- Semantic safeguards for signatures, event arguments, initialization and exported program completeness.
 
-Здесь опубликованы **исходники переработанного ядра и результаты проверок**. Переносимая самостоятельная сборка нового AST snapshot пока не завершена:
-часть зависимостей утрачена, в собранных исходниках и тестах обнаружены 157 отсутствующих импортируемых файлов и 17 других ссылок; абсолютные `file:///K:/...` импорты ещё требуют переноса.
-Точное восстановление части файлов выполнено по историческим хешам; похожие версии не подставлялись.
-Подробности: [состояние сборки](docs/BUILD_STATUS_RU.md), [недостающие ссылки](validation/missing-references.json).
-
-PASS относится к бизнес-логике MapScript. Полная приёмка всех атрибутов, лобби и игрового исполнения для всех карт не заявлена.
-Часть старых исходных архивов и native receipts сейчас отсутствует; [сохранность доказательств](validation/evidence-availability.json) отделена от исторического результата.
-
-## Структура
+## Source layout
 
 ```text
-src/                    Исходники ядра, используемых стадий и зависимостей
-  trigger_ast_core/     AST, GUI, типы, привязки, дозаполнение, verification
-  map_global_repair_*/  Используемые снимки модулей конвертера
-  map_proof_*/          Используемые модули полного доказательства
-benchmark/oracle/       Независимый benchmark с неизменённым manifest
-maps/                   Полные списки 103 + 222 и общий реестр 339
-validation/             Хеши, комплектность, доступность доказательств
-docs/                   Архитектура, reverse engineering, критерии приёмки
-history/                Сохранившиеся изменения
-licenses/               Upstream-лицензии и notices
-tools/                  Проверка целостности опубликованного снимка
+src/
+  cli/            Conversion entry point
+  ast/            Galaxy program model and syntax services
+  model/          Symbol identity and source ownership
+  analysis/       Dependency and initialization analysis
+  types/          Type inference and compatibility
+  bindings/       Galaxy-to-GUI bindings
+  gui/            GUI contracts and representation
+  conversion/     Conversion stages
+  incremental/    Existing-tree completion
+  lowering/       Guarded source transformations
+  verification/   Semantic safeguards used by the converter
+  archive/        Archive and component handling
+  libraries/      Shared library support
+  sdk/            Included SDK source modules
+  vendor/         Third-party runtime source
+maps/             The 103 + 222 accepted-map lists
+ARCHITECTURE.md   Design and integration notes
+CONTRIBUTORS.md   Contributors and upstream acknowledgements
+licenses/         Original third-party license notices
 ```
 
-[Подробная архитектура и точки входа](docs/ARCHITECTURE_RU.md) · [Что проверяет benchmark](docs/VALIDATION_RU.md) · [Изменения](CHANGELOG.md)
+See [Architecture](ARCHITECTURE.md) for module responsibilities and entry points. This repository contains production source, accepted-map records and documentation; test suites, benchmark distributions, run logs and generated verification reports are not included.
 
-## Reverse engineering и участники
+## Integration status
 
-При разработке использовались анализ форматов SC2, GUI/NativeLib, ABI событий и фактического поведения генератора Editor.
-Подробнее: [Reverse engineering](docs/REVERSE_ENGINEERING_RU.md).
+The conversion core is implemented and has recorded results on real maps. The available source still has missing external dependencies and qualification inputs, so this is **not yet a complete standalone build**. Module paths have been reorganized for readability; historical results remain attached to the previously verified artifacts. No missing implementation is replaced by a stub, and the reorganization does not relax verification rules.
 
-Проект перерабатывался совместно с **Vise**. Благодарность **[hometlt](https://github.com/hometlt)** за используемый upstream [ModKit/Blizzard](https://github.com/hometlt/modkit-extensions-blizzard), библиотеки форматов и техническую основу исследований.
-Полный список: [CONTRIBUTORS.md](CONTRIBUTORS.md). Авторство и лицензии сторонних компонентов сохранены: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+## Contributors and reverse engineering
 
-## Получение исходников на Windows
+The reworked implementation was developed together with **Vise**. Thanks to **[hometlt](https://github.com/hometlt)** for the upstream [ModKit/Blizzard libraries](https://github.com/hometlt/modkit-extensions-blizzard) used in this project.
 
-В текущем снимке есть длинные пути к модулям. Для Git for Windows:
+Development included reverse engineering and analysis of SC2 formats, Galaxy, NativeLib, GUI bindings, event ABI and actual Editor exports. [Contributors](CONTRIBUTORS.md) and [third-party notices](THIRD_PARTY_NOTICES.md) document attribution.
 
-```text
-git -c core.longpaths=true clone https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition.git
-cd SC2-Trigger-Recovery-Tool-KSP-Edition
-```
-
-## Проверка опубликованного комплекта
-
-```text
-python tools/verify_publication.py
-```
-
-Команда проверяет реестр, хеши файлов и 304 исходных assets oracle. Она не компилирует карты и не объявляет runtime готовым.
-Двоичные карты, DLL, временные native-worker задания, кеши и гигабайтные тестовые результаты в репозиторий не включены.
-
-## Прежние бинарные релизы
-
-[Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases) сохраняют прежнюю опубликованную линию приложения.
-Она отделена от нового AST snapshot; [предыдущая страница загрузки](docs/legacy-public-release-page.md) сохранена для справки.
+Earlier packaged application releases remain available under [Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases); they are separate from this reworked source publication.

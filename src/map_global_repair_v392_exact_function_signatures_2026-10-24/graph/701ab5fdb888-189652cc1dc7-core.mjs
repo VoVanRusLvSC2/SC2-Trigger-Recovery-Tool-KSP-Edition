@@ -1,3 +1,0 @@
-export * from 'file:///K:/SC2_MAP_Workspace/sc2_editor_C%2B%2B/map_global_repair_v265_attribute_scalar_codec_2026-10-21/types/189652cc1dc7-symbol-core.mjs';
-export {deriveNativeTypeMapping,declaredReturnType,isResolvedGalaxyType,mapParameterTypeToGalaxy,isIdentityConversionOperator} from 'file:///K:/SC2_MAP_Workspace/sc2_editor_C%2B%2B/map_global_repair_v392_exact_function_signatures_2026-10-24/graph/e87f717ee3a3-189652cc1dc7-types.mjs';
-export {indexDeclaredGalaxySymbols,indexDependencyFunctionNames,indexDependencyVariableNames} from 'file:///K:/SC2_MAP_Workspace/sc2_editor_C%2B%2B/map_global_repair_v392_exact_function_signatures_2026-10-24/graph/ce72d7a4db34-sdk-index.mjs';

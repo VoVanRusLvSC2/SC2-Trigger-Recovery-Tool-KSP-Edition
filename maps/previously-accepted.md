@@ -1,0 +1,230 @@
+# Previously accepted map records
+
+222 records marked as accepted in the earlier registry. This is a historical acceptance level, not 222 additional passes under the latest strict verification criteria.
+
+Map titles retain their original published spelling. Equal titles do not imply identical versions. The archive ID and SHA256 identify each record.
+
+| Archive ID | Map title | Original archive SHA256 |
+| --- | --- | --- |
+| 0143 | 0ef678576c82eeed94cb48f96fdcc381bf1d2ee8174308ee79801a736bad61c0 | `0ef678576c82eeed94cb48f96fdcc381bf1d2ee8174308ee79801a736bad61c0` |
+| 0168 | 2FORT | `0b395c38540297f98e2aaff4bb1972176b2c4dc9aa655fc39d0eb62ea16e8db7` |
+| 0405 | 4 players coop defence | `a73489c4a0049f1a4db3b0450844d515703836ad171fe90698137c552a77a31c` |
+| 0576 | [Probes vs Zealot 2] | `3dd9ce479138973f42700096982206ed80441bf5cde9cd735fdcde3d459b9a83` |
+| 0310 | [Versus mode] 10 - Hots - Пробуждение Древнего | `7a8e3555a86d846cb6c62008a1237e387e29eab32b62a9ccde59bf7e5c52dedd` |
+| 0311 | [Versus mode] 10 - Hots - Пробуждение Древнего | `af94e26fabc7c8f7d0a1a816ffb8cbda6370ead0f9aa605f2e535dcc96b94c70` |
+| 0312 | [Versus mode] 10 - Hots - Пробуждение Древнего | `6dec8148104b5a23f036dcd610efbae9e259a13431d70d17248494d0915ad4b3` |
+| 0313 | [Versus mode] 10 - Hots - Пробуждение Древнего | `ded9e4327b84219f13376de98c46c1782e270cf93ad94113c77d608c861c7c58` |
+| 0315 | [Versus mode] 10 - Hots - Пробуждение Древнего | `5a58614b06f813542dffb2dd85431d1189291fa6e3aa189a0819bded8574759b` |
+| 0320 | [Versus mode] 10 - Hots - Пробуждение Древнего | `7767562bba50c99b8c9b577e31d0c285619995d0ace8586bac10b17a59cd34d2` |
+| 0411 | [Versus mode] 10 - Hots - Пробуждение Древнего | `86ec0298a06ba014b9c3a021a48bbf41287b8357301800c90ae50f0af4cf9cbf` |
+| 0413 | [Versus mode] 10 - Hots - Пробуждение Древнего | `28ca935a06a010a762b150b41d3886685025ddc302b612c2196f2215241789eb` |
+| 0414 | [Versus mode] 10 - Hots - Пробуждение Древнего | `381b8a54730d082e7f727dfeaabfc2e1e7f2cfc20c1e01bb66b675759e3b4108` |
+| 0415 | [Versus mode] 10 - Hots - Пробуждение Древнего | `ba600241061812f7007a60bdaa9a62f703076a8bf9b020153e51682063fc14e4` |
+| 0416 | [Versus mode] 10 - Hots - Пробуждение Древнего | `6b67687956e10dbb36a991c29ad5916b0b559904a0fa0110ede25b3c11b26f8c` |
+| 0417 | [Versus mode] 10 - Hots - Пробуждение Древнего | `af89a1d06b036f75c093c47de7fa482d165317a8cf2da98242d11675ace011c6` |
+| 0418 | [Versus mode] 10 - Hots - Пробуждение Древнего | `a94d772c9f8bf4d814d0ae1914307d825b62943af22b2244164f7f2b8c33dbb3` |
+| 0419 | [Versus mode] 10 - Hots - Пробуждение Древнего | `61c1f2c8f3b62671bea9daccb5ee200dc238493e85682f6ea8e0c9d13348074f` |
+| 0420 | [Versus mode] 10 - Hots - Пробуждение Древнего | `1c6ef1dacfecdfed1ea4dcf4a4be660671c180d042b2141803fc141c45d4d255` |
+| 0308 | [Versus mode] 2 - Hots - Снова с седле | `5e89638730830fdcb9c58c55873c8f4c1b705a8a17dbe6f602a93c6e17b5cb1e` |
+| 0309 | [Versus mode] 2 - Hots - Снова с седле | `8ce74134213dfee67fa0eb49b2941c453f8d8c019750a4492a64e7acc8590df7` |
+| 0366 | [Versus mode] 2 - Hots - Снова с седле | `02afc03de83685b98ba4e9ce65a43728bf2d4f947d5dd7430b9b11507d1fd49a` |
+| 0368 | [Versus mode] 2 - Hots - Снова с седле | `e19994e8e35c9a602403457b4a7a08c0398ce05454e8598ea160df8dab685b87` |
+| 0194 | [Versus mode] 3 - Hots - Встреча | `42f0ee82eccf74d9dc3527582041a6468548c8b7d1e305a9f062d61b0e1ec00c` |
+| 0190 | [Versus mode] 4 - Hots - Подчинение | `89ee2d150d6496981b64b6f4536ff7e7a92a382ecc88903357ac90f090f98a47` |
+| 0191 | [Versus mode] 4 - Hots - Подчинение | `d15455f33da2b69e679c644b68d5f1fa0578c090f2351b5675b2c1f3136d6353` |
+| 0213 | [Versus mode] 4 - Hots - Подчинение | `932bd635dbf565561872d06419d719131f5ba2483e948efbd9f89b82ebf92205` |
+| 0222 | [Versus mode] 4 - Hots - Подчинение | `96c5c4ede4ba527f5fb7d02785e236c2411c3296e07a5802913754ef5086a3d8` |
+| 0223 | [Versus mode] 4 - Hots - Подчинение | `575e3c0c111abb12067102ebc6b6ee48a4beb9dd1703d4e3b228ec92063bc356` |
+| 0224 | [Versus mode] 4 - Hots - Подчинение | `bab640a197d85ec60fa4641d8d294737c65758de38ab84e063b3b5ef0f2c33be` |
+| 0225 | [Versus mode] 4 - Hots - Подчинение | `1b2ca142e4c729345b895788cd3e383ee22ac942e48d8f888dd206f6f26df766` |
+| 0226 | [Versus mode] 4 - Hots - Подчинение | `b6e4446e768714d389671cccfb33bddf2a1aa1bdb6b7078086f447c052a5ce9c` |
+| 0228 | [Versus mode] 4 - Hots - Подчинение | `fd26d97077e5ae4d467fe0af1f343694497641994d4e94fbc5c926636623c74f` |
+| 0229 | [Versus mode] 4 - Hots - Подчинение | `70d2bdba6948edd3fa52499bd747977e4a2376e90a2ba33fbc450d7750166ac8` |
+| 0230 | [Versus mode] 4 - Hots - Подчинение | `f4bbab99b12c33a1157f5bbbef67217b1c637d8772e56bc2d430de3ca12c5d50` |
+| 0232 | [Versus mode] 4 - Hots - Подчинение | `e7e7e45f897ca93d31b941416d92355a577a1fc2964f948635ee04c14a3a5c06` |
+| 0378 | [Versus mode] 4 - Hots - Подчинение | `a251c059b33604cb068979a6e677446a18071164800a506948314a23a19c1301` |
+| 0170 | [Versus mode] 6 - Hots - Старые вояки | `ff36b8fbe8fd773c53364a880b743b28fdff55e515c6d5c80857ee4509d8733c` |
+| 0171 | [Versus mode] 6 - Hots - Старые вояки | `58bdf623cb841b8f6355aee2a2676ef8b83c3cc753b5bef9d8a7ec5f51d464f0` |
+| 0172 | [Versus mode] 6 - Hots - Старые вояки | `72ed97aa9870b809fa5639288c0c197dbc87a10290adf6fe30950a747b264ead` |
+| 0201 | [Versus mode] 6 - Hots - Старые вояки | `b339d76a35ff07725a7825ba4d8668c4a6b61bdd990a271d6d18c9e036d3f6e4` |
+| 0203 | [Versus mode] 6 - Hots - Старые вояки | `3e99693eed00e47315272f7965c0af2e21f3801caeeea1459b62ac966a8dcc1b` |
+| 0204 | [Versus mode] 6 - Hots - Старые вояки | `d64991bf3924f6e56707f0d9e6894298b0ea4cacd52b38e48bd9f4386d29b953` |
+| 0205 | [Versus mode] 6 - Hots - Старые вояки | `bbc5f0e6d74755d7c037d5f920f07212725e5e580f8cf38e9bd90a4baa731e7d` |
+| 0206 | [Versus mode] 6 - Hots - Старые вояки | `77352c999e594e6a446718dbccea0cf5ab7a56e4da88507c9e294d717c17a2d3` |
+| 0207 | [Versus mode] 6 - Hots - Старые вояки | `ff4ba9558c11a05f5b3b155026ce81a2f5515b819275778e73448067d88765d2` |
+| 0208 | [Versus mode] 6 - Hots - Старые вояки | `47453946a98b980487411e2b9f8c01f77d4798a0d8a9a60d754c674aa9a2ba78` |
+| 0209 | [Versus mode] 6 - Hots - Старые вояки | `bb1e12a3c2b57d2618398735b5378efaa3dd88f067e0132a53a573f1f326f543` |
+| 0210 | [Versus mode] 6 - Hots - Старые вояки | `57b32775915f9197bf4eae1c2f73ef5be34fade689742026ac5b5731a8ea79af` |
+| 0211 | [Versus mode] 6 - Hots - Старые вояки | `2d672e1c25843d8fb48e2f0006ee87d2be093bae841898ba5014e1853c7475d9` |
+| 0212 | [Versus mode] 6 - Hots - Старые вояки | `94f1d29fa4ccbcc714ae848cef16285179556dde255a6b9c2223842d47aa72b1` |
+| 0259 | [Versus mode] 6 - Hots - Старые вояки | `c48c6409c8a4be6fe19b2eae896efd39f504a5f99bd94c1e892ef716c2b3eabf` |
+| 0260 | [Versus mode] 6 - Hots - Старые вояки | `cd010f1c80dc3596bacfa2d5252d1e7eae605bf2cddb16dc978095e92ade7b35` |
+| 0261 | [Versus mode] 6 - Hots - Старые вояки | `af7ee3c564cf3fb59970a7f360341a02a21e42ba0593a356a679f2538f06bb1d` |
+| 0375 | [Versus mode] 6 - Hots - Старые вояки | `0d16f5bec2851d67cd017df49390321d51419fccfd84b33deff8cb232000bb15` |
+| 0141 | [Versus mode] 7 - Hots - Ледяное безмолвие | `9c854c8bf77790267b8a76ab4b233e47961ba2af22507f724b5db8facf4ac578` |
+| 0142 | [Versus mode] 7 - Hots - Ледяное безмолвие | `75bec06ee160d82f2795b2d3909f7801773d60b05eb4569b395cf9c8f61e4c1c` |
+| 0155 | [Versus mode] 7 - Hots - Ледяное безмолвие | `2b3f3766499b9b0ed83deb916483eb8d040073b087f69ca5e6028f000134e545` |
+| 0156 | [Versus mode] 7 - Hots - Ледяное безмолвие | `78e1419aa4b82aa3d9462b58a114d914af794d524354bd53ad84c5416c5d2a30` |
+| 0157 | [Versus mode] 7 - Hots - Ледяное безмолвие | `905b9f40d0e4256f0c2d3f9e3cc42c8ec2ba7b4679ee0edd6c22126d55edd885` |
+| 0158 | [Versus mode] 7 - Hots - Ледяное безмолвие | `9efe12770dcb3a1f7bf37784f6320049f0406e77f431f38d612ce86b0afd140b` |
+| 0167 | [Versus mode] 7 - Hots - Ледяное безмолвие | `1badea7f7bb6373d03340aab506d1a1eb2dd3c782c5382e8e2ec5a2d5f6c0874` |
+| 0195 | [Versus mode] 7 - Hots - Ледяное безмолвие | `bdaa24d2c850578ef09bba6df9e36e6625c2516bcb84aa448b52a10644d7bbe2` |
+| 0196 | [Versus mode] 7 - Hots - Ледяное безмолвие | `fc1beed59697be40f7b5c630dc2e4e26d69e06b556589fa9590742833d934eb2` |
+| 0197 | [Versus mode] 7 - Hots - Ледяное безмолвие | `9f2f38281676e890bed8ed0d2266109bbd95a75a02b8ec2097218b185236c9e4` |
+| 0198 | [Versus mode] 7 - Hots - Ледяное безмолвие | `1b6d53550ce905fe588574caf61bdad07d69a38d3b4d7d794903010cee1df5c2` |
+| 0117 | [Versus mode] 8 - Hots - Перехват | `db20a4416bd4b91d0c1b3c7175aa566aee21a7720852f6cd27784860aeb5275c` |
+| 0119 | [Versus mode] 8 - Hots - Перехват | `c20c187f1a62e1f466a0a033f54748144d9ac064c00b1eb4da871273d5ef266a` |
+| 0121 | [Versus mode] 8 - Hots - Перехват | `02aad3b946ad538ab208e5412f4656dea296ce98840fd6638a4ba7038be87bce` |
+| 0122 | [Versus mode] 8 - Hots - Перехват | `34239520e17742e9084b0a31e367f13d849fd87cf5e4087e0b18c9e1291edc69` |
+| 0123 | [Versus mode] 8 - Hots - Перехват | `1ad9ee034e7ae01418aa6be8c6666f53fcf7ca4188838ad0775262822647ba8c` |
+| 0124 | [Versus mode] 8 - Hots - Перехват | `59548cc0395da1da1505f66789027f5ddbf2860678ba1437b7c52d3582a5af4a` |
+| 0125 | [Versus mode] 8 - Hots - Перехват | `dc10b8d2d92a9387113fec5b5d8dac83673694a3826922320d0ad6588646d2a8` |
+| 0126 | [Versus mode] 8 - Hots - Перехват | `632f96c5ff5f709aa1118baae33375d4e5a71fac685984fe20d7684347551df1` |
+| 0199 | [Versus mode] 8 - Hots - Перехват | `5c2f283a27bc059b97d24dc38c79a994d7591ae00228569766b8a830806e191f` |
+| 0200 | [Versus mode] 8 - Hots - Перехват | `5b63d320842e5cc39b8e6b392bb8d3bc79b548899028f47a19213fdcbcd7b07d` |
+| 0202 | [Versus mode] 8 - Hots - Перехват | `bca55caeec4427e70e618fc9ce39b90372039d95e258acf85ab0a4241c204b9e` |
+| 0219 | [Versus mode] 8 - Hots - Перехват | `8708315623d85d39368b45001e89398ea4f657c1818d51bf3e924d982a9350b7` |
+| 0326 | [Versus mode] 8 - Hots - Перехват | `f0b8cb8f72a11e3b9d8f7de8d45776e4f83292d245c786b0fbf3a91c223fbcd8` |
+| 0327 | [Versus mode] 8 - Hots - Перехват | `e0ebcedadc8979891755cd5e5e9a8fe172ea508f16c063e8fe62d962a5e75336` |
+| 0065 | [Versus mode] 9 - Hots - Внутренний враг | `441190f2a60a8cbe6db12cc8aa47618c6b9ec64ad4197a42ff9216ff76ffddcb` |
+| 0066 | [Versus mode] 9 - Hots - Внутренний враг | `2418ad1d7113c6f9fd87c97106a0237afb4b75145f442c39fd0d6429d71990ce` |
+| 0067 | [Versus mode] 9 - Hots - Внутренний враг | `3ba6180e7e52377d685839245fe4b7077e25b0a0e4bfe1087a20fc24e0855396` |
+| 0068 | [Versus mode] 9 - Hots - Внутренний враг | `2527446ffda5b2d21373d39f2f6ac91339e5c5ec0f2a6b51d42cd8a3ecdb3b54` |
+| 0080 | [Versus mode] 9 - Hots - Внутренний враг | `fd2a8a73d12a48fdd073f5389f338ea94c6329d26b9de9bcdce62a4f9f608e13` |
+| 0133 | [Versus mode] 9 - Hots - Внутренний враг | `29e14ae62ce62543d67a12216c7dc298ce0065b7a02b2b2ec8015a08b48bc28c` |
+| 0134 | [Versus mode] 9 - Hots - Внутренний враг | `47af12b37ce866b5c0c4859d3a5f5461879ccfacd6cee15fe9cb9df36f2a6591` |
+| 0135 | A Sinister Turn [VERSUS MODE] | `08c9a0d7c22b3174a21ce7a6b4b5cd1f06c48c9f287e40ef436f3c62afd012e9` |
+| 0371 | a45bca3ec0ceea97d2d1c8a85eba44b6b8cd91adc016829fb2127d6d5ecfd3f7 | `a45bca3ec0ceea97d2d1c8a85eba44b6b8cd91adc016829fb2127d6d5ecfd3f7` |
+| 0556 | Additional Pylons! | `df9fa69ed0442afd8bfca825e0d75c91a25d0307fd74869a4a1537a6dab0acf6` |
+| 0511 | Amon fight _ Legacy of the void | `39110a6a805531d1687df44d96c539904ed5db1464621774d86716bd6d02b2a1` |
+| 0025 | Ant Colonies | `c740b6c2274608c4c4a8710ca64b951aa7d6bb9aac65c8c72a61d8f8a072223d` |
+| 0454 | BigDig_TEST00 | `237d0de3d2175b5a6618c5c07f18ad9da9be8d6520f9ea3dba77a95febadac73` |
+| 0529 | Bomberbot | `4b17f3f43ed9f34c1fa9b713c1dc70bb308f0de166702c282703f8b18836d0f3` |
+| 0015 | CO-OP Minesweepers!! | `cd3801d80afca2aa973566386bcc745fdf635afd8d834d9a0c1d2fa5f5b8dedd` |
+| 0564 | Co-op+ 2.0 Map Launcher [Co-op+] | `053bc27b87bdd1c5ca17f2df52c35d211f646b76288b6e7e9561091c6ed4affd` |
+| 0499 | Dark Future - 10Illiam | `9e1929a3d0acdaf576d5e633f2d3b6db386a4ee3fa5f37f89a5d09125f728f91` |
+| 0016 | def-test | `11f780d0f9c657811d381aac869725ee6d2a090e5f555e27da4b1b57acedbd99` |
+| 0553 | Deity EvolutionS | `b0bb35dcbebc49fdf5cd7a3ead298d8c2457fffd5b7b6073a18612b4dc75cd4b` |
+| 0241 | Devil's Playground [VERSUS MODE] | `5ed7093731efe00def22044e493179a59fe0a52b5025d23e487f501f7b4e5575` |
+| 0521 | Evil Pineapple | `5467d51df2f7c03f67e5259c999bd8dc1a98b6f3dfc9debf7a3567c3f28247ba` |
+| 0506 | Falti's Temple | `c52f2c7261d52ab7b3ae726109a590673d90927b988cacf13134acd2752147b1` |
+| 0087 | Fort Defence Coop | `b21b428d753663b322e2b3dfd134d3a9a08d7607f273da88a9d1493164fcb252` |
+| 0406 | Gatecraft_ Thus the Terrans fought there 01 | `2320043c4eb0805dcc1712e0bae99bde725f4d635a9a55ca6cdd78ee72978531` |
+| 0565 | Gun Game | `c2711e90f37ffe9a90f7eff375ee0510187cb5e9f20f56a072237e857308f13d` |
+| 0569 | Haunted Forest (EU) | `7fc745e70090bb59d14e997928fa0e54c370dd018574e8c6056cc203afa0dcdb` |
+| 0061 | Help Mining Station | `0fbed9d733d3fca24d2d224da1ba75aae9a4f4b3180023ca42163fb779c341cb` |
+| 0021 | Honest War | `4273b95ef79930c885ba7c70b59399fe2b72bd482de8559649f929238aa4b66d` |
+| 0488 | Honest War REMASTER | `d60473f9b7b4c21fb84687fcd562bf04c437dba06727ef5b472857200106e954` |
+| 0610 | HotS - Огонь небесный [VERSUS MODE] | `c0a75a61888df9a91bb6d07c2e1dd64557c2a4a2e29ad5b1e6ac4a41a27058a0` |
+| 0001 | House Special Map | `d2aff3b630ca92ad14a4e20d451c161f930b2496e16ed4139e8a459e3942d995` |
+| 0611 | Hundred million stars falling from the sky | `70f60da6720bcf0248114c88b37b223dd557185dd51ac78943f0d5404973a85a` |
+| 0612 | Ice Baneling Escape | `bb05a52d60fd7c0705d41798134d292fa352111ce1dff233fc2cdeb6ab1e1a19` |
+| 0433 | Inferno Force - Roguelike | `7fc356faccd2f0500322688886899607650fed1f8f3568b58ec1d835b3cb6163` |
+| 0589 | Isolation' | `83facb245a0deb048311203d8fcbd449a6893b9da426369b6870b946332c1ccd` |
+| 0032 | joe's test map | `01a91ba97cb8e5d517700c6b0788c7d7cb357bae5edb3841f391fa5daa9fbcfc` |
+| 0006 | Kerrigan Covert Ops COOP - Map Launcher | `ce86b2cbce42e6cd637904756c8a4a4c8a86d869862757a1417edfb35d9b8301` |
+| 0064 | Kerrigan Covert Ops COOP 2_ Sudden Strike | `354dea0da76089be42aee256828cac7a5126e0f07e34929488c31bfbc35bf658` |
+| 0091 | Kerrigan Covert Ops COOP 3_ Enemy Intelligence | `fc5c0ecdba77df449c41c18380c642083c531f30097a6176cb806190258fc236` |
+| 0084 | Kerrigan Covert Ops COOP 7_ In the Enemy's Shadow | `9327cc63ebf61a9fad4f245d6965ac3a586f3a1f4ce260a5f8f07000567d41f7` |
+| 0042 | Kerrigan Covert Ops COOP 8_ Dark Skies | `2992fc344d3679ec756cdf8809c05a5ee622b73e33e3905aa4d2c92845826eac` |
+| 0614 | Launcher KSP | `6372d8a045587301a454a3e72739d1b6aba7b6307c6d47df5dcf353d529f4822` |
+| 0557 | Left 2 Die Bonkers Bunkers | `3f0475a34a5b08b83f2a5f79eb5d56a70e0dcd46de4d83bf22e1929d96fcd521` |
+| 0057 | Meinhoff Invasion | `4837d76e0842ad4782cc1706659b5af1628d3c7737c8664bba51112b0e374a85` |
+| previous13-0005 | Mercs Episode 1 | `9bd7b661315f8ad6ba29c00c5aee65d824fd2dd925e52bf95958eeab0eac01c8` |
+| previous13-0006 | Mercs Episode 2 | `22d2dc6d6892bff006e0cad9589174168c54342b773f65a0d6ea4b0fabc97729` |
+| 0527 | Micro Tournament 1.26 | `ab8d9e80058e2232f3890e7bdabe1db6af885a98ecac9d28ac1cd90696dc447d` |
+| 0449 | Mines and Magic | `ec42f8b784b2e8c3c1e94973fd659e179426b994b77b531ae479db96ee7330a5` |
+| 0115 | Monobattle LotV - Map Rotation | `ea525d00ba9cb82ca6fa8bd763c7214fb19fa71b89c90a1f6ccf1091c94f72ed` |
+| 0263 | Monobattle LotV - Map Rotation | `575a58e12449ff85702403cc7490cc240482fa7ebe5219987033a27eb2b63703` |
+| 0570 | Nova&Tosh Coop | `58448d17aa3a6c487f3a60b21e32521c13cafff646cf1edd9b56449d81c64faf` |
+| 0102 | Nydus Conspiracy | `6f17527777f2c69e3a7a024009eb3c3c4e007de274a6d624f2fde49a818f9851` |
+| 0103 | Nydus Conspiracy | `e8dc98b4aa2097aac6d564da2922acb77ebfd5b6b1ec56bb9b706e4e7a9b6293` |
+| 0104 | Nydus Conspiracy | `38b309f919cc9dee8be794e618db7fdc49e1f4b2674edf9f96db592dc60acbb9` |
+| 0105 | Nydus Conspiracy | `21b08212d32c2afa99a43c4ce182d2ba85dcc4090a9b834c28c947d83bd01932` |
+| 0106 | Nydus Conspiracy | `c14135002be6b8f6c50c72461bd739ab73cd4bf0c2dd1790c596253ea08abb62` |
+| 0107 | Nydus Conspiracy | `bf31e5ae80d0b945fffc55b7b416ecc5b423231ea5a9203446185d10d79e0a5d` |
+| 0108 | Nydus Conspiracy | `29edec8d4f6bd90cd56b2aa95b325849ba0b592683d1853680cdd83a90708219` |
+| 0109 | Nydus Conspiracy | `7019074b94e69b8d388d8b2277a209051722b9ea4311a702d395cf3b50af84a4` |
+| 0110 | Nydus Conspiracy | `c27a04a197ed0ce8b1831a889746a0a251f144015240a9704c13540f71a8ad72` |
+| 0111 | Nydus Conspiracy | `5b3c774cb9940a73c4dcd4c1c3b5e2dba44d1f24c3b69de1ece7504ef065d947` |
+| 0113 | Nydus Conspiracy | `19a6ebb6fc657ffc5f509fd8885d1cf45dfdd5f592956394e033aa773b81df43` |
+| 0114 | Nydus Conspiracy | `b32e3eb82270c670ed9232e3d0481c61a43b13ca891b2173b390fb09abee27cf` |
+| 0242 | Nydus Conspiracy | `664674ef882dd36e72c78d49a2feb3438490c7dfd30bece6090afdd0b28ccc6f` |
+| 0243 | Nydus Conspiracy | `ac67b96f4d447cd05a447c96d53e1c5ceeddc2cae7b08d754fe9dfed5433c2f8` |
+| 0244 | Nydus Conspiracy | `832cc2387ac1319b65bf32602dd3ef1ca38550f793ff15ef16ca8d270f6e382e` |
+| 0245 | Nydus Conspiracy | `0f07a9c9120fba305e2bedc9723c1c04d6f1c4a32d15f4df275f94299e51499a` |
+| 0246 | Nydus Conspiracy | `664482901a2aafe5b14e6f88eb1a366adfbe0ce4799955039298d9e74fa75615` |
+| 0024 | Nydus Mastermind | `dbe3d574e5839ecf1f1f3d71fc15fdce71effb89902ea76af47f21eb0d91fb8d` |
+| 0008 | Outhouse Defense | `82bfeb71b68c14988dd1084f615f059389897015221a42381f288c1de5b0c4d2` |
+| 0020 | Outskirts of Xil | `f7c39ef0aa97a5930e504d3cd36810457aa8d2d2e6a79be4a4f51d3bb3641c70` |
+| 0528 | Planetary Cleaning Service | `ca30cf32f1a650580b1819bf7568a7b91f9e36ce6e15a4cc5dbdd47b5a5e16b8` |
+| previous13-0007 | Project [DELETED] | `e3e276f5def9cf8348c86b0954a2f2942d43c12aaa1aacd8c03c64b24e92bd84` |
+| 0278 | Protoss Covert Ops COOP 3_ Enemy Intelligence | `6dcd5ed0c01767f5ddac79059e8b31043edfdabc1593dea54b3647bdc26ecd95` |
+| 0398 | Protoss Covert Ops COOP 4_ Trouble in Paradise | `849456f232371b5010cc83708b88bfb9b6f4875662717f2d454f8cfdcc696c87` |
+| 0407 | Protoss Covert Ops COOP 5_ Night Terrors | `ed8c5439655715ea67cce8296756c2c304fffd0be6207e1fd43038e9676d515b` |
+| previous13-0011 | Rainbow_Six_Arena-16.01.2019  | `1c50915a8f4c9ac9996f229b8ae3bcefafa155734420032ba85c0666efbe53f9` |
+| 0541 | Randоm Unit Fight | `43198316ec45c84e2b7601d96c1eea1ccba88100a33e5b0c328afe81fa058fbc` |
+| 0554 | Raynor Party_ Revival | `14a5f084fd7bcf5622317d2b1abc8bbc6adc39bd95ef8db7dde3920401471426` |
+| 0453 | Raynor's Secrets | `2ebf31e9db3d6d1f8394f0ff7ed1cbc81325819917dee40facdefc9dea20aa2b` |
+| 0399 | Reaper Dunk | `0efddfb10ac422b8b18ec47ee7f437fbdd032b929cb71fe50fcdac3bc401936f` |
+| 0473 | Reaper Dunk | `ab6be6be99a6382081a9923219711e678a450261fb1b5ea613afcf74613c0fda` |
+| 0475 | Reaper Dunk | `aca193b7dd2eccbc0ea8d76fbfff076b77bf3cad2f6515b578d03de2b0f64085` |
+| 0543 | Reaper Dunk | `1f68c25fb4ed6cff20ec5b0a423ef01e054a5aa797fd33d04dd3bf16fcb385db` |
+| 0523 | Saga Early test 2000 Atmospheres LE | `f5c6d232325662cd601b84609f607aa61734d3cb69395feb5e62366d7d812b75` |
+| 0517 | SC_ Battlefront | `b8bbd2a75e51a9c10991bd15000e20a5ded901d77c963f74ba38e95983532a37` |
+| 0421 | SmashAndGrab Versus mode | `4235cb9b623937503aaada74567a83a93f40dc99acfa1120afd386fd963bdabc` |
+| previous13-0012 | STAR CRAFT Roleplay | `238d4cff7fbe2c1a09fc7869f5a61e50e8e87a79a1ddf9a11a1bd0cb3cef6e64` |
+| 0028 | Starcall 2v2 map | `9c0775bba7e54be9a3534253eb7d707807bae8686e851ffc08a41eeae1fa12f6` |
+| 0026 | Test of Survival | `92ef619a8e85e1252bb07b488b164a1fdc41dee4f669521a59a1bdb8aeb7ff9b` |
+| previous13-0014 | The Dark Story | `daba7b859146196038673f31eae1f3168a30669a9fa34f21567b62e7928cf7a2` |
+| 0220 | The Outlaws [VERSUS MODE] | `fd28b66d4f2d5230c09bb0c791c03cfb73d9b5c3efa6701b6db67e44b0083613` |
+| 0578 | They are millions | `6213f027b90d0388b6c665bea15d7750070d4f5d86a72c1908c4d2299b1779e5` |
+| 0579 | They are millions | `47d0c9d393d386fbc941167a6d4ba132822a95785fddf192c34c1a945252b768` |
+| 0004 | Ultimate Marine Split Challenge (Beta) | `d5dfd5cd8de0b649268a70237767235308c9b4384bc594dfd7762e9a37f3cbbc` |
+| 0455 | Versus mode 11 WoL The Dig | `c008dc550185f7e99a64fe651e7b904466db7084b65951611c9bb91f9201ca3e` |
+| 0456 | Versus mode 11 WoL The Dig | `0b96a6f1a918db38c76e2265cd66a512e7cc6dda9618e0e0511b8aad1653aef9` |
+| 0221 | Versus mode 3 - Hots - Встреча | `3f54f50957cd678cc5b6d4752b43ab578017be22bdf7c6bb45958e8bf3486b4c` |
+| previous13-0016 | Victor's Reapers | `20a5602709b2505044b66c53e9a69e5f9ec2413a696a3ca0c1d655973105865e` |
+| 0271 | Welcome to the Jungle [VERSUS MODE] | `cdbce5ba48522cd7f56f3eff7146acefd71b70c9c0b557e9824373abf650d1f3` |
+| 0568 | Wild Animals Space | `22841ad8fd8330fa6eb03b01ce0884b7d2721723608b1af4c4f7aa481b2ad8bf` |
+| 0131 | Wings of Liberty Coop 12. A Sinister Turn | `60350f8fe0121bce29ecf95c872712a60748ddaa22424dbf09c1f49831c51547` |
+| 0054 | Wings of Liberty Reversed - Launcher | `9b9e7c62f2dd950fe5d143f7234b75d13e36a83ee86ca6d94e9bae3139cab056` |
+| 0187 | Wings of Liberty Reversed 1 - Liberation Day | `10c49a04d634e6e525644ced5a1d7a145e47c4b687b20231c18282c43efe41ce` |
+| 0063 | Wings of Liberty Reversed 2 - The Outlaws | `c075c521dcb1b602be390c911c06fc6b2b749936ff2b70b4db50345f1613eba6` |
+| 0076 | Wings of Liberty Reversed 3 - Zero Hour | `45d6d37ccf1b9d29a30360f3bad873320446c517655d9be160705e47e574147d` |
+| 0005 | Zerg swarm mutation2 | `f573728dfbacc12e60c372d939ce9964553198e000dd3bec5b247c306fb2a379` |
+| 0012 | Zergling Defense v2 [RU] | `29034da413329ef6c42309ccecc3216e853fcfe392d4b15c440d09873d2447f5` |
+| 0188 | Zero Hour with friends! | `715905c5e33e95c2b0f5c334b2b44641d9a1412c98bb88c0626ee936c0d5e133` |
+| 0264 | Zombie Arena Remake (Beta) | `a510aeddc3f25fac643e303588ff289470d6b81730c6af0265f7401dd7f15944` |
+| 0018 | Выживание в пещере | `5876e365a220c227a61ab6a7c7f31444e1176fe55dd723f3b25ef9ec5b834794` |
+| 0513 | Выживание в пещере | `e86ebc52a814314b70bdbff5e6f9172527333f0dc4ab66dc39a2b2addde1b60f` |
+| 0514 | Выживание в пещере | `53b3d284ae446ce254117b4452148ffaa3874883861fb52f026509fa092cbf13` |
+| 0515 | Выживание в пещере | `dbf64d1977e4529e6499136c0711bc1508484c46df9720a3ff9bee8e833491a7` |
+| 0516 | Выживание в пещере | `bd4cbb429c07b6e2c54fdb2106a71544e1193c4395b4abe8a43eac5cc7b3416c` |
+| 0518 | Выживание в пещере | `8d25833afb7e02377a70204c7ab58528d1483698e7e63eab8dbd2f655793cf96` |
+| 0519 | Выживание в пещере | `3357f3350f8ef9057c4829d4dce643015d0f54c98bf6a636e241b7e3c98f5a02` |
+| 0429 | Диарай_ рождение королевы | `cd1dd7e275af5d1aabc630a80e769bc08f9212d8726f6d081ac6406ace180916` |
+| 0007 | Захват планеты | `8fce53a2b5c537f03ec20caa2bd60633b4232e6dfd1b9c890b7247e5b5d84c93` |
+| 0422 | Кампания KSP Мисия-1 | `0b58d9e0559592fc6a0d17a00a9c81c11eb66bd470394cc3260c3970512ded4b` |
+| 0273 | Кампания KSP Миссия-2 | `855dd33b51078860fe542f5321fd6ace9d1a4ab839e3f270750d4f202d393add` |
+| 0619 | Кампания KSP Миссия-3 | `da7f43e2b4f271c8cfed8cfe180be92617001aeede2704080c91ecd176029ad2` |
+| 0436 | МБОУ СОШ 46 | `2ab809c04cbf6a94ccd71d966c5364f0adab61bdc3246b857756825f89aaf1af` |
+| 0324 | Начало пути. 01 | `f7b108238dda2b50fad2ec8411aa896068320c787863dfcfb56ba11ddc71d9d9` |
+| 0458 | Небольшая миссия | `244408476f59625da702479278cde30ccaa4926986867588343c57c5557f126b` |
+| 0459 | Небольшая миссия | `a1af68fe54b9eeaf44f41e12a0540eb3daf7e8b7b95331659ed3519d6c236f4a` |
+| 0461 | Небольшая миссия | `11d369adb349bdf11256ad2ca565456eefd570c6ae55e63b148fc2fa143acb0e` |
+| 0465 | Небольшая миссия | `b265bb1f7e8b47d697b29ac52b3f49e236d1b47e6eb30661dcf1100696f63be2` |
+| 0069 | ну я хз я ещё не придумал | `446eade4a24f8611a4c84dbca34f03776ca623559fd0886bfd55dd409429292d` |
+| 0050 | Помощь Горнодобывающей Станцие | `222a97003d95ad184d01187ecdd220509774966667b4f3ed31f8e8854a19b5bb` |
+| 0561 | Потужный Survival с Маканом | `1ffb3a741855a17f477f6927904976f16adfbfb1ae228970b559be4894eabdbb` |
+| 0013 | ПЯТЬ НОЧЕЙ В СТАРКРАФТЕ ✦ Five nights at Koprulu Sector! | `eb071aee3f0318a6709de840e8af0392fb53b1acb3c66c6ce3ba723490e087a1` |
+| 0009 | Разрушители порядка_ Мисия 1 | `e67e4163665f516cbe69b49469634543cb393622b5d3a35203e090e3d5886f26` |
+| 0037 | Разрушители порядка_ Миссия 2 | `b40aa0983a627db1e78bacdd4e69aabe036425413cc7deb5a50b300d14600d29` |
+| 0010 | Симулятор камня 2 | `e058abc8df15937f973e1d90a5994be89b8048fb0aa4e4faaf8c3234b010a735` |
+| 0062 | Терраны на Айуре | `3b125f361693f908a7cddce5640a4146b45cac2672bdcdd2193ffd1febbde3ba` |
+| 0505 | Тирадорська Бронтозябра | `77175116e6830b8a2634f07c16f4dbca24fc871850957252148e5f49b0c431fb` |
+| 0027 | Храм Аюру | `d1262e8ef87219d1a95a48d09c25394fec15e09c6e271631988479a6800988ce` |
+| 0048 | Центр Зеруса HARD | `7964be3e39c3b890c7a088b6083aef9d14f15d90d19d0e3723ab04952d81e571` |
+| 0077 | Центр Зеруса HARD + Zerg | `ccbce8736d110a50634a2f5e4b05e8d8926082930c04a5009c1bb335ebc60f0f` |
+| 0031 | Чар+уюча лава | `9cc184f865885c12987383a12f6ee42a813b323f01bcf9611b484e8e565542fd` |
+| previous13-0017 | Эпические Битвы с Боссами | `022ca1ecc3ad9b9b899043ee4517d4fc278ade3f47b8c52cb0f3835c366982ba` |

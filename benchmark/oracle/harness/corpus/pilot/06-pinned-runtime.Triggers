@@ -1,7 +1,0 @@
-<TriggerData>
-  <Library Id="RuntimeFixture">
-    <Element Id="Run" Type="FunctionDef">
-      <Identifier>Run</Identifier>
-    </Element>
-  </Library>
-</TriggerData>

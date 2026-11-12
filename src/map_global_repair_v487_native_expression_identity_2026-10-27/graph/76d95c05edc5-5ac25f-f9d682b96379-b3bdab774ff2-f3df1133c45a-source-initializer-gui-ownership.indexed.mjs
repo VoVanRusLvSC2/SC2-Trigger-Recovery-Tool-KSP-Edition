@@ -1,1 +1,0 @@
-export {verifySourceInitializerGuiOwnership} from 'file:///K:/SC2_MAP_Workspace/sc2_editor_C%2B%2B/map_global_repair_v487_native_expression_identity_2026-10-27/graph/544439d2a86b-a4-3cc3fec9bd16-f1c656b8bb46-98c9c708fc51-source-initializer-gui-ownership.native-slot.mjs';

@@ -1,5 +1,0 @@
-int counter;
-
-void Launch() {
-    counter = 7;
-}

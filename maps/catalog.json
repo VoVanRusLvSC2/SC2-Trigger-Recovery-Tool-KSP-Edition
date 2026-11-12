@@ -1,0 +1,2607 @@
+{
+  "scope": "325 accepted archive records from a 339-record corpus; titles and versions may repeat",
+  "strict_recorded_pass": 103,
+  "historically_accepted": 222,
+  "records": [
+    {
+      "id": "0001",
+      "title": "House Special Map",
+      "original_filename": "House Special Map__d2aff3b630ca92ad14a4e20d451c161f930b2496e16ed4139e8a459e3942d995.SC2Map",
+      "original_sha256": "d2aff3b630ca92ad14a4e20d451c161f930b2496e16ed4139e8a459e3942d995",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0523",
+      "title": "Saga Early test 2000 Atmospheres LE",
+      "original_filename": "Saga Early test 2000 Atmospheres LE__f5c6d232325662cd601b84609f607aa61734d3cb69395feb5e62366d7d812b75.SC2Map",
+      "original_sha256": "f5c6d232325662cd601b84609f607aa61734d3cb69395feb5e62366d7d812b75",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0028",
+      "title": "Starcall 2v2 map",
+      "original_filename": "Starcall 2v2 map__9c0775bba7e54be9a3534253eb7d707807bae8686e851ffc08a41eeae1fa12f6.SC2Map",
+      "original_sha256": "9c0775bba7e54be9a3534253eb7d707807bae8686e851ffc08a41eeae1fa12f6",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0032",
+      "title": "joe's test map",
+      "original_filename": "joe's test map__01a91ba97cb8e5d517700c6b0788c7d7cb357bae5edb3841f391fa5daa9fbcfc.SC2Map",
+      "original_sha256": "01a91ba97cb8e5d517700c6b0788c7d7cb357bae5edb3841f391fa5daa9fbcfc",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0168",
+      "title": "2FORT",
+      "original_filename": "2FORT__0b395c38540297f98e2aaff4bb1972176b2c4dc9aa655fc39d0eb62ea16e8db7.SC2Map",
+      "original_sha256": "0b395c38540297f98e2aaff4bb1972176b2c4dc9aa655fc39d0eb62ea16e8db7",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0013",
+      "title": "ПЯТЬ НОЧЕЙ В СТАРКРАФТЕ ✦ Five nights at Koprulu Sector!",
+      "original_filename": "ПЯТЬ НОЧЕЙ В СТАРКРАФТЕ ✦ Five nights at Koprulu Sector!__eb071aee3f0318a6709de840e8af0392fb53b1acb3c66c6ce3ba723490e087a1.SC2Map",
+      "original_sha256": "eb071aee3f0318a6709de840e8af0392fb53b1acb3c66c6ce3ba723490e087a1",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0436",
+      "title": "МБОУ СОШ 46",
+      "original_filename": "МБОУ СОШ 46__2ab809c04cbf6a94ccd71d966c5364f0adab61bdc3246b857756825f89aaf1af.SC2Map",
+      "original_sha256": "2ab809c04cbf6a94ccd71d966c5364f0adab61bdc3246b857756825f89aaf1af",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0483",
+      "title": "Direct Strike",
+      "original_filename": "Direct Strike__182a303e0940ac93c6d290e2a7d69dba9ed5513bd3014a9c344d75c44bcee711.SC2Map",
+      "original_sha256": "182a303e0940ac93c6d290e2a7d69dba9ed5513bd3014a9c344d75c44bcee711",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0484",
+      "title": "Direct Strike",
+      "original_filename": "Direct Strike__5b846b739714ef26b865588d38bb7408e164e89570d00fda5d0c343e17519f00.SC2Map",
+      "original_sha256": "5b846b739714ef26b865588d38bb7408e164e89570d00fda5d0c343e17519f00",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0005",
+      "title": "Zerg swarm mutation2",
+      "original_filename": "Zerg swarm mutation2__f573728dfbacc12e60c372d939ce9964553198e000dd3bec5b247c306fb2a379.SC2Map",
+      "original_sha256": "f573728dfbacc12e60c372d939ce9964553198e000dd3bec5b247c306fb2a379",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0054",
+      "title": "Wings of Liberty Reversed - Launcher",
+      "original_filename": "Wings of Liberty Reversed - Launcher__9b9e7c62f2dd950fe5d143f7234b75d13e36a83ee86ca6d94e9bae3139cab056.SC2Map",
+      "original_sha256": "9b9e7c62f2dd950fe5d143f7234b75d13e36a83ee86ca6d94e9bae3139cab056",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0006",
+      "title": "Kerrigan Covert Ops COOP - Map Launcher",
+      "original_filename": "Kerrigan Covert Ops COOP - Map Launcher__ce86b2cbce42e6cd637904756c8a4a4c8a86d869862757a1417edfb35d9b8301.SC2Map",
+      "original_sha256": "ce86b2cbce42e6cd637904756c8a4a4c8a86d869862757a1417edfb35d9b8301",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0561",
+      "title": "Потужный Survival с Маканом",
+      "original_filename": "Потужный Survival с Маканом__1ffb3a741855a17f477f6927904976f16adfbfb1ae228970b559be4894eabdbb.SC2Map",
+      "original_sha256": "1ffb3a741855a17f477f6927904976f16adfbfb1ae228970b559be4894eabdbb",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0106",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__c14135002be6b8f6c50c72461bd739ab73cd4bf0c2dd1790c596253ea08abb62.SC2Map",
+      "original_sha256": "c14135002be6b8f6c50c72461bd739ab73cd4bf0c2dd1790c596253ea08abb62",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0111",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__5b3c774cb9940a73c4dcd4c1c3b5e2dba44d1f24c3b69de1ece7504ef065d947.SC2Map",
+      "original_sha256": "5b3c774cb9940a73c4dcd4c1c3b5e2dba44d1f24c3b69de1ece7504ef065d947",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0541",
+      "title": "Randоm Unit Fight",
+      "original_filename": "Randоm Unit Fight__43198316ec45c84e2b7601d96c1eea1ccba88100a33e5b0c328afe81fa058fbc.SC2Map",
+      "original_sha256": "43198316ec45c84e2b7601d96c1eea1ccba88100a33e5b0c328afe81fa058fbc",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0107",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__bf31e5ae80d0b945fffc55b7b416ecc5b423231ea5a9203446185d10d79e0a5d.SC2Map",
+      "original_sha256": "bf31e5ae80d0b945fffc55b7b416ecc5b423231ea5a9203446185d10d79e0a5d",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0108",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__29edec8d4f6bd90cd56b2aa95b325849ba0b592683d1853680cdd83a90708219.SC2Map",
+      "original_sha256": "29edec8d4f6bd90cd56b2aa95b325849ba0b592683d1853680cdd83a90708219",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0109",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__7019074b94e69b8d388d8b2277a209051722b9ea4311a702d395cf3b50af84a4.SC2Map",
+      "original_sha256": "7019074b94e69b8d388d8b2277a209051722b9ea4311a702d395cf3b50af84a4",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0114",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__b32e3eb82270c670ed9232e3d0481c61a43b13ca891b2173b390fb09abee27cf.SC2Map",
+      "original_sha256": "b32e3eb82270c670ed9232e3d0481c61a43b13ca891b2173b390fb09abee27cf",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0113",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__19a6ebb6fc657ffc5f509fd8885d1cf45dfdd5f592956394e033aa773b81df43.SC2Map",
+      "original_sha256": "19a6ebb6fc657ffc5f509fd8885d1cf45dfdd5f592956394e033aa773b81df43",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0242",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__664674ef882dd36e72c78d49a2feb3438490c7dfd30bece6090afdd0b28ccc6f.SC2Map",
+      "original_sha256": "664674ef882dd36e72c78d49a2feb3438490c7dfd30bece6090afdd0b28ccc6f",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0244",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__832cc2387ac1319b65bf32602dd3ef1ca38550f793ff15ef16ca8d270f6e382e.SC2Map",
+      "original_sha256": "832cc2387ac1319b65bf32602dd3ef1ca38550f793ff15ef16ca8d270f6e382e",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0245",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__0f07a9c9120fba305e2bedc9723c1c04d6f1c4a32d15f4df275f94299e51499a.SC2Map",
+      "original_sha256": "0f07a9c9120fba305e2bedc9723c1c04d6f1c4a32d15f4df275f94299e51499a",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0052",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__8c100be6c866f2deaa8011c6787932df8acc4e955ea9862c580c6fb035cde92e.SC2Map",
+      "original_sha256": "8c100be6c866f2deaa8011c6787932df8acc4e955ea9862c580c6fb035cde92e",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0088",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__f7afcea8536b751c338e2e8f182cd5052f0fe79ead8ca060b589e79c55010a50.SC2Map",
+      "original_sha256": "f7afcea8536b751c338e2e8f182cd5052f0fe79ead8ca060b589e79c55010a50",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0096",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__7efa9544dbb3983bbbb1fd03b209545bba80a2b051698a28cde99ba46f23226d.SC2Map",
+      "original_sha256": "7efa9544dbb3983bbbb1fd03b209545bba80a2b051698a28cde99ba46f23226d",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0097",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__fb5cd4be9ab0c23719841881e3b61f2e50c9e6b051b866bb271a62299d35ad2b.SC2Map",
+      "original_sha256": "fb5cd4be9ab0c23719841881e3b61f2e50c9e6b051b866bb271a62299d35ad2b",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0033",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__7c92b5cfc79a769a11017a30996190086c897e4199d80fb994ee504a463e14b8.SC2Map",
+      "original_sha256": "7c92b5cfc79a769a11017a30996190086c897e4199d80fb994ee504a463e14b8",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0243",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__ac67b96f4d447cd05a447c96d53e1c5ceeddc2cae7b08d754fe9dfed5433c2f8.SC2Map",
+      "original_sha256": "ac67b96f4d447cd05a447c96d53e1c5ceeddc2cae7b08d754fe9dfed5433c2f8",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0102",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__6f17527777f2c69e3a7a024009eb3c3c4e007de274a6d624f2fde49a818f9851.SC2Map",
+      "original_sha256": "6f17527777f2c69e3a7a024009eb3c3c4e007de274a6d624f2fde49a818f9851",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0103",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__e8dc98b4aa2097aac6d564da2922acb77ebfd5b6b1ec56bb9b706e4e7a9b6293.SC2Map",
+      "original_sha256": "e8dc98b4aa2097aac6d564da2922acb77ebfd5b6b1ec56bb9b706e4e7a9b6293",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0104",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__38b309f919cc9dee8be794e618db7fdc49e1f4b2674edf9f96db592dc60acbb9.SC2Map",
+      "original_sha256": "38b309f919cc9dee8be794e618db7fdc49e1f4b2674edf9f96db592dc60acbb9",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0101",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__733403cfd72475e0092a834c4df8807f19eb365b0ecb7b6c0f27a4b43acc3d7b.SC2Map",
+      "original_sha256": "733403cfd72475e0092a834c4df8807f19eb365b0ecb7b6c0f27a4b43acc3d7b",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0100",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__0496c5a31ab99b11c863998441fb084123ee8c9be1e0148cae37fd081c8e083f.SC2Map",
+      "original_sha256": "0496c5a31ab99b11c863998441fb084123ee8c9be1e0148cae37fd081c8e083f",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0473",
+      "title": "Reaper Dunk",
+      "original_filename": "Reaper Dunk__ab6be6be99a6382081a9923219711e678a450261fb1b5ea613afcf74613c0fda.SC2Map",
+      "original_sha256": "ab6be6be99a6382081a9923219711e678a450261fb1b5ea613afcf74613c0fda",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0246",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__664482901a2aafe5b14e6f88eb1a366adfbe0ce4799955039298d9e74fa75615.SC2Map",
+      "original_sha256": "664482901a2aafe5b14e6f88eb1a366adfbe0ce4799955039298d9e74fa75615",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0105",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__21b08212d32c2afa99a43c4ce182d2ba85dcc4090a9b834c28c947d83bd01932.SC2Map",
+      "original_sha256": "21b08212d32c2afa99a43c4ce182d2ba85dcc4090a9b834c28c947d83bd01932",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0110",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__c27a04a197ed0ce8b1831a889746a0a251f144015240a9704c13540f71a8ad72.SC2Map",
+      "original_sha256": "c27a04a197ed0ce8b1831a889746a0a251f144015240a9704c13540f71a8ad72",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0490",
+      "title": "Direct Strike",
+      "original_filename": "Direct Strike__713c31f1c0d09cfc1a8f39203995de86c475046be9e2bd8a4542f81231822a9c.SC2Map",
+      "original_sha256": "713c31f1c0d09cfc1a8f39203995de86c475046be9e2bd8a4542f81231822a9c",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0057",
+      "title": "Meinhoff Invasion",
+      "original_filename": "Meinhoff Invasion__4837d76e0842ad4782cc1706659b5af1628d3c7737c8664bba51112b0e374a85.SC2Map",
+      "original_sha256": "4837d76e0842ad4782cc1706659b5af1628d3c7737c8664bba51112b0e374a85",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0491",
+      "title": "Direct Strike",
+      "original_filename": "Direct Strike__5b866bcfa562e2ec27167bfc0122f65a9acc5be304088008e2377ac81b9dd651.SC2Map",
+      "original_sha256": "5b866bcfa562e2ec27167bfc0122f65a9acc5be304088008e2377ac81b9dd651",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0020",
+      "title": "Outskirts of Xil",
+      "original_filename": "Outskirts of Xil__f7c39ef0aa97a5930e504d3cd36810457aa8d2d2e6a79be4a4f51d3bb3641c70.SC2Map",
+      "original_sha256": "f7c39ef0aa97a5930e504d3cd36810457aa8d2d2e6a79be4a4f51d3bb3641c70",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0521",
+      "title": "Evil Pineapple",
+      "original_filename": "Evil Pineapple__5467d51df2f7c03f67e5259c999bd8dc1a98b6f3dfc9debf7a3567c3f28247ba.SC2Map",
+      "original_sha256": "5467d51df2f7c03f67e5259c999bd8dc1a98b6f3dfc9debf7a3567c3f28247ba",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0543",
+      "title": "Reaper Dunk",
+      "original_filename": "Reaper Dunk__1f68c25fb4ed6cff20ec5b0a423ef01e054a5aa797fd33d04dd3bf16fcb385db.SC2Map",
+      "original_sha256": "1f68c25fb4ed6cff20ec5b0a423ef01e054a5aa797fd33d04dd3bf16fcb385db",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0399",
+      "title": "Reaper Dunk",
+      "original_filename": "Reaper Dunk__0efddfb10ac422b8b18ec47ee7f437fbdd032b929cb71fe50fcdac3bc401936f.SC2Map",
+      "original_sha256": "0efddfb10ac422b8b18ec47ee7f437fbdd032b929cb71fe50fcdac3bc401936f",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0008",
+      "title": "Outhouse Defense",
+      "original_filename": "Outhouse Defense__82bfeb71b68c14988dd1084f615f059389897015221a42381f288c1de5b0c4d2.SC2Map",
+      "original_sha256": "82bfeb71b68c14988dd1084f615f059389897015221a42381f288c1de5b0c4d2",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0475",
+      "title": "Reaper Dunk",
+      "original_filename": "Reaper Dunk__aca193b7dd2eccbc0ea8d76fbfff076b77bf3cad2f6515b578d03de2b0f64085.SC2Map",
+      "original_sha256": "aca193b7dd2eccbc0ea8d76fbfff076b77bf3cad2f6515b578d03de2b0f64085",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0021",
+      "title": "Honest War",
+      "original_filename": "Honest War__4273b95ef79930c885ba7c70b59399fe2b72bd482de8559649f929238aa4b66d.SC2Map",
+      "original_sha256": "4273b95ef79930c885ba7c70b59399fe2b72bd482de8559649f929238aa4b66d",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0043",
+      "title": "Cats and Critters_ Winter",
+      "original_filename": "Cats and Critters_ Winter__9d27dd6855d2f86bba0cfa9a6e728e9c708a810cf7adbb897fc7d06fdec9d350.SC2Map",
+      "original_sha256": "9d27dd6855d2f86bba0cfa9a6e728e9c708a810cf7adbb897fc7d06fdec9d350",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0007",
+      "title": "Захват планеты",
+      "original_filename": "Захват планеты__8fce53a2b5c537f03ec20caa2bd60633b4232e6dfd1b9c890b7247e5b5d84c93.SC2Map",
+      "original_sha256": "8fce53a2b5c537f03ec20caa2bd60633b4232e6dfd1b9c890b7247e5b5d84c93",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0564",
+      "title": "Co-op+ 2.0 Map Launcher [Co-op+]",
+      "original_filename": "Co-op+ 2.0 Map Launcher [Co-op+]__053bc27b87bdd1c5ca17f2df52c35d211f646b76288b6e7e9561091c6ed4affd.SC2Map",
+      "original_sha256": "053bc27b87bdd1c5ca17f2df52c35d211f646b76288b6e7e9561091c6ed4affd",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0004",
+      "title": "Ultimate Marine Split Challenge (Beta)",
+      "original_filename": "Ultimate Marine Split Challenge (Beta)__d5dfd5cd8de0b649268a70237767235308c9b4384bc594dfd7762e9a37f3cbbc.SC2Map",
+      "original_sha256": "d5dfd5cd8de0b649268a70237767235308c9b4384bc594dfd7762e9a37f3cbbc",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0406",
+      "title": "Gatecraft_ Thus the Terrans fought there 01",
+      "original_filename": "Gatecraft_ Thus the Terrans fought there 01__2320043c4eb0805dcc1712e0bae99bde725f4d635a9a55ca6cdd78ee72978531.SC2Map",
+      "original_sha256": "2320043c4eb0805dcc1712e0bae99bde725f4d635a9a55ca6cdd78ee72978531",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0010",
+      "title": "Симулятор камня 2",
+      "original_filename": "Симулятор камня 2__e058abc8df15937f973e1d90a5994be89b8048fb0aa4e4faaf8c3234b010a735.SC2Map",
+      "original_sha256": "e058abc8df15937f973e1d90a5994be89b8048fb0aa4e4faaf8c3234b010a735",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0027",
+      "title": "Храм Аюру",
+      "original_filename": "Храм Аюру__d1262e8ef87219d1a95a48d09c25394fec15e09c6e271631988479a6800988ce.SC2Map",
+      "original_sha256": "d1262e8ef87219d1a95a48d09c25394fec15e09c6e271631988479a6800988ce",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0570",
+      "title": "Nova&Tosh Coop",
+      "original_filename": "Nova&Tosh Coop__58448d17aa3a6c487f3a60b21e32521c13cafff646cf1edd9b56449d81c64faf.SC2Map",
+      "original_sha256": "58448d17aa3a6c487f3a60b21e32521c13cafff646cf1edd9b56449d81c64faf",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0087",
+      "title": "Fort Defence Coop",
+      "original_filename": "Fort Defence Coop__b21b428d753663b322e2b3dfd134d3a9a08d7607f273da88a9d1493164fcb252.SC2Map",
+      "original_sha256": "b21b428d753663b322e2b3dfd134d3a9a08d7607f273da88a9d1493164fcb252",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0012",
+      "title": "Zergling Defense v2 [RU]",
+      "original_filename": "Zergling Defense v2 [RU]__29034da413329ef6c42309ccecc3216e853fcfe392d4b15c440d09873d2447f5.SC2Map",
+      "original_sha256": "29034da413329ef6c42309ccecc3216e853fcfe392d4b15c440d09873d2447f5",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0505",
+      "title": "Тирадорська Бронтозябра",
+      "original_filename": "Тирадорська Бронтозябра__77175116e6830b8a2634f07c16f4dbca24fc871850957252148e5f49b0c431fb.SC2Map",
+      "original_sha256": "77175116e6830b8a2634f07c16f4dbca24fc871850957252148e5f49b0c431fb",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0015",
+      "title": "CO-OP Minesweepers!!",
+      "original_filename": "CO-OP Minesweepers!!__cd3801d80afca2aa973566386bcc745fdf635afd8d834d9a0c1d2fa5f5b8dedd.SC2Map",
+      "original_sha256": "cd3801d80afca2aa973566386bcc745fdf635afd8d834d9a0c1d2fa5f5b8dedd",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0488",
+      "title": "Honest War REMASTER",
+      "original_filename": "Honest War REMASTER__d60473f9b7b4c21fb84687fcd562bf04c437dba06727ef5b472857200106e954.SC2Map",
+      "original_sha256": "d60473f9b7b4c21fb84687fcd562bf04c437dba06727ef5b472857200106e954",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0009",
+      "title": "Разрушители порядка_ Мисия 1",
+      "original_filename": "Разрушители порядка_ Мисия 1__e67e4163665f516cbe69b49469634543cb393622b5d3a35203e090e3d5886f26.SC2Map",
+      "original_sha256": "e67e4163665f516cbe69b49469634543cb393622b5d3a35203e090e3d5886f26",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0506",
+      "title": "Falti's Temple",
+      "original_filename": "Falti's Temple__c52f2c7261d52ab7b3ae726109a590673d90927b988cacf13134acd2752147b1.SC2Map",
+      "original_sha256": "c52f2c7261d52ab7b3ae726109a590673d90927b988cacf13134acd2752147b1",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0016",
+      "title": "def-test",
+      "original_filename": "def-test__11f780d0f9c657811d381aac869725ee6d2a090e5f555e27da4b1b57acedbd99.SC2Map",
+      "original_sha256": "11f780d0f9c657811d381aac869725ee6d2a090e5f555e27da4b1b57acedbd99",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0405",
+      "title": "4 players coop defence",
+      "original_filename": "4 players coop defence__a73489c4a0049f1a4db3b0450844d515703836ad171fe90698137c552a77a31c.SC2Map",
+      "original_sha256": "a73489c4a0049f1a4db3b0450844d515703836ad171fe90698137c552a77a31c",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0018",
+      "title": "Выживание в пещере",
+      "original_filename": "Выживание в пещере__5876e365a220c227a61ab6a7c7f31444e1176fe55dd723f3b25ef9ec5b834794.SC2Map",
+      "original_sha256": "5876e365a220c227a61ab6a7c7f31444e1176fe55dd723f3b25ef9ec5b834794",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0513",
+      "title": "Выживание в пещере",
+      "original_filename": "Выживание в пещере__e86ebc52a814314b70bdbff5e6f9172527333f0dc4ab66dc39a2b2addde1b60f.SC2Map",
+      "original_sha256": "e86ebc52a814314b70bdbff5e6f9172527333f0dc4ab66dc39a2b2addde1b60f",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0031",
+      "title": "Чар+уюча лава",
+      "original_filename": "Чар+уюча лава__9cc184f865885c12987383a12f6ee42a813b323f01bcf9611b484e8e565542fd.SC2Map",
+      "original_sha256": "9cc184f865885c12987383a12f6ee42a813b323f01bcf9611b484e8e565542fd",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0614",
+      "title": "Launcher KSP",
+      "original_filename": "Launcher KSP__6372d8a045587301a454a3e72739d1b6aba7b6307c6d47df5dcf353d529f4822.SC2Map",
+      "original_sha256": "6372d8a045587301a454a3e72739d1b6aba7b6307c6d47df5dcf353d529f4822",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0348",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__0f602a84e5c166f70b6b9a07a79fe7bbc15c880d94efd51e215b887f29638773.SC2Map",
+      "original_sha256": "0f602a84e5c166f70b6b9a07a79fe7bbc15c880d94efd51e215b887f29638773",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0324",
+      "title": "Начало пути. 01",
+      "original_filename": "Начало пути. 01__f7b108238dda2b50fad2ec8411aa896068320c787863dfcfb56ba11ddc71d9d9.SC2Map",
+      "original_sha256": "f7b108238dda2b50fad2ec8411aa896068320c787863dfcfb56ba11ddc71d9d9",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0453",
+      "title": "Raynor's Secrets",
+      "original_filename": "Raynor's Secrets__2ebf31e9db3d6d1f8394f0ff7ed1cbc81325819917dee40facdefc9dea20aa2b.SC2Map",
+      "original_sha256": "2ebf31e9db3d6d1f8394f0ff7ed1cbc81325819917dee40facdefc9dea20aa2b",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0353",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__8e5d82e164573d9599145c2bc41d12252f77519d7401089571932843d033e4c4.SC2Map",
+      "original_sha256": "8e5d82e164573d9599145c2bc41d12252f77519d7401089571932843d033e4c4",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0352",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__36815ca22f4c5cc647d92220479303f0ac5b3e7b063c540736bcf54512fcb646.SC2Map",
+      "original_sha256": "36815ca22f4c5cc647d92220479303f0ac5b3e7b063c540736bcf54512fcb646",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0354",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__7a8faa5248b66d3366dff0990fa0a0e01efd1e386bbd660cbf54502a939527f0.SC2Map",
+      "original_sha256": "7a8faa5248b66d3366dff0990fa0a0e01efd1e386bbd660cbf54502a939527f0",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0264",
+      "title": "Zombie Arena Remake (Beta)",
+      "original_filename": "Zombie Arena Remake (Beta)__a510aeddc3f25fac643e303588ff289470d6b81730c6af0265f7401dd7f15944.SC2Map",
+      "original_sha256": "a510aeddc3f25fac643e303588ff289470d6b81730c6af0265f7401dd7f15944",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0048",
+      "title": "Центр Зеруса HARD",
+      "original_filename": "Центр Зеруса HARD__7964be3e39c3b890c7a088b6083aef9d14f15d90d19d0e3723ab04952d81e571.SC2Map",
+      "original_sha256": "7964be3e39c3b890c7a088b6083aef9d14f15d90d19d0e3723ab04952d81e571",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0360",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__0bd602784197229cd8963751500eceab881f3067137881c8355b87d45ff3440a.SC2Map",
+      "original_sha256": "0bd602784197229cd8963751500eceab881f3067137881c8355b87d45ff3440a",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0359",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__977b97ef6188b6410c4d1783fe24dde4ba1f94e519918138eb260c1f4f759577.SC2Map",
+      "original_sha256": "977b97ef6188b6410c4d1783fe24dde4ba1f94e519918138eb260c1f4f759577",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0361",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__05a5dbe1eaae69551a348e9ac2b954a28c51591fcbfc8e8011a5b0d48a9dc304.SC2Map",
+      "original_sha256": "05a5dbe1eaae69551a348e9ac2b954a28c51591fcbfc8e8011a5b0d48a9dc304",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0062",
+      "title": "Терраны на Айуре",
+      "original_filename": "Терраны на Айуре__3b125f361693f908a7cddce5640a4146b45cac2672bdcdd2193ffd1febbde3ba.SC2Map",
+      "original_sha256": "3b125f361693f908a7cddce5640a4146b45cac2672bdcdd2193ffd1febbde3ba",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0362",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__3c33179bbe630f4e80c2f72194787d87e0bca0fe87bb4923ea6715399e7552f6.SC2Map",
+      "original_sha256": "3c33179bbe630f4e80c2f72194787d87e0bca0fe87bb4923ea6715399e7552f6",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0349",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__f1b0a7ca56fd6a9a0005089c28acfb3d38a28627b55d264b14e7bb51215efeb9.SC2Map",
+      "original_sha256": "f1b0a7ca56fd6a9a0005089c28acfb3d38a28627b55d264b14e7bb51215efeb9",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0350",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__5fcccb7b66aa2f30733a1d8ebce0a9a50978170a215d431901324c894751061e.SC2Map",
+      "original_sha256": "5fcccb7b66aa2f30733a1d8ebce0a9a50978170a215d431901324c894751061e",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0351",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__cef8cacfbfcff6bd7188541af0eb4bf2f3b6835fa79eaf58d9ee3942b1758a51.SC2Map",
+      "original_sha256": "cef8cacfbfcff6bd7188541af0eb4bf2f3b6835fa79eaf58d9ee3942b1758a51",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0355",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__fbdbb8115d97c233391300f02ed53a1a28f7da827a4135c8759745a071001337.SC2Map",
+      "original_sha256": "fbdbb8115d97c233391300f02ed53a1a28f7da827a4135c8759745a071001337",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0037",
+      "title": "Разрушители порядка_ Миссия 2",
+      "original_filename": "Разрушители порядка_ Миссия 2__b40aa0983a627db1e78bacdd4e69aabe036425413cc7deb5a50b300d14600d29.SC2Map",
+      "original_sha256": "b40aa0983a627db1e78bacdd4e69aabe036425413cc7deb5a50b300d14600d29",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0568",
+      "title": "Wild Animals Space",
+      "original_filename": "Wild Animals Space__22841ad8fd8330fa6eb03b01ce0884b7d2721723608b1af4c4f7aa481b2ad8bf.SC2Map",
+      "original_sha256": "22841ad8fd8330fa6eb03b01ce0884b7d2721723608b1af4c4f7aa481b2ad8bf",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0334",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__9b06330ed57c00553fa23f9bac5160b45413092a3962bbc242bfdbb3a7abcc74.SC2Map",
+      "original_sha256": "9b06330ed57c00553fa23f9bac5160b45413092a3962bbc242bfdbb3a7abcc74",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0330",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__ff06111fed5c335ba9a5535048ff30ebb39ae9025c3ae5ddf7f4042856ddc16c.SC2Map",
+      "original_sha256": "ff06111fed5c335ba9a5535048ff30ebb39ae9025c3ae5ddf7f4042856ddc16c",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0329",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__92336309b6adfa6e3aa5ecaeffb8f798bfbb7f5e39ca61695398ac35ad026c22.SC2Map",
+      "original_sha256": "92336309b6adfa6e3aa5ecaeffb8f798bfbb7f5e39ca61695398ac35ad026c22",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0332",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__503e329037725bfba07907faaa592bd8bdf5e043e05952abf6a8a6d5f5c9c3ba.SC2Map",
+      "original_sha256": "503e329037725bfba07907faaa592bd8bdf5e043e05952abf6a8a6d5f5c9c3ba",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0331",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__5233e24b2cf918520d2368e0d90cca80e7eedd59cbef88ae14041fe9e8b5d09a.SC2Map",
+      "original_sha256": "5233e24b2cf918520d2368e0d90cca80e7eedd59cbef88ae14041fe9e8b5d09a",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0335",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__ff8a4403aea07fc428811b4a4c7f0b0cea95d55ab37fd65c1b05a93fe16f8aa9.SC2Map",
+      "original_sha256": "ff8a4403aea07fc428811b4a4c7f0b0cea95d55ab37fd65c1b05a93fe16f8aa9",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0336",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__78793ffff8dc02e8a4d9310b88cd7abe936d85db2cadc17dd065e29c2c958ccd.SC2Map",
+      "original_sha256": "78793ffff8dc02e8a4d9310b88cd7abe936d85db2cadc17dd065e29c2c958ccd",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0337",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__545155f5b823a19453b9d757c9ee91ac433bfcbbefa9f0ad51e1f8a14c96217c.SC2Map",
+      "original_sha256": "545155f5b823a19453b9d757c9ee91ac433bfcbbefa9f0ad51e1f8a14c96217c",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0063",
+      "title": "Wings of Liberty Reversed 2 - The Outlaws",
+      "original_filename": "Wings of Liberty Reversed 2 - The Outlaws__c075c521dcb1b602be390c911c06fc6b2b749936ff2b70b4db50345f1613eba6.SC2Map",
+      "original_sha256": "c075c521dcb1b602be390c911c06fc6b2b749936ff2b70b4db50345f1613eba6",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0357",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__01ef87e1cba76442d1e0c8082bb82aca7c93b28c5f84844f1c1cd44364d30ed3.SC2Map",
+      "original_sha256": "01ef87e1cba76442d1e0c8082bb82aca7c93b28c5f84844f1c1cd44364d30ed3",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0338",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__3f0513229fa183111543849988245114b3a0423d8643037848c515be0ee511a1.SC2Map",
+      "original_sha256": "3f0513229fa183111543849988245114b3a0423d8643037848c515be0ee511a1",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0363",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__ac8208b45210685a12cabc2b3dd4d6c003fffbc87d85c3e0b8e7351b896fd71b.SC2Map",
+      "original_sha256": "ac8208b45210685a12cabc2b3dd4d6c003fffbc87d85c3e0b8e7351b896fd71b",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0364",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__e7849254c6a1e1da43ebf78469432acc5e30733e52837edee7e11a5289b72b77.SC2Map",
+      "original_sha256": "e7849254c6a1e1da43ebf78469432acc5e30733e52837edee7e11a5289b72b77",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0579",
+      "title": "They are millions",
+      "original_filename": "They are millions__47d0c9d393d386fbc941167a6d4ba132822a95785fddf192c34c1a945252b768.SC2Map",
+      "original_sha256": "47d0c9d393d386fbc941167a6d4ba132822a95785fddf192c34c1a945252b768",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0578",
+      "title": "They are millions",
+      "original_filename": "They are millions__6213f027b90d0388b6c665bea15d7750070d4f5d86a72c1908c4d2299b1779e5.SC2Map",
+      "original_sha256": "6213f027b90d0388b6c665bea15d7750070d4f5d86a72c1908c4d2299b1779e5",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0616",
+      "title": "Star Crafts Mod",
+      "original_filename": "Star Crafts Mod__b366fd8d23b6df0cc596fd64c9c1b29d2a03dfade3cad51850c23d3bce14768e.SC2Map",
+      "original_sha256": "b366fd8d23b6df0cc596fd64c9c1b29d2a03dfade3cad51850c23d3bce14768e",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0365",
+      "title": "Nydus Conspiracy",
+      "original_filename": "Nydus Conspiracy__2f8444522e8a7d70edc756f74201b159a21f567ea52ff78a447f497fffdf8bd1.SC2Map",
+      "original_sha256": "2f8444522e8a7d70edc756f74201b159a21f567ea52ff78a447f497fffdf8bd1",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0069",
+      "title": "ну я хз я ещё не придумал",
+      "original_filename": "ну я хз я ещё не придумал__446eade4a24f8611a4c84dbca34f03776ca623559fd0886bfd55dd409429292d.SC2Map",
+      "original_sha256": "446eade4a24f8611a4c84dbca34f03776ca623559fd0886bfd55dd409429292d",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0569",
+      "title": "Haunted Forest (EU)",
+      "original_filename": "Haunted Forest (EU)__7fc745e70090bb59d14e997928fa0e54c370dd018574e8c6056cc203afa0dcdb.SC2Map",
+      "original_sha256": "7fc745e70090bb59d14e997928fa0e54c370dd018574e8c6056cc203afa0dcdb",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0566",
+      "title": "Photon Cycles Reworked",
+      "original_filename": "Photon Cycles Reworked__354ea168386bb71fffb5014edb61a61cb014fd3c297c7810ab4fdbe8c5d47dc5.SC2Map",
+      "original_sha256": "354ea168386bb71fffb5014edb61a61cb014fd3c297c7810ab4fdbe8c5d47dc5",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0528",
+      "title": "Planetary Cleaning Service",
+      "original_filename": "Planetary Cleaning Service__ca30cf32f1a650580b1819bf7568a7b91f9e36ce6e15a4cc5dbdd47b5a5e16b8.SC2Map",
+      "original_sha256": "ca30cf32f1a650580b1819bf7568a7b91f9e36ce6e15a4cc5dbdd47b5a5e16b8",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0143",
+      "title": "0ef678576c82eeed94cb48f96fdcc381bf1d2ee8174308ee79801a736bad61c0",
+      "original_filename": "0ef678576c82eeed94cb48f96fdcc381bf1d2ee8174308ee79801a736bad61c0__0ef678576c82eeed94cb48f96fdcc381bf1d2ee8174308ee79801a736bad61c0.SC2Map",
+      "original_sha256": "0ef678576c82eeed94cb48f96fdcc381bf1d2ee8174308ee79801a736bad61c0",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0271",
+      "title": "Welcome to the Jungle [VERSUS MODE]",
+      "original_filename": "Welcome to the Jungle [VERSUS MODE]__cdbce5ba48522cd7f56f3eff7146acefd71b70c9c0b557e9824373abf650d1f3.SC2Map",
+      "original_sha256": "cdbce5ba48522cd7f56f3eff7146acefd71b70c9c0b557e9824373abf650d1f3",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0369",
+      "title": "Tya's Zerg Defense",
+      "original_filename": "Tya's Zerg Defense__033c8ab9a0b8e4cc5037fc7e3fcfbbb871770edf7fb0dd5191a44522c6df3eb0.SC2Map",
+      "original_sha256": "033c8ab9a0b8e4cc5037fc7e3fcfbbb871770edf7fb0dd5191a44522c6df3eb0",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0061",
+      "title": "Help Mining Station",
+      "original_filename": "Help Mining Station__0fbed9d733d3fca24d2d224da1ba75aae9a4f4b3180023ca42163fb779c341cb.SC2Map",
+      "original_sha256": "0fbed9d733d3fca24d2d224da1ba75aae9a4f4b3180023ca42163fb779c341cb",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0588",
+      "title": "Boss of the Gym",
+      "original_filename": "Boss of the Gym__81aa395fcf853baabb6b12dacca3c80045375304e8d45269c0e87c501b2ff9f3.SC2Map",
+      "original_sha256": "81aa395fcf853baabb6b12dacca3c80045375304e8d45269c0e87c501b2ff9f3",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0499",
+      "title": "Dark Future - 10Illiam",
+      "original_filename": "Dark Future - 10Illiam__9e1929a3d0acdaf576d5e633f2d3b6db386a4ee3fa5f37f89a5d09125f728f91.SC2Map",
+      "original_sha256": "9e1929a3d0acdaf576d5e633f2d3b6db386a4ee3fa5f37f89a5d09125f728f91",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0076",
+      "title": "Wings of Liberty Reversed 3 - Zero Hour",
+      "original_filename": "Wings of Liberty Reversed 3 - Zero Hour__45d6d37ccf1b9d29a30360f3bad873320446c517655d9be160705e47e574147d.SC2Map",
+      "original_sha256": "45d6d37ccf1b9d29a30360f3bad873320446c517655d9be160705e47e574147d",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0241",
+      "title": "Devil's Playground [VERSUS MODE]",
+      "original_filename": "Devil's Playground [VERSUS MODE]__5ed7093731efe00def22044e493179a59fe0a52b5025d23e487f501f7b4e5575.SC2Map",
+      "original_sha256": "5ed7093731efe00def22044e493179a59fe0a52b5025d23e487f501f7b4e5575",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0026",
+      "title": "Test of Survival",
+      "original_filename": "Test of Survival__92ef619a8e85e1252bb07b488b164a1fdc41dee4f669521a59a1bdb8aeb7ff9b.SC2Map",
+      "original_sha256": "92ef619a8e85e1252bb07b488b164a1fdc41dee4f669521a59a1bdb8aeb7ff9b",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0220",
+      "title": "The Outlaws [VERSUS MODE]",
+      "original_filename": "The Outlaws [VERSUS MODE]__fd28b66d4f2d5230c09bb0c791c03cfb73d9b5c3efa6701b6db67e44b0083613.SC2Map",
+      "original_sha256": "fd28b66d4f2d5230c09bb0c791c03cfb73d9b5c3efa6701b6db67e44b0083613",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0050",
+      "title": "Помощь Горнодобывающей Станцие",
+      "original_filename": "Помощь Горнодобывающей Станцие__222a97003d95ad184d01187ecdd220509774966667b4f3ed31f8e8854a19b5bb.SC2Map",
+      "original_sha256": "222a97003d95ad184d01187ecdd220509774966667b4f3ed31f8e8854a19b5bb",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0514",
+      "title": "Выживание в пещере",
+      "original_filename": "Выживание в пещере__53b3d284ae446ce254117b4452148ffaa3874883861fb52f026509fa092cbf13.SC2Map",
+      "original_sha256": "53b3d284ae446ce254117b4452148ffaa3874883861fb52f026509fa092cbf13",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0515",
+      "title": "Выживание в пещере",
+      "original_filename": "Выживание в пещере__dbf64d1977e4529e6499136c0711bc1508484c46df9720a3ff9bee8e833491a7.SC2Map",
+      "original_sha256": "dbf64d1977e4529e6499136c0711bc1508484c46df9720a3ff9bee8e833491a7",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0571",
+      "title": "Among Us",
+      "original_filename": "Among Us__118925c097babaaf4fa9cc8a843c37b8cc60d0d75a7c03e92be27e01ab250c61.SC2Map",
+      "original_sha256": "118925c097babaaf4fa9cc8a843c37b8cc60d0d75a7c03e92be27e01ab250c61",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0135",
+      "title": "A Sinister Turn [VERSUS MODE]",
+      "original_filename": "A Sinister Turn [VERSUS MODE]__08c9a0d7c22b3174a21ce7a6b4b5cd1f06c48c9f287e40ef436f3c62afd012e9.SC2Map",
+      "original_sha256": "08c9a0d7c22b3174a21ce7a6b4b5cd1f06c48c9f287e40ef436f3c62afd012e9",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0077",
+      "title": "Центр Зеруса HARD + Zerg",
+      "original_filename": "Центр Зеруса HARD + Zerg__ccbce8736d110a50634a2f5e4b05e8d8926082930c04a5009c1bb335ebc60f0f.SC2Map",
+      "original_sha256": "ccbce8736d110a50634a2f5e4b05e8d8926082930c04a5009c1bb335ebc60f0f",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0117",
+      "title": "[Versus mode] 8 - Hots - Перехват",
+      "original_filename": "[Versus mode] 8 - Hots - Перехват__db20a4416bd4b91d0c1b3c7175aa566aee21a7720852f6cd27784860aeb5275c.SC2Map",
+      "original_sha256": "db20a4416bd4b91d0c1b3c7175aa566aee21a7720852f6cd27784860aeb5275c",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0119",
+      "title": "[Versus mode] 8 - Hots - Перехват",
+      "original_filename": "[Versus mode] 8 - Hots - Перехват__c20c187f1a62e1f466a0a033f54748144d9ac064c00b1eb4da871273d5ef266a.SC2Map",
+      "original_sha256": "c20c187f1a62e1f466a0a033f54748144d9ac064c00b1eb4da871273d5ef266a",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0121",
+      "title": "[Versus mode] 8 - Hots - Перехват",
+      "original_filename": "[Versus mode] 8 - Hots - Перехват__02aad3b946ad538ab208e5412f4656dea296ce98840fd6638a4ba7038be87bce.SC2Map",
+      "original_sha256": "02aad3b946ad538ab208e5412f4656dea296ce98840fd6638a4ba7038be87bce",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0122",
+      "title": "[Versus mode] 8 - Hots - Перехват",
+      "original_filename": "[Versus mode] 8 - Hots - Перехват__34239520e17742e9084b0a31e367f13d849fd87cf5e4087e0b18c9e1291edc69.SC2Map",
+      "original_sha256": "34239520e17742e9084b0a31e367f13d849fd87cf5e4087e0b18c9e1291edc69",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0123",
+      "title": "[Versus mode] 8 - Hots - Перехват",
+      "original_filename": "[Versus mode] 8 - Hots - Перехват__1ad9ee034e7ae01418aa6be8c6666f53fcf7ca4188838ad0775262822647ba8c.SC2Map",
+      "original_sha256": "1ad9ee034e7ae01418aa6be8c6666f53fcf7ca4188838ad0775262822647ba8c",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0125",
+      "title": "[Versus mode] 8 - Hots - Перехват",
+      "original_filename": "[Versus mode] 8 - Hots - Перехват__dc10b8d2d92a9387113fec5b5d8dac83673694a3826922320d0ad6588646d2a8.SC2Map",
+      "original_sha256": "dc10b8d2d92a9387113fec5b5d8dac83673694a3826922320d0ad6588646d2a8",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0124",
+      "title": "[Versus mode] 8 - Hots - Перехват",
+      "original_filename": "[Versus mode] 8 - Hots - Перехват__59548cc0395da1da1505f66789027f5ddbf2860678ba1437b7c52d3582a5af4a.SC2Map",
+      "original_sha256": "59548cc0395da1da1505f66789027f5ddbf2860678ba1437b7c52d3582a5af4a",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0126",
+      "title": "[Versus mode] 8 - Hots - Перехват",
+      "original_filename": "[Versus mode] 8 - Hots - Перехват__632f96c5ff5f709aa1118baae33375d4e5a71fac685984fe20d7684347551df1.SC2Map",
+      "original_sha256": "632f96c5ff5f709aa1118baae33375d4e5a71fac685984fe20d7684347551df1",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0064",
+      "title": "Kerrigan Covert Ops COOP 2_ Sudden Strike",
+      "original_filename": "Kerrigan Covert Ops COOP 2_ Sudden Strike__354dea0da76089be42aee256828cac7a5126e0f07e34929488c31bfbc35bf658.SC2Map",
+      "original_sha256": "354dea0da76089be42aee256828cac7a5126e0f07e34929488c31bfbc35bf658",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0187",
+      "title": "Wings of Liberty Reversed 1 - Liberation Day",
+      "original_filename": "Wings of Liberty Reversed 1 - Liberation Day__10c49a04d634e6e525644ced5a1d7a145e47c4b687b20231c18282c43efe41ce.SC2Map",
+      "original_sha256": "10c49a04d634e6e525644ced5a1d7a145e47c4b687b20231c18282c43efe41ce",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0421",
+      "title": "SmashAndGrab Versus mode",
+      "original_filename": "SmashAndGrab Versus mode__4235cb9b623937503aaada74567a83a93f40dc99acfa1120afd386fd963bdabc.SC2Map",
+      "original_sha256": "4235cb9b623937503aaada74567a83a93f40dc99acfa1120afd386fd963bdabc",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0273",
+      "title": "Кампания KSP Миссия-2",
+      "original_filename": "Кампания KSP Миссия-2__855dd33b51078860fe542f5321fd6ace9d1a4ab839e3f270750d4f202d393add.SC2Map",
+      "original_sha256": "855dd33b51078860fe542f5321fd6ace9d1a4ab839e3f270750d4f202d393add",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0190",
+      "title": "[Versus mode] 4 - Hots - Подчинение",
+      "original_filename": "[Versus mode] 4 - Hots - Подчинение__89ee2d150d6496981b64b6f4536ff7e7a92a382ecc88903357ac90f090f98a47.SC2Map",
+      "original_sha256": "89ee2d150d6496981b64b6f4536ff7e7a92a382ecc88903357ac90f090f98a47",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0191",
+      "title": "[Versus mode] 4 - Hots - Подчинение",
+      "original_filename": "[Versus mode] 4 - Hots - Подчинение__d15455f33da2b69e679c644b68d5f1fa0578c090f2351b5675b2c1f3136d6353.SC2Map",
+      "original_sha256": "d15455f33da2b69e679c644b68d5f1fa0578c090f2351b5675b2c1f3136d6353",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0042",
+      "title": "Kerrigan Covert Ops COOP 8_ Dark Skies",
+      "original_filename": "Kerrigan Covert Ops COOP 8_ Dark Skies__2992fc344d3679ec756cdf8809c05a5ee622b73e33e3905aa4d2c92845826eac.SC2Map",
+      "original_sha256": "2992fc344d3679ec756cdf8809c05a5ee622b73e33e3905aa4d2c92845826eac",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0199",
+      "title": "[Versus mode] 8 - Hots - Перехват",
+      "original_filename": "[Versus mode] 8 - Hots - Перехват__5c2f283a27bc059b97d24dc38c79a994d7591ae00228569766b8a830806e191f.SC2Map",
+      "original_sha256": "5c2f283a27bc059b97d24dc38c79a994d7591ae00228569766b8a830806e191f",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0200",
+      "title": "[Versus mode] 8 - Hots - Перехват",
+      "original_filename": "[Versus mode] 8 - Hots - Перехват__5b63d320842e5cc39b8e6b392bb8d3bc79b548899028f47a19213fdcbcd7b07d.SC2Map",
+      "original_sha256": "5b63d320842e5cc39b8e6b392bb8d3bc79b548899028f47a19213fdcbcd7b07d",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0202",
+      "title": "[Versus mode] 8 - Hots - Перехват",
+      "original_filename": "[Versus mode] 8 - Hots - Перехват__bca55caeec4427e70e618fc9ce39b90372039d95e258acf85ab0a4241c204b9e.SC2Map",
+      "original_sha256": "bca55caeec4427e70e618fc9ce39b90372039d95e258acf85ab0a4241c204b9e",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0398",
+      "title": "Protoss Covert Ops COOP 4_ Trouble in Paradise",
+      "original_filename": "Protoss Covert Ops COOP 4_ Trouble in Paradise__849456f232371b5010cc83708b88bfb9b6f4875662717f2d454f8cfdcc696c87.SC2Map",
+      "original_sha256": "849456f232371b5010cc83708b88bfb9b6f4875662717f2d454f8cfdcc696c87",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0213",
+      "title": "[Versus mode] 4 - Hots - Подчинение",
+      "original_filename": "[Versus mode] 4 - Hots - Подчинение__932bd635dbf565561872d06419d719131f5ba2483e948efbd9f89b82ebf92205.SC2Map",
+      "original_sha256": "932bd635dbf565561872d06419d719131f5ba2483e948efbd9f89b82ebf92205",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0222",
+      "title": "[Versus mode] 4 - Hots - Подчинение",
+      "original_filename": "[Versus mode] 4 - Hots - Подчинение__96c5c4ede4ba527f5fb7d02785e236c2411c3296e07a5802913754ef5086a3d8.SC2Map",
+      "original_sha256": "96c5c4ede4ba527f5fb7d02785e236c2411c3296e07a5802913754ef5086a3d8",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0516",
+      "title": "Выживание в пещере",
+      "original_filename": "Выживание в пещере__bd4cbb429c07b6e2c54fdb2106a71544e1193c4395b4abe8a43eac5cc7b3416c.SC2Map",
+      "original_sha256": "bd4cbb429c07b6e2c54fdb2106a71544e1193c4395b4abe8a43eac5cc7b3416c",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0527",
+      "title": "Micro Tournament 1.26",
+      "original_filename": "Micro Tournament 1.26__ab8d9e80058e2232f3890e7bdabe1db6af885a98ecac9d28ac1cd90696dc447d.SC2Map",
+      "original_sha256": "ab8d9e80058e2232f3890e7bdabe1db6af885a98ecac9d28ac1cd90696dc447d",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0611",
+      "title": "Hundred million stars falling from the sky",
+      "original_filename": "Hundred million stars falling from the sky__70f60da6720bcf0248114c88b37b223dd557185dd51ac78943f0d5404973a85a.SC2Map",
+      "original_sha256": "70f60da6720bcf0248114c88b37b223dd557185dd51ac78943f0d5404973a85a",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0512",
+      "title": "Ice Baneling Escape Arctic Adventures",
+      "original_filename": "Ice Baneling Escape Arctic Adventures__f0d1f47977bdee9cf65ec2f995dae5db3c3bff55922e9c386ae4fe10788c6347.SC2Map",
+      "original_sha256": "f0d1f47977bdee9cf65ec2f995dae5db3c3bff55922e9c386ae4fe10788c6347",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0259",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__c48c6409c8a4be6fe19b2eae896efd39f504a5f99bd94c1e892ef716c2b3eabf.SC2Map",
+      "original_sha256": "c48c6409c8a4be6fe19b2eae896efd39f504a5f99bd94c1e892ef716c2b3eabf",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0260",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__cd010f1c80dc3596bacfa2d5252d1e7eae605bf2cddb16dc978095e92ade7b35.SC2Map",
+      "original_sha256": "cd010f1c80dc3596bacfa2d5252d1e7eae605bf2cddb16dc978095e92ade7b35",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0518",
+      "title": "Выживание в пещере",
+      "original_filename": "Выживание в пещере__8d25833afb7e02377a70204c7ab58528d1483698e7e63eab8dbd2f655793cf96.SC2Map",
+      "original_sha256": "8d25833afb7e02377a70204c7ab58528d1483698e7e63eab8dbd2f655793cf96",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0519",
+      "title": "Выживание в пещере",
+      "original_filename": "Выживание в пещере__3357f3350f8ef9057c4829d4dce643015d0f54c98bf6a636e241b7e3c98f5a02.SC2Map",
+      "original_sha256": "3357f3350f8ef9057c4829d4dce643015d0f54c98bf6a636e241b7e3c98f5a02",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0511",
+      "title": "Amon fight _ Legacy of the void",
+      "original_filename": "Amon fight _ Legacy of the void__39110a6a805531d1687df44d96c539904ed5db1464621774d86716bd6d02b2a1.SC2Map",
+      "original_sha256": "39110a6a805531d1687df44d96c539904ed5db1464621774d86716bd6d02b2a1",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0261",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__af7ee3c564cf3fb59970a7f360341a02a21e42ba0593a356a679f2538f06bb1d.SC2Map",
+      "original_sha256": "af7ee3c564cf3fb59970a7f360341a02a21e42ba0593a356a679f2538f06bb1d",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0456",
+      "title": "Versus mode 11 WoL The Dig",
+      "original_filename": "Versus mode 11 WoL The Dig__0b96a6f1a918db38c76e2265cd66a512e7cc6dda9618e0e0511b8aad1653aef9.SC2Map",
+      "original_sha256": "0b96a6f1a918db38c76e2265cd66a512e7cc6dda9618e0e0511b8aad1653aef9",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0455",
+      "title": "Versus mode 11 WoL The Dig",
+      "original_filename": "Versus mode 11 WoL The Dig__c008dc550185f7e99a64fe651e7b904466db7084b65951611c9bb91f9201ca3e.SC2Map",
+      "original_sha256": "c008dc550185f7e99a64fe651e7b904466db7084b65951611c9bb91f9201ca3e",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0454",
+      "title": "BigDig_TEST00",
+      "original_filename": "BigDig_TEST00__237d0de3d2175b5a6618c5c07f18ad9da9be8d6520f9ea3dba77a95febadac73.SC2Map",
+      "original_sha256": "237d0de3d2175b5a6618c5c07f18ad9da9be8d6520f9ea3dba77a95febadac73",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0525",
+      "title": "Hide and Kill (Assassins)",
+      "original_filename": "Hide and Kill (Assassins)__e7484ca2ab0490695f69ab03dc7e3772997af6a9d46a6411f27ca18a1daec9c3.SC2Map",
+      "original_sha256": "e7484ca2ab0490695f69ab03dc7e3772997af6a9d46a6411f27ca18a1daec9c3",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0223",
+      "title": "[Versus mode] 4 - Hots - Подчинение",
+      "original_filename": "[Versus mode] 4 - Hots - Подчинение__575e3c0c111abb12067102ebc6b6ee48a4beb9dd1703d4e3b228ec92063bc356.SC2Map",
+      "original_sha256": "575e3c0c111abb12067102ebc6b6ee48a4beb9dd1703d4e3b228ec92063bc356",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0224",
+      "title": "[Versus mode] 4 - Hots - Подчинение",
+      "original_filename": "[Versus mode] 4 - Hots - Подчинение__bab640a197d85ec60fa4641d8d294737c65758de38ab84e063b3b5ef0f2c33be.SC2Map",
+      "original_sha256": "bab640a197d85ec60fa4641d8d294737c65758de38ab84e063b3b5ef0f2c33be",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0225",
+      "title": "[Versus mode] 4 - Hots - Подчинение",
+      "original_filename": "[Versus mode] 4 - Hots - Подчинение__1b2ca142e4c729345b895788cd3e383ee22ac942e48d8f888dd206f6f26df766.SC2Map",
+      "original_sha256": "1b2ca142e4c729345b895788cd3e383ee22ac942e48d8f888dd206f6f26df766",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0226",
+      "title": "[Versus mode] 4 - Hots - Подчинение",
+      "original_filename": "[Versus mode] 4 - Hots - Подчинение__b6e4446e768714d389671cccfb33bddf2a1aa1bdb6b7078086f447c052a5ce9c.SC2Map",
+      "original_sha256": "b6e4446e768714d389671cccfb33bddf2a1aa1bdb6b7078086f447c052a5ce9c",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0232",
+      "title": "[Versus mode] 4 - Hots - Подчинение",
+      "original_filename": "[Versus mode] 4 - Hots - Подчинение__e7e7e45f897ca93d31b941416d92355a577a1fc2964f948635ee04c14a3a5c06.SC2Map",
+      "original_sha256": "e7e7e45f897ca93d31b941416d92355a577a1fc2964f948635ee04c14a3a5c06",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0228",
+      "title": "[Versus mode] 4 - Hots - Подчинение",
+      "original_filename": "[Versus mode] 4 - Hots - Подчинение__fd26d97077e5ae4d467fe0af1f343694497641994d4e94fbc5c926636623c74f.SC2Map",
+      "original_sha256": "fd26d97077e5ae4d467fe0af1f343694497641994d4e94fbc5c926636623c74f",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0229",
+      "title": "[Versus mode] 4 - Hots - Подчинение",
+      "original_filename": "[Versus mode] 4 - Hots - Подчинение__70d2bdba6948edd3fa52499bd747977e4a2376e90a2ba33fbc450d7750166ac8.SC2Map",
+      "original_sha256": "70d2bdba6948edd3fa52499bd747977e4a2376e90a2ba33fbc450d7750166ac8",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0230",
+      "title": "[Versus mode] 4 - Hots - Подчинение",
+      "original_filename": "[Versus mode] 4 - Hots - Подчинение__f4bbab99b12c33a1157f5bbbef67217b1c637d8772e56bc2d430de3ca12c5d50.SC2Map",
+      "original_sha256": "f4bbab99b12c33a1157f5bbbef67217b1c637d8772e56bc2d430de3ca12c5d50",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0188",
+      "title": "Zero Hour with friends!",
+      "original_filename": "Zero Hour with friends!__715905c5e33e95c2b0f5c334b2b44641d9a1412c98bb88c0626ee936c0d5e133.SC2Map",
+      "original_sha256": "715905c5e33e95c2b0f5c334b2b44641d9a1412c98bb88c0626ee936c0d5e133",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0219",
+      "title": "[Versus mode] 8 - Hots - Перехват",
+      "original_filename": "[Versus mode] 8 - Hots - Перехват__8708315623d85d39368b45001e89398ea4f657c1818d51bf3e924d982a9350b7.SC2Map",
+      "original_sha256": "8708315623d85d39368b45001e89398ea4f657c1818d51bf3e924d982a9350b7",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0558",
+      "title": "Left 2 Die",
+      "original_filename": "Left 2 Die__448b2ac0a30e5986ea784b388ca87e624b9bdd0b59ec0cb0b5c06afc508ea6b9.SC2Map",
+      "original_sha256": "448b2ac0a30e5986ea784b388ca87e624b9bdd0b59ec0cb0b5c06afc508ea6b9",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0272",
+      "title": "The Great Hunt. Миссия 6",
+      "original_filename": "The Great Hunt. Миссия 6__3a4efb7a869c5a0ddbbdbd5aeae129f9b4734be189848c4866e09ed083f14d8d.SC2Map",
+      "original_sha256": "3a4efb7a869c5a0ddbbdbd5aeae129f9b4734be189848c4866e09ed083f14d8d",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0610",
+      "title": "HotS - Огонь небесный [VERSUS MODE]",
+      "original_filename": "HotS - Огонь небесный [VERSUS MODE]__c0a75a61888df9a91bb6d07c2e1dd64557c2a4a2e29ad5b1e6ac4a41a27058a0.SC2Map",
+      "original_sha256": "c0a75a61888df9a91bb6d07c2e1dd64557c2a4a2e29ad5b1e6ac4a41a27058a0",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0310",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__7a8e3555a86d846cb6c62008a1237e387e29eab32b62a9ccde59bf7e5c52dedd.SC2Map",
+      "original_sha256": "7a8e3555a86d846cb6c62008a1237e387e29eab32b62a9ccde59bf7e5c52dedd",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0311",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__af94e26fabc7c8f7d0a1a816ffb8cbda6370ead0f9aa605f2e535dcc96b94c70.SC2Map",
+      "original_sha256": "af94e26fabc7c8f7d0a1a816ffb8cbda6370ead0f9aa605f2e535dcc96b94c70",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0312",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__6dec8148104b5a23f036dcd610efbae9e259a13431d70d17248494d0915ad4b3.SC2Map",
+      "original_sha256": "6dec8148104b5a23f036dcd610efbae9e259a13431d70d17248494d0915ad4b3",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0358",
+      "title": "InfestedVersusMod",
+      "original_filename": "InfestedVersusMod__0629fe23eaaa63b570bc947c7fabb7f7b96f3d59f6eaf4d07983c513b935b4d5.SC2Map",
+      "original_sha256": "0629fe23eaaa63b570bc947c7fabb7f7b96f3d59f6eaf4d07983c513b935b4d5",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0557",
+      "title": "Left 2 Die Bonkers Bunkers",
+      "original_filename": "Left 2 Die Bonkers Bunkers__3f0475a34a5b08b83f2a5f79eb5d56a70e0dcd46de4d83bf22e1929d96fcd521.SC2Map",
+      "original_sha256": "3f0475a34a5b08b83f2a5f79eb5d56a70e0dcd46de4d83bf22e1929d96fcd521",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0313",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__ded9e4327b84219f13376de98c46c1782e270cf93ad94113c77d608c861c7c58.SC2Map",
+      "original_sha256": "ded9e4327b84219f13376de98c46c1782e270cf93ad94113c77d608c861c7c58",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0265",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__f682a61af9322e944976ae070cbe8a62fc8a99ca72df56e8f7696a4abaf87135.SC2Map",
+      "original_sha256": "f682a61af9322e944976ae070cbe8a62fc8a99ca72df56e8f7696a4abaf87135",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0266",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__97f2dcad4d48ce15178344102fd496630eca920affaf64d09645944b76eca5ef.SC2Map",
+      "original_sha256": "97f2dcad4d48ce15178344102fd496630eca920affaf64d09645944b76eca5ef",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0025",
+      "title": "Ant Colonies",
+      "original_filename": "Ant Colonies__c740b6c2274608c4c4a8710ca64b951aa7d6bb9aac65c8c72a61d8f8a072223d.SC2Map",
+      "original_sha256": "c740b6c2274608c4c4a8710ca64b951aa7d6bb9aac65c8c72a61d8f8a072223d",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0267",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__5dda498edf23563e8be6c201f79669be4ae4417cbd8b672911ae93d7656d0db2.SC2Map",
+      "original_sha256": "5dda498edf23563e8be6c201f79669be4ae4417cbd8b672911ae93d7656d0db2",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0268",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__f0fdaf8ec9d863708b1d1cc823c2125488aee260f5b0a8296e00f0475fc529d3.SC2Map",
+      "original_sha256": "f0fdaf8ec9d863708b1d1cc823c2125488aee260f5b0a8296e00f0475fc529d3",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0269",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__2021fd98b049e4d4f33d34fa1cb87fedbea7fa62a84b3dd4e4372b3b7a68cf08.SC2Map",
+      "original_sha256": "2021fd98b049e4d4f33d34fa1cb87fedbea7fa62a84b3dd4e4372b3b7a68cf08",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0270",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__4d768e1bb5913eb8f87316bd30e10269d7af59f3fd11ab8d4b50ba04b35bd7fd.SC2Map",
+      "original_sha256": "4d768e1bb5913eb8f87316bd30e10269d7af59f3fd11ab8d4b50ba04b35bd7fd",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0024",
+      "title": "Nydus Mastermind",
+      "original_filename": "Nydus Mastermind__dbe3d574e5839ecf1f1f3d71fc15fdce71effb89902ea76af47f21eb0d91fb8d.SC2Map",
+      "original_sha256": "dbe3d574e5839ecf1f1f3d71fc15fdce71effb89902ea76af47f21eb0d91fb8d",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0084",
+      "title": "Kerrigan Covert Ops COOP 7_ In the Enemy's Shadow",
+      "original_filename": "Kerrigan Covert Ops COOP 7_ In the Enemy's Shadow__9327cc63ebf61a9fad4f245d6965ac3a586f3a1f4ce260a5f8f07000567d41f7.SC2Map",
+      "original_sha256": "9327cc63ebf61a9fad4f245d6965ac3a586f3a1f4ce260a5f8f07000567d41f7",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0141",
+      "title": "[Versus mode] 7 - Hots - Ледяное безмолвие",
+      "original_filename": "[Versus mode] 7 - Hots - Ледяное безмолвие__9c854c8bf77790267b8a76ab4b233e47961ba2af22507f724b5db8facf4ac578.SC2Map",
+      "original_sha256": "9c854c8bf77790267b8a76ab4b233e47961ba2af22507f724b5db8facf4ac578",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0142",
+      "title": "[Versus mode] 7 - Hots - Ледяное безмолвие",
+      "original_filename": "[Versus mode] 7 - Hots - Ледяное безмолвие__75bec06ee160d82f2795b2d3909f7801773d60b05eb4569b395cf9c8f61e4c1c.SC2Map",
+      "original_sha256": "75bec06ee160d82f2795b2d3909f7801773d60b05eb4569b395cf9c8f61e4c1c",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0170",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__ff36b8fbe8fd773c53364a880b743b28fdff55e515c6d5c80857ee4509d8733c.SC2Map",
+      "original_sha256": "ff36b8fbe8fd773c53364a880b743b28fdff55e515c6d5c80857ee4509d8733c",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0171",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__58bdf623cb841b8f6355aee2a2676ef8b83c3cc753b5bef9d8a7ec5f51d464f0.SC2Map",
+      "original_sha256": "58bdf623cb841b8f6355aee2a2676ef8b83c3cc753b5bef9d8a7ec5f51d464f0",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0172",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__72ed97aa9870b809fa5639288c0c197dbc87a10290adf6fe30950a747b264ead.SC2Map",
+      "original_sha256": "72ed97aa9870b809fa5639288c0c197dbc87a10290adf6fe30950a747b264ead",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0315",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__5a58614b06f813542dffb2dd85431d1189291fa6e3aa189a0819bded8574759b.SC2Map",
+      "original_sha256": "5a58614b06f813542dffb2dd85431d1189291fa6e3aa189a0819bded8574759b",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0274",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__3402ad1feef1ff6d0064f27492a6d923cebc4efb18a6f9ded1dbac8387398a6f.SC2Map",
+      "original_sha256": "3402ad1feef1ff6d0064f27492a6d923cebc4efb18a6f9ded1dbac8387398a6f",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0275",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__5314de6bb59b002486da855c067f663b18ffd1be13b1de34fbf46c6179f374a9.SC2Map",
+      "original_sha256": "5314de6bb59b002486da855c067f663b18ffd1be13b1de34fbf46c6179f374a9",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0276",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__b7cc663b797be009529bbafadeefe5da80323b2e8fd91ea862b4a8e8ef5b3837.SC2Map",
+      "original_sha256": "b7cc663b797be009529bbafadeefe5da80323b2e8fd91ea862b4a8e8ef5b3837",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0371",
+      "title": "a45bca3ec0ceea97d2d1c8a85eba44b6b8cd91adc016829fb2127d6d5ecfd3f7",
+      "original_filename": "a45bca3ec0ceea97d2d1c8a85eba44b6b8cd91adc016829fb2127d6d5ecfd3f7__a45bca3ec0ceea97d2d1c8a85eba44b6b8cd91adc016829fb2127d6d5ecfd3f7.SC2Map",
+      "original_sha256": "a45bca3ec0ceea97d2d1c8a85eba44b6b8cd91adc016829fb2127d6d5ecfd3f7",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0155",
+      "title": "[Versus mode] 7 - Hots - Ледяное безмолвие",
+      "original_filename": "[Versus mode] 7 - Hots - Ледяное безмолвие__2b3f3766499b9b0ed83deb916483eb8d040073b087f69ca5e6028f000134e545.SC2Map",
+      "original_sha256": "2b3f3766499b9b0ed83deb916483eb8d040073b087f69ca5e6028f000134e545",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0157",
+      "title": "[Versus mode] 7 - Hots - Ледяное безмолвие",
+      "original_filename": "[Versus mode] 7 - Hots - Ледяное безмолвие__905b9f40d0e4256f0c2d3f9e3cc42c8ec2ba7b4679ee0edd6c22126d55edd885.SC2Map",
+      "original_sha256": "905b9f40d0e4256f0c2d3f9e3cc42c8ec2ba7b4679ee0edd6c22126d55edd885",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0156",
+      "title": "[Versus mode] 7 - Hots - Ледяное безмолвие",
+      "original_filename": "[Versus mode] 7 - Hots - Ледяное безмолвие__78e1419aa4b82aa3d9462b58a114d914af794d524354bd53ad84c5416c5d2a30.SC2Map",
+      "original_sha256": "78e1419aa4b82aa3d9462b58a114d914af794d524354bd53ad84c5416c5d2a30",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0158",
+      "title": "[Versus mode] 7 - Hots - Ледяное безмолвие",
+      "original_filename": "[Versus mode] 7 - Hots - Ледяное безмолвие__9efe12770dcb3a1f7bf37784f6320049f0406e77f431f38d612ce86b0afd140b.SC2Map",
+      "original_sha256": "9efe12770dcb3a1f7bf37784f6320049f0406e77f431f38d612ce86b0afd140b",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0167",
+      "title": "[Versus mode] 7 - Hots - Ледяное безмолвие",
+      "original_filename": "[Versus mode] 7 - Hots - Ледяное безмолвие__1badea7f7bb6373d03340aab506d1a1eb2dd3c782c5382e8e2ec5a2d5f6c0874.SC2Map",
+      "original_sha256": "1badea7f7bb6373d03340aab506d1a1eb2dd3c782c5382e8e2ec5a2d5f6c0874",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0196",
+      "title": "[Versus mode] 7 - Hots - Ледяное безмолвие",
+      "original_filename": "[Versus mode] 7 - Hots - Ледяное безмолвие__fc1beed59697be40f7b5c630dc2e4e26d69e06b556589fa9590742833d934eb2.SC2Map",
+      "original_sha256": "fc1beed59697be40f7b5c630dc2e4e26d69e06b556589fa9590742833d934eb2",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0195",
+      "title": "[Versus mode] 7 - Hots - Ледяное безмолвие",
+      "original_filename": "[Versus mode] 7 - Hots - Ледяное безмолвие__bdaa24d2c850578ef09bba6df9e36e6625c2516bcb84aa448b52a10644d7bbe2.SC2Map",
+      "original_sha256": "bdaa24d2c850578ef09bba6df9e36e6625c2516bcb84aa448b52a10644d7bbe2",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0197",
+      "title": "[Versus mode] 7 - Hots - Ледяное безмолвие",
+      "original_filename": "[Versus mode] 7 - Hots - Ледяное безмолвие__9f2f38281676e890bed8ed0d2266109bbd95a75a02b8ec2097218b185236c9e4.SC2Map",
+      "original_sha256": "9f2f38281676e890bed8ed0d2266109bbd95a75a02b8ec2097218b185236c9e4",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0198",
+      "title": "[Versus mode] 7 - Hots - Ледяное безмолвие",
+      "original_filename": "[Versus mode] 7 - Hots - Ледяное безмолвие__1b6d53550ce905fe588574caf61bdad07d69a38d3b4d7d794903010cee1df5c2.SC2Map",
+      "original_sha256": "1b6d53550ce905fe588574caf61bdad07d69a38d3b4d7d794903010cee1df5c2",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0429",
+      "title": "Диарай_ рождение королевы",
+      "original_filename": "Диарай_ рождение королевы__cd1dd7e275af5d1aabc630a80e769bc08f9212d8726f6d081ac6406ace180916.SC2Map",
+      "original_sha256": "cd1dd7e275af5d1aabc630a80e769bc08f9212d8726f6d081ac6406ace180916",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0201",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__b339d76a35ff07725a7825ba4d8668c4a6b61bdd990a271d6d18c9e036d3f6e4.SC2Map",
+      "original_sha256": "b339d76a35ff07725a7825ba4d8668c4a6b61bdd990a271d6d18c9e036d3f6e4",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0203",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__3e99693eed00e47315272f7965c0af2e21f3801caeeea1459b62ac966a8dcc1b.SC2Map",
+      "original_sha256": "3e99693eed00e47315272f7965c0af2e21f3801caeeea1459b62ac966a8dcc1b",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0204",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__d64991bf3924f6e56707f0d9e6894298b0ea4cacd52b38e48bd9f4386d29b953.SC2Map",
+      "original_sha256": "d64991bf3924f6e56707f0d9e6894298b0ea4cacd52b38e48bd9f4386d29b953",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0206",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__77352c999e594e6a446718dbccea0cf5ab7a56e4da88507c9e294d717c17a2d3.SC2Map",
+      "original_sha256": "77352c999e594e6a446718dbccea0cf5ab7a56e4da88507c9e294d717c17a2d3",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0205",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__bbc5f0e6d74755d7c037d5f920f07212725e5e580f8cf38e9bd90a4baa731e7d.SC2Map",
+      "original_sha256": "bbc5f0e6d74755d7c037d5f920f07212725e5e580f8cf38e9bd90a4baa731e7d",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0210",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__57b32775915f9197bf4eae1c2f73ef5be34fade689742026ac5b5731a8ea79af.SC2Map",
+      "original_sha256": "57b32775915f9197bf4eae1c2f73ef5be34fade689742026ac5b5731a8ea79af",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0211",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__2d672e1c25843d8fb48e2f0006ee87d2be093bae841898ba5014e1853c7475d9.SC2Map",
+      "original_sha256": "2d672e1c25843d8fb48e2f0006ee87d2be093bae841898ba5014e1853c7475d9",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0207",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__ff4ba9558c11a05f5b3b155026ce81a2f5515b819275778e73448067d88765d2.SC2Map",
+      "original_sha256": "ff4ba9558c11a05f5b3b155026ce81a2f5515b819275778e73448067d88765d2",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0208",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__47453946a98b980487411e2b9f8c01f77d4798a0d8a9a60d754c674aa9a2ba78.SC2Map",
+      "original_sha256": "47453946a98b980487411e2b9f8c01f77d4798a0d8a9a60d754c674aa9a2ba78",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0209",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__bb1e12a3c2b57d2618398735b5378efaa3dd88f067e0132a53a573f1f326f543.SC2Map",
+      "original_sha256": "bb1e12a3c2b57d2618398735b5378efaa3dd88f067e0132a53a573f1f326f543",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0212",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__94f1d29fa4ccbcc714ae848cef16285179556dde255a6b9c2223842d47aa72b1.SC2Map",
+      "original_sha256": "94f1d29fa4ccbcc714ae848cef16285179556dde255a6b9c2223842d47aa72b1",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0065",
+      "title": "[Versus mode] 9 - Hots - Внутренний враг",
+      "original_filename": "[Versus mode] 9 - Hots - Внутренний враг__441190f2a60a8cbe6db12cc8aa47618c6b9ec64ad4197a42ff9216ff76ffddcb.SC2Map",
+      "original_sha256": "441190f2a60a8cbe6db12cc8aa47618c6b9ec64ad4197a42ff9216ff76ffddcb",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0320",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__7767562bba50c99b8c9b577e31d0c285619995d0ace8586bac10b17a59cd34d2.SC2Map",
+      "original_sha256": "7767562bba50c99b8c9b577e31d0c285619995d0ace8586bac10b17a59cd34d2",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0221",
+      "title": "Versus mode 3 - Hots - Встреча",
+      "original_filename": "Versus mode 3 - Hots - Встреча__3f54f50957cd678cc5b6d4752b43ab578017be22bdf7c6bb45958e8bf3486b4c.SC2Map",
+      "original_sha256": "3f54f50957cd678cc5b6d4752b43ab578017be22bdf7c6bb45958e8bf3486b4c",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0194",
+      "title": "[Versus mode] 3 - Hots - Встреча",
+      "original_filename": "[Versus mode] 3 - Hots - Встреча__42f0ee82eccf74d9dc3527582041a6468548c8b7d1e305a9f062d61b0e1ec00c.SC2Map",
+      "original_sha256": "42f0ee82eccf74d9dc3527582041a6468548c8b7d1e305a9f062d61b0e1ec00c",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0066",
+      "title": "[Versus mode] 9 - Hots - Внутренний враг",
+      "original_filename": "[Versus mode] 9 - Hots - Внутренний враг__2418ad1d7113c6f9fd87c97106a0237afb4b75145f442c39fd0d6429d71990ce.SC2Map",
+      "original_sha256": "2418ad1d7113c6f9fd87c97106a0237afb4b75145f442c39fd0d6429d71990ce",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0589",
+      "title": "Isolation'",
+      "original_filename": "Isolation'__83facb245a0deb048311203d8fcbd449a6893b9da426369b6870b946332c1ccd.SC2Map",
+      "original_sha256": "83facb245a0deb048311203d8fcbd449a6893b9da426369b6870b946332c1ccd",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0068",
+      "title": "[Versus mode] 9 - Hots - Внутренний враг",
+      "original_filename": "[Versus mode] 9 - Hots - Внутренний враг__2527446ffda5b2d21373d39f2f6ac91339e5c5ec0f2a6b51d42cd8a3ecdb3b54.SC2Map",
+      "original_sha256": "2527446ffda5b2d21373d39f2f6ac91339e5c5ec0f2a6b51d42cd8a3ecdb3b54",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0067",
+      "title": "[Versus mode] 9 - Hots - Внутренний враг",
+      "original_filename": "[Versus mode] 9 - Hots - Внутренний враг__3ba6180e7e52377d685839245fe4b7077e25b0a0e4bfe1087a20fc24e0855396.SC2Map",
+      "original_sha256": "3ba6180e7e52377d685839245fe4b7077e25b0a0e4bfe1087a20fc24e0855396",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0080",
+      "title": "[Versus mode] 9 - Hots - Внутренний враг",
+      "original_filename": "[Versus mode] 9 - Hots - Внутренний враг__fd2a8a73d12a48fdd073f5389f338ea94c6329d26b9de9bcdce62a4f9f608e13.SC2Map",
+      "original_sha256": "fd2a8a73d12a48fdd073f5389f338ea94c6329d26b9de9bcdce62a4f9f608e13",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0458",
+      "title": "Небольшая миссия",
+      "original_filename": "Небольшая миссия__244408476f59625da702479278cde30ccaa4926986867588343c57c5557f126b.SC2Map",
+      "original_sha256": "244408476f59625da702479278cde30ccaa4926986867588343c57c5557f126b",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0278",
+      "title": "Protoss Covert Ops COOP 3_ Enemy Intelligence",
+      "original_filename": "Protoss Covert Ops COOP 3_ Enemy Intelligence__6dcd5ed0c01767f5ddac79059e8b31043edfdabc1593dea54b3647bdc26ecd95.SC2Map",
+      "original_sha256": "6dcd5ed0c01767f5ddac79059e8b31043edfdabc1593dea54b3647bdc26ecd95",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0133",
+      "title": "[Versus mode] 9 - Hots - Внутренний враг",
+      "original_filename": "[Versus mode] 9 - Hots - Внутренний враг__29e14ae62ce62543d67a12216c7dc298ce0065b7a02b2b2ec8015a08b48bc28c.SC2Map",
+      "original_sha256": "29e14ae62ce62543d67a12216c7dc298ce0065b7a02b2b2ec8015a08b48bc28c",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0459",
+      "title": "Небольшая миссия",
+      "original_filename": "Небольшая миссия__a1af68fe54b9eeaf44f41e12a0540eb3daf7e8b7b95331659ed3519d6c236f4a.SC2Map",
+      "original_sha256": "a1af68fe54b9eeaf44f41e12a0540eb3daf7e8b7b95331659ed3519d6c236f4a",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0134",
+      "title": "[Versus mode] 9 - Hots - Внутренний враг",
+      "original_filename": "[Versus mode] 9 - Hots - Внутренний враг__47af12b37ce866b5c0c4859d3a5f5461879ccfacd6cee15fe9cb9df36f2a6591.SC2Map",
+      "original_sha256": "47af12b37ce866b5c0c4859d3a5f5461879ccfacd6cee15fe9cb9df36f2a6591",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0461",
+      "title": "Небольшая миссия",
+      "original_filename": "Небольшая миссия__11d369adb349bdf11256ad2ca565456eefd570c6ae55e63b148fc2fa143acb0e.SC2Map",
+      "original_sha256": "11d369adb349bdf11256ad2ca565456eefd570c6ae55e63b148fc2fa143acb0e",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0091",
+      "title": "Kerrigan Covert Ops COOP 3_ Enemy Intelligence",
+      "original_filename": "Kerrigan Covert Ops COOP 3_ Enemy Intelligence__fc5c0ecdba77df449c41c18380c642083c531f30097a6176cb806190258fc236.SC2Map",
+      "original_sha256": "fc5c0ecdba77df449c41c18380c642083c531f30097a6176cb806190258fc236",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0463",
+      "title": "Небольшая миссия",
+      "original_filename": "Небольшая миссия__5c45ba7c77686aaa93a076a99b85600a57c419e8a393ded7f4064b355d32fa32.SC2Map",
+      "original_sha256": "5c45ba7c77686aaa93a076a99b85600a57c419e8a393ded7f4064b355d32fa32",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0407",
+      "title": "Protoss Covert Ops COOP 5_ Night Terrors",
+      "original_filename": "Protoss Covert Ops COOP 5_ Night Terrors__ed8c5439655715ea67cce8296756c2c304fffd0be6207e1fd43038e9676d515b.SC2Map",
+      "original_sha256": "ed8c5439655715ea67cce8296756c2c304fffd0be6207e1fd43038e9676d515b",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0030",
+      "title": "Eclectic Ant Colonies [ TEST MAP ]",
+      "original_filename": "Eclectic Ant Colonies [ TEST MAP ]__20bf90cef343a1a730488b9c536641a61c9106fce6fc5ccccb1fb2eea0f79231.SC2Map",
+      "original_sha256": "20bf90cef343a1a730488b9c536641a61c9106fce6fc5ccccb1fb2eea0f79231",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0465",
+      "title": "Небольшая миссия",
+      "original_filename": "Небольшая миссия__b265bb1f7e8b47d697b29ac52b3f49e236d1b47e6eb30661dcf1100696f63be2.SC2Map",
+      "original_sha256": "b265bb1f7e8b47d697b29ac52b3f49e236d1b47e6eb30661dcf1100696f63be2",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0553",
+      "title": "Deity EvolutionS",
+      "original_filename": "Deity EvolutionS__b0bb35dcbebc49fdf5cd7a3ead298d8c2457fffd5b7b6073a18612b4dc75cd4b.SC2Map",
+      "original_sha256": "b0bb35dcbebc49fdf5cd7a3ead298d8c2457fffd5b7b6073a18612b4dc75cd4b",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0422",
+      "title": "Кампания KSP Мисия-1",
+      "original_filename": "Кампания KSP Мисия-1__0b58d9e0559592fc6a0d17a00a9c81c11eb66bd470394cc3260c3970512ded4b.SC2Map",
+      "original_sha256": "0b58d9e0559592fc6a0d17a00a9c81c11eb66bd470394cc3260c3970512ded4b",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0563",
+      "title": "Сюня 3 Ко-оп",
+      "original_filename": "Сюня 3 Ко-оп__cb2b58d603f55ced9422b5744b173d5396c3b913f89f9760b7303330ed7fd750.SC2Map",
+      "original_sha256": "cb2b58d603f55ced9422b5744b173d5396c3b913f89f9760b7303330ed7fd750",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0554",
+      "title": "Raynor Party_ Revival",
+      "original_filename": "Raynor Party_ Revival__14a5f084fd7bcf5622317d2b1abc8bbc6adc39bd95ef8db7dde3920401471426.SC2Map",
+      "original_sha256": "14a5f084fd7bcf5622317d2b1abc8bbc6adc39bd95ef8db7dde3920401471426",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0449",
+      "title": "Mines and Magic",
+      "original_filename": "Mines and Magic__ec42f8b784b2e8c3c1e94973fd659e179426b994b77b531ae479db96ee7330a5.SC2Map",
+      "original_sha256": "ec42f8b784b2e8c3c1e94973fd659e179426b994b77b531ae479db96ee7330a5",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0302",
+      "title": "熔岩之潮大乱战",
+      "original_filename": "熔岩之潮大乱战__82601960635ce0a437f3cce16fdf79c20801f549725059b001f35fc578b35ca9.SC2Map",
+      "original_sha256": "82601960635ce0a437f3cce16fdf79c20801f549725059b001f35fc578b35ca9",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0263",
+      "title": "Monobattle LotV - Map Rotation",
+      "original_filename": "Monobattle LotV - Map Rotation__575a58e12449ff85702403cc7490cc240482fa7ebe5219987033a27eb2b63703.SC2Map",
+      "original_sha256": "575a58e12449ff85702403cc7490cc240482fa7ebe5219987033a27eb2b63703",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0115",
+      "title": "Monobattle LotV - Map Rotation",
+      "original_filename": "Monobattle LotV - Map Rotation__ea525d00ba9cb82ca6fa8bd763c7214fb19fa71b89c90a1f6ccf1091c94f72ed.SC2Map",
+      "original_sha256": "ea525d00ba9cb82ca6fa8bd763c7214fb19fa71b89c90a1f6ccf1091c94f72ed",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0500",
+      "title": "Uberena Beyond",
+      "original_filename": "Uberena Beyond__99db22d2b6f43500cce0e6b2307b133dbfba1713e5cc4495273fbb47adeec2f7.SC2Map",
+      "original_sha256": "99db22d2b6f43500cce0e6b2307b133dbfba1713e5cc4495273fbb47adeec2f7",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0520",
+      "title": "BattlePoker",
+      "original_filename": "BattlePoker__2d0b396fd2e0e09b86d3c65f229080873689a68725f0aa89cda9145020ce54a9.SC2Map",
+      "original_sha256": "2d0b396fd2e0e09b86d3c65f229080873689a68725f0aa89cda9145020ce54a9",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0501",
+      "title": "Uberena Beyond",
+      "original_filename": "Uberena Beyond__2ced7299d853ea13326d0b61199df0ce0dda125ba43574e3e46d4f06706a95e2.SC2Map",
+      "original_sha256": "2ced7299d853ea13326d0b61199df0ce0dda125ba43574e3e46d4f06706a95e2",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0591",
+      "title": "Project Dead City - TEST",
+      "original_filename": "Project Dead City - TEST__d452856582cd10381d09f7c17511822fd6e326dec9bb07c125f1d66a01b1009b.SC2Map",
+      "original_sha256": "d452856582cd10381d09f7c17511822fd6e326dec9bb07c125f1d66a01b1009b",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0619",
+      "title": "Кампания KSP Миссия-3",
+      "original_filename": "Кампания KSP Миссия-3__da7f43e2b4f271c8cfed8cfe180be92617001aeede2704080c91ecd176029ad2.SC2Map",
+      "original_sha256": "da7f43e2b4f271c8cfed8cfe180be92617001aeede2704080c91ecd176029ad2",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0366",
+      "title": "[Versus mode] 2 - Hots - Снова с седле",
+      "original_filename": "[Versus mode] 2 - Hots - Снова с седле__02afc03de83685b98ba4e9ce65a43728bf2d4f947d5dd7430b9b11507d1fd49a.SC2Map",
+      "original_sha256": "02afc03de83685b98ba4e9ce65a43728bf2d4f947d5dd7430b9b11507d1fd49a",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0368",
+      "title": "[Versus mode] 2 - Hots - Снова с седле",
+      "original_filename": "[Versus mode] 2 - Hots - Снова с седле__e19994e8e35c9a602403457b4a7a08c0398ce05454e8598ea160df8dab685b87.SC2Map",
+      "original_sha256": "e19994e8e35c9a602403457b4a7a08c0398ce05454e8598ea160df8dab685b87",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0309",
+      "title": "[Versus mode] 2 - Hots - Снова с седле",
+      "original_filename": "[Versus mode] 2 - Hots - Снова с седле__8ce74134213dfee67fa0eb49b2941c453f8d8c019750a4492a64e7acc8590df7.SC2Map",
+      "original_sha256": "8ce74134213dfee67fa0eb49b2941c453f8d8c019750a4492a64e7acc8590df7",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0308",
+      "title": "[Versus mode] 2 - Hots - Снова с седле",
+      "original_filename": "[Versus mode] 2 - Hots - Снова с седле__5e89638730830fdcb9c58c55873c8f4c1b705a8a17dbe6f602a93c6e17b5cb1e.SC2Map",
+      "original_sha256": "5e89638730830fdcb9c58c55873c8f4c1b705a8a17dbe6f602a93c6e17b5cb1e",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0326",
+      "title": "[Versus mode] 8 - Hots - Перехват",
+      "original_filename": "[Versus mode] 8 - Hots - Перехват__f0b8cb8f72a11e3b9d8f7de8d45776e4f83292d245c786b0fbf3a91c223fbcd8.SC2Map",
+      "original_sha256": "f0b8cb8f72a11e3b9d8f7de8d45776e4f83292d245c786b0fbf3a91c223fbcd8",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0327",
+      "title": "[Versus mode] 8 - Hots - Перехват",
+      "original_filename": "[Versus mode] 8 - Hots - Перехват__e0ebcedadc8979891755cd5e5e9a8fe172ea508f16c063e8fe62d962a5e75336.SC2Map",
+      "original_sha256": "e0ebcedadc8979891755cd5e5e9a8fe172ea508f16c063e8fe62d962a5e75336",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0612",
+      "title": "Ice Baneling Escape",
+      "original_filename": "Ice Baneling Escape__bb05a52d60fd7c0705d41798134d292fa352111ce1dff233fc2cdeb6ab1e1a19.SC2Map",
+      "original_sha256": "bb05a52d60fd7c0705d41798134d292fa352111ce1dff233fc2cdeb6ab1e1a19",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0556",
+      "title": "Additional Pylons!",
+      "original_filename": "Additional Pylons!__df9fa69ed0442afd8bfca825e0d75c91a25d0307fd74869a4a1537a6dab0acf6.SC2Map",
+      "original_sha256": "df9fa69ed0442afd8bfca825e0d75c91a25d0307fd74869a4a1537a6dab0acf6",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0131",
+      "title": "Wings of Liberty Coop 12. A Sinister Turn",
+      "original_filename": "Wings of Liberty Coop 12. A Sinister Turn__60350f8fe0121bce29ecf95c872712a60748ddaa22424dbf09c1f49831c51547.SC2Map",
+      "original_sha256": "60350f8fe0121bce29ecf95c872712a60748ddaa22424dbf09c1f49831c51547",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0392",
+      "title": "Hungry Hungry Arena",
+      "original_filename": "Hungry Hungry Arena__63be6c011a88c535e0c3337084056a08ab859a4696b1a0b8bdc769d21ac19629.SC2Map",
+      "original_sha256": "63be6c011a88c535e0c3337084056a08ab859a4696b1a0b8bdc769d21ac19629",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0378",
+      "title": "[Versus mode] 4 - Hots - Подчинение",
+      "original_filename": "[Versus mode] 4 - Hots - Подчинение__a251c059b33604cb068979a6e677446a18071164800a506948314a23a19c1301.SC2Map",
+      "original_sha256": "a251c059b33604cb068979a6e677446a18071164800a506948314a23a19c1301",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0583",
+      "title": "Maze and Terran Updated",
+      "original_filename": "Maze and Terran Updated__934ad22625a301905497a6fe8fbb2490b88b777e3329bd132f2f8183a88f56de.SC2Map",
+      "original_sha256": "934ad22625a301905497a6fe8fbb2490b88b777e3329bd132f2f8183a88f56de",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0390",
+      "title": "星途—序章：废弃都市",
+      "original_filename": "星途—序章：废弃都市__45a54669ae93ee9e1728d01f85e8bc66f1e8dfc0b1ee889438cc0acede9332fe.SC2Map",
+      "original_sha256": "45a54669ae93ee9e1728d01f85e8bc66f1e8dfc0b1ee889438cc0acede9332fe",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0531",
+      "title": "Ant Colonies - Expansions [ TEST MAP ]",
+      "original_filename": "Ant Colonies - Expansions [ TEST MAP ]__add88ef9f07cc0b5c87199027fbae3c5121d4e27c76cd3ea8aad4ea417ea6d7b.SC2Map",
+      "original_sha256": "add88ef9f07cc0b5c87199027fbae3c5121d4e27c76cd3ea8aad4ea417ea6d7b",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0231",
+      "title": "Ice Baneling Escape 2.1 - The Ice Awakens",
+      "original_filename": "Ice Baneling Escape 2.1 - The Ice Awakens__408674057dc1759f7b719cc7d27ade3f235e2e80c336bd827cdad10abdb12658.SC2Map",
+      "original_sha256": "408674057dc1759f7b719cc7d27ade3f235e2e80c336bd827cdad10abdb12658",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0530",
+      "title": "Ant Colonies - Expansions [ TEST MAP ]",
+      "original_filename": "Ant Colonies - Expansions [ TEST MAP ]__86f6676807df9adc1bc3a479aa31077a5b8cd38db6ae790179f22b902ec3b175.SC2Map",
+      "original_sha256": "86f6676807df9adc1bc3a479aa31077a5b8cd38db6ae790179f22b902ec3b175",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0532",
+      "title": "Ant Colonies - Expansions [ TEST MAP ]",
+      "original_filename": "Ant Colonies - Expansions [ TEST MAP ]__4dd9e91e5c8970af5f8a429d179a81d1c8f0a87a0c1a472009ef60068cba6dac.SC2Map",
+      "original_sha256": "4dd9e91e5c8970af5f8a429d179a81d1c8f0a87a0c1a472009ef60068cba6dac",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0533",
+      "title": "Ant Colonies - Expansions [ TEST MAP ]",
+      "original_filename": "Ant Colonies - Expansions [ TEST MAP ]__355a182abce4c72cf9d4deb5191f10ad9bd33f18f7bd0b1facc8e09e216da532.SC2Map",
+      "original_sha256": "355a182abce4c72cf9d4deb5191f10ad9bd33f18f7bd0b1facc8e09e216da532",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0534",
+      "title": "Ant Colonies - Expansions [ TEST MAP ]",
+      "original_filename": "Ant Colonies - Expansions [ TEST MAP ]__115e834d73f35b3cc5318c675b0225e074e9668f7393a1b483507af0be27ca0b.SC2Map",
+      "original_sha256": "115e834d73f35b3cc5318c675b0225e074e9668f7393a1b483507af0be27ca0b",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0535",
+      "title": "Ant Colonies - Expansions [ TEST MAP ]",
+      "original_filename": "Ant Colonies - Expansions [ TEST MAP ]__4085bde2fa0ca224249d35130020cbb14b45f00c6abe8b23b08d80255dfbdc14.SC2Map",
+      "original_sha256": "4085bde2fa0ca224249d35130020cbb14b45f00c6abe8b23b08d80255dfbdc14",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0411",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__86ec0298a06ba014b9c3a021a48bbf41287b8357301800c90ae50f0af4cf9cbf.SC2Map",
+      "original_sha256": "86ec0298a06ba014b9c3a021a48bbf41287b8357301800c90ae50f0af4cf9cbf",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0414",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__381b8a54730d082e7f727dfeaabfc2e1e7f2cfc20c1e01bb66b675759e3b4108.SC2Map",
+      "original_sha256": "381b8a54730d082e7f727dfeaabfc2e1e7f2cfc20c1e01bb66b675759e3b4108",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0413",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__28ca935a06a010a762b150b41d3886685025ddc302b612c2196f2215241789eb.SC2Map",
+      "original_sha256": "28ca935a06a010a762b150b41d3886685025ddc302b612c2196f2215241789eb",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0418",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__a94d772c9f8bf4d814d0ae1914307d825b62943af22b2244164f7f2b8c33dbb3.SC2Map",
+      "original_sha256": "a94d772c9f8bf4d814d0ae1914307d825b62943af22b2244164f7f2b8c33dbb3",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0417",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__af89a1d06b036f75c093c47de7fa482d165317a8cf2da98242d11675ace011c6.SC2Map",
+      "original_sha256": "af89a1d06b036f75c093c47de7fa482d165317a8cf2da98242d11675ace011c6",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0415",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__ba600241061812f7007a60bdaa9a62f703076a8bf9b020153e51682063fc14e4.SC2Map",
+      "original_sha256": "ba600241061812f7007a60bdaa9a62f703076a8bf9b020153e51682063fc14e4",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0416",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__6b67687956e10dbb36a991c29ad5916b0b559904a0fa0110ede25b3c11b26f8c.SC2Map",
+      "original_sha256": "6b67687956e10dbb36a991c29ad5916b0b559904a0fa0110ede25b3c11b26f8c",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0419",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__61c1f2c8f3b62671bea9daccb5ee200dc238493e85682f6ea8e0c9d13348074f.SC2Map",
+      "original_sha256": "61c1f2c8f3b62671bea9daccb5ee200dc238493e85682f6ea8e0c9d13348074f",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0420",
+      "title": "[Versus mode] 10 - Hots - Пробуждение Древнего",
+      "original_filename": "[Versus mode] 10 - Hots - Пробуждение Древнего__1c6ef1dacfecdfed1ea4dcf4a4be660671c180d042b2141803fc141c45d4d255.SC2Map",
+      "original_sha256": "1c6ef1dacfecdfed1ea4dcf4a4be660671c180d042b2141803fc141c45d4d255",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0375",
+      "title": "[Versus mode] 6 - Hots - Старые вояки",
+      "original_filename": "[Versus mode] 6 - Hots - Старые вояки__0d16f5bec2851d67cd017df49390321d51419fccfd84b33deff8cb232000bb15.SC2Map",
+      "original_sha256": "0d16f5bec2851d67cd017df49390321d51419fccfd84b33deff8cb232000bb15",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0538",
+      "title": "Ant Colonies - Expansions [ TEST MAP ]",
+      "original_filename": "Ant Colonies - Expansions [ TEST MAP ]__22c98beaeaa2d49dd7dcb7718903f8b567ed26b56bfe7963014e4b3ed2b3337c.SC2Map",
+      "original_sha256": "22c98beaeaa2d49dd7dcb7718903f8b567ed26b56bfe7963014e4b3ed2b3337c",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0539",
+      "title": "Ant Colonies - Expansions [ TEST MAP ]",
+      "original_filename": "Ant Colonies - Expansions [ TEST MAP ]__92fc8448fa755dc6764afdc2202b14782f9bf6887037f4b3a668789f33f6f79c.SC2Map",
+      "original_sha256": "92fc8448fa755dc6764afdc2202b14782f9bf6887037f4b3a668789f33f6f79c",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0540",
+      "title": "Ant Colonies - Expansions [ TEST MAP ]",
+      "original_filename": "Ant Colonies - Expansions [ TEST MAP ]__096c8466d44010ad61d8bf90f4955b2b04ce300a9afdbc42c2cd60d3c097aed3.SC2Map",
+      "original_sha256": "096c8466d44010ad61d8bf90f4955b2b04ce300a9afdbc42c2cd60d3c097aed3",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0542",
+      "title": "Ant Colonies - Expansions [ TEST MAP ]",
+      "original_filename": "Ant Colonies - Expansions [ TEST MAP ]__0356e0b22a08bca7aa8239b3cd031351a8293bf138113d34d449dc1bcb0f70b7.SC2Map",
+      "original_sha256": "0356e0b22a08bca7aa8239b3cd031351a8293bf138113d34d449dc1bcb0f70b7",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0529",
+      "title": "Bomberbot",
+      "original_filename": "Bomberbot__4b17f3f43ed9f34c1fa9b713c1dc70bb308f0de166702c282703f8b18836d0f3.SC2Map",
+      "original_sha256": "4b17f3f43ed9f34c1fa9b713c1dc70bb308f0de166702c282703f8b18836d0f3",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0551",
+      "title": "Line Tower Wars_ Re-Engineered",
+      "original_filename": "Line Tower Wars_ Re-Engineered__2bdf83d17c4d298270cb6f4a3dd968c59d9a2de6c0ca12f6cc3c60be1303e00e.SC2Map",
+      "original_sha256": "2bdf83d17c4d298270cb6f4a3dd968c59d9a2de6c0ca12f6cc3c60be1303e00e",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0585",
+      "title": "City of Tempest [EU]",
+      "original_filename": "City of Tempest [EU]__5fa9b28b17caab6c4ce100a2d1a3f358f6cceba7dcf3465bf16248b57da029f7.SC2Map",
+      "original_sha256": "5fa9b28b17caab6c4ce100a2d1a3f358f6cceba7dcf3465bf16248b57da029f7",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0586",
+      "title": "City of Tempest [EU]",
+      "original_filename": "City of Tempest [EU]__d370d1a4758d5e03e02ac58f75bb59224e7b2f7786086d7d5011c5a557cdb108.SC2Map",
+      "original_sha256": "d370d1a4758d5e03e02ac58f75bb59224e7b2f7786086d7d5011c5a557cdb108",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0433",
+      "title": "Inferno Force - Roguelike",
+      "original_filename": "Inferno Force - Roguelike__7fc356faccd2f0500322688886899607650fed1f8f3568b58ec1d835b3cb6163.SC2Map",
+      "original_sha256": "7fc356faccd2f0500322688886899607650fed1f8f3568b58ec1d835b3cb6163",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0615",
+      "title": "Star Chess EU",
+      "original_filename": "Star Chess EU__a2110da9311cecee4312c3685afba58a93fdc8a726255692d58b62250b573ccd.SC2Map",
+      "original_sha256": "a2110da9311cecee4312c3685afba58a93fdc8a726255692d58b62250b573ccd",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0166",
+      "title": "Wings of Liberty Coop 11. Whispers of Doom",
+      "original_filename": "Wings of Liberty Coop 11. Whispers of Doom__e2a818a447ba598ac4707d99c4bda181bdc4e90c2bdbdbdfd104afb5923593ef.SC2Map",
+      "original_sha256": "e2a818a447ba598ac4707d99c4bda181bdc4e90c2bdbdbdfd104afb5923593ef",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0377",
+      "title": "指挥官—末章：邪恶觉醒",
+      "original_filename": "指挥官—末章：邪恶觉醒__4908382c1d339d43c3c4ff0d6c53d75788f30e390a36bed5410d0454f61634ad.SC2Map",
+      "original_sha256": "4908382c1d339d43c3c4ff0d6c53d75788f30e390a36bed5410d0454f61634ad",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0314",
+      "title": "Ice Baneling Escape 2",
+      "original_filename": "Ice Baneling Escape 2__fcb42a39c4fe04688b82277e383e82073d7a0df3df102a5178613acdd8380b92.SC2Map",
+      "original_sha256": "fcb42a39c4fe04688b82277e383e82073d7a0df3df102a5178613acdd8380b92",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0517",
+      "title": "SC_ Battlefront",
+      "original_filename": "SC_ Battlefront__b8bbd2a75e51a9c10991bd15000e20a5ded901d77c963f74ba38e95983532a37.SC2Map",
+      "original_sha256": "b8bbd2a75e51a9c10991bd15000e20a5ded901d77c963f74ba38e95983532a37",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0552",
+      "title": "Left 3 Die·Death Tide",
+      "original_filename": "Left 3 Die·Death Tide__4dc5612778f1e30456966902b71aabd6a26dea89dcd5b11a8bf7ff4b1aa99ea5.SC2Map",
+      "original_sha256": "4dc5612778f1e30456966902b71aabd6a26dea89dcd5b11a8bf7ff4b1aa99ea5",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0550",
+      "title": "Runling Run 4",
+      "original_filename": "Runling Run 4__5e55ee14c6cd61ba6e77b0304ac2180c87b3e5e423f5dc98c41da9ff9668349b.SC2Map",
+      "original_sha256": "5e55ee14c6cd61ba6e77b0304ac2180c87b3e5e423f5dc98c41da9ff9668349b",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0576",
+      "title": "[Probes vs Zealot 2]",
+      "original_filename": "[Probes vs Zealot 2]__3dd9ce479138973f42700096982206ed80441bf5cde9cd735fdcde3d459b9a83.SC2Map",
+      "original_sha256": "3dd9ce479138973f42700096982206ed80441bf5cde9cd735fdcde3d459b9a83",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0508",
+      "title": "PeepMode_ At Eternity's Edge LE",
+      "original_filename": "PeepMode_ At Eternity's Edge LE__cb12cec15b693b7e0db979f2d92a01afd68dcc86f59e02ee168e1c7f3af3e9c1.SC2Map",
+      "original_sha256": "cb12cec15b693b7e0db979f2d92a01afd68dcc86f59e02ee168e1c7f3af3e9c1",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0547",
+      "title": "PeepMode_ Frostveil Ruins",
+      "original_filename": "PeepMode_ Frostveil Ruins__1448074a6b34e66ca45b15d2290be26bdc6687fa21132a571c57f7d5f4110151.SC2Map",
+      "original_sha256": "1448074a6b34e66ca45b15d2290be26bdc6687fa21132a571c57f7d5f4110151",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0580",
+      "title": "WarshipsRecovered",
+      "original_filename": "WarshipsRecovered__edc2ddee6513ea2c11dbae8328d19efb6bf6347e0bea9c978c9f9ca9a607bf2b.SC2Map",
+      "original_sha256": "edc2ddee6513ea2c11dbae8328d19efb6bf6347e0bea9c978c9f9ca9a607bf2b",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0581",
+      "title": "WarshipsRecovered",
+      "original_filename": "WarshipsRecovered__23558c2600ec20db6278531a65d13c58512d1a25666cc133b3012617cb620199.SC2Map",
+      "original_sha256": "23558c2600ec20db6278531a65d13c58512d1a25666cc133b3012617cb620199",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0509",
+      "title": "Star Party 2.0",
+      "original_filename": "Star Party 2.0__a9de5c35961b94830630ae244c984f125bcadc1316028b85999311898dd5dba7.SC2Map",
+      "original_sha256": "a9de5c35961b94830630ae244c984f125bcadc1316028b85999311898dd5dba7",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0594",
+      "title": "Ant War",
+      "original_filename": "Ant War__63f170f3524d25e099757678190683be4cfd97f3e1061be1c1e57629de6e20e3.SC2Map",
+      "original_sha256": "63f170f3524d25e099757678190683be4cfd97f3e1061be1c1e57629de6e20e3",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0593",
+      "title": "Baseship Commanders 5.0",
+      "original_filename": "Baseship Commanders 5.0__3fee7f55a52778883c9752cb4ca23008538c0cbc91d2a7c97e31cff64e611cbe.SC2Map",
+      "original_sha256": "3fee7f55a52778883c9752cb4ca23008538c0cbc91d2a7c97e31cff64e611cbe",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0537",
+      "title": "War of the Insects 3",
+      "original_filename": "War of the Insects 3__37ef2728d8f1e2a34bdecfe0b5f9e82b4a1d10133d0e2f3b11bff85ff9a4f55f.SC2Map",
+      "original_sha256": "37ef2728d8f1e2a34bdecfe0b5f9e82b4a1d10133d0e2f3b11bff85ff9a4f55f",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0536",
+      "title": "War of the Insects 3",
+      "original_filename": "War of the Insects 3__4dbc7a863408c9fbe367c85e402e77a29785207fd6633f64352e8f13d1fdeb1c.SC2Map",
+      "original_sha256": "4dbc7a863408c9fbe367c85e402e77a29785207fd6633f64352e8f13d1fdeb1c",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0546",
+      "title": "Zerg Wars (Updated)",
+      "original_filename": "Zerg Wars (Updated)__d0390267f26b7c06b117860cc28ab5dbbdaf1b20da9be7285be017e725b99a15.SC2Map",
+      "original_sha256": "d0390267f26b7c06b117860cc28ab5dbbdaf1b20da9be7285be017e725b99a15",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0565",
+      "title": "Gun Game",
+      "original_filename": "Gun Game__c2711e90f37ffe9a90f7eff375ee0510187cb5e9f20f56a072237e857308f13d.SC2Map",
+      "original_sha256": "c2711e90f37ffe9a90f7eff375ee0510187cb5e9f20f56a072237e857308f13d",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "0592",
+      "title": "Aeon of Storms (EU)",
+      "original_filename": "Aeon of Storms (EU)__398d8cd3009f1a320e278848416ca8d6ec9e0500720ae57ff6d2a528ddbcb6a3.SC2Map",
+      "original_sha256": "398d8cd3009f1a320e278848416ca8d6ec9e0500720ae57ff6d2a528ddbcb6a3",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "0617",
+      "title": "Stellars Horizon [EN]",
+      "original_filename": "Stellars Horizon [EN]__1255f244e7be826964987407876a722a38ecfc8284a735801f212cdce2cbfdd6.SC2Map",
+      "original_sha256": "1255f244e7be826964987407876a722a38ecfc8284a735801f212cdce2cbfdd6",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "previous13-0001",
+      "title": "City of Tempest KSP Production",
+      "original_filename": "City of Tempest KSP Production.SC2Map",
+      "original_sha256": "7c52a0da5a2e0943ee19a533b76606ee50880aec18bec4e72a3593a65780d74c",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "previous13-0003",
+      "title": "Ice Baneling Escape Arctic Adventures",
+      "original_filename": "Ice Baneling Escape Arctic Adventures.SC2Map",
+      "original_sha256": "cf6e716491c1d5d07c934ea17887edba11838787a86309019cb9d9a57480d462",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "previous13-0004",
+      "title": "Merces Episode 3",
+      "original_filename": "Merces Episode 3.SC2Map",
+      "original_sha256": "0e8894aab0f8d1ee315973d9e15ac16008e001cc0f2b166c26d805cf29250aaf",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "previous13-0005",
+      "title": "Mercs Episode 1",
+      "original_filename": "Mercs Episode 1.SC2Map",
+      "original_sha256": "9bd7b661315f8ad6ba29c00c5aee65d824fd2dd925e52bf95958eeab0eac01c8",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "previous13-0006",
+      "title": "Mercs Episode 2",
+      "original_filename": "Mercs Episode 2.SC2Map",
+      "original_sha256": "22d2dc6d6892bff006e0cad9589174168c54342b773f65a0d6ea4b0fabc97729",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "previous13-0007",
+      "title": "Project [DELETED]",
+      "original_filename": "Project [DELETED].SC2Map",
+      "original_sha256": "e3e276f5def9cf8348c86b0954a2f2942d43c12aaa1aacd8c03c64b24e92bd84",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "previous13-0011",
+      "title": "Rainbow_Six_Arena-16.01.2019 ",
+      "original_filename": "Rainbow_Six_Arena-16.01.2019 .SC2Map",
+      "original_sha256": "1c50915a8f4c9ac9996f229b8ae3bcefafa155734420032ba85c0666efbe53f9",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "previous13-0012",
+      "title": "STAR CRAFT Roleplay",
+      "original_filename": "STAR CRAFT Roleplay.SC2Map",
+      "original_sha256": "238d4cff7fbe2c1a09fc7869f5a61e50e8e87a79a1ddf9a11a1bd0cb3cef6e64",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "previous13-0013",
+      "title": "Star Party v",
+      "original_filename": "Star Party v.SC2Map",
+      "original_sha256": "46a19c3e0d8bb4bb71c168146c19ebb82fc32aec680cbaa94d6ec89d8d0b1bf3",
+      "verification_level": "strict_recorded_pass",
+      "recorded_at": "2026-10-30T02:30:19.390676+00:00"
+    },
+    {
+      "id": "previous13-0014",
+      "title": "The Dark Story",
+      "original_filename": "The Dark Story.SC2Map",
+      "original_sha256": "daba7b859146196038673f31eae1f3168a30669a9fa34f21567b62e7928cf7a2",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "previous13-0016",
+      "title": "Victor's Reapers",
+      "original_filename": "Victor's Reapers.SC2Map",
+      "original_sha256": "20a5602709b2505044b66c53e9a69e5f9ec2413a696a3ca0c1d655973105865e",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    },
+    {
+      "id": "previous13-0017",
+      "title": "Эпические Битвы с Боссами",
+      "original_filename": "Эпические Битвы с Боссами.SC2Map",
+      "original_sha256": "022ca1ecc3ad9b9b899043ee4517d4fc278ade3f47b8c52cb0f3835c366982ba",
+      "verification_level": "historically_accepted",
+      "recorded_at": "2026-10-15T19:49:38.600328+00:00"
+    }
+  ]
+}
