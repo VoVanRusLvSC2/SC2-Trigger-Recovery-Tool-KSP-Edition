@@ -1,0 +1,1 @@
+export {planSourceInitializerGuiWeave,emitSourceInitializerGuiWeave,isBoundSourceInitializerMacro} from 'file:///K:/SC2_MAP_Workspace/sc2_editor_C%2B%2B/map_global_repair_v454_retained_startup_interfaces_2026-10-27/graph/b944a05140c0-source-initializer-gui-weave.bound-entry.mjs';

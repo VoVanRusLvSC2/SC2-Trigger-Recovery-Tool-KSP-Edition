@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "name": "real-mixed-5",
+  "astOracleModule": "../modkit-extensions-blizzard/starcraft2/dist/modules/triggers/services/galaxy-conversion/index.js",
+  "repetitions": 1,
+  "timeoutMs": 60000,
+  "coverageRequirements": {
+    "minCases": 5,
+    "minUniquePackages": 5,
+    "minDocumentKinds": {
+      "map": 4,
+      "mod": 1
+    },
+    "minOperations": {
+      "galaxy-triggers-roundtrip": 5
+    },
+    "minTags": {
+      "real-package": 5,
+      "map-script": 4,
+      "mod-script": 1,
+      "mod-library": 1,
+      "script-size-tier-1": 1,
+      "script-size-tier-2": 1,
+      "script-size-tier-3": 1,
+      "script-size-tier-4": 1,
+      "script-size-tier-5": 1,
+      "gui-baseline": 2,
+      "single-library-package": 1,
+      "has-galaxy-header": 1,
+      "has-trigger-strings": 4,
+      "has-game-strings": 1
+    }
+  },
+  "converters": [
+    {
+      "id": "modkit",
+      "command": "node",
+      "args": [
+        "adapters/modkit.mjs",
+        "{request}"
+      ],
+      "env": {
+        "MODKIT_CONVERSION_MODULE": "../modkit-extensions-blizzard/starcraft2/dist/modules/triggers/services/galaxy-conversion/index.js"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "real-map-001",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/Mocherad_MoonBase.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "full"
+      }
+    },
+    {
+      "id": "real-mod-002",
+      "documentKind": "mod",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "mod-script",
+        "mod-library",
+        "single-library-package",
+        "has-galaxy-header",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "mod-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/AllRaces2-AI.SC2Mod"
+        },
+        {
+          "role": "script",
+          "fromPackage": "mod-package",
+          "path": "Base.SC2Data/LibB09742AC.galaxy"
+        },
+        {
+          "role": "header",
+          "fromPackage": "mod-package",
+          "path": "Base.SC2Data/LibB09742AC_h.galaxy"
+        },
+        {
+          "role": "expected-trigger-data",
+          "fromPackage": "mod-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "mod-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "B09742AC",
+        "verification": "full"
+      }
+    },
+    {
+      "id": "real-map-003",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/29-WeatheredShelter.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "full"
+      }
+    },
+    {
+      "id": "real-map-004",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M25_TheFlashBeforeDusk.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "full"
+      }
+    },
+    {
+      "id": "real-map-005",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "has-game-strings",
+        "script-size-tier-5",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/KeyStone.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "expected-trigger-data",
+          "fromPackage": "map-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "full"
+      }
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {proveTemplateCellSubstitution as prove} from './template-cell-substitution.mjs';
+const automatic='#AUTOVAR(group, playergroup)=#PARAM(group); #AUTOVAR(cell)=-1; while(true){#AUTOVAR(cell)=Next(#AUTOVAR(group),#AUTOVAR(cell));if(#AUTOVAR(cell)<0){break;}#SUBFUNCS(actions)}';
+const explicit=automatic.replaceAll('#AUTOVAR(cell)','#PARAM(output)');
+const input={automatic,explicit,cell:'cell',parameter:'output'};
+test('derive an explicit cell alias from equal complete template ASTs',()=>{const p=prove(input);assert(p?.completeTemplateAstEqual);assert.equal(p.variableBindingAuthorized,false);assert.deepEqual(p.parameterRoles,['group']);});
+test('different traversal, bound, update and additional effect refuse',()=>{for(const replacement of [explicit.replace('Next(','Other('),explicit.replace('<0','<1'),explicit.replace('=-1','=0'),explicit+'SideEffect();'])assert.equal(prove({...input,explicit:replacement}),undefined);});
+test('unknown macro and ancestor indirection refuse',()=>{assert.equal(prove({...input,explicit:explicit+'#UNSUPPORTED(x)'}),undefined);assert.equal(prove({...input,automatic:automatic.replace('#AUTOVAR(cell)','#AUTOVAR(cell,ancestor:Other)')}),undefined);});
+test('macro-looking text in a string stays part of the compared body',()=>{assert.equal(prove({...input,automatic:automatic+'Use("#AUTOVAR(cell)");',explicit:explicit+'Use("#PARAM(output)");'}),undefined);});

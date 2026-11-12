@@ -1,0 +1,167 @@
+{
+  "sdkBatch": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\benchmark_review_v7_20261019\\recheck-generated-batch.mjs",
+    "sha256": "51c696c9899df19b1f4b726b65e1989f98c6b29a7f1886fd2e832f2095fcf5da"
+  },
+  "oracleBatch": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\localized_identity_20261019\\recheck-batch.literal-bytes.mjs",
+    "sha256": "4f91c3bbc977c5577d05368f9c91efc472d58c6e5b524e8b8f0a9b95b9c9c4f0"
+  },
+  "audit": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\benchmark_review_v3_20261019\\audit.mjs",
+    "sha256": "8f95c420915645e3ad40dce1349f97874466bdef972c050163fbdc705091a127"
+  },
+  "qualification": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\nested_gui_calls_20261019\\QUALIFICATION_CURRENT.json",
+    "sha256": "36d4a0966152ace9ab9b4137a2b21cc07fda9663d7f00819e8be9cbd8382abbb"
+  },
+  "analysis": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\nested_gui_calls_20261019\\qualified-root-view\\FINAL.json",
+    "sha256": "c6a4adb8646cbfdb29816cd13875452fea70b5e9f5c7a910bca2be5cc6b0cb41"
+  },
+  "freshSdk": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\benchmark_review_v6_20261019\\generated-98-r3\\FINAL.json",
+    "sha256": "2ff4b9777ded7a5c189306011e333152673295dafef1ed7f7cbd992fe12cc8fe"
+  },
+  "freshOracle": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\localized_identity_20261019\\oracle-byte-guard-98-r2\\FINAL.json",
+    "sha256": "e781a7450938df29dffe6918fae89941c407dbbb9ec8351d4071cac944049448"
+  },
+  "qualifiedRootProfile": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\queue_audit_2026-10-15\\prove-source-bound-composed-offline.literal-fences.v44.mjs",
+    "sha256": "a403a94f3845fb93727355d1188e101b83f3410a0381253601acc77674531506"
+  },
+  "originalOracleChanged": false,
+  "wholeMapAccepted": false,
+  "sdkInput": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\benchmark_review_v5_20261019\\SDK_INPUT.json",
+    "sha256": "935ef7fb3ad5c3a79969178bd446d803bd340304334abc954d3f4972be6a1893"
+  },
+  "qualifiedOverlayAudit": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\benchmark_review_v5_20261019\\audit-overlay.mjs",
+    "sha256": "9c3554b400b0fde649d8f82c689fed0f35f969e60e7b8eb959b825471981ccd5"
+  },
+  "qualifiedOverlayInput": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\benchmark_review_v5_20261019\\OVERLAY_INPUT.json",
+    "sha256": "60e4923c3e3de036565a04a694585335e062cd7cccf3ac8a4203991bea60c7d5"
+  },
+  "parentQualification": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\benchmark_review_v6_20261019\\QUALIFICATION.json",
+    "sha256": "5fc3224ba87e56169e93b19eac4db037e0c919d37d59b62979353dcfb89d01d8"
+  },
+  "qualifiedRootProfiles": [
+    {
+      "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\queue_audit_2026-10-15\\prove-source-bound-composed-offline.literal-fences.v42.mjs",
+      "sha256": "45f2be973575bc5c8f93f94b83022434e7f26965887a5d4cc73b8a622e9447b7"
+    },
+    {
+      "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\queue_audit_2026-10-15\\prove-source-bound-composed-offline.literal-fences.v43.mjs",
+      "sha256": "c149fa1b76a3f44b82783b4c957f44e4bc342f1c43d4de39715601f27b6d80b7"
+    },
+    {
+      "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\queue_audit_2026-10-15\\prove-source-bound-composed-offline.literal-fences.v44.mjs",
+      "sha256": "a403a94f3845fb93727355d1188e101b83f3410a0381253601acc77674531506"
+    }
+  ],
+  "qualifiedRecoveryWorker": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\map_global_repair_v169_source_literal_frontend_2026-10-19\\worker.mjs",
+    "sha256": "5fb2ab495f332cb829f4da27f919539c8b6fe7893d2bbc0f439af42e5012aec0"
+  },
+  "notes": "Fresh complete strict root audit: 98 proved with mandatory initialization fences and complete include-once graph. Attribute/source/dependency/Editor gates stay separate. Source SDK and immutable ZIP oracle unchanged. V44 is the preferred future root proof with identical guards and proof-local immutable AST sharing; existing 98 proofs remain V42/V43, not rerun under V44.",
+  "sourceBatch": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\benchmark_review_v6_20261019\\recheck-original-batch.r2.mjs",
+    "sha256": "4aa2c097a694c6c681efa41efb886adf8edf894d31d689cccb9084a33edf98fe"
+  },
+  "sourceInput": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\benchmark_review_v6_20261019\\ORIGINAL_INPUT_119_R2.json",
+    "sha256": "7f89adfeea2a06e7fb0bc517e91f2ceca7f98a545216d184fc8f759c5d1e9de4"
+  },
+  "sourceAudit": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\benchmark_review_v6_20261019\\original-119-r3\\FINAL.json",
+    "sha256": "392243b2f991fded4d680c2099c54a8235463287b5080d9e3187a111cead3df8"
+  },
+  "sourceViewAudit": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\benchmark_review_v6_20261019\\audit-source-view.mjs",
+    "sha256": "e7267385b3159329fbf9792dadd262a5a13bb8b96f8407335be816a742a60bde"
+  },
+  "sourceViewInput": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\benchmark_review_v6_20261019\\SOURCE_VIEW_INPUT_R3.json",
+    "sha256": "51fe2769a208828cc4345d004df9a140061084972761e07a27740745e9e060c3"
+  },
+  "rootAudit": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\nested_gui_calls_20261019\\QUALIFICATION_FINAL_ROOT.json",
+    "sha256": "d27c2fec635eec817156cde99c4f8efcb9294fcbda27ba3c843e20fb853e7aa0"
+  },
+  "sharedAstQualification": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\nested_gui_calls_20261019\\QUALIFICATION_SHARED_SYNTAX_V44.json",
+    "sha256": "8af4f3d32fa5e52092dac483c491c59f161266c11a578e16e8d55b276de51db7"
+  },
+  "updatedAt": "2026-10-19T08:57:08.715582+00:00",
+  "diagnosticAnalysis": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\remaining_gui_v167_20261019\\qualified-outcomes\\FINAL.json",
+    "sha256": "f11dd99c942542d843b0bb0180f1e58c024c64bf37e6483a60a374b456268fce"
+  },
+  "diagnosticQualification": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\remaining_gui_v167_20261019\\QUALIFICATION_RESOURCE_GATE.json",
+    "sha256": "0ede98a1a272946369db22ae3a1b6a7026e38d146f94b973d551d397f29bf451"
+  },
+  "diagnosticModel": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_core\\verification\\offline-outcome.localized-values.mjs",
+    "sha256": "9a9e283532afef6a975c53c9c231e207bacacc843755588b2698cf1ee4e90481"
+  },
+  "diagnosticAudit": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\remaining_gui_v167_20261019\\compose-resource-outcomes.mjs",
+    "sha256": "4c872cbecb3475e94810767fbaad2fba86a81120e0f7228ae87401e96f514fee"
+  },
+  "evidenceSession": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_core\\verification\\evidence-session.mjs",
+    "sha256": "593fb1eb95bbd6ff3a9b0502b885934f0dbc74578560a6f79d8daf496a55f6ae"
+  },
+  "diagnosticReport": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\remaining_gui_v167_20261019\\REPORT_RU.md",
+    "sha256": "b9ab7341c9592dda1530075986d22748fa4ad03a916eba78fea966b1a8fa7ef8"
+  },
+  "actualEditor": false,
+  "reviewExplanation": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\source_literal_frontend_20261019\\explained-eight-gates\\FINAL.json",
+    "sha256": "7c5fb4f56c51880d0e05ac2f50e6830c988476fe7a21449366f45dcfec1810b3"
+  },
+  "reviewExplanationQualification": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\source_literal_frontend_20261019\\QUALIFICATION_REVIEW_PRESENTATION.json",
+    "sha256": "f60c50b8b413c801947be565060261d1463d1cacc5948a9ae186df997993059b"
+  },
+  "reviewExplanationAudit": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\source_literal_frontend_20261019\\explain-qualified-results.mjs",
+    "sha256": "0e011233ead695ca02ace8bcc0f7b50eed92cc87ef8a14c3dcf529447d6bcf98"
+  },
+  "jobBenchmark": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_core\\verification\\benchmark-generated-job.literal-bytes.mjs",
+    "sha256": "6a9997c472b8ac173430f8b30bb188bbc37d2fc004fc690b53f5b1085bb32f09"
+  },
+  "diagnosticInput": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\remaining_gui_v167_20261019\\RESOURCE_VIEW_INPUT.json",
+    "sha256": "ab0220ae0b807d1ebe434d384bc61677d491434a09101c30721f0e47f5d6df8a"
+  },
+  "localizationAudit": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\remaining_gui_v167_20261019\\localization-audit-r2\\FINAL.json",
+    "sha256": "2ac536a03ec1981dffd21b368e06ebcd0d81ae08bea4e3ec03b1210a029d18e6"
+  },
+  "resourceGateRequired": true,
+  "parallelOracleQualification": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\benchmark_parallel_20261019\\QUALIFICATION.json",
+    "sha256": "a7c4157b6d2645e5d876d86d94e8c84f83b6f504ad04d4d1c9d8b4a1103a1280"
+  },
+  "rawMatchLiteralByteGuardRequired": true,
+  "rawMatchLiteralByteQualification": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\localized_identity_20261019\\QUALIFICATION_BYTE_GUARD.json",
+    "sha256": "dae543de8be7f06988420dcd96c3e638803513cf3455ef979f9b29d9abbb6047"
+  },
+  "frontendQualification": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\source_literal_frontend_20261019\\QUALIFICATION.json",
+    "sha256": "3bb2592be2a2479921c6a9ce1e75d11893e9c60b1dd8396ff921a473f5b221b4"
+  },
+  "latestRemainingRetest": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\source_literal_frontend_20261019\\QUALIFICATION_REMAINING_RETEST.json",
+    "sha256": "a6b7c5bdb342c2c2ece994b34f2e5ea1773492e8e457f12690fc276e853234b9"
+  }
+}

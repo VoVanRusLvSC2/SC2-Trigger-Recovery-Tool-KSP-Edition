@@ -1,0 +1,73 @@
+{
+  "kind": "SOURCE_NOMINAL_INLINE_GUI_ROLE_NATIVE_PROFILE",
+  "version": 1,
+  "evidence": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\NOMINAL_INLINE_NATIVE_AUDIT_R2782.json",
+    "sha256": "af19ba31eac95bc5256cb7a3ca3d3438bb632b12d18b1cdbe29b16d8caa46ba6"
+  },
+  "metadataSha256": "cbb2302825dce57ff9bb8efd44f9b0ed5cb056eee00265e5b711b0824d872396",
+  "role": "return",
+  "surfaceType": "struct",
+  "qualifier": "PURE_SOURCE_BOUND_OPERATOR_PATH",
+  "requiredFlags": [
+    "Call",
+    "Operator",
+    "NoScriptPrefix"
+  ],
+  "forbiddenFlags": [
+    "Native"
+  ],
+  "runtimeBodyAllowed": false,
+  "sourceProvidedTypeRequired": true,
+  "sourceProvidedPathRequired": true,
+  "typedReferenceReplayRequired": true,
+  "nativeControls": [
+    {
+      "name": "nested-reference",
+      "xml": {
+        "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\nominal-converter-native-r2777\\nested-reference\\Triggers",
+        "sha256": "c85b7ba34c66fc68df5458f90a578fdf6c9f882f2cd0e1fc20f7f9e1504f8748"
+      },
+      "export": {
+        "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\nominal-capabilities-native-r2779\\Native.galaxy",
+        "sha256": "698db1b95eddab6797cdd920a88b2777f63e801e8bf3742d1f8ad3c03c01cf8b",
+        "bytes": 1996
+      },
+      "compilePassed": true,
+      "stepTokensExact": true
+    },
+    {
+      "name": "indexed-alias-reference",
+      "xml": {
+        "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\nominal-converter-native-r2777\\indexed-alias-reference\\Triggers",
+        "sha256": "242fb177880bcd1dba6664701fb079d42d9ddce6c9c5dea1f1f424c17c74ff98"
+      },
+      "export": {
+        "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\nominal-capabilities-native-r2779\\case-0\\Native.galaxy",
+        "sha256": "8059b9be14afe4d6b27ecf2ae91f4b9b99228f78f4d6dbee12625ba563c20198",
+        "bytes": 2009
+      },
+      "compilePassed": true,
+      "stepTokensExact": true
+    },
+    {
+      "name": "local-array-write",
+      "xml": {
+        "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\nominal-converter-native-r2777\\local-array-write\\Triggers",
+        "sha256": "cec7e6fe008012663e330dd7740d4b8bbf23a88f12634914c1d136a695cff36c"
+      },
+      "export": {
+        "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\nominal-capabilities-native-r2779\\case-1\\Native.galaxy",
+        "sha256": "03f915587f0773c45ce4381987b669a9d0fb64c2c0b038863a07041168d8f778",
+        "bytes": 2182
+      },
+      "compilePassed": true,
+      "stepTokensExact": true
+    }
+  ],
+  "doesNotAuthorizeOrdinaryStructReturnFunctions": true,
+  "doesNotAuthorizeArbitraryScriptCode": true,
+  "newNative": 0,
+  "newRuntimeFunctions": 0,
+  "wholeMapAccepted": false
+}

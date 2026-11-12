@@ -1,0 +1,3266 @@
+{
+  "schemaVersion": 1,
+  "name": "real-map-100",
+  "astOracleModule": "../modkit-extensions-blizzard/starcraft2/dist/modules/triggers/services/galaxy-conversion/index.js",
+  "repetitions": 1,
+  "timeoutMs": 60000,
+  "coverageRequirements": {
+    "minCases": 95,
+    "minUniquePackages": 95,
+    "minDocumentKinds": {
+      "map": 95,
+      "mod": 0
+    },
+    "minOperations": {
+      "galaxy-triggers-roundtrip": 95
+    },
+    "minTags": {
+      "real-package": 95,
+      "map-script": 95,
+      "script-size-tier-1": 17,
+      "script-size-tier-2": 20,
+      "script-size-tier-3": 19,
+      "script-size-tier-4": 20,
+      "script-size-tier-5": 19,
+      "gui-baseline": 2,
+      "has-trigger-strings": 94,
+      "has-game-strings": 12
+    }
+  },
+  "converters": [
+    {
+      "id": "modkit",
+      "command": "node",
+      "args": [
+        "adapters/modkit.mjs",
+        "{request}"
+      ],
+      "env": {
+        "MODKIT_CONVERSION_MODULE": "../modkit-extensions-blizzard/starcraft2/dist/modules/triggers/services/galaxy-conversion/index.js"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "real-map-001",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/Mocherad_MoonBase.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-003",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/Newkirk.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-004",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/WTE174_ScrinKing.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-005",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/Mozared_TerrainShowcase.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enGB.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-006",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/WTE70_Madlibrarian.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enGB.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-007",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/CJBiome.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "deDE.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-009",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/test.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-010",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/WTE76_Alaron251.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enGB.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-011",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/Amphion SpawnPanel No Dependncies. Test With Mod. 3 players.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-012",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/Mocherad_TerrainWasteland.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-013",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/WTE1_Eliek.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-014",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/bridges.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-015",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "has-game-strings",
+        "script-size-tier-1",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/SCEVO_DeathValley.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "expected-trigger-data",
+          "fromPackage": "map-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "original-trigger-data",
+          "fromPackage": "map-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-016",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/all-races-coop-launcher-defenders.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-017",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/all-races-coop-launcher.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-018",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/06-MistOpportunities.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-020",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-1",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/64-NexusCoopProvingGround.sc2map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-021",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/43-PrisonEscape.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-022",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "has-game-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/The Dark Story.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-023",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/20-ImmortalSiege.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-024",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/57-MothersMercy.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-025",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/41-SmashBrothers.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-026",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/12-UlnarLocks.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-027",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M17_TapestryOfLies.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-028",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M19_TheFallOfTarsus.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-029",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/44-BigCityShowdown.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-030",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/51-YouAreWhatYouEat.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-031",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M18_BeforeMaarThereWasZhakul.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-032",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/60-PSIChaos.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-033",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/58-VoidOverwhelming.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-034",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/29-WeatheredShelter.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-035",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/59-PrimalResurgence.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-036",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/47-PurificationRedux.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-037",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M23_AMinuteToMidnight.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-038",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/37-PreserverOfTheEnd.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-039",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/26-TradingPlaces.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-040",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_Launcher.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-042",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M26_PlansInsidePlans.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-043",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/14-VoidLaunch.SC2MAP"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-044",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/09-RiftsToKorhal.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-045",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/10-ScytheOfAmon.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-046",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/11-TempleOfThePast.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-047",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/traynor2.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-048",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/30-SkyFall.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-049",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/13-VermillionProblem.SC2MAP"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-050",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/56-AerialEvacuation.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-051",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/17-Dilemma.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-052",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/48-AmonsReach.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-053",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M22_Deliverance.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-054",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/01-ChainOfAscension.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-055",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M21_Providence.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-056",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/07-OblivionExpress.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-057",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "has-game-strings",
+        "script-size-tier-3",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/TTosh1.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "expected-trigger-data",
+          "fromPackage": "map-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "original-trigger-data",
+          "fromPackage": "map-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-058",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/25-SolarRight.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-059",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/55-GuardiansOfAiur.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-060",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/traynor01.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-061",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/16-DeathFromAbove.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-062",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M14_AbandonHope.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-063",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/02-CradleOfDeath.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-064",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/31-PrecipiceOfSalvation.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-065",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/62-PurifiersAwakening.sc2map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-066",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/03-DeadOfNight.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-067",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M25_TheFlashBeforeDusk.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-068",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/24-ScavengerHunt.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-069",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/27-RelicOfTwilight.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-070",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/21-LosingMemories.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-071",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/63-Salvation.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-072",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M09_PyrrhicVictory.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-073",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/deadZone.sc2map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-074",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/46-DominionWarMachines.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-075",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/38-Essens-o-maina.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-076",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M07_PaybackTime.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-077",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/05-MinerEvacuation.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-078",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M13_TheGatekeepers.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-079",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M00_Routhe.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-080",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/42-BurningSwarm.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-081",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M28_Ouroboros.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-082",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M27_Strings.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-083",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M10_Longshot.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-084",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/50-RealSteel.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-085",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M01_EndofInnocence.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-086",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M12_August.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-087",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M05_Outpost497.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-089",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/TesterSimple.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-090",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "has-game-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/Унитазофoбия.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "ruRU.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "ruRU.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-091",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "has-game-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/Mercs Episode 1.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-092",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "has-game-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/Mercs Episode 2.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-093",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M06_CleanandSweep.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-094",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "has-game-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/Rainbow Six Сюнь Arena - latest replay 2026-09-09.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-095",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "has-game-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/Rainbow Arena from replay - reference 2026-09-09.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-096",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "has-game-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/STAR CRAFT Roleplay.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-097",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "has-game-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/Cold expedition.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-098",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "has-game-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/Эпические Битвы с Боссами.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-099",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/EditorTest.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "real-map-100",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "has-game-strings",
+        "script-size-tier-5",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/KeyStone.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    }
+  ]
+}

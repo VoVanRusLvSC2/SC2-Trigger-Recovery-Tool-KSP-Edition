@@ -1,0 +1,3 @@
+void libBenchmarkClient_gf_Call () {
+    libRuntimeFixture_gf_Run();
+}

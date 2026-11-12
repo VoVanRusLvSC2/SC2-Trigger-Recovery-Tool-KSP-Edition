@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "name": "smoke",
+  "repetitions": 1,
+  "timeoutMs": 5000,
+  "converters": [
+    {
+      "id": "mock",
+      "command": "node",
+      "args": ["fixtures/mock-converter.mjs", "{request}"]
+    }
+  ],
+  "cases": [
+    {
+      "id": "minimal-map",
+      "documentKind": "map",
+      "inputs": [
+        { "role": "script", "path": "fixtures/minimal.galaxy" }
+      ],
+      "options": {
+        "libraryId": "MapScript"
+      }
+    }
+  ]
+}

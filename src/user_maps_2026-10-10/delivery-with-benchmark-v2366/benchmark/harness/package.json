@@ -1,0 +1,23 @@
+{
+  "name": "galaxy-trigger-benchmark",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "demo": "node src/benchmark.mjs benchmark.example.json --output .benchmark-runs",
+    "census": "node src/census.mjs",
+    "manifest:real-maps": "node src/package-manifest.mjs",
+    "manifest:real-mixed": "node src/package-manifest.mjs",
+    "manifest:real-pilot": "node src/package-manifest.mjs",
+    "pilot:real-mod": "node src/benchmark.mjs benchmark.real-mod-pilot.json --output .benchmark-runs",
+    "pilot:real-mixed": "node src/benchmark.mjs benchmark.real-mixed-pilot.json --output .benchmark-runs",
+    "pilot:modkit": "node src/benchmark.mjs benchmark.modkit-pilot.json --output .benchmark-runs",
+    "oracle:self-test": "node src/oracle.mjs --self-test",
+    "compare-runs": "node src/compare-runs.mjs",
+    "error-report": "node src/error-report.mjs",
+    "test": "node --test"
+  }
+}

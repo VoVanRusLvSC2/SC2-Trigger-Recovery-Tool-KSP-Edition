@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "name": "auto-unit-name-map",
+  "astOracleModule": "../modkit-extensions-blizzard/starcraft2/dist/modules/triggers/services/galaxy-conversion/index.js",
+  "repetitions": 1,
+  "timeoutMs": 60000,
+  "converters": [
+    {
+      "id": "modkit",
+      "command": "node",
+      "args": ["adapters/modkit.mjs", "{request}"],
+      "env": {
+        "MODKIT_CONVERSION_MODULE": "../modkit-extensions-blizzard/starcraft2/dist/modules/triggers/services/galaxy-conversion/index.js"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "uedfl-the-fall-of-tarsus",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/UEDFL_EP01M19_TheFallOfTarsus.SC2Map"
+        },
+        { "role": "script", "fromPackage": "map-package", "path": "MapScript.galaxy" },
+        { "role": "trigger-strings", "fromPackage": "map-package", "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt" }
+      ],
+      "options": { "libraryId": "Map", "verification": "full" }
+    }
+  ]
+}

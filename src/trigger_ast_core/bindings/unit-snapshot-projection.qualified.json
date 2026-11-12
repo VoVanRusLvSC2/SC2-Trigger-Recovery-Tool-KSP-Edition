@@ -1,0 +1,123 @@
+{
+  "kind": "QUALIFIED_EXISTING_GUI_SNAPSHOT_PROJECTION",
+  "version": 1,
+  "source": {
+    "symbol": "UnitRefFromUnit",
+    "returnType": "unitref",
+    "parameters": [
+      "unit"
+    ]
+  },
+  "target": {
+    "returnType": "unit",
+    "formalType": {
+      "type": "anypreset",
+      "variableType": "unit"
+    },
+    "definition": {
+      "type": "FunctionDef",
+      "id": "7FB12E7B",
+      "library": "Ntve",
+      "identifier": "ConvertPresetToUnit",
+      "flags": [
+        "Call",
+        "Operator"
+      ],
+      "returnType": {
+        "type": "unit"
+      },
+      "parameters": [
+        {
+          "id": "15113067",
+          "library": "Ntve",
+          "type": "ParamDef"
+        }
+      ],
+      "actions": []
+    },
+    "formal": {
+      "type": "ParamDef",
+      "id": "15113067",
+      "library": "Ntve",
+      "identifier": "value",
+      "paramType": {
+        "type": "anypreset",
+        "variableType": "unit"
+      }
+    }
+  },
+  "metadata": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\batch20_offline_2026-10-12\\library-inputs\\cbb2302825dce57ff9bb8efd44f9b0ed5cb056eee00265e5b711b0824d872396\\NativeLib.TriggerLib",
+    "sha256": "cbb2302825dce57ff9bb8efd44f9b0ed5cb056eee00265e5b711b0824d872396"
+  },
+  "nativeEditor": {
+    "path": "C:/Program Files (x86)/StarCraft II/Support64/SC2Editor_x64.exe",
+    "sha256": "e561d76903221bdcd4585b9496bba1d2b9c5ae13b8fbe8c8469d213f22823d91"
+  },
+  "evidence": [
+    {
+      "id": "unit-snapshot-projection-formal",
+      "files": [
+        {
+          "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\native-probes-r224\\unit-snapshot-projection-formal\\Triggers.xml",
+          "sha256": "c6032631aa39b689b15d3a0111d1e8527bc53449f7eee911ce3d7bc5a2d6a5e1"
+        },
+        {
+          "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\native-probes-r224\\unit-snapshot-projection-formal\\Native.galaxy",
+          "sha256": "41e85708ca8f1ed5bf4098becf6988492e08a31d12c762db903a3039c3e980ba"
+        },
+        {
+          "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\native-probes-r224\\unit-snapshot-projection-formal\\RESPONSE.json",
+          "sha256": "44329f0f28dfff8d4695701aac3921a3a33751f2a19c27916e8dcbfd7d76455a"
+        },
+        {
+          "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\native-probes-r224\\unit-snapshot-projection-formal\\EXPECTATION.json",
+          "sha256": "cbac0a0d9ea0a8490e1caee330d00059d89fbdb8fe21c0ed9359790516d44d52"
+        },
+        {
+          "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\native-probes-r224\\unit-snapshot-projection-formal\\NATIVE_EXPORT_GUARD.json",
+          "sha256": "c0fce7ba698217a7ab481a660ab7c267b1f07e519a6a3698db90d655fc51ef8c"
+        }
+      ],
+      "scope": "source-function-component",
+      "wholeMapAccepted": false
+    },
+    {
+      "id": "unit-snapshot-projection-global",
+      "files": [
+        {
+          "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\native-probes-r224\\unit-snapshot-projection-global\\Triggers.xml",
+          "sha256": "69e9fe32007b65ad470b91b68336340e012bd6633b8032427c930b558c712f07"
+        },
+        {
+          "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\native-probes-r224\\unit-snapshot-projection-global\\Native.galaxy",
+          "sha256": "94bb58bd0755985dbc33eef46c83651e624c0f6cacca81a4b58f8206cc3e76fe"
+        },
+        {
+          "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\native-probes-r224\\unit-snapshot-projection-global\\RESPONSE.json",
+          "sha256": "08c95c5c634ab62ed022ceb8aa2ee62ac5c46297881cbdf0e406ed86bd431719"
+        },
+        {
+          "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\native-probes-r224\\unit-snapshot-projection-global\\EXPECTATION.json",
+          "sha256": "703088fbf5cd979a12f156a0ac21b1bc963e377298143adf3b86fdf0591b7959"
+        },
+        {
+          "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\native-probes-r224\\unit-snapshot-projection-global\\NATIVE_EXPORT_GUARD.json",
+          "sha256": "8e649e16753dadc0c362bf478887451f93edf44501b9c2e304766941ed9f4a18"
+        }
+      ],
+      "scope": "exact-event-component",
+      "wholeMapAccepted": false
+    }
+  ],
+  "semantics": {
+    "evaluationCount": 1,
+    "outerCarrier": "SNAPSHOT_VALUE",
+    "emits": "parenthesized-original-unit-value",
+    "newDefinitions": 0,
+    "newNative": 0,
+    "newCustomScript": 0,
+    "newRuntimeFunctions": 0
+  },
+  "wholeMapAccepted": false
+}

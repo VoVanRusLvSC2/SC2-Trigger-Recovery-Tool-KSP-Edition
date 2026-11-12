@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-12",
+  "sourceSnapshotPublished": true,
+  "standaloneRuntimeReady": false,
+  "newEditorRuns": 0,
+  "newMapPasses": 0,
+  "maps": {
+    "HISTORICAL_REGISTRY_ACCEPTED": 222,
+    "RECORDED_ROOT_PASS": 103,
+    "REVIEW": 12,
+    "UNCONFIRMED": 1,
+    "SKIP": 1
+  },
+  "oracleAssets": 304,
+  "recordedMissingModuleImports": 157,
+  "recordedMissingOtherReferences": 17,
+  "importsStillAbsolute": true
+}

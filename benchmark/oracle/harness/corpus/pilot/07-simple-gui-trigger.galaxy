@@ -1,0 +1,37 @@
+include "TriggerLibs/NativeLib"
+include "LibTEST_h"
+void libTEST_InitLibraries () {
+    libNtve_InitVariables();
+}
+
+bool libTEST_InitVariables_completed = false;
+void libTEST_InitVariables () {
+    if (libTEST_InitVariables_completed) {
+        return;
+    }
+    libTEST_InitVariables_completed = true;
+    libTEST_gv_score = 7;
+}
+
+bool libTEST_gt_Start_Func (bool testConds, bool runActions) {
+    return true;
+}
+
+void libTEST_gt_Start_Init () {
+    libTEST_gt_Start = TriggerCreate("libTEST_gt_Start_Func");
+}
+
+void libTEST_InitTriggers () {
+    libTEST_gt_Start_Init();
+}
+
+bool libTEST_InitLib_completed = false;
+void libTEST_InitLib () {
+    if (libTEST_InitLib_completed) {
+        return;
+    }
+    libTEST_InitLib_completed = true;
+    libTEST_InitLibraries();
+    libTEST_InitVariables();
+    libTEST_InitTriggers();
+}

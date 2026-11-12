@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "name": "original-triggers-deity-wasp",
+  "astOracleModule": "../modkit-extensions-blizzard/.benchmark-build/deity-fix/modules/triggers/services/galaxy-conversion/index.js",
+  "repetitions": 1,
+  "timeoutMs": 180000,
+  "coverageRequirements": {
+    "minCases": 1,
+    "minUniquePackages": 1,
+    "minDocumentKinds": { "mod": 1 },
+    "minOperations": { "triggers-to-galaxy": 1 }
+  },
+  "converters": [
+    {
+      "id": "modkit",
+      "command": "node",
+      "args": ["adapters/modkit.mjs", "{request}"],
+      "env": {
+        "MODKIT_CONVERSION_MODULE": "../modkit-extensions-blizzard/.benchmark-build/deity-fix/modules/triggers/services/galaxy-conversion/index.js"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "deity-wasp",
+      "documentKind": "mod",
+      "operation": "triggers-to-galaxy",
+      "tags": ["real-package", "original-trigger-data"],
+      "inputs": [
+        { "role": "package", "id": "package", "path": "C:/FILES/SC2Files/Mods/Deity Wasp.SC2Mod" },
+        { "role": "trigger-data", "fromPackage": "package", "path": "Triggers" },
+        { "role": "trigger-strings", "fromPackage": "package", "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt" },
+        { "role": "game-strings", "fromPackage": "package", "path": "enUS.SC2Data/LocalizedData/GameStrings.txt" },
+        { "role": "expected-script", "fromPackage": "package", "path": "Base.SC2Data/Lib22142002.galaxy" },
+        { "role": "expected-header", "fromPackage": "package", "path": "Base.SC2Data/Lib22142002_h.galaxy" }
+      ],
+      "options": { "libraryId": "22142002" }
+    }
+  ]
+}

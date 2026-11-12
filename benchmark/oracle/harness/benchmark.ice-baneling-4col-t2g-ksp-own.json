@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "name": "ice-baneling-4col-t2g-ksp-own",
+  "astOracleModule": "../.wt-sc2-triggers/starcraft2/dist/modules/triggers/services/galaxy-conversion/index.js",
+  "repetitions": 1,
+  "timeoutMs": 3600000,
+  "converters": [
+    {
+      "id": "ksp-t2g",
+      "command": "node",
+      "args": [
+        "adapters/ksp.mjs",
+        "{request}"
+      ],
+      "env": {
+        "KSP_MIN_FREE_VIRTUAL_GB": "1.5"
+      },
+      "timeoutMs": 900000
+    }
+  ],
+  "cases": [
+    {
+      "id": "ice-baneling-no-texturemap.ksp-triggers",
+      "documentKind": "map",
+      "operation": "triggers-to-galaxy",
+      "tags": [
+        "real-package",
+        "map-script",
+        "triggers-stripped",
+        "installed-mod-dependency",
+        "texturemap-removed",
+        "triggers-source-ksp"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/modkit-vs-ksp-final-2026-09-26/maps-no-texturemap/Ice Baneling Escape Arctic Adventures.SC2Map"
+        },
+        {
+          "role": "expected-script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-data",
+          "path": ".benchmark-runs/ice-baneling-4col-ksp-g2t-2026-09-26T18-04-17-764Z/cases/ice-baneling-no-texturemap/ksp/attempt-01/output/Triggers"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map"
+      }
+    }
+  ]
+}

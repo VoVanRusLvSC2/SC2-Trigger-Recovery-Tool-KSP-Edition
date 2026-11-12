@@ -1,0 +1,16 @@
+# Generated runtime/output files; the sealed vendor subset is intentionally tracked.
+/node_modules/
+__pycache__/
+*.pyc
+.env
+.env.*
+*.pem
+*.key
+*.SC2Map
+*.SC2Mod
+*.dll
+*.exe
+*.log
+/output/
+/tmp/
+*.local.json

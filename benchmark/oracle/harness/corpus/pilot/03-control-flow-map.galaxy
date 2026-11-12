@@ -1,0 +1,9 @@
+int SumTo(int limit) {
+    int total = 0;
+    int index = 0;
+    while (index < limit) {
+        total += index;
+        index += 1;
+    }
+    return total;
+}

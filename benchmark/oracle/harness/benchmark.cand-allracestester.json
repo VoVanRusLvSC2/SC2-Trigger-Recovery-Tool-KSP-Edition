@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "name": "cand-allracestester",
+  "astOracleModule": "../.wt-sc2-triggers/starcraft2/dist/modules/triggers/services/galaxy-conversion/index.js",
+  "repetitions": 1,
+  "timeoutMs": 60000,
+  "converters": [
+    {
+      "id": "modkit",
+      "command": "node",
+      "args": [
+        "adapters/modkit.mjs",
+        "{request}"
+      ],
+      "env": {
+        "MODKIT_CONVERSION_MODULE": "../.wt-sc2-triggers-fix/starcraft2/dist/modules/triggers/services/galaxy-conversion/index.js"
+      },
+      "timeoutMs": 900000
+    }
+  ],
+  "cases": [
+    {
+      "id": "allracestester",
+      "displayName": "AllRacesTester",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "embedded-library"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/editor-acceptance-2026-09-25/original/allracestester.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        },
+        {
+          "role": "original-trigger-data",
+          "fromPackage": "map-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "expected-trigger-data",
+          "fromPackage": "map-package",
+          "path": "Triggers"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    }
+  ]
+}

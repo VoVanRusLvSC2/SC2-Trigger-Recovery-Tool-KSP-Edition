@@ -1,0 +1,4 @@
+include "TriggerLibs/natives"
+int libTEST_gv_score;
+trigger libTEST_gt_Start;
+void libTEST_InitVariables ();

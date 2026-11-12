@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "astOracleModule": "../modkit-extensions-blizzard/starcraft2/dist/modules/triggers/services/galaxy-conversion/index.js",
+  "name": "modkit-pilot",
+  "repetitions": 1,
+  "timeoutMs": 30000,
+  "converters": [
+    {
+      "id": "modkit",
+      "command": "node",
+      "args": ["adapters/modkit.mjs", "{request}"],
+      "env": {
+        "MODKIT_CONVERSION_MODULE": "../modkit-extensions-blizzard/starcraft2/dist/modules/triggers/services/galaxy-conversion/index.js"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "minimal-map",
+      "documentKind": "map",
+      "tags": ["simple", "empty", "galaxy-to-triggers"],
+      "inputs": [{ "role": "script", "path": "corpus/pilot/01-minimal-map.galaxy" }],
+      "options": { "libraryId": "Map", "verification": "full" }
+    },
+    {
+      "id": "functions-map",
+      "documentKind": "map",
+      "tags": ["functions", "galaxy-to-triggers"],
+      "inputs": [{ "role": "script", "path": "corpus/pilot/02-functions-map.galaxy" }],
+      "options": { "libraryId": "Map", "verification": "full" }
+    },
+    {
+      "id": "control-flow-map",
+      "documentKind": "map",
+      "tags": ["control-flow", "galaxy-to-triggers"],
+      "inputs": [{ "role": "script", "path": "corpus/pilot/03-control-flow-map.galaxy" }],
+      "options": { "libraryId": "Map", "verification": "full" }
+    },
+    {
+      "id": "structure-library",
+      "documentKind": "library",
+      "tags": ["structures", "header", "galaxy-to-triggers"],
+      "inputs": [
+        { "role": "script", "path": "corpus/pilot/04-structure-library.galaxy" },
+        { "role": "header", "path": "corpus/pilot/04-structure-library_h.galaxy" }
+      ],
+      "options": { "libraryId": "TEST", "verification": "full" }
+    },
+    {
+      "id": "initialization-library",
+      "documentKind": "library",
+      "tags": ["initialization", "entry-point", "galaxy-to-triggers"],
+      "inputs": [{ "role": "script", "path": "corpus/pilot/05-initialization-library.galaxy" }],
+      "options": { "libraryId": "TEST", "verification": "full", "entryPoint": "Launch" }
+    },
+    {
+      "id": "pinned-runtime-roundtrip-input",
+      "documentKind": "library",
+      "tags": ["runtime-library", "galaxy-to-triggers"],
+      "inputs": [
+        { "role": "script", "path": "corpus/pilot/06-pinned-runtime.galaxy" },
+        { "role": "header", "path": "corpus/pilot/06-pinned-runtime_h.galaxy" }
+      ],
+      "options": { "libraryId": "RuntimeFixture", "verification": "full" }
+    },
+    {
+      "id": "pinned-runtime-roundtrip-evaluation",
+      "operation": "galaxy-triggers-roundtrip",
+      "documentKind": "library",
+      "tags": ["runtime-library", "roundtrip", "ast-roundtrip-only"],
+      "inputs": [
+        { "role": "script", "path": "corpus/pilot/06-pinned-runtime.galaxy" },
+        { "role": "header", "path": "corpus/pilot/06-pinned-runtime_h.galaxy" }
+      ],
+      "options": { "libraryId": "RuntimeFixture", "verification": "full" }
+    },
+    {
+      "id": "pinned-triggerdata-forward",
+      "operation": "triggers-to-galaxy",
+      "documentKind": "library",
+      "tags": ["runtime-library", "ast-golden", "triggers-to-galaxy"],
+      "inputs": [
+        { "role": "trigger-data", "path": "corpus/pilot/06-pinned-runtime.Triggers" },
+        { "role": "expected-script", "path": "corpus/pilot/06-pinned-runtime.galaxy" },
+        { "role": "expected-header", "path": "corpus/pilot/06-pinned-runtime_h.galaxy" }
+      ],
+      "options": { "libraryId": "RuntimeFixture" }
+    },
+    {
+      "id": "simple-gui-trigger-forward",
+      "operation": "triggers-to-galaxy",
+      "documentKind": "library",
+      "tags": ["gui-trigger", "triggers-to-galaxy"],
+      "inputs": [
+        { "role": "trigger-data", "path": "corpus/pilot/07-simple-gui-trigger.Triggers" }
+      ],
+      "options": { "libraryId": "TEST" }
+    },
+    {
+      "id": "simple-gui-trigger-roundtrip-metamorphic",
+      "operation": "galaxy-triggers-roundtrip",
+      "documentKind": "library",
+      "tags": ["gui-trigger", "roundtrip", "metamorphic"],
+      "inputs": [
+        { "role": "script", "path": "corpus/pilot/07-simple-gui-trigger.galaxy" },
+        { "role": "header", "path": "corpus/pilot/07-simple-gui-trigger_h.galaxy" }
+      ],
+      "options": { "libraryId": "TEST", "verification": "full" }
+    },
+    {
+      "id": "cross-library-call",
+      "documentKind": "library",
+      "tags": ["dependencies", "cross-library-call"],
+      "inputs": [
+        { "role": "script", "path": "corpus/pilot/08-cross-library-call.galaxy" },
+        { "role": "dependency-trigger-data", "group": "runtime", "path": "corpus/pilot/06-pinned-runtime.Triggers" }
+      ],
+      "options": { "libraryId": "BenchmarkClient", "verification": "full" }
+    }
+  ]
+}

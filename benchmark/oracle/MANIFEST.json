@@ -1,0 +1,1230 @@
+{
+  "archives": [
+    {
+      "path": "C:\\Users\\Vladimir\\Downloads\\benchmark-build.zip",
+      "sha256": "c80cd6a3a75d5fba9c619dc22e3240a4ea893850fc98b4d282fe8b6cc3069e20"
+    },
+    {
+      "path": "C:\\Users\\Vladimir\\Downloads\\benchmark.real-mod-fix-check.zip",
+      "sha256": "150f6c6943bc23d2d61d2f765bc357211beafb48bc6f8c3045088b578d32add0"
+    }
+  ],
+  "files": [
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/banks/shared/core/bank-list.js",
+      "sha256": "c4d20808594ec7eeb721c7fbe51cf677e0edcaf8e460a7646e5ae8c66f7bb2fc"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/banks/shared/core/types.js",
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/codecs/sc2data/src/entity-cards.js",
+      "sha256": "304af195bc44e3803f0181f1807877b2e6fd3472b5018c2c9e9dd2b678c36c36"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/codecs/sc2data/src/entity-facts.js",
+      "sha256": "84122c922a4d991776145a3bac518904afff17659f2af2ba5a0c82549dbdbef7"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/services/calculations/index.js",
+      "sha256": "2ba60be77631db10ccbdedb2200c7e2df3a74f476b222aec89d35c4c82e3a71a"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/services/calculations/unit-semantics.js",
+      "sha256": "bef5d34017cb08e8611b3df31d36e33e583ad3dd3f07a613e66116420be8b786"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/services/calculations/unit-weapon-dps.js",
+      "sha256": "3d4a962e938129d013d25c12604e4d9e43354d794eed45bf218f5da87d929ece"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/services/catalog/provider.js",
+      "sha256": "67d2a5d78ef1764a4703992b41213ba0bc5fe631f17648cbf9dd61082227e02d"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/services/catalog/resolved-data-normalization.js",
+      "sha256": "4e138f1d5424f62cc96ea7bc18164529c220bf0aa3d823fa4faaeadc4d0739e0"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/services/editing/edit-target.js",
+      "sha256": "f2b0068f70047fce316582f2904e851520e4b33b23970bfd02a47c925dff89e3"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/services/editing/graph-isolation.js",
+      "sha256": "d51e8f8a2b35785dc18cd7eaa5733dc711282cfc80d463d1ae6e728f672eb2d9"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/services/editing/resolved-entity-xml.js",
+      "sha256": "d1843f742bfaa14a1b2c4acf05db659b075c0750279f106ce4f05be1f7cf3e6d"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/services/projections/data-sources.js",
+      "sha256": "939f1665dce5b3ba9bab3bc9244d123daa9cec3d4026aa08402d73258222069c"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/services/projections/semantic-card-profiles.js",
+      "sha256": "ad4406caf55220e320c22944f6e9d17dc11cd8f1700299860a9a712144b651e5"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/services/schema/catalog-registry.js",
+      "sha256": "2e112c2503e8cebb8bdaf22930834cb01661aa61784b0d5fdbda707681cb6fb0"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/services/schema/data-schema-identity.js",
+      "sha256": "8c069db749563e59d66eece6900c430c37a77935978ce4531e023e63e904d69f"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/gamedata-order.js",
+      "sha256": "e562b669a4c69ce17db340f1c90fbb5a983efcfd900189364ccf11558901a864"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-catalog/catalog.js",
+      "sha256": "f68cd1bbaddb98f84603fef0af24f12238786b0da3606db7e372080500a31f54"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-catalog/index.js",
+      "sha256": "c8f250700a8d2c1f32e6e7fd6864a39d97ced8aa91a2092a5e72bcc41a0e0f1c"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-catalog/inheritance.js",
+      "sha256": "41a1ac9dc4f6a488e707fe131559b693f357ab5b21a17ec32f7fd6038f1b41ce"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-catalog/merge.js",
+      "sha256": "30dadeb19661a8d89383de4f274a51d2da7624724c1a273db7b5e9ebcf454e0e"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-catalog/namespace.js",
+      "sha256": "c22c96f51d9214493c40a16062f99f40265af7806bffe04550d02ec25330d4fe"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-catalog/resolve-typed.js",
+      "sha256": "5edbed17ee3f58f0cc32c1d2fdb1379d1423f821be007aad2e2f8309a19c28b2"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-catalog/schema-fields.js",
+      "sha256": "4b850eface8bb08f34c704f0c168555398430d111d789fd45237ca78fa2d0a4c"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-catalog/tokens.js",
+      "sha256": "95809dd6351c4a22895c55d841ce99156e5c895df071b690ee8a31522e0ec721"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-catalog/types.js",
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-editor-core/editor-categories-runtime.js",
+      "sha256": "85b649ccb5b4fe28122cb43e745a647128c12b8fbc2acc39eb63a60ff2d44f76"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-editor-core/editor-categories.js",
+      "sha256": "c0bad36aae343ab1945a553e9c2a4fe821bc291157087d8ea69ac5337d7c68e2"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-editor-core/index.js",
+      "sha256": "19f6534f858c31b1ecc09847519984836a4ad467d76fc7a2817557ec4e3f0070"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-editor-core/strings.js",
+      "sha256": "d3d7700328ebb9a352a8442b7066acfb1398820704738216b1b502f12df517c8"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/builtin.js",
+      "sha256": "5369e0b91d4f2d3f05f59bbe055b238401717fa7ff2ba423142d06e689d2f36f"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/index.js",
+      "sha256": "3051cbd2025aaa619f73bd27de5c3e2a14f7f86c81e50fa51843756665081e90"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/link-registry.js",
+      "sha256": "5f55a4f1893dc6ec07d76e57a0aab1824fe56d5bec0ec2a16c683311278f3273"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/namespaces.js",
+      "sha256": "e14921f5f3c4a9480ede969e53d0ad4d1cf58534e8449b59af3d6b50d84b74f1"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/structure-types/index.js",
+      "sha256": "c4a2cd2b37cfbc2d7725c10699bfab1a4c1500092e9fcb17d4ca6485040d1e7c"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/structure-types/schema.classes.js",
+      "sha256": "eb64bd524aa476747a313d47a0299930285daa8c8c9990a8dc05f1d5f0bbbb20"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/structure-types/schema.complex.js",
+      "sha256": "5633401f6a35852ef2a14894627aa1d2eebae36940415b98baa11a6364f1fc56"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/structure-types/schema.core.js",
+      "sha256": "f6e576f6f47ef8feea5a93735a852cd21b3aa4b17bf757d40e2e861799ec2ac0"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/structure-types/schema.enums.js",
+      "sha256": "99bf391792d6ffb78efd134233f1969dadcee6fcda4433d63130166e53f97ec7"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/structure-types/schema.flags.js",
+      "sha256": "be3a0264058ddc902027ca43c29f24d9052358a6cbd75df37dd9bda0e4357d40"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/structure-types/schema.init.js",
+      "sha256": "a3f9d9b8b5565df1568de1077fdcc38fd2144ad41cb44ba5f3c69a2167fea1cd"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/structure-types/schema.links.js",
+      "sha256": "a066b053e117761de517d13fc50471958c810a5e3a87317f865a8a069dca2415"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/structure-types/schema.primitives.js",
+      "sha256": "081644039bd01ac876a8936537ef6d76075a2c8f0843ec01163e22a6a2e13882"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/structure-types/schema.struct.js",
+      "sha256": "e2220922e15717bf68602a4c8b1c59ff8d7a7e07ae8f15f0affaf79cb64319ab"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/structure-types/schema.types.js",
+      "sha256": "316f935a22668c9662e513ee63dae54a344a8dea01708f9e0240727c4e0e828f"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/structure-types/util.js",
+      "sha256": "82c268f8dd4a49cce287762ce43914bbb5a1d20acd4ff83aed70b089dfbd06cb"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/token-types.js",
+      "sha256": "155ac8151af2b22511d52a2998ffd0aec8c6a45d1a4c725d289578619e3c2a01"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/sc2-schema/types.js",
+      "sha256": "305e4cf455f3423d2a29b3d5437a7490560a4519f723fff3f33296271c8d83c5"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/xml/index.js",
+      "sha256": "1a32f2a781be05e1371fef86c34cdc1900f4eae84ffc664b675b783889a3a790"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/xml/parser.js",
+      "sha256": "fedba823f39488f6867467626d63e5818984008295f9603ce12ba7395492b578"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/catalog-engine/xml/types.js",
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/format/entity-xml.js",
+      "sha256": "7a163768ee71c2de45f4b894d482d782bf8e0b790066be9f7f188edde77fe450"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/format/export.js",
+      "sha256": "18423d69a2a9a5aef72fc99ca159fad74eb264c0d470518bdee48df6087ddc1b"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/format/identity.js",
+      "sha256": "ba0759de5563950edd3a8cefbc4920723ab4e88b011501d0ef2df5723c35efb0"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/format/language/xml-scan.js",
+      "sha256": "c70447af20b9faff73aad49383e44a4b3e3df565e14db9dd98872a4214a18611"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/format/producers.js",
+      "sha256": "fb23c91d95c6c08fe20ebc778f92d964b7e07c1134ebb879a189b9ef058871cb"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/format/relations.js",
+      "sha256": "8fd724b7aa7a4be55a8ab7f8763219181e9dff2f89d31bd041a86af9d9ddacce"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/format/structure-defaults.js",
+      "sha256": "9f9e6e84abbb75beffd025a035c87dbca0379bd3256b68ede7c8559a33adfeff"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/format/token-decls.js",
+      "sha256": "2aeda983d1a377cb8c8266109fda8657543ea9220f75f3bf88b49863a4a97843"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/format/wiki/cards.js",
+      "sha256": "eb4ff6056440bba635be55174e061ea8bc5e022cefd8918bafde15fa431be46f"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/format/wiki/coerce.js",
+      "sha256": "5bdedda5f1a508f14cd3a9bbae841121a789041a08dec05eb4017602e6ba16a6"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/format/wiki/source.js",
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/format/wiki/visuals.js",
+      "sha256": "0b4a8ff338727df24eedead1cb6569dc6318aefdccb19c3c316d39648a49f3cf"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/data/shared/format/wiki/wiki.js",
+      "sha256": "9d4b328599b19349cf5bf9b1966589030d998b7e02774fd9c836be45a2029243"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/galaxy/language-core/binder.js",
+      "sha256": "f015437a7d4da24cc4b6ec5f44ac84b1157a371dd9ba7091eda4860bca16795b"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/galaxy/language-core/checker.js",
+      "sha256": "3b6c69a8e69a8e3cedad1b945444b7d64838409219bfc53da8ea38e86a5f7c21"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/galaxy/language-core/index.js",
+      "sha256": "478db675030bf784f036d4ad2577b4f9ef646e621a7f238c53294fe0f3c1e0a8"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/galaxy/language-core/parser.js",
+      "sha256": "20853adc10e6cbf4878a9791421d6816c09c8bd8ce841136b650b8122a2c313d"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/galaxy/language-core/printer.js",
+      "sha256": "cf8fc7eae2c9439f5740969511471c8fc17db1edc4cfb127dfe572635ef963b9"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/galaxy/language-core/scanner.js",
+      "sha256": "92870e12f5242c1d7454c17143113063795cc859053b4e8f0a9641610be7d901"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/galaxy/language-core/types.js",
+      "sha256": "9b6ddcaa79371ea97b91aed6b3d245e90df994bb15a05559d371d31966ba5a3b"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/galaxy/language-core/utils.js",
+      "sha256": "f6d71407fb711e77d6e71b10209891d22e7d4b63c94e041e61585fa54bda603a"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/layout/shared/layout-engine/sc2-layout-core/simple-parse/index.js",
+      "sha256": "af11952dcad6fb5f9cc62d38ce890af6ff3d4d0e959e5da02e796c40fe97b6a3"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/layout/shared/layout-engine/sc2-layout-core/simple-parse/parse.js",
+      "sha256": "9d585541b49dec2ccdb57bab79d8d677dbdadc730eb53655290d643002378ced"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/layout/shared/layout-engine/sc2-layout-core/simple-parse/types.js",
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/codecs/directory/src/codec.js",
+      "sha256": "470374b611fa21fd684113e76ba11459b0236011b0b21a56b1813e2ac511c3fb"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/codecs/document-metadata/codec.js",
+      "sha256": "301d7aedbd5280b572cdb7eaa940e40718b0b9d10021999e94f6c84eddf3e303"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/codecs/document-metadata/core/component-list.js",
+      "sha256": "9680e702d04713f25470424babb451a7f1127b1b054ebf21dc2893778bc8350c"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/codecs/document-metadata/core/document-header.js",
+      "sha256": "912ced1c56e79404df7cba25282ad1ada177ec36afc524161634dfc3fd1d5be2"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/codecs/document-metadata/core/document-info.js",
+      "sha256": "628e44402282c810ed55cf0e441818b15099aade86a654be7e5d4852e842b2b7"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/codecs/document-metadata/core/index.js",
+      "sha256": "59180991a4c647ca43f12292cd9bd243111f5ea7a616d5d11eacc57587847e36"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/codecs/document-metadata/core/types.js",
+      "sha256": "2cf8a462331be027aa209763f2ecb26a3db4f9fb98f9152204f09461b2a3b633"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/codecs/document-metadata/core/version-file.js",
+      "sha256": "8499b3af15e9566534b5cef317966b85b2995240ac9dbe04cccbbc1a75d7305e"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/codecs/document-metadata/dependencies.js",
+      "sha256": "e8cbe8e2e06ad2c05f924c65e96465ac444d3fbfcfc5c14fec47019c7c22f054"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/codecs/document-metadata/facts.js",
+      "sha256": "c905a6ae3fc2d32d1a49aa60bc4a02c07393bcee3c78ef01d8ee9438eac87fd0"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/codecs/mod/src/codec.js",
+      "sha256": "a852f21e003fea78052ac206aa4fbcb106784058ddbf268b38b0b0c5fa9152b3"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/codecs/mod/src/mod-card.js",
+      "sha256": "7d951a37ae10aa3db7ae61b321fcd30975eed034f3c6dd2681cb7564b2eb1841"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/codecs/mod/src/portable-json-export.js",
+      "sha256": "2b3d2fa47ce8c1342873fe285192f55d14e6f08e3aef7472e84068bc379c6a2c"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/codecs/mod/src/sc2-components-export.js",
+      "sha256": "823fc9825a4d8f98b366a9025da7c207285ab6aabd19a9e45ec8264de88f7f2e"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/shared/core/document-routes.js",
+      "sha256": "ed4101e9838d5c00f1c9432124e5419ecdc15b1a0bb0377d6a1f3ff3d412ae79"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/shared/core/entities.js",
+      "sha256": "7d3112a7fca6122d101342361d593ded8e2717faefec9da146646b089850cd3c"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/shared/core/index.js",
+      "sha256": "adb12a4492ce9f0f1eae0b430da18e824060e54373d515eeb1c2e3845b73f853"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/shared/core/mod.js",
+      "sha256": "602391668cc84cf03ddf9af1c859267fd901c6b94f4ef38d889d6462e3ddcf48"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/shared/core/reader.js",
+      "sha256": "8fd35c9238d26ed8c3eff0a029e2dbfd01f66e1c4955a9b63083543ff7b194bf"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/shared/core/types.js",
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/shared/workspace/content-source-provider.js",
+      "sha256": "d677627ba907a3c3ec117d3be22ab622b60590da158a5006efc2394f03befea8"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/shared/workspace/context-catalog.js",
+      "sha256": "cfa83752852370ec3b12ec04062d1a8ce79635645084d0ae258b7a48901efca7"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/shared/workspace/mod-context.js",
+      "sha256": "4f18a49d4ad6cba7ac6f5798279d32abcc5384aa4ca1bad0fb2a206f629f040d"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/shared/workspace/mod-contexts.js",
+      "sha256": "b0899a3ed3c8f7e1287ae262cd4ea29481f6a88f29ba8042daee1794b23b5e5c"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/shared/workspace/resolver.js",
+      "sha256": "d0087489f6487def1d3931188862218d1b378b04e0b978ce71263d0e4ea0ffd7"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/mod/shared/workspace/vfs.js",
+      "sha256": "69183104acddfec1bcc91470b60a2760b92573e345b930e67616875b1b0ddb89"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/strings/shared/core/markup.js",
+      "sha256": "59ca33d4fd14c5066bbda248c4b2ba318b12de5a105708df9d393a999d96f1f6"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/strings/shared/core/render-html.js",
+      "sha256": "1740336a76df73e6fc3fec3f3adfb935fb13f25d801ca72ccee606741cfba39f"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/strings/shared/core/resolve.js",
+      "sha256": "46bbf39d592a5695907786f9718dde37c2089f71cabf6703438b6b64b17be74f"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/strings/shared/core/text-file.js",
+      "sha256": "31dee9d791fda29004eab7ab21d0d897ffe1819b475106ae7a228078d48dbda9"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/style/shared/font-styles.js",
+      "sha256": "22a799a93dcf5e5723e698b0d8d6565b1c97fa56646e401d83b04afad3abeb84"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/codecs/triggers/src/codec.js",
+      "sha256": "96374466905a1ec312c7425f3eda26bb293b8b2179efdf1ccd1245fd350ef2a5"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/editing/rename.js",
+      "sha256": "48c4b4aeaae9e0067d75a0aebaebd453cb87dab5e0f336f2cd4a0c73f8793334"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/editing/tree-edit.js",
+      "sha256": "2adad86de15f7bb734a384d5de40490581af9c8ab9a8a5192a5bad99c2df9c16"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/converter-entry.js",
+      "sha256": "0334aeab9287d175d8ade7582074e1d8e00b9d9183ecf0cafad56c6e1982a8ef"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/index.js",
+      "sha256": "5644203326c1129d10ce09c5a9d2f3e236d6d94c1bf5f295c04c8a013fec08e5"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/ast-factory.js",
+      "sha256": "1b93509f6596de242024ba55548e107fc0a8ecc8b7588e0ded2faf345703b0b3"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/conversion-model.js",
+      "sha256": "ff08012ec5960185186a0a96fccf981f0329837a32ab7be875a525b3e996469a"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/dependency-functions.js",
+      "sha256": "305990577dd62639c77598acf9234dc09cfbb47269ca11660d99b4374b477fb4"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/editor-layout.js",
+      "sha256": "22f0527ce1792602d91499e6479fd8bd7445db7e32357497ba26a5507df49152"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/g2t-actions.js",
+      "sha256": "a836fe219b0cd229acf4d5df1ba931804326363fa86862ca482466e0426c20c2"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/g2t-call.js",
+      "sha256": "e8312cccf147abfb3ce0ccca06412f0855b1c5fa5a7b3dffd183e082d2c76b8b"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/g2t-core.js",
+      "sha256": "1ccb23383e68c38bf4be13ede0c586c4b08bb32dac9a89529bf430af2be04ea4"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/g2t-initialization.js",
+      "sha256": "c28cdd1eb70a00af2b18cb598e36ada63f9283ae73a4d299c1cb505dcae851a9"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/g2t-params.js",
+      "sha256": "483206ddff8367ad890c7d2778edc735006b427faadd24fec1c2a63ff805dfc9"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/g2t-payload.js",
+      "sha256": "c8d3e5e87c9f8868b1fc4b4c3c37df45ef67cbf271a07c9f4957627f448b0928"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/g2t-prune.js",
+      "sha256": "6a99ce767e752c44eb0fd3753cd552a38e83caaa7f812222d25af002a4bd988b"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/g2t-structured.js",
+      "sha256": "95817da7be097943302497e294d34b11188d8dbeafd100ba45bc0fab07ac9907"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/g2t-trigger-body.js",
+      "sha256": "9a12953b44561428764f2b941674054bc25eecadcea432fc7981b44d7f7acb53"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/galaxy-comparison.js",
+      "sha256": "70c9d6fa5d237042f4efdc27410341b15f86a7449bfbdc97666ecff1a4cabe12"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/galaxy-constants.js",
+      "sha256": "73468a81322dd27508d56e7abf7b5aa5216834aeb1a328c8c0d1cd888e270eed"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/galaxy-to-trigger.js",
+      "sha256": "c7f591521f9751bebf4c208bf94f302410e2da8dad30c13c53744283dccf852c"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/galaxy-type-resolution.js",
+      "sha256": "c71a6426e154093c389bca94c0b078fe99c1389c3448870d7771bb5b7a2db278"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/script-template.js",
+      "sha256": "96167bcc8fd86c7d05f6081aabf26d6d20df53664d403c1537521aeca4a3c4c3"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/trigger-to-galaxy.js",
+      "sha256": "186294f5c8b8920f8c4d020e2946a119db3691dd6a27ea415a10f6d87130b980"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/ttg-actions.js",
+      "sha256": "7155ee5b8c345f38d1eb68af6ed7f91dad10e5cbffaee71924c3a60cce489be4"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/ttg-convert.js",
+      "sha256": "c4dfd9e9cebe4a1dbd538b7143c997c22d9ed7e118c47ef7d6fd770d2af30d80"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/ttg-core.js",
+      "sha256": "38c88de79c396bee539d5e2f483ffd9422db54fe5c28f829e1d46aea27728b9d"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/ttg-params.js",
+      "sha256": "f96d1dd58c7a3a65467946a0aadb2661e1934c0ce2997418a77acdbc3e8a470f"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/internal/ttg-template.js",
+      "sha256": "a81cdc8db4fa95680bab307a240a8c76bd2fc8ec849fd6e40ea75f7911a63c8a"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/service.js",
+      "sha256": "4f2dc2c1a98dc9ca97bf9655cf40cd53cf5e52da765aea8135a96a6be133cf4b"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/validation.js",
+      "sha256": "5ae42efbfd0012689129682e727f0ec1eeee3f199b61a6e9cf49dab7567f4449"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/source-detection.js",
+      "sha256": "e8cbb4ae0e62d991ff2bd65c14badeebb048f1b15d31892fb8c3388aaadcaa65"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/workspace/mod-libraries.js",
+      "sha256": "9f3ee49a1051a1331a07bcda3f98868c202e6fca17e02bc932ccd4ca9bcbdf23"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/shared/trigger-document/function-flags.js",
+      "sha256": "2c090c4a12f392a42487960980cae01362297ba2a1ed53ba255fa2cbce98ed58"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/shared/trigger-document/index.js",
+      "sha256": "d1dbced645e3b5db17803bd37c1d7749af8cdbdd20b5bb4a4a6f6c4130a49421"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/shared/trigger-document/payload-sentinels.js",
+      "sha256": "3a8288433cb99fc71be72aa4d534440348bc2cad08d41efe5784e1d7377f0bdb"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/shared/trigger-document/reader.js",
+      "sha256": "d8a654df055188f5ad8ee5713fc9cd5bae07a12eead8aaf4b5896f32196936f1"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/shared/trigger-document/sax-reader.js",
+      "sha256": "07e849f4d9202a9890ce2699d5064eaa377a979e4fb8cbe2bc43bfe084cc3aa8"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/shared/trigger-document/source-index.js",
+      "sha256": "f2e524b03dcb66fb98bc4b9a94d7530cf5ec85a7d42028adfbc053246c892c8c"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/shared/trigger-document/structure-validate.js",
+      "sha256": "68d6053bd971fc88e55fcc6dc346997ff02065859e0bbce4286b881a88befb01"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/shared/trigger-document/to-engine-types.js",
+      "sha256": "01104f83fb3720a2614f9238efa7f145d41f1d8fd12a95068faf78df6a22a83b"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/shared/trigger-document/to-engine.js",
+      "sha256": "98a9ea2ef40158aec4ecd6726a66dcb93b5d200d7f5a812adcae7f7b9bae82f1"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/shared/trigger-document/trigger-store.js",
+      "sha256": "681df2b243c73cd7c0903d7d508b32fa0cb1a6781a2b87edae50d272d0b249db"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/shared/trigger-document/trigger-strings.js",
+      "sha256": "55ee84a05195f6495cd89e03e55afd4d78d1cd1fa63372dacc7d67d9bd347db8"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/shared/trigger-document/trigger-xml.js",
+      "sha256": "10a4299a72edb1312c22892234504ceea87a63dfe17da63e1e71bab4d160e400"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/shared/trigger-document/types.js",
+      "sha256": "6dabb839e27a960c9732d322b4ab00eb860a96a49f67ba3cdc9135aff9d49f8a"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/modules/triggers/shared/xml-document.js",
+      "sha256": "f40574b3840a5d5d39d4b6919bf46002bd7ade86b350b73163f912a51f537b85"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/shared/editing/rename-transaction.js",
+      "sha256": "672e01c4d63daa411e49b1d1aae25c2f9a6988370e351921af2358b6c4baccbc"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/shared/inspection/structured-text.js",
+      "sha256": "742af211981bb600011b5acd629417a71a1a47c979f7ca1f9a971d2077e4138f"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/shared/package-namespace/runtime.js",
+      "sha256": "01d2757b945e6358efa70806f0eeba226eee330bfe74a367ad009f1485573148"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/shared/scripts/identity.js",
+      "sha256": "9c1f30f4da5b02068eeaef9bf9b5fd1587362a17f858c581e98de0e6e34760f5"
+    },
+    {
+      "path": "build/.benchmark-build/modkit-sc2-triggers/shared/xml/text-position.js",
+      "sha256": "b1c3b4eabd71e7cddac38a6e761501327fa050496f19a9c2e9e3dc2fd69aca83"
+    },
+    {
+      "path": "harness/benchmark.real-mod-fix-check.json",
+      "sha256": "937afa31699238bf2611f5952677da4c7cf764fa284b2e24dbb98bb03cfb9b1f"
+    },
+    {
+      "path": "harness/benchmark.real-mod-pilot.json",
+      "sha256": "5723f9f05ceda6096767eea92134ddce4bd062880199c40fa11699dc9e23e0d7"
+    },
+    {
+      "path": "harness/benchmark.vovan-two-maps.json",
+      "sha256": "9f95eb87a2f0cdad8d877b3afcff8a0932c83c1d80750b98dee9b38407e678a2"
+    },
+    {
+      "path": "harness/package.json",
+      "sha256": "5642d63b4a12c16f18bee1cfb76a14e00826bb133adca5fc9f3c8c1145643c66"
+    },
+    {
+      "path": "harness/README.md",
+      "sha256": "63c172f465bd170146a25c78d68497a202734db2c82a9e843d9944bf64377e3f"
+    },
+    {
+      "path": "harness/RESULTS-2026-09-26.md",
+      "sha256": "fbec83ef7281d4e4a7958280518fc8e651e8b7fb23209d02276f413d650198f5"
+    },
+    {
+      "path": "harness/run-final.ps1",
+      "sha256": "a8f648a98711764d609c45e13da5d5ccc42255564757df2d8b8a8f541f8d9022"
+    },
+    {
+      "path": "harness/run-ice-baneling-4col.ps1",
+      "sha256": "26c935bd5f782069420c1aa080cc5fc992d9ce8ca7f6b70a634977b2d4c36562"
+    },
+    {
+      "path": "harness/adapters/ksp.mjs",
+      "sha256": "6eedbe78fb04b482fbd8894fe19490e6c421cc129a3f1ab5b8b9823d4d2827be"
+    },
+    {
+      "path": "harness/adapters/modkit.mjs",
+      "sha256": "db1855170f32ec1ccac93b698af1f31b51a7dc71b5ff2de7d5300bf4fd35ff4b"
+    },
+    {
+      "path": "harness/corpus/package-census.json",
+      "sha256": "7fd8a92b63b43e3ad406c9d3b79e79d975032e062ffb16e61580090325ce0a64"
+    },
+    {
+      "path": "harness/corpus/pilot/01-minimal-map.galaxy",
+      "sha256": "af3aec86a013992ae6af71a8e418d5c6b9c1c9f962f44b0353b469599d0ad2bc"
+    },
+    {
+      "path": "harness/corpus/pilot/02-functions-map.galaxy",
+      "sha256": "64b8b32b6cd055760e2258dbdf67c40919a2ce157bac8d9c5a7101d34454c925"
+    },
+    {
+      "path": "harness/corpus/pilot/03-control-flow-map.galaxy",
+      "sha256": "51e23b871f7f9614a3181eca504d8b30ddcb1a41b24591210a094dd4a13adfc2"
+    },
+    {
+      "path": "harness/corpus/pilot/04-structure-library.galaxy",
+      "sha256": "2a69bd0d6d19fede2451f0273bf44ce3b50b1c6d504a46c27cb8031e1595a3d1"
+    },
+    {
+      "path": "harness/corpus/pilot/04-structure-library_h.galaxy",
+      "sha256": "724b9ee88f0a14aa40ee55002c2b099440728f8ee94bdddc9954855de5eff20a"
+    },
+    {
+      "path": "harness/corpus/pilot/05-initialization-library.galaxy",
+      "sha256": "17ecfecb165ea8ee96767774725f192a2759ac089cfda68519cf155f0f805a88"
+    },
+    {
+      "path": "harness/corpus/pilot/06-pinned-runtime.galaxy",
+      "sha256": "b6b37e694d7555750e516d06f077d796c6daf3397a20203043d4b1a2f78b42e4"
+    },
+    {
+      "path": "harness/corpus/pilot/06-pinned-runtime.Triggers",
+      "sha256": "3e2e07812b300828addc746e9346f8ce9a4f90e7789cba0f9dfd3cfd0b76c3fa"
+    },
+    {
+      "path": "harness/corpus/pilot/06-pinned-runtime_h.galaxy",
+      "sha256": "81ec5bf68d1eac0a50d42200f7f7c522d7540852e9d2aa9c2ac709f8ef40b26c"
+    },
+    {
+      "path": "harness/corpus/pilot/07-simple-gui-trigger.galaxy",
+      "sha256": "1a6d973f3ef68ae9d6bd58dc619de058f5f4c18860a8c3d482c9289d5c7e90c6"
+    },
+    {
+      "path": "harness/corpus/pilot/07-simple-gui-trigger.Triggers",
+      "sha256": "498d0e75363488bf041a1cbfb98ad5d422638d02f25609f3d18dc546377ac78f"
+    },
+    {
+      "path": "harness/corpus/pilot/07-simple-gui-trigger_h.galaxy",
+      "sha256": "974beb47de5ea7d84879786fceb01b0f4fd25e358303c6197adb629e204020e3"
+    },
+    {
+      "path": "harness/corpus/pilot/08-cross-library-call.galaxy",
+      "sha256": "181bb11d0c29a6fa1254a71457168e3b7f67591e871b94eb9810f355c7261dbc"
+    },
+    {
+      "path": "harness/fixtures/fake-modkit-conversion.mjs",
+      "sha256": "519ffb2c709799686014effafcc907b59331e33577d3e866a23388251ccb2b96"
+    },
+    {
+      "path": "harness/fixtures/JavaCandidateFixture.java",
+      "sha256": "0492bb00f929a10fbaffed723db7698172f497a654468e104d0c1d00b4648116"
+    },
+    {
+      "path": "harness/fixtures/minimal.galaxy",
+      "sha256": "af3aec86a013992ae6af71a8e418d5c6b9c1c9f962f44b0353b469599d0ad2bc"
+    },
+    {
+      "path": "harness/fixtures/mock-converter.mjs",
+      "sha256": "137c55ae83052d56e9f63a51d8a9992f66ae2242c18ed02e8530ebcfa6248fa8"
+    },
+    {
+      "path": "harness/fixtures/throwing-oracle.mjs",
+      "sha256": "a93e3089da66ab022105efe6a7ec54032c52cedf27f85cbc3f1493345e13a2fa"
+    },
+    {
+      "path": "harness/src/assemble-playable-map.mjs",
+      "sha256": "26dc2f67157cac137da44d6091a99bc211244ab009712409016ebb00e262e0bc"
+    },
+    {
+      "path": "harness/src/ast-metrics.mjs",
+      "sha256": "0eeb31ac6c4533ef0dd2c6186c65fafa611222811a2777e7f6c7498b60674000"
+    },
+    {
+      "path": "harness/src/benchmark.mjs",
+      "sha256": "3d778f221e0d07f40e88070662ff5b2acf6079711804df1d84d13bb316bb8c80"
+    },
+    {
+      "path": "harness/src/candidate-manifest.mjs",
+      "sha256": "83528b4bc126174bb93058b79874ea62f1d13bd5b29cd9a6da817faf5ba1a7e8"
+    },
+    {
+      "path": "harness/src/census.mjs",
+      "sha256": "4cd70cf7a3a757bef89411d7295a97cc37209a99d70036ebfc70765caac0d247"
+    },
+    {
+      "path": "harness/src/compare-runs.mjs",
+      "sha256": "94789de1eafb3915045e201f7bd5884f86bc2f0b9ba134695da1c346a631bd9c"
+    },
+    {
+      "path": "harness/src/compare.html",
+      "sha256": "4f94b2ce916a3bd6320e62d67b0167b7a993fe99d38068ace3714ef2def05efa"
+    },
+    {
+      "path": "harness/src/conversion-oracle.mjs",
+      "sha256": "4bb0d9a7558e3b902ede32e69ba3945c7a73b77443d1d7f3e9b61edcaaf81db1"
+    },
+    {
+      "path": "harness/src/converter-comparison.mjs",
+      "sha256": "5cf2e360469f351d0422c5ec5203eb68f92e173902412774f4803804cdd354d1"
+    },
+    {
+      "path": "harness/src/enrich-corpus.mjs",
+      "sha256": "354e0667a1be0fbeffd8694d6487d1cda9ad2c39ab44a5dce319a9c713091904"
+    },
+    {
+      "path": "harness/src/error-report.mjs",
+      "sha256": "ef2fb8e8839b9b410008dfbd4a820ba351fb09b616f573c90dd52d509b9e8a3e"
+    },
+    {
+      "path": "harness/src/exclude-cases.mjs",
+      "sha256": "4c078fe31d5a979b35dcc7fe960ad92018642483ee16136bc940f744bfbba022"
+    },
+    {
+      "path": "harness/src/excluded-dependents.mjs",
+      "sha256": "6f62b74f9fde81278402b80f43554f2b2965f55513d3a232a65c3bf9f66f615c"
+    },
+    {
+      "path": "harness/src/gui-signature.mjs",
+      "sha256": "f2c897041a94c29199b1c89bcb0a5f3db59fad2c83df0798d748e58a14d94038"
+    },
+    {
+      "path": "harness/src/ksp-profile.mjs",
+      "sha256": "7deb639308d3a2f25f04f1c9c3d57ae06f6ba740aee0f579db5011b5dcdbcf9a"
+    },
+    {
+      "path": "harness/src/memory-monitor.ps1",
+      "sha256": "507e520ce93bd33f9181e67bcdd491c3d6f5efa61dd29e0631b52020f4d60299"
+    },
+    {
+      "path": "harness/src/oracle.mjs",
+      "sha256": "a5657c51264baed5e4b340ef0f133ccab57c98982ca454cd71d06ae3ff48c248"
+    },
+    {
+      "path": "harness/src/package-manifest.mjs",
+      "sha256": "ddff46f605059dbff1e7b54ea99e92992e2597874073299280badf1acc072e2e"
+    },
+    {
+      "path": "harness/src/report.mjs",
+      "sha256": "865bc628b6284d4f4984a05d6a09cf1291c25084d7a42c26650ed59e6d9a2688"
+    },
+    {
+      "path": "harness/src/rerender-report.mjs",
+      "sha256": "917c7888be3ab01240c14fafdc68a8975c0d4c00bc8a401a65898fed1f6aeee8"
+    },
+    {
+      "path": "harness/src/run-regression.mjs",
+      "sha256": "ab09877c24718397a0b134e55eb8de876c287c5ca2f65c91a88f852f92976286"
+    },
+    {
+      "path": "harness/src/run-stats.mjs",
+      "sha256": "f244f2cc592f2aeaff83859bc6cc9d059912e767b2d9bacda18f98140c9c95d3"
+    },
+    {
+      "path": "harness/src/t2g-crosscheck.mjs",
+      "sha256": "8ab1d8a102859947ae88e771fe28ad5562862994f794bfb67b4f76f2c725d5d9"
+    },
+    {
+      "path": "harness/test/auto-unit-name-map.test.mjs",
+      "sha256": "2dee82ec3d240a5e428697fdbd950d9bae2d73404e7b7fda4e566900767e3cbe"
+    },
+    {
+      "path": "harness/test/benchmark.test.mjs",
+      "sha256": "98b5b82c68fc6d9128c054ef8f22ac34e45d779f9062a12307c77ccfd86a94b1"
+    },
+    {
+      "path": "harness/.gitignore",
+      "sha256": "aadf1df0047e1e0e54621f61804eaeb12e5762102173c4f7a1627babb41ec127"
+    },
+    {
+      "path": "harness/benchmark.allracestester.json",
+      "sha256": "8db6b1325cb6b2f469c999f0ffe5416d5a348d11aabfdee873470bee51b9fae0"
+    },
+    {
+      "path": "harness/benchmark.auto-unit-name-map.json",
+      "sha256": "6bcac523214fdabae71a025acbc063e112e0db437d41f2f06dad526d5215f0df"
+    },
+    {
+      "path": "harness/benchmark.auto-unit-name-map.wt.json",
+      "sha256": "3249f4145f8ce94d87b6392d3e3091c575d7b3c57e83714d11f8897798343340"
+    },
+    {
+      "path": "harness/benchmark.base32-enriched.json",
+      "sha256": "f53af21a1a4df199e4ac1e28e0b3f703febfceb04fd90fddbc26ba8cd25d7019"
+    },
+    {
+      "path": "harness/benchmark.base-main-91754ee6.json",
+      "sha256": "9eaa1e73a35135e3475badc4a2c4f85c9b4c97838811f0dbf772cf8f1e79428f"
+    },
+    {
+      "path": "harness/benchmark.cand-allracestester.json",
+      "sha256": "cb74adb3c1df0696e6419faab80861011a9370dfefb5eccce8d8d4d4a4dc996b"
+    },
+    {
+      "path": "harness/benchmark.cand-autoname-fix.json",
+      "sha256": "e6c566b878380829badc65bda556c65427da50e85564b543b5bbbe1c5d261599"
+    },
+    {
+      "path": "harness/benchmark.cand-autos-fix.json",
+      "sha256": "9e268e77a1ac47f3c23b56d8b1f11dd619e3be4103aa75affe55d986caab8172"
+    },
+    {
+      "path": "harness/benchmark.cand-base-ruru2-6fb7de7c.json",
+      "sha256": "3c151552cd5cc2b16574414df2d890b3b5f978ef2f48dfe9783fcf278719c4be"
+    },
+    {
+      "path": "harness/benchmark.cand-base-ruru3-6fb7de7c.json",
+      "sha256": "3fb41dbdb187ca0e4670a6608a7428cb0ca6921312457b298610ca2a39251ccd"
+    },
+    {
+      "path": "harness/benchmark.cand-base-ruru-6fb7de7c.json",
+      "sha256": "9227f0bbfe34a629f7373eefa7a428ab1f95107ef2db6cc8d412662b7118aad7"
+    },
+    {
+      "path": "harness/benchmark.cand-cai-a.json",
+      "sha256": "805258916c691bcae7998fb343c63009dbc267adbf1f0ef2b3b306dd03b9fbb0"
+    },
+    {
+      "path": "harness/benchmark.cand-comments4.json",
+      "sha256": "25cd1cbeaedc701365e66e362de85e772fe2c7ae96ae0836b7ae78c023eeca78"
+    },
+    {
+      "path": "harness/benchmark.cand-editortest.json",
+      "sha256": "597e80fa23a05fe7728bde640ea168070710ea3d7e3ea28fff3e77e258cb1ed1"
+    },
+    {
+      "path": "harness/benchmark.cand-embedded.json",
+      "sha256": "1d769b6e249235306d9e954624a63d8a0219203ec025d2bd94c824978d9aaf11"
+    },
+    {
+      "path": "harness/benchmark.cand-event-offset.json",
+      "sha256": "946f6c5a0cfa500d03b3343578275a452e6fa949bdc77fbf9c0ca65ed1df7e2f"
+    },
+    {
+      "path": "harness/benchmark.cand-library-docs.json",
+      "sha256": "cc0d5e6bae15b865b8b19fc45be838986975dd12f62db7f4b7302cedc8a9e978"
+    },
+    {
+      "path": "harness/benchmark.cand-own-libraries.json",
+      "sha256": "f8f25a5372f6c6adab28c380c61dca20c6f4faaa9918b2ccd54c186bf56fa037"
+    },
+    {
+      "path": "harness/benchmark.cand-presets-b.json",
+      "sha256": "b1b12812ca5d892f68a78812b31074caf73537ef2207f1dc5f7e3715117ebdef"
+    },
+    {
+      "path": "harness/benchmark.cand-unitref.json",
+      "sha256": "f5d598c270ac959f9070364d079901c2ade8f4c9f989d7fafa214b559647430e"
+    },
+    {
+      "path": "harness/benchmark.cand-wip8.json",
+      "sha256": "5918cb21dea68f31d3fc3add6e874ff3f7bf7e1363825364166cbade39a65109"
+    },
+    {
+      "path": "harness/benchmark.cand-wip9.json",
+      "sha256": "66c1d65405a436404545a80595e4e835d709ec4d2fe5adb717980012ee0e7b90"
+    },
+    {
+      "path": "harness/benchmark.cand-wip9-mods.json",
+      "sha256": "a30bbaa217fdb770bb1b02186b16ec38c56bf65575a374fcae57ffc5b256e57a"
+    },
+    {
+      "path": "harness/benchmark.cand-wip10.json",
+      "sha256": "ef7cfded94d9e91188f04b595290b054ee9a217fb855ada16db3286b5c1d23e6"
+    },
+    {
+      "path": "harness/benchmark.cand-wip10b.json",
+      "sha256": "d5e42a54f6c5dce0866d6adadc4b2cc487db7ec5333d20d79f284739e067e2f7"
+    },
+    {
+      "path": "harness/benchmark.cand-wip19-a422daed.json",
+      "sha256": "308cf39cd4ed11d4a9c751040f6c1c3576c14622060ab6f55988d25ec2b14e32"
+    },
+    {
+      "path": "harness/benchmark.cand-wip19b-a422daed.json",
+      "sha256": "a5c3e38d561bfaffb626226131fa244de8a20090768189cb1226961d331aa153"
+    },
+    {
+      "path": "harness/benchmark.cand-worst-wip4.json",
+      "sha256": "dde5d0dfc5f2abe7c152be74b079c70cdb224b0e46703ac34a4eaccf96944bf3"
+    },
+    {
+      "path": "harness/benchmark.corpus-8c53b6e6.json",
+      "sha256": "1f4d1ef3ad6d13a40c8b306229357cb087148ddfdac9c79ea3341c5113fe434a"
+    },
+    {
+      "path": "harness/benchmark.corpus32-77c8f162.json",
+      "sha256": "504001efe4560ed49fe3dc8813a7a55621ae188eee7c360048aa896e15849b5c"
+    },
+    {
+      "path": "harness/benchmark.corpus-final-9d68b531.json",
+      "sha256": "c9c1f07f1f80f62f88792ef48da8c43fb5482f853507e7483ae97f391e75893b"
+    },
+    {
+      "path": "harness/benchmark.corpus-final-ac9b00bf.json",
+      "sha256": "94bb76912f164418d8f71d7e9d283efab737ae6087c3a26119091cb0b49ba9bb"
+    },
+    {
+      "path": "harness/benchmark.corpus-wip-3ca1fbd9.json",
+      "sha256": "b417e833e8ccd3d564495ef4d72b825c0e339c05ffb79a7cbf74f0265fead6a1"
+    },
+    {
+      "path": "harness/benchmark.corpus-wip-5a33a045.json",
+      "sha256": "a63ae9a2e16ce25bb5b18587b081fcb8f8c0651252fc52ae79bc1475dd561f53"
+    },
+    {
+      "path": "harness/benchmark.corpus-wip10-16e07365.json",
+      "sha256": "35c7770c95bc4ee094c081a163c5ae8e77ab62559af209656739953395ab2b5d"
+    },
+    {
+      "path": "harness/benchmark.corpus-wip12-6fb7de7c.json",
+      "sha256": "1fa2b2cf0f80c108f7f8c0524db41b0acf7ec6bf052588a5c0221bef909cf386"
+    },
+    {
+      "path": "harness/benchmark.corpus-wip17-2661ba9a.json",
+      "sha256": "5f1155321e88eb7bf52b38591cd66f9ba6880fca2d733bd386f9e47083693c9a"
+    },
+    {
+      "path": "harness/benchmark.corpus-wip18-90e2b6e6.json",
+      "sha256": "992847f7d8ba8fa2ecb4970f81d5f7e7a6d71713f3ca259eee547a139d32cbec"
+    },
+    {
+      "path": "harness/benchmark.corpus-wip-29597f3b.json",
+      "sha256": "d91991e94cc44f27d66aced13f31797ab67ddead9906ea64e8b7fd19b37cb245"
+    },
+    {
+      "path": "harness/benchmark.debug-098.json",
+      "sha256": "d95a0788b9baa58473fee096a4498f95adbdfd847290b50a2c4c941c6683f0db"
+    },
+    {
+      "path": "harness/benchmark.dual-pilot.json",
+      "sha256": "e57b10bc023175ee2e42189863a609dee3e55e22c952a0f94af0141ffc3d9304"
+    },
+    {
+      "path": "harness/benchmark.dual-smoke.json",
+      "sha256": "a53001898d9f1be1c60362a7cc484f710b22493285f9c714ba6933f0f07296ed"
+    },
+    {
+      "path": "harness/benchmark.emb-art-lib1.json",
+      "sha256": "590968cf943dcc645ac5ffb7bc8557f580c86b1514eff5f5241d400a53670339"
+    },
+    {
+      "path": "harness/benchmark.example.json",
+      "sha256": "967b5261bef520fd46d9c987b5a9be3d19c57c93a44dd72a8677fe115a062ddc"
+    },
+    {
+      "path": "harness/benchmark.ice-baneling-4col-ksp-g2t.json",
+      "sha256": "074e36a51a3557dfda2012e7e2c3d9d39068042efbb48105adc0b3ad4a8b4516"
+    },
+    {
+      "path": "harness/benchmark.ice-baneling-4col-modkit-g2t.json",
+      "sha256": "4a6cb3adc147804d157e36c4a9acf2b1b8db10be9389189db1f8819629e8cdcc"
+    },
+    {
+      "path": "harness/benchmark.ice-baneling-4col-t2g-ksp-own.json",
+      "sha256": "d7ca2cc0fa555ac1860c290ca1090270258863158ac23786708d02185e235997"
+    },
+    {
+      "path": "harness/benchmark.ice-baneling-4col-t2g-no-texturemap.json",
+      "sha256": "302f907b1c6bad6c2272f8da0195ab0a682844544088141fa5de875ff60c4272"
+    },
+    {
+      "path": "harness/benchmark.ice-baneling-4col-t2g-texturemap.json",
+      "sha256": "4780f96ed932c6e2ade5c6e37b4955bbd33d4f1528aa92bf8aae7fec35304dd8"
+    },
+    {
+      "path": "harness/benchmark.ice-baneling-g2t.json",
+      "sha256": "6207ebbe32330552bd934c892c3eb8444bc05cd2181e52397f366cd4a09dbcb1"
+    },
+    {
+      "path": "harness/benchmark.ice-baneling-g2t-semantic.json",
+      "sha256": "db37205538b3156580044a4930fec3df82a3e0733d613d627d0302a37517dfa8"
+    },
+    {
+      "path": "harness/benchmark.ice-baneling-g2t-texturemap.json",
+      "sha256": "a19e3478644b40620b76a2dccae3b74786b6c520d39c20a5217b1ebc29f7fd48"
+    },
+    {
+      "path": "harness/benchmark.ice-baneling-startup-fold.json",
+      "sha256": "c961ef2b7fcbb650824c2972cd68a8a3d09e11163b8d175176341a3f189c9f74"
+    },
+    {
+      "path": "harness/benchmark.ice-baneling-string-fix-check.json",
+      "sha256": "454a52418fe9760f78cf0de0b692cf8cbeeff52cafbab7859bfc52da11f4c238"
+    },
+    {
+      "path": "harness/benchmark.ice-baneling-t2g.json",
+      "sha256": "bba1bf9e58857f417cdb614b42a80e03c1d7d178ec641b9809cdf593cd0e798c"
+    },
+    {
+      "path": "harness/benchmark.ice-baneling-texturemap-as-script.json",
+      "sha256": "1a77a3a07481ff8b25c57b9e7d90394ebc4178b89f14fbfde1a30f5b43e13925"
+    },
+    {
+      "path": "harness/benchmark.ice-baneling-tm-include-check.json",
+      "sha256": "974123c0c363d557eedeb5d37f30af0fa70ed5dae0b183e751db438f3544a9b9"
+    },
+    {
+      "path": "harness/benchmark.include-check.json",
+      "sha256": "7625ffef869b8d4db5e8873e39dc5c2554a96e1a144aa45292c567f7a340880f"
+    },
+    {
+      "path": "harness/benchmark.keystone-generated-triggers-roundtrip.json",
+      "sha256": "2ed6c5762cca6d7098b38e92b680633586e7f3aa07b67f94059d61151fa30939"
+    },
+    {
+      "path": "harness/benchmark.ksp-bridges-forward.json",
+      "sha256": "e0e030b9209616561cc42b382e9c88d1a032067a129baefc7844464780f4fee8"
+    },
+    {
+      "path": "harness/benchmark.ksp-bridges-pilot.json",
+      "sha256": "3dfc13bc6ee1ccaa03de145200d333d59f24a3071429f7686d60ebfa9f4b7313"
+    },
+    {
+      "path": "harness/benchmark.loader-smoke.json",
+      "sha256": "0a75ef64ac84fd25bcd0db7406a04a2dd20361d0d74e41dc6d867f0f28c77072"
+    },
+    {
+      "path": "harness/benchmark.locale-nydus.json",
+      "sha256": "bad84b22905fa65089f99cbfd79237f2fd9076e0e37220dbb4e56c76580fbfc3"
+    },
+    {
+      "path": "harness/benchmark.main32-91754ee6.json",
+      "sha256": "f76cba6d97556972dcbd313b75e2a7ae45aa71e57e2cd89e4c7b5da20ae1d18d"
+    },
+    {
+      "path": "harness/benchmark.modkit-pilot.json",
+      "sha256": "04c4ac0b427752b1bccdef3723ea59bf8e0265d0a3adbae0680cb909d1d991de"
+    },
+    {
+      "path": "harness/benchmark.modkit-profile.json",
+      "sha256": "a7b382b8858bce14b4d1cf23721f4e7e8ce6bb255c4fc3e235ca45d6bdf6b5d6"
+    },
+    {
+      "path": "harness/benchmark.modkit-vs-ksp.json",
+      "sha256": "1dac322f5a6424b85db8229f36ce340c88aaaa9f0c7e922d66a1a26c7b00da37"
+    },
+    {
+      "path": "harness/benchmark.modkit-vs-ksp-5.json",
+      "sha256": "1c2eb724ce5583fa6f43159d88811c43d36a2179a751f2591094f911b3b18281"
+    },
+    {
+      "path": "harness/benchmark.modkit-vs-ksp-final.json",
+      "sha256": "af2073adc771cd4d1ff9c6ffd26e37ba5810baafd336b8477764da1620f0af26"
+    },
+    {
+      "path": "harness/benchmark.modkit-vs-ksp-final-lib1.json",
+      "sha256": "52f5ae7f20ec1f6a2c2af263668bb38ce286a86a26b03229c61d1945f6ce1ea4"
+    },
+    {
+      "path": "harness/benchmark.modkit-vs-ksp-final-smoke.json",
+      "sha256": "94da4ad667418f9b458463e1a74b501c0f2fe2ba952b87977a86973d0986e4f7"
+    },
+    {
+      "path": "harness/benchmark.original-triggers-12.json",
+      "sha256": "f87c92dfa2d15b5f8a88814a176f83ee3ef6d2cdd1437c2f46c7a44764b966d5"
+    },
+    {
+      "path": "harness/benchmark.original-triggers-cross-mod.json",
+      "sha256": "1d3ef21530b6b03b36b4b03c1468837974bc37917b05e00d780caa01a3d82d75"
+    },
+    {
+      "path": "harness/benchmark.original-triggers-deity-wasp.json",
+      "sha256": "d8d2400c44c47e05538f5171e324c565713d0584ae5cef0060ce555f647291d2"
+    },
+    {
+      "path": "harness/benchmark.original-triggers-htxl-with-dependency.json",
+      "sha256": "b860b45f1de42d1b93f24a8430afa8133706e05b4fff5a13b68b7ee53ae27449"
+    },
+    {
+      "path": "harness/benchmark.original-triggers-keystone-starlight.json",
+      "sha256": "81192f3b8f14af4e53757b64593a4850d14b0d8a7645d0f95b852d9ffb76e9c3"
+    },
+    {
+      "path": "harness/benchmark.original-triggers-next-10.json",
+      "sha256": "f5463443d24824ad24389f8984bfb2eb9855cb8ceaa743ef23f0c742a9100eff"
+    },
+    {
+      "path": "harness/benchmark.original-triggers-next-10-fix-check.json",
+      "sha256": "0c49e3bdf9aaef99539cea0238de0d71588806c8e19a8944699a10ef938d32d8"
+    },
+    {
+      "path": "harness/benchmark.original-triggers-old-red-data.json",
+      "sha256": "8444671c84c1ccccacd99964e80d0d94a78413f400c62929a8bbe99c2db5d99a"
+    },
+    {
+      "path": "harness/benchmark.original-triggers-starlight-full-strings.json",
+      "sha256": "06d2ed36b658325d0dcd76bc767f1bb3017a2434eead3135f39f364de9884c0c"
+    },
+    {
+      "path": "harness/benchmark.playable-maps.json",
+      "sha256": "3564d4c43062f95c01a056231f2b1f45f967147fb92f759133ce8cadc1d2082d"
+    },
+    {
+      "path": "harness/benchmark.real-map2-fix-check.json",
+      "sha256": "1c609ea132e363d9cc50932d57ed56abeeb402873e2089886f3debbae27be093"
+    },
+    {
+      "path": "harness/benchmark.real-map-100.json",
+      "sha256": "45ebc7697c89bebb12425e7389e74c137e9dc27fc47b5b64f4946705dd0921ae"
+    },
+    {
+      "path": "harness/benchmark.real-mixed-5.json",
+      "sha256": "0e43d8c7e7874a804323ab8bcf3cc1ea92a56cde75fba803ad3080497546a849"
+    },
+    {
+      "path": "harness/benchmark.real-mixed-5-fix-check.json",
+      "sha256": "3fa0f28a690913fa6f28af9a484c41b48af8729e4bb31b20cf9444948383b96c"
+    },
+    {
+      "path": "harness/benchmark.real-mixed-5-local-build.json",
+      "sha256": "290aa83f175fc357c77abd71895a287b08d5423fdbed8be59989eaf36993aeda"
+    },
+    {
+      "path": "harness/benchmark.real-mixed-5-pinned.json",
+      "sha256": "ac6bff7b8750fb33f12774536243af1ae2834664f1f6b833c0ac3c5b9645e65e"
+    },
+    {
+      "path": "harness/benchmark.real-mixed-100.json",
+      "sha256": "645a22a21c16c6d0cfe7220da38b37a842738afc0fa11038de870907a97f6f49"
+    },
+    {
+      "path": "harness/benchmark.real-mixed-100-clean.json",
+      "sha256": "5f9b5a8d2dbe847a8c3fd6c06e90e89a16a06aa50f892a91c096d84f1ccabcb8"
+    },
+    {
+      "path": "harness/benchmark.real-mixed-100-fix-check.json",
+      "sha256": "d35ddb6b8bbf2cd37b1d30c68613de328a0b4f6e30b92e98b5c3e20145808ced"
+    },
+    {
+      "path": "harness/benchmark.real-mixed-pilot.json",
+      "sha256": "4ab78f0505cdb82f2e3c3a189fa720312b7645ab7604e3952ff1e947cfc031b5"
+    }
+  ]
+}

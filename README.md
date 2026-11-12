@@ -1,60 +1,85 @@
-# SC2 Trigger Recovery Tool KSP Edition
+# SC2 Trigger Recovery Tool — KSP Edition
 
-Utility for recovering, rebuilding, and exporting StarCraft II trigger data for KSP maps and custom campaign content.
+**Новая переработанная версия Trigger Revizer, разработанная совместно с Vise.**
 
-This GitHub page is a public release and information page. It is not a source-code repository.
+Восстановление GUI-триггеров StarCraft II из Galaxy и дозаполнение существующей разметки с проверкой сохранения бизнес-логики.
+Это реализованное ядро с результатами на реальных картах: **325 из 339 архивных позиций имеют историю принятия**, причём уровни проверки явно разделены.
 
-## What it does
+| Результат | Позиций | Список |
+| --- | ---: | --- |
+| Последний сохранённый строгий root-business PASS | **103** | [Все 103 с названиями, ID и SHA256](maps/confirmed-103.md) |
+| Ранее принятый исторический реестр | **222** | [Все 222 с названиями, ID и SHA256](maps/historical-222.md) |
+| REVIEW | 12 | [Список](maps/review-12.md) |
+| SKIP / UNCONFIRMED | 1 / 1 | [Список](maps/skip-and-unconfirmed.md) |
 
-- opens `.SC2Map` and related trigger resources
-- rebuilds trigger markup from available map data
-- restores and exports Galaxy script
-- shows trigger tree, markup, and generated script in one tool
-- supports KSP campaign maps and custom trigger-heavy projects
+103 + 222 — разные уровни доказательства, а не 325 новых строгих PASS. Это архивные позиции из основной выборки 339, не гарантированно разные названия или последние версии публикаций.
+Дата последнего реестра строгих результатов — **2026-10-30**. При этой публикации новый прогон Editor не выполнялся.
 
-## Main use cases
+## Что уже реализовано
 
-- inspect damaged or partially broken trigger data
-- regenerate trigger structure for editing
-- compare original and rebuilt script results
-- save rebuilt triggers back into the map workflow
+- Общая AST для анализа Galaxy, функций, типов, исходных файлов и инициализации.
+- Разрешение GUI-привязок по библиотеке, типу, идентификатору и области видимости.
+- Восстановление отсутствующего дерева и дозаполнение изменённых участков существующей разметки.
+- Сохранение структуры GUI и отдельных исходников в режиме `preserve-source`.
+- Работа с атрибутами, зависимостями и локализованными строками при наличии подтверждённых исходных данных.
+- Проверки полной программы, порядка инициализации и реального экспорта Galaxy.
+- Неизменённый независимый oracle: **304 файла с исходными SHA256**.
 
-## Download
+## Готовность и ограничения
 
-Use the latest packaged release from the Releases section of this repository.
+Здесь опубликованы **исходники переработанного ядра и результаты проверок**. Переносимая самостоятельная сборка нового AST snapshot пока не завершена:
+часть зависимостей утрачена, в собранных исходниках и тестах обнаружены 157 отсутствующих импортируемых файлов и 17 других ссылок; абсолютные `file:///K:/...` импорты ещё требуют переноса.
+Точное восстановление части файлов выполнено по историческим хешам; похожие версии не подставлялись.
+Подробности: [состояние сборки](docs/BUILD_STATUS_RU.md), [недостающие ссылки](validation/missing-references.json).
 
-Recommended build for most users:
+PASS относится к бизнес-логике MapScript. Полная приёмка всех атрибутов, лобби и игрового исполнения для всех карт не заявлена.
+Часть старых исходных архивов и native receipts сейчас отсутствует; [сохранность доказательств](validation/evidence-availability.json) отделена от исторического результата.
 
-- `SC2-Trigger-Recovery-Tool-v1.1.3-secure-single.exe`
+## Структура
 
+```text
+src/                    Исходники ядра, используемых стадий и зависимостей
+  trigger_ast_core/     AST, GUI, типы, привязки, дозаполнение, verification
+  map_global_repair_*/  Используемые снимки модулей конвертера
+  map_proof_*/          Используемые модули полного доказательства
+benchmark/oracle/       Независимый benchmark с неизменённым manifest
+maps/                   Полные списки 103 + 222 и общий реестр 339
+validation/             Хеши, комплектность, доступность доказательств
+docs/                   Архитектура, reverse engineering, критерии приёмки
+history/                Сохранившиеся изменения
+licenses/               Upstream-лицензии и notices
+tools/                  Проверка целостности опубликованного снимка
+```
 
-## Quick start
+[Подробная архитектура и точки входа](docs/ARCHITECTURE_RU.md) · [Что проверяет benchmark](docs/VALIDATION_RU.md) · [Изменения](CHANGELOG.md)
 
-1. Download the latest release.
-2. Run the secure `.exe`.
-3. Open your `.SC2Map`.
-4. Regenerate triggers or inspect the loaded tree/script.
-5. Save or export the result you need.
+## Reverse engineering и участники
 
-## Notes
+При разработке использовались анализ форматов SC2, GUI/NativeLib, ABI событий и фактического поведения генератора Editor.
+Подробнее: [Reverse engineering](docs/REVERSE_ENGINEERING_RU.md).
 
-- This page is intended for end users, testers, and release tracking.
-- Public source files are not provided here.
-- Releases may change packaging, protection, and compatibility details between versions.
+Проект перерабатывался совместно с **Vise**. Благодарность **[hometlt](https://github.com/hometlt)** за используемый upstream [ModKit/Blizzard](https://github.com/hometlt/modkit-extensions-blizzard), библиотеки форматов и техническую основу исследований.
+Полный список: [CONTRIBUTORS.md](CONTRIBUTORS.md). Авторство и лицензии сторонних компонентов сохранены: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-## Compatibility
+## Получение исходников на Windows
 
-- Windows
-- StarCraft II map workflow
-- KSP campaign/custom map recovery scenarios
+В текущем снимке есть длинные пути к модулям. Для Git for Windows:
 
-## Feedback
+```text
+git -c core.longpaths=true clone https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition.git
+cd SC2-Trigger-Recovery-Tool-KSP-Edition
+```
 
-If a specific map fails to load or regenerate correctly, report:
+## Проверка опубликованного комплекта
 
-- tool version
-- map type
-- what action failed
-- whether the problem is in trigger tree, markup, Galaxy script, or save/export
+```text
+python tools/verify_publication.py
+```
 
-That is enough to reproduce and fix most issues faster.
+Команда проверяет реестр, хеши файлов и 304 исходных assets oracle. Она не компилирует карты и не объявляет runtime готовым.
+Двоичные карты, DLL, временные native-worker задания, кеши и гигабайтные тестовые результаты в репозиторий не включены.
+
+## Прежние бинарные релизы
+
+[Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases) сохраняют прежнюю опубликованную линию приложения.
+Она отделена от нового AST snapshot; [предыдущая страница загрузки](docs/legacy-public-release-page.md) сохранена для справки.

@@ -1,0 +1,20 @@
+{
+  "createdAt": "2026-10-16T19:57:16.880773+00:00",
+  "asset": "Trusted installed NativeLib GUI definitions",
+  "nativeGui": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\batch20b_offline_2026-10-12\\library-inputs\\cbb2302825dce57ff9bb8efd44f9b0ed5cb056eee00265e5b711b0824d872396\\NativeLib.TriggerLib",
+    "sha256": "cbb2302825dce57ff9bb8efd44f9b0ed5cb056eee00265e5b711b0824d872396",
+    "bytes": 7743650,
+    "sourceLabel": "Base.SC2Data/TriggerLibs/NativeLib.TriggerLib"
+  },
+  "preparedSourceEvidence": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\batch20b_offline_2026-10-12\\preparation-r2\\0502\\RESULT.json",
+    "sha256": "9c8038bd287c22f51e8734d0effe92716854dd77a9136a8a063b86bb3b9c1a26"
+  },
+  "coreNativeCodeEvidence": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\map_global_repair_v80_closed_header_startup_2026-10-16\\header-startup\\0325\\LIVE_NATIVE_PROOF.json",
+    "sha256": "6ffdcb7a5177730b006a710125f5ed7b831a058ea5c15fed2e1e806b9fae09c9"
+  },
+  "scope": "GUI event role/owner trust anchor; does not accept map-specific or modified XML as native API evidence. Any new GUI version requires an explicit new trusted asset record.",
+  "mapAcceptance": false
+}

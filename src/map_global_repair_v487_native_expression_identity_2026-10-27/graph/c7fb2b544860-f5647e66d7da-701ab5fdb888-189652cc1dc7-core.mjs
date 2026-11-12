@@ -1,0 +1,3 @@
+export * from 'file:///K:/SC2_MAP_Workspace/sc2_editor_C%2B%2B/map_global_repair_v487_native_expression_identity_2026-10-27/graph/3f1f1fe57f08-a67fee2b5f71-189652cc1dc7-symbol-core.mjs';
+export {deriveNativeTypeMapping,declaredReturnType,isResolvedGalaxyType,mapParameterTypeToGalaxy,isIdentityConversionOperator} from 'file:///K:/SC2_MAP_Workspace/sc2_editor_C%2B%2B/map_global_repair_v487_native_expression_identity_2026-10-27/graph/15d173fd923f-6b141de3799a-e87f717ee3a3-189652cc1dc7-types.mjs';
+export {indexDeclaredGalaxySymbols,indexDependencyFunctionNames,indexDependencyVariableNames} from 'file:///K:/SC2_MAP_Workspace/sc2_editor_C%2B%2B/map_global_repair_v487_native_expression_identity_2026-10-27/graph/68f727db008a-77e01270193d-ce72d7a4db34-sdk-index.mjs';

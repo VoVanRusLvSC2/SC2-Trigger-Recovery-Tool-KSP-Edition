@@ -1,0 +1,4 @@
+import {deriveNativeTypeMapping} from 'file:///K:/SC2_MAP_Workspace/sc2_editor_C%2B%2B/map_global_repair_v265_attribute_scalar_codec_2026-10-21/types/189652cc1dc7-types.mjs';
+import {FunctionCandidateIndex} from 'file:///K:/SC2_MAP_Workspace/sc2_editor_C%2B%2B/map_global_repair_v294_shared_native_formal_abi_2026-10-22/graph/16e10ba1b30e-0b7fdcf204a856e8-function-candidates.mjs';
+import {createNativeEventEffectTools} from 'file:///K:/SC2_MAP_Workspace/sc2_editor_C%2B%2B/map_global_repair_v294_shared_native_formal_abi_2026-10-22/graph/5f35d29e9603-af20d00c68d74a52-native-event-effects.param-aware.mjs';
+export const {classifyNativeEventContracts,createTrustedNativeEventEffects,verifiedNativeEventEffect,nativeEventEffectEvidence}=createNativeEventEffectTools(FunctionCandidateIndex,deriveNativeTypeMapping);

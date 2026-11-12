@@ -1,0 +1,99 @@
+{
+ "schemaVersion": 1,
+ "name": "vovan-two-maps-modkit-vs-ksp",
+ "astOracleModule": "../modkit-extensions-blizzard/starcraft2/dist/modules/triggers/services/galaxy-conversion/index.js",
+ "repetitions": 1,
+ "timeoutMs": 3600000,
+ "converters": [
+  {
+   "id": "modkit",
+   "command": "node",
+   "args": [
+    "adapters/modkit.mjs",
+    "{request}"
+   ],
+   "env": {
+    "MODKIT_CONVERSION_MODULE": "../modkit-extensions-blizzard/starcraft2/dist/modules/triggers/services/galaxy-conversion/index.js"
+   },
+   "timeoutMs": 1200000
+  },
+  {
+   "id": "ksp",
+   "command": "node",
+   "args": [
+    "adapters/ksp.mjs",
+    "{request}"
+   ],
+   "timeoutMs": 2700000
+  }
+ ],
+ "cases": [
+  {
+   "id": "ice-baneling",
+   "documentKind": "map",
+   "operation": "galaxy-triggers-roundtrip",
+   "tags": [
+    "real-package",
+    "map-script"
+   ],
+   "inputs": [
+    {
+     "role": "package",
+     "id": "map-package",
+     "path": "../artifacts/test-mods-vovan/originals/Ice Baneling Escape Arctic Adventures.SC2Map"
+    },
+    {
+     "role": "script",
+     "fromPackage": "map-package",
+     "path": "MapScript.galaxy"
+    },
+    {
+     "role": "expected-trigger-data",
+     "fromPackage": "map-package",
+     "path": "Triggers"
+    },
+    {
+     "role": "trigger-strings",
+     "fromPackage": "map-package",
+     "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+    }
+   ],
+   "options": {
+    "libraryId": "Map",
+    "verification": "semantic",
+    "kspMap": "../artifacts/test-mods-vovan/originals/Ice Baneling Escape Arctic Adventures.SC2Map"
+   }
+  },
+  {
+   "id": "epic-bosses",
+   "documentKind": "map",
+   "operation": "galaxy-triggers-roundtrip",
+   "tags": [
+    "real-package",
+    "map-script"
+   ],
+   "inputs": [
+    {
+     "role": "package",
+     "id": "map-package",
+     "path": "../artifacts/test-mods-vovan/originals/Epic Bosses.SC2Map"
+    },
+    {
+     "role": "script",
+     "fromPackage": "map-package",
+     "path": "MapScript.galaxy"
+    },
+    {
+     "role": "trigger-strings",
+     "fromPackage": "map-package",
+     "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+    }
+   ],
+   "options": {
+    "libraryId": "Map",
+    "verification": "semantic",
+    "kspMap": "../artifacts/test-mods-vovan/originals/Epic Bosses.SC2Map"
+   }
+  }
+ ]
+}

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "name": "original-triggers-htxl-with-dependency",
+  "astOracleModule": "../modkit-extensions-blizzard/.benchmark-build/deity-fix/modules/triggers/services/galaxy-conversion/index.js",
+  "repetitions": 1,
+  "timeoutMs": 180000,
+  "coverageRequirements": {
+    "minCases": 1,
+    "minUniquePackages": 2,
+    "minDocumentKinds": { "mod": 1 },
+    "minOperations": { "triggers-to-galaxy": 1 }
+  },
+  "converters": [{
+    "id": "modkit",
+    "command": "node",
+    "args": ["adapters/modkit.mjs", "{request}"],
+    "env": { "MODKIT_CONVERSION_MODULE": "../modkit-extensions-blizzard/.benchmark-build/deity-fix/modules/triggers/services/galaxy-conversion/index.js" }
+  }],
+  "cases": [{
+    "id": "real-mod-088-with-dependency",
+    "documentKind": "mod",
+    "operation": "triggers-to-galaxy",
+    "tags": ["real-package", "gui-baseline", "explicit-dependency"],
+    "inputs": [
+      { "role": "package", "id": "target", "path": "../artifacts/corpus-installed-2026-09-16/originals/AllRaces2-Extension-HTXL.SC2Mod" },
+      { "role": "package", "id": "dependency", "path": "../artifacts/corpus-installed-2026-09-16/originals/AllRaces2-AI.SC2Mod" },
+      { "role": "expected-script", "fromPackage": "target", "path": "Base.SC2Data/LibARMP.galaxy" },
+      { "role": "expected-header", "fromPackage": "target", "path": "Base.SC2Data/LibARMP_h.galaxy" },
+      { "role": "trigger-data", "fromPackage": "target", "path": "Triggers" },
+      { "role": "trigger-strings", "fromPackage": "target", "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt" },
+      { "role": "dependency-trigger-data", "group": "B09742AC", "fromPackage": "dependency", "path": "Triggers" },
+      { "role": "dependency-trigger-strings", "group": "B09742AC", "fromPackage": "dependency", "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt" }
+    ],
+    "options": { "libraryId": "ARMP" }
+  }]
+}

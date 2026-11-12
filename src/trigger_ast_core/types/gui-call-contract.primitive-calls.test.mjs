@@ -1,0 +1,12 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {createGuiCallTypeResolver} from './gui-call-contract.primitive-calls.mjs';
+function fixture(){
+ const elements=new Map(),key=r=>JSON.stringify([r.library??'Map',r.type,r.id]),ref=(type,id)=>({type,id,library:'Map'}),put=e=>(elements.set(key(e),e),ref(e.type,e.id));
+ const formal=put({type:'ParamDef',id:'group-arg',paramType:{type:'unitgroup'}}),group=put({type:'FunctionDef',id:'group-function',returnType:{type:'unitgroup'},parameters:[]}),count=put({type:'FunctionDef',id:'count-function',returnType:{type:'int'},parameters:[formal]}),groupCall=put({type:'FunctionCall',id:'group-call',functionDef:group,parameters:[]}),arg=put({type:'Param',id:'argument',parameterDef:formal,functionCall:groupCall}),countCall=put({type:'FunctionCall',id:'count-call',functionDef:count,parameters:[arg]}),root={type:'Param',id:'root',functionCall:countCall};
+ const resolve=r=>r&&elements.get(key(r));let callType;const argumentType=(p,owner,seen)=>{if(!p||seen.has(key(p)))return;const next=new Set(seen);next.add(key(p));return p.functionCall?callType(p,owner,next):p.valueType?.type;};
+ callType=createGuiCallTypeResolver({resolve,key,argumentType,declared:(p,t)=>!p.valueType||p.valueType.type===t?t:undefined});
+ return {elements,resolve,ref,root,type:()=>callType(root,'Map',new Set())};
+}
+test('a numeric call may consume the validated primitive result of a nested unitgroup call',()=>{const f=fixture();assert.equal(f.type(),'int');});
+test('a mismatched intrinsic argument or wrong qualified ParamDef still refuses',()=>{for(const change of [f=>f.resolve(f.ref('FunctionDef','group-function')).returnType={type:'point'},f=>f.resolve(f.ref('Param','argument')).parameterDef={type:'ParamDef',id:'group-arg',library:'Other'}]){const f=fixture();change(f);assert.equal(f.type(),undefined);}});
+test('unknown and nominal return domains do not masquerade as intrinsic values',()=>{for(const type of [{type:'UnknownNominal'},{type:'unknown'},{type:'unitgroup',typeElement:{type:'Preset',id:'foreign'}}]){const f=fixture();f.resolve(f.ref('FunctionDef','group-function')).returnType=type;assert.equal(f.type(),undefined);}});
+test('disabled definitions and declared result mismatches remain rejected',()=>{const f=fixture();f.resolve(f.ref('FunctionDef','group-function')).disabled=true;assert.equal(f.type(),undefined);delete f.resolve(f.ref('FunctionDef','group-function')).disabled;f.root.valueType={type:'fixed'};assert.equal(f.type(),undefined);});

@@ -1,0 +1,112 @@
+{
+  "base": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1828",
+  "sdk": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\map_build_validation_2026-10-01\\bundle\\modkit-extensions-blizzard\\starcraft2-trigger-ast-array-values-2026-10-07",
+  "entry": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\83669c0005cd-index.standard-getter-overlay.mjs",
+  "correctedParser": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\738aa3fd7188-sax-reader.mjs",
+  "affectedModules": [
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\map_build_validation_2026-10-01\\bundle\\modkit-extensions-blizzard\\starcraft2-trigger-ast-array-values-2026-10-07\\dist\\modules\\triggers\\shared\\trigger-document\\sax-reader.js",
+      "sourceSha256": "01fea70ed0cea2e3e8882417608f97f5768097cab920818a7a92708912a7faa9",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\738aa3fd7188-sax-reader.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1828\\index.standard-getter-overlay.mjs",
+      "sourceSha256": "229d76a8e797ee11a936ca56f54bc59da6706536d0bb6ff607f90d18633e76d0",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\83669c0005cd-index.standard-getter-overlay.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\getter-integration-v1746\\verified-getter-input.mjs",
+      "sourceSha256": "f60bc1a29e409bf89a53e46e1ed4572c9ea35cce7d9d2171e7d71f62510ea462",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\e45b93abfee2-verified-getter-input.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\map_build_validation_2026-10-01\\bundle\\modkit-extensions-blizzard\\starcraft2-trigger-ast-array-values-2026-10-07\\dist\\modules\\triggers\\shared\\trigger-document\\trigger-xml.js",
+      "sourceSha256": "2c6a197e65eb344313c1684a7a18d4b3948a7d80019ad828413a0480945ac33f",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\667e8c11a224-trigger-xml.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1828\\service.standard-getter.mjs",
+      "sourceSha256": "1b9c0685e6d9f91a4614204eb20c4790560b3667ca915bc1c2a9dd9a7deef3e9",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\75199da84980-service.standard-getter.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1826\\getter-capability.mjs",
+      "sourceSha256": "89a754f79a134f01d51eb2b1fa4187a5b74c598855830d796c1daadd3e1ec7c4",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\55d255e06bcd-getter-capability.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1826\\verified-standard-getter.mjs",
+      "sourceSha256": "20b3ab0928a5f98ea14873d6bddb152425cf35523065b934d3670a513ab1ff83",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\1465f9cdde68-verified-standard-getter.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1826\\explicit-legacy-accessor.mjs",
+      "sourceSha256": "28539fdfb73819c9ed58c8d7b89197d80b1241999e52b6ad1a89fabb80cecc0c",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\86d8e43882b2-explicit-legacy-accessor.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1826\\g2t-call.mjs",
+      "sourceSha256": "66724f8a9e8e13e29ba574cf2f950ffd66ee966c9c9501b52dd7431d25a85b56",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\409d75f0726f-g2t-call.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1826\\g2t-trigger-body.mjs",
+      "sourceSha256": "53203871643f8fccf837e7a54c8cda016bc44efd3e555e2dcc6befa2f0473888",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\1e4d629256be-g2t-trigger-body.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1828\\verified-forward-getter.mjs",
+      "sourceSha256": "e943eb56c8bfeb7574ed94ea9ffaab148093bb56e788861850c95a2ee833046f",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\123a66bcadee-verified-forward-getter.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1826\\galaxy-to-trigger.standard-getter.mjs",
+      "sourceSha256": "93777d3262fa766af379e4b260e40e216b75265f3f59343004f4aa5a71de78b5",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\4e95a8bf056f-galaxy-to-trigger.standard-getter.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1826\\g2t-actions.mjs",
+      "sourceSha256": "e51cb27549c234e8b1de4aa4a08304c0ce5a010cec94c8ac25f6cbc2f3f5e6d9",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\22a168ad3bac-g2t-actions.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1826\\g2t-structured.mjs",
+      "sourceSha256": "4a93373aa2fee11c6a68d432937d8696cf7d3d307f5452daa7fc0574531955e0",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\ae402a97576c-g2t-structured.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1828\\ttg-core.verified-getter.mjs",
+      "sourceSha256": "56d8707b98a62dee60615b17d970054d037a753c284b8d98e215dbe36f945a21",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\5ac1aec7c09a-ttg-core.verified-getter.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1828\\ttg-params.mjs",
+      "sourceSha256": "fb675e160cd918a21eab1ca5e0fdf4765e2962b71b62e3bf2e81da4aa22e2d1e",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\0ac43be45119-ttg-params.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1828\\ttg-convert.mjs",
+      "sourceSha256": "6e2ed8ccf537906a1c8610011d665693a678d3c312987e0ecaf030c6424bea07",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\904dd6fb9f72-ttg-convert.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1828\\ttg-actions.mjs",
+      "sourceSha256": "428860f445fe8d8d78f0ca5eccddddd53cd5df5bdf38fd9763cab5bea106dedb",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\6bb64a1f4c40-ttg-actions.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1828\\trigger-to-galaxy.mjs",
+      "sourceSha256": "6990c002da7a34e5bb4ed8179cf59994276c750d4674e0c78e3333eb83bb3878",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\3c452e73d56c-trigger-to-galaxy.mjs"
+    },
+    {
+      "source": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\standard-getter-v1828\\ttg-template.mjs",
+      "sourceSha256": "1bc58492d47d3ebdc0b3861f8aabbdc8243e66615b91773b3c20e1203e6ca318",
+      "output": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\source-bug-v1670\\subfunction-scope-v1850\\graph\\7e340c0f7da8-ttg-template.mjs"
+    }
+  ],
+  "unchangedImportsRetainOriginalSingletons": true,
+  "workingSdkChanged": false,
+  "benchmarkChanged": false,
+  "persistentConversionCache": false
+}

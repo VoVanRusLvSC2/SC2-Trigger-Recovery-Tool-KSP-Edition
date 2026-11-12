@@ -1,0 +1,39 @@
+{
+  "inspectionDate": "2026-11-12",
+  "recordedPassDate": "2026-10-30",
+  "roles": {
+    "original": {
+      "recorded": 103,
+      "present": 10,
+      "sha256Matches": 10
+    },
+    "candidate": {
+      "recorded": 103,
+      "present": 103,
+      "sha256Matches": 103
+    },
+    "export": {
+      "recorded": 103,
+      "present": 103,
+      "sha256Matches": 103
+    },
+    "nativeReceipt": {
+      "recorded": 103,
+      "present": 70,
+      "sha256Matches": 70
+    },
+    "benchmark": {
+      "recorded": 70,
+      "present": 70,
+      "sha256Matches": 70
+    },
+    "witness": {
+      "recorded": 70,
+      "present": 70,
+      "sha256Matches": 70
+    }
+  },
+  "fullyReproducedNow": false,
+  "originalPathsNotPublished": true,
+  "note": "Artifact integrity is separate from a fresh Editor/oracle run. Missing original archives or receipts do not create a new PASS."
+}

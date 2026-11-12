@@ -1,0 +1,20 @@
+<TriggerData>
+  <Library Id="TEST">
+    <Root>
+      <Item Type="Variable" Library="TEST" Id="00000001"/>
+      <Item Type="Trigger" Library="TEST" Id="00000002"/>
+    </Root>
+    <Element Type="Param" Id="00000010">
+      <ValueType Type="int"/>
+      <Value>7</Value>
+    </Element>
+    <Element Type="Variable" Id="00000001">
+      <Identifier>Score</Identifier>
+      <VariableType><Type Value="int"/></VariableType>
+      <InitialValue Type="Param" Library="TEST" Id="00000010"/>
+    </Element>
+    <Element Type="Trigger" Id="00000002">
+      <Identifier>Start</Identifier>
+    </Element>
+  </Library>
+</TriggerData>

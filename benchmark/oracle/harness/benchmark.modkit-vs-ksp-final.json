@@ -1,0 +1,275 @@
+{
+  "schemaVersion": 1,
+  "astOracleModule": "../.wt-sc2-triggers/starcraft2/dist/modules/triggers/services/galaxy-conversion/index.js",
+  "repetitions": 1,
+  "timeoutMs": 3600000,
+  "converters": [
+    {
+      "id": "modkit",
+      "command": "node",
+      "args": [
+        "adapters/modkit.mjs",
+        "{request}"
+      ],
+      "env": {
+        "MODKIT_CONVERSION_MODULE": "../.wt-sc2-triggers/starcraft2/dist/modules/triggers/services/galaxy-conversion/index.js",
+        "MODKIT_ADAPTER_SELF_CHECK": "0"
+      },
+      "timeoutMs": 900000
+    },
+    {
+      "id": "ksp",
+      "command": "node",
+      "args": [
+        "adapters/ksp.mjs",
+        "{request}"
+      ],
+      "timeoutMs": 7200000,
+      "env": {
+        "KSP_MIN_FREE_VIRTUAL_GB": "1.5"
+      }
+    }
+  ],
+  "name": "modkit-vs-ksp-final",
+  "cases": [
+    {
+      "id": "bridges",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/bridges.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic",
+        "kspMap": "../artifacts/corpus-installed-2026-09-16/originals/bridges.SC2Map"
+      }
+    },
+    {
+      "id": "complex-map-030",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "triggers-stripped",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/modkit-vs-ksp-final-2026-09-26/maps/TTosh1.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        },
+        {
+          "role": "expected-trigger-data",
+          "path": "../artifacts/test-mods-vovan/originals/TTosh1.SC2Map/Triggers"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic",
+        "kspMap": "../artifacts/modkit-vs-ksp-final-2026-09-26/maps/TTosh1.SC2Map"
+      }
+    },
+    {
+      "id": "complex-map-035",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "triggers-stripped",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/modkit-vs-ksp-final-2026-09-26/maps/UoP_Mission4.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        },
+        {
+          "role": "expected-trigger-data",
+          "path": "../artifacts/test-mods-vovan/originals/UoP_Mission4.SC2Map/Triggers"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic",
+        "kspMap": "../artifacts/modkit-vs-ksp-final-2026-09-26/maps/UoP_Mission4.SC2Map"
+      }
+    },
+    {
+      "id": "ice-baneling",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "triggers-stripped",
+        "gui-baseline",
+        "installed-mod-dependency"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/modkit-vs-ksp-final-2026-09-26/maps/Ice Baneling Escape Arctic Adventures.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        },
+        {
+          "role": "expected-trigger-data",
+          "path": "../artifacts/test-mods-vovan/originals/Ice Baneling Escape Arctic Adventures.SC2Map/Triggers"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic",
+        "kspMap": "../artifacts/modkit-vs-ksp-final-2026-09-26/maps/Ice Baneling Escape Arctic Adventures.SC2Map"
+      }
+    },
+    {
+      "id": "allracestester",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "triggers-stripped",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/modkit-vs-ksp-final-2026-09-26/maps/AllRacesTester.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        },
+        {
+          "role": "expected-trigger-data",
+          "path": "../artifacts/allracestester-2026-09-25/orig/Triggers"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic",
+        "kspMap": "../artifacts/modkit-vs-ksp-final-2026-09-26/maps/AllRacesTester.SC2Map"
+      }
+    },
+    {
+      "id": "epic-bosses",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "no-gui-baseline",
+        "script-only-original"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/Epic Bosses.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic",
+        "kspMap": "../artifacts/test-mods-vovan/originals/Epic Bosses.SC2Map"
+      }
+    }
+  ]
+}

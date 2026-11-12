@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 1,
+  "name": "original-triggers-next-10",
+  "astOracleModule": "../modkit-extensions-blizzard/.benchmark-build/deity-fix/modules/triggers/services/galaxy-conversion/index.js",
+  "repetitions": 1,
+  "timeoutMs": 240000,
+  "coverageRequirements": {
+    "minCases": 8,
+    "minUniquePackages": 8,
+    "minDocumentKinds": {
+      "map": 3,
+      "mod": 5
+    },
+    "minOperations": {
+      "triggers-to-galaxy": 8
+    }
+  },
+  "converters": [
+    {
+      "id": "modkit",
+      "command": "node",
+      "args": [
+        "adapters/modkit.mjs",
+        "{request}"
+      ],
+      "env": {
+        "MODKIT_CONVERSION_MODULE": "../modkit-extensions-blizzard/.benchmark-build/deity-fix/modules/triggers/services/galaxy-conversion/index.js"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "real-map-080",
+      "documentKind": "map",
+      "operation": "triggers-to-galaxy",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-4",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/Rainbow_Six_Arena-16.01.2019 .SC2Map"
+        },
+        {
+          "role": "expected-script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-data",
+          "fromPackage": "map-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "ruRU.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map"
+      }
+    },
+    {
+      "id": "real-map-081",
+      "documentKind": "map",
+      "operation": "triggers-to-galaxy",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/STAR CRAFT Roleplay.SC2Map"
+        },
+        {
+          "role": "expected-script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-data",
+          "fromPackage": "map-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map"
+      }
+    },
+    {
+      "id": "real-map-083",
+      "documentKind": "map",
+      "operation": "triggers-to-galaxy",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/TTosh1.SC2Map"
+        },
+        {
+          "role": "expected-script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-data",
+          "fromPackage": "map-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map"
+      }
+    },
+    {
+      "id": "real-mod-085",
+      "documentKind": "mod",
+      "operation": "triggers-to-galaxy",
+      "tags": [
+        "real-package",
+        "mod-script",
+        "mod-library",
+        "single-library-package",
+        "has-galaxy-header",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "mod-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/-cnc-data.SC2Mod"
+        },
+        {
+          "role": "expected-script",
+          "fromPackage": "mod-package",
+          "path": "Base.SC2Data/LibCNCC.galaxy"
+        },
+        {
+          "role": "expected-header",
+          "fromPackage": "mod-package",
+          "path": "Base.SC2Data/LibCNCC_h.galaxy"
+        },
+        {
+          "role": "trigger-data",
+          "fromPackage": "mod-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "mod-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "CNCC"
+      }
+    },
+    {
+      "id": "real-mod-086",
+      "documentKind": "mod",
+      "operation": "triggers-to-galaxy",
+      "tags": [
+        "real-package",
+        "mod-script",
+        "mod-library",
+        "single-library-package",
+        "has-galaxy-header",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "mod-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/-old-red-data.sc2mod"
+        },
+        {
+          "role": "expected-script",
+          "fromPackage": "mod-package",
+          "path": "Base.SC2Data/LibRED3.galaxy"
+        },
+        {
+          "role": "expected-header",
+          "fromPackage": "mod-package",
+          "path": "Base.SC2Data/LibRED3_h.galaxy"
+        },
+        {
+          "role": "trigger-data",
+          "fromPackage": "mod-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "mod-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "RED3"
+      }
+    },
+    {
+      "id": "real-mod-087",
+      "documentKind": "mod",
+      "operation": "triggers-to-galaxy",
+      "tags": [
+        "real-package",
+        "mod-script",
+        "mod-library",
+        "single-library-package",
+        "has-galaxy-header",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "mod-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/AllRaces2-AI.SC2Mod"
+        },
+        {
+          "role": "expected-script",
+          "fromPackage": "mod-package",
+          "path": "Base.SC2Data/LibB09742AC.galaxy"
+        },
+        {
+          "role": "expected-header",
+          "fromPackage": "mod-package",
+          "path": "Base.SC2Data/LibB09742AC_h.galaxy"
+        },
+        {
+          "role": "trigger-data",
+          "fromPackage": "mod-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "mod-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "B09742AC"
+      }
+    },
+    {
+      "id": "real-mod-088",
+      "documentKind": "mod",
+      "operation": "triggers-to-galaxy",
+      "tags": [
+        "real-package",
+        "mod-script",
+        "mod-library",
+        "single-library-package",
+        "has-galaxy-header",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "mod-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/AllRaces2-Extension-HTXL.SC2Mod"
+        },
+        {
+          "role": "package",
+          "id": "ai-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/AllRaces2-AI.SC2Mod"
+        },
+        {
+          "role": "expected-script",
+          "fromPackage": "mod-package",
+          "path": "Base.SC2Data/LibARMP.galaxy"
+        },
+        {
+          "role": "expected-header",
+          "fromPackage": "mod-package",
+          "path": "Base.SC2Data/LibARMP_h.galaxy"
+        },
+        {
+          "role": "trigger-data",
+          "fromPackage": "mod-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "mod-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "dependency-trigger-data",
+          "group": "B09742AC",
+          "fromPackage": "ai-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "dependency-trigger-strings",
+          "group": "B09742AC",
+          "fromPackage": "ai-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "ARMP"
+      }
+    },
+    {
+      "id": "real-mod-089",
+      "documentKind": "mod",
+      "operation": "triggers-to-galaxy",
+      "tags": [
+        "real-package",
+        "mod-script",
+        "mod-library",
+        "single-library-package",
+        "has-galaxy-header",
+        "has-trigger-strings",
+        "script-size-tier-5",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "mod-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/AllRaces2-Extension.SC2Mod"
+        },
+        {
+          "role": "expected-script",
+          "fromPackage": "mod-package",
+          "path": "Base.SC2Data/LibARMP.galaxy"
+        },
+        {
+          "role": "expected-header",
+          "fromPackage": "mod-package",
+          "path": "Base.SC2Data/LibARMP_h.galaxy"
+        },
+        {
+          "role": "trigger-data",
+          "fromPackage": "mod-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "mod-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "ARMP"
+      }
+    }
+  ]
+}

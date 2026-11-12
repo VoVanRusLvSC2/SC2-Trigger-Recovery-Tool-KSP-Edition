@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "name": "real-mixed-5-complex",
+  "astOracleModule": "../modkit-extensions-blizzard/.benchmark-build/next10-fix/modules/triggers/services/galaxy-conversion/index.js",
+  "repetitions": 1,
+  "timeoutMs": 120000,
+  "coverageRequirements": {
+    "minCases": 4,
+    "minUniquePackages": 4,
+    "minDocumentKinds": {
+      "map": 3,
+      "mod": 1
+    },
+    "minOperations": {
+      "galaxy-triggers-roundtrip": 4
+    },
+    "minTags": {
+      "real-package": 4,
+      "map-script": 3,
+      "mod-script": 1,
+      "mod-library": 1,
+      "script-size-tier-2": 1,
+      "script-size-tier-3": 1,
+      "script-size-tier-4": 1,
+      "script-size-tier-5": 1,
+      "gui-baseline": 2,
+      "multi-library-package": 1,
+      "has-galaxy-header": 1,
+      "has-trigger-strings": 4,
+      "has-game-strings": 3
+    }
+  },
+  "converters": [
+    {
+      "id": "modkit",
+      "command": "node",
+      "args": [
+        "adapters/modkit.mjs",
+        "{request}"
+      ],
+      "env": {
+        "MODKIT_CONVERSION_MODULE": "../modkit-extensions-blizzard/.benchmark-build/next10-fix/modules/triggers/services/galaxy-conversion/index.js",
+        "MODKIT_SC2_LOADER_MODULE": "../modkit-extensions-blizzard/starcraft2/dist/modules/triggers/services/galaxy-conversion/index.js"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "complex-mod-002",
+      "documentKind": "mod",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "mod-script",
+        "mod-library",
+        "multi-library-package",
+        "has-galaxy-header",
+        "has-trigger-strings",
+        "has-game-strings",
+        "script-size-tier-2",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "mod-package",
+          "path": "../artifacts/test-mods-vovan/originals/Deity Wasp.SC2Mod"
+        },
+        {
+          "role": "script",
+          "fromPackage": "mod-package",
+          "path": "Base.SC2Data/Lib22142002.galaxy"
+        },
+        {
+          "role": "header",
+          "fromPackage": "mod-package",
+          "path": "Base.SC2Data/Lib22142002_h.galaxy"
+        },
+        {
+          "role": "original-trigger-data",
+          "fromPackage": "mod-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "mod-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "mod-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "22142002",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "complex-map-003",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "script-size-tier-3",
+        "no-gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/corpus-installed-2026-09-16/originals/EditorTest.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "complex-map-004",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "has-game-strings",
+        "script-size-tier-4",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/Rainbow_Six_Arena-16.01.2019 .SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "expected-trigger-data",
+          "fromPackage": "map-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "original-trigger-data",
+          "fromPackage": "map-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "ruRU.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "ruRU.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    },
+    {
+      "id": "complex-map-005",
+      "documentKind": "map",
+      "operation": "galaxy-triggers-roundtrip",
+      "tags": [
+        "real-package",
+        "map-script",
+        "has-trigger-strings",
+        "has-game-strings",
+        "script-size-tier-5",
+        "gui-baseline"
+      ],
+      "inputs": [
+        {
+          "role": "package",
+          "id": "map-package",
+          "path": "../artifacts/test-mods-vovan/originals/KeyStone.SC2Map"
+        },
+        {
+          "role": "script",
+          "fromPackage": "map-package",
+          "path": "MapScript.galaxy"
+        },
+        {
+          "role": "expected-trigger-data",
+          "fromPackage": "map-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "original-trigger-data",
+          "fromPackage": "map-package",
+          "path": "Triggers"
+        },
+        {
+          "role": "trigger-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/TriggerStrings.txt"
+        },
+        {
+          "role": "game-strings",
+          "fromPackage": "map-package",
+          "path": "enUS.SC2Data/LocalizedData/GameStrings.txt"
+        }
+      ],
+      "options": {
+        "libraryId": "Map",
+        "verification": "semantic"
+      }
+    }
+  ]
+}

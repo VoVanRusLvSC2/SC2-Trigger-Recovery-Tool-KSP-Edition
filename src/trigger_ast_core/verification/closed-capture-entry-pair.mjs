@@ -1,0 +1,6 @@
+import assert from 'node:assert/strict';import {canonicalClosedLoopCaptureCells} from './closed-loop-capture-cells.entry-stores.mjs';import {refinePrivateEntryRangePair} from './private-entry-range-pair.mjs';import {inspectNamedStorageObservers} from '../analysis/named-storage-observers.mjs';
+export function refineClosedCaptureEntryPair(before,after,{context={},observerRoots=[before,after],externalSources=context.externalSources??[]}={}){
+ const stages={},names=new Set(),pair={};for(const side of ['before','after']){const r=canonicalClosedLoopCaptureCells(side==='before'?before:after,context);assert(!r.proof.reason,'CAPTURE_ENTRY_UNCLOSED_BINDINGS');stages[side]=r.proof;pair[side]=r.text;for(const record of r.proof.records){names.add(record.function);names.add(record.from);names.add(record.to);}}
+ const observers=observerRoots.map(root=>inspectNamedStorageObservers(root,[...names],{externalSources}));assert(observers.every(r=>!r.unknownObserverInput&&!r.observedNames.length),'CAPTURE_ENTRY_NAMED_STORAGE_OBSERVER');
+ const entries=refinePrivateEntryRangePair(pair.before,pair.after,{context,observerRoots,externalSources});return{before:entries.before,after:entries.after,proof:{kind:'CLOSED_CAPTURE_CELLS_WITH_PRESERVED_ENTRY_EFFECTS',stages,observers,entries:entries.proof,sourceOrExportChanged:false,passGranted:false,wholeProgramOracleStillRequired:true}};
+}

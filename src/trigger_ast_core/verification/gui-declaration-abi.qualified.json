@@ -1,0 +1,54 @@
+{
+  "kind": "QUALIFIED_GUI_DECLARATION_ROLE_REJECTIONS",
+  "schemaVersion": 1,
+  "editor": {
+    "build": 98310,
+    "sha256": "e561d76903221bdcd4585b9496bba1d2b9c5ae13b8fbe8c8469d213f22823d91"
+  },
+  "metadata": {
+    "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\batch20_offline_2026-10-12\\library-inputs\\cbb2302825dce57ff9bb8efd44f9b0ed5cb056eee00265e5b711b0824d872396\\NativeLib.TriggerLib",
+    "sha256": "cbb2302825dce57ff9bb8efd44f9b0ed5cb056eee00265e5b711b0824d872396"
+  },
+  "rules": [
+    {
+      "role": "ordinary-action-formal",
+      "requiredFlags": [
+        "Action"
+      ],
+      "excludedFlags": [
+        "Native",
+        "Operator",
+        "Inline",
+        "Event",
+        "CustomScript"
+      ],
+      "surfaceType": {
+        "type": "unitref"
+      },
+      "reason": "FORMAL_TYPE_OMITTED_BY_QUALIFIED_FRONTEND",
+      "nativeObservation": "The formal type is omitted, producing an invalid parameter list",
+      "evidence": [
+        {
+          "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\native-probes-r255\\direct-unitref-formal\\Triggers.xml",
+          "sha256": "2ecfac981a2da42370fdbf0eb843bde28f5bf6790e237ba39fda137a0aba38ca"
+        },
+        {
+          "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\native-probes-r255\\direct-unitref-formal\\RESPONSE.json",
+          "sha256": "03672e1b18d9a086243f7457a5eb3153c7a37142ff1903262191904c093f75f2"
+        },
+        {
+          "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\native-probes-r255\\direct-unitref-formal\\Native.galaxy",
+          "sha256": "21b0a6924717951a2a4a627758c1b6767f6f7b724a07bf9b026acf899b6114ab"
+        },
+        {
+          "path": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\sdk_gui_closure_20261019\\native-probes-r255\\direct-unitref-formal\\NATIVE_EXPORT_GUARD.json",
+          "sha256": "dbfb93d58981f984ba844254faaa1ea99f2b8a400f8f40d36ec67760e8562258"
+        }
+      ]
+    }
+  ],
+  "allOtherTypes": "NOT_CLASSIFIED_BY_THIS_PROFILE",
+  "newNative": 0,
+  "newCustomScript": 0,
+  "emissionAuthorized": false
+}

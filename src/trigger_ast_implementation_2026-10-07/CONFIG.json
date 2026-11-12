@@ -1,0 +1,9 @@
+{
+  "project": "K:\\SC2_MAP_Workspace\\sc2_editor_C++",
+  "materials": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_pack_2026-10-07",
+  "acceptedSdk": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\map_build_validation_2026-10-01\\bundle\\modkit-extensions-blizzard\\starcraft2-legacy-native-while-v1527-2026-10-07",
+  "sdk": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\map_build_validation_2026-10-01\\bundle\\modkit-extensions-blizzard\\starcraft2-trigger-ast-array-values-2026-10-07",
+  "node": "C:/Program Files/nodejs/node.exe",
+  "python": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\map_editor_batch\\.venv\\Scripts\\python.exe",
+  "sourceManifest": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\trigger_ast_implementation_2026-10-07\\BASELINE_MANIFEST.json"
+}
