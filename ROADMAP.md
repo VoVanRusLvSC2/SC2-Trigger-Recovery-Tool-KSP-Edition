@@ -86,3 +86,6 @@ The 2026-11-14 audit parsed 1,265 JavaScript modules and checked literal relativ
 The [103 recorded strict-pass records](maps/verified.md) and [222 historical acceptance records](maps/previously-accepted.md) remain separate. Neither list is a claim that the current source snapshot has just passed a new Editor run. The English source reorganization and readability work do not promote map statuses.
 
 This plan does not promise universal reversal of arbitrary Galaxy into the exact original folders, comments or GUI authoring choices. It targets supported behavioral reconstruction, conservative preservation and explicit results when equivalence is not proved.
+
+
+The local dependency bootstrap and shared language-core checks are now available; see [BUILDING.md](BUILDING.md). Three more utilities were recovered from retained source with separate provenance. Source closure and complete API/CLI execution remain pending.

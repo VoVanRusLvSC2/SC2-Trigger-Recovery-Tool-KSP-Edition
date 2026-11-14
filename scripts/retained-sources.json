@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-14",
+  "basis": "Retained local source files, with module-specifier relocation and formatting only. No pre-loss pin for the missing destination is claimed.",
+  "scope": "Source provenance and integrity; converter equivalence remains separately unqualified.",
+  "files": [
+    {
+      "file": "src/utilities/s2mh-source.mjs",
+      "sourceOrigin": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\map_global_repair_v307_complete_runtime_schema_2026-10-23\\graph\\955d19f71b9e-s2mh_source.mjs",
+      "originalSha256": "a8b741cf97d44a935685fc46255c0d10657ea88834a93497fb5e0720e810af3e",
+      "publishedSha256": "c2069e5de8c6a1e65756a12980cc835faf1e999e5b920beb81e03e3e644f693a",
+      "algorithmAstSha256": "1f2e18e3788edef4597abdc845cb0b43abf222f000c2b5e1372866ca63d8aa5c"
+    },
+    {
+      "file": "src/utilities/cache-attribute-defaults.mjs",
+      "sourceOrigin": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\map_global_repair_v307_complete_runtime_schema_2026-10-23\\graph\\4460e39ee6a4-cache_attribute_defaults.mjs",
+      "originalSha256": "b238cc65edb9ccca31ab7904ee067cc113deb5b5a5a67ea27f6968524378b820",
+      "publishedSha256": "54696b54f82e3252e4a1d443f93c40189b47fcdbec6d759e3f67bcace221c666",
+      "algorithmAstSha256": "8177464aa7c6d2aae4215b3291859f2790bdb6a82b994792a2299b1b968acf74"
+    },
+    {
+      "file": "src/utilities/dependency-ai-pack-policy-legacy.mjs",
+      "sourceOrigin": "K:\\SC2_MAP_Workspace\\sc2_editor_C++\\map_global_repair_v307_complete_runtime_schema_2026-10-23\\graph\\fcb869464e8c-dependency_ai_pack_policy_v1285.mjs",
+      "originalSha256": "57b9a3bd338ddb98c5e4580fecd69e0e678d074ace403eb0af44693d13ffd406",
+      "publishedSha256": "c45c55a040a9868a96c4af26b60b3affd1c4bde5e427862ce66d1d80909ad6ea",
+      "algorithmAstSha256": "5b94ad6995771d7b6ae271109b8aea4a2daf392a738a90048182c09a6d4d6d54"
+    }
+  ]
+}

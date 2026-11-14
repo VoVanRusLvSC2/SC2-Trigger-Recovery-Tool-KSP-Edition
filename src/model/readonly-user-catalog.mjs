@@ -1,9 +1,9 @@
 // A source-bound value domain for immutable User Data, never a replacement API.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { STARCRAFT2_CATALOG_FILES } from '../sdk/array-values/modules/data/services/schema/full-data-schema.js';
-import { gameDataIncludePaths } from '../sdk/array-values/modules/data/shared/catalog-engine/gamedata-order.js';
-import { parseCatalogXmlElements } from '../sdk/array-values/modules/data/shared/catalog-engine/xml/parser.js';
+import { STARCRAFT2_CATALOG_FILES } from '../sdk/core/modules/data/services/schema/full-data-schema.js';
+import { gameDataIncludePaths } from '../sdk/core/modules/data/shared/catalog-engine/gamedata-order.js';
+import { parseCatalogXmlElements } from '../sdk/core/modules/data/shared/catalog-engine/xml/parser.js';
 import {
   SyntaxKind as K,
   forEachChild,

@@ -6,7 +6,7 @@ import { filterCaptionTables } from './caption-keys.mjs';
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 import { parseGalaxySource } from '../../sdk/core/modules/triggers/services/galaxy-conversion/internal/galaxy-to-trigger.js';
-import { attributeDisplayNames } from '../../utilities/attribute-display-text.mjs';
+import { attributeDisplayNames } from '../../conversion/exact-function-signatures/attribute-display-text.mjs';
 const require = createRequire(
   new URL(
     '../map_build_validation_2026-10-01/bundle/modkit-extensions-blizzard/starcraft2/package.json',

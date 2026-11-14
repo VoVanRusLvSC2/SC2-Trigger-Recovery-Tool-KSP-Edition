@@ -3,8 +3,8 @@ import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import assert from 'node:assert/strict';
 import { openMpqReader } from '../vendor/@modkit/blizzard-mpq/src/mpq/codec.js';
-import { dependencyAiPackPolicy as legacyPolicy } from './dependency_ai_pack_policy_v1285.mjs';
-import { readAIData } from './map_build_validation_2026-10-01/bundle/modkit-extensions-blizzard/starcraft2-raw-local-structure-scope-v1368-2026-10-07/dist/modules/map/shared/format/formats/ai-data.js';
+import { dependencyAiPackPolicy as legacyPolicy } from './dependency-ai-pack-policy-legacy.mjs';
+import { readAIData } from '../sdk/array-values/modules/map/shared/format/formats/ai-data.js';
 const sha = (b) => createHash('sha256').update(b).digest('hex');
 export async function verifiedDependencyAiDocuments(prepared) {
   const documents = [],

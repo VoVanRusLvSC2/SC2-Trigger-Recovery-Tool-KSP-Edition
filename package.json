@@ -7,7 +7,12 @@
     "format": "prettier --write \"src/**/*.{mjs,js}\" \"scripts/*.mjs\" package.json .prettierrc.json",
     "format:check": "prettier --check \"src/**/*.{mjs,js}\" \"scripts/*.mjs\" package.json .prettierrc.json",
     "verify:source": "node scripts/check-source.mjs",
-    "verify:recovered": "node scripts/check-recovered-source.mjs"
+    "verify:recovered": "node scripts/check-recovered-source.mjs",
+    "verify:language": "node scripts/check-language-core.mjs",
+    "setup:local": "python scripts/setup-local-dependencies.py",
+    "verify:attribute-source": "node scripts/check-attribute-source.mjs",
+    "verify:retained": "node scripts/check-retained-source.mjs",
+    "verify:dependencies": "node scripts/check-runtime-dependencies.mjs"
   },
   "devDependencies": {
     "acorn": "8.15.0",
