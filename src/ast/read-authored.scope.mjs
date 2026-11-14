@@ -1,19 +1,10 @@
-import { readFile } from 'node:fs/promises';
-import { pathToFileURL } from 'node:url';
 import assert from 'node:assert/strict';
-const graph = JSON.parse(await readFile(new URL('./graph-sources.json', import.meta.url), 'utf8'));
-const { parseTriggerXmlSync, readTriggerLibrariesFast } = await import(
-  pathToFileURL(graph.correctedParser)
-);
-const { TriggerDocument } = await import(
-  pathToFileURL(graph.sdk + '/dist/modules/triggers/services/galaxy-conversion/trigger-document.js')
-);
-const { xmlTree } = await import(
-  pathToFileURL(graph.sdk + '/dist/modules/triggers/shared/trigger-document/lossless-xml.js')
-);
+import { arrayValuesSdkRoot, isLocalTriggerSdk, loadAuthoredSdk } from '../sdk/runtime.mjs';
+const { TriggerDocument, parseTriggerXmlSync, readTriggerLibrariesFast, xmlTree } =
+  await loadAuthoredSdk();
 export { validateAuthoredReferences } from '../utilities/read-authored-trigger-document.mjs';
-export async function readAuthoredTriggerDocument(raw, sdk, strings = '') {
-  assert.equal(sdk, graph.sdk);
+export async function readAuthoredTriggerDocument(raw, sdk = arrayValuesSdkRoot, strings = '') {
+  assert(isLocalTriggerSdk(sdk), 'Authored scope reader requires the bundled array-values SDK');
   const cst = xmlTree(raw),
     standards = cst.children.filter((n) => n.tag === 'Standard');
   assert(standards.length <= 1);

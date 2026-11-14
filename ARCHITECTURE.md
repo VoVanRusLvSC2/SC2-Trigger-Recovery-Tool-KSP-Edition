@@ -12,7 +12,7 @@ The common AST is the basis for analysis, type resolution, GUI binding and guard
 
 Real map archives, matching SDK dependencies and qualified source inputs are required. This publication is not a self-contained installer, and some dependencies remain unavailable.
 
-The [release roadmap](ROADMAP.md) lists integration blockers and completion criteria. Literal imports of the public entry point now resolve after local setup, but computed historical SDK paths still block execution. It is not currently a runnable example.
+The [release roadmap](ROADMAP.md) lists integration blockers and completion criteria. The public API and prepared-job CLI execute after local setup; they use portable checkout-relative SDK modules. See [API usage](API.md) and [CLI jobs](CLI.md). Source/input qualification and Editor acceptance remain separate.
 
 ## Code reading guide
 

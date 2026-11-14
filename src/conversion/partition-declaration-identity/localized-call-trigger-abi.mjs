@@ -1,3 +1,4 @@
+import { arrayValuesSdkRoot } from '../../sdk/runtime.mjs';
 // Extend the established variable-only metadata view. Dependency archives and
 // the source Galaxy remain unchanged; aliases need same-mod locale IDs and ABI.
 import assert from 'node:assert/strict';
@@ -24,15 +25,7 @@ import {
   unwrapArrayType,
 } from '../native-expression-identity/g2t-core.generated-call-provenance.mjs';
 const sha = (b) => createHash('sha256').update(b).digest('hex');
-const sdk = JSON.parse(
-  await readFile(
-    new URL(
-      '../trigger_ast_implementation_2026-10-07/CONFIG.json',
-      new URL('../../libraries/gui/localized-call-trigger-abi.mjs', import.meta.url).href,
-    ),
-    'utf8',
-  ),
-).sdk;
+const sdk = arrayValuesSdkRoot;
 const typeKey = (t) => {
   const { baseType, sizes } = unwrapArrayType(t);
   return [getTypeName(baseType), sizes.length];

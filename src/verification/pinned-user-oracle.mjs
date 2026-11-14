@@ -1,21 +1,24 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { localResourcePath } from '../model/local-resource-path.mjs';
 import { loadConversionOracle } from './oracle/conversion-oracle.mjs';
-const base = new URL('../../user_maps_2026-10-10/delivery-with-benchmark-v2366/', import.meta.url);
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 // Release identity of the user's unchanged benchmark, not a map-specific rule.
 const manifestSha256 = '94d0ee8f5a7ff489e1d161134a6a93f73c68669d00ce7f4bca2bc66f24649166';
-export async function openPinnedUserOracle() {
-  const bytes = await readFile(new URL('benchmark/MANIFEST.json', base));
+export async function openPinnedUserOracle({ root = process.env.SC2_TRIGGER_BENCHMARK_ROOT } = {}) {
+  if (root === undefined)
+    throw new Error('Pinned benchmark root required: pass root or set SC2_TRIGGER_BENCHMARK_ROOT');
+  const location = pathToFileURL(localResourcePath(root) + '/');
+  const bytes = await readFile(new URL('benchmark/MANIFEST.json', location));
   assert.equal(sha(bytes), manifestSha256);
   const manifest = JSON.parse(bytes.toString('utf8').replace(/^\uFEFF/u, ''));
   const verify = async () => {
-    assert.equal(sha(await readFile(new URL('benchmark/MANIFEST.json', base))), manifestSha256);
+    assert.equal(sha(await readFile(new URL('benchmark/MANIFEST.json', location))), manifestSha256);
     for (const entry of manifest.files)
       assert.equal(
-        sha(await readFile(new URL('benchmark/' + entry.path, base))),
+        sha(await readFile(new URL('benchmark/' + entry.path, location))),
         entry.sha256,
         entry.path,
       );
@@ -23,7 +26,7 @@ export async function openPinnedUserOracle() {
   await verify();
   const oracle = await loadConversionOracle(
     './benchmark/build/.benchmark-build/modkit-sc2-triggers/modules/triggers/services/galaxy-conversion/index.js',
-    fileURLToPath(base),
+    fileURLToPath(location),
   );
   return {
     compare: (a, b) => oracle.compareGalaxy(a, b, { libraryId: 'Map' }),

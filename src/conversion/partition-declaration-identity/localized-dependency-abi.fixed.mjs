@@ -1,3 +1,4 @@
+import { arrayValuesSdkRoot } from '../../sdk/runtime.mjs';
 // Display names can be localized; the compiled library ABI must use the actual
 
 // declared symbol. Derive aliases only from locales of the same hashed mod and
@@ -26,15 +27,7 @@ import {
   unwrapArrayType,
 } from '../native-expression-identity/g2t-core.generated-call-provenance.mjs';
 
-const SDK = JSON.parse(
-  await readFile(
-    new URL(
-      '../trigger_ast_implementation_2026-10-07/CONFIG.json',
-      new URL('../2026-10-15/localized-dependency-abi.fixed.mjs', import.meta.url).href,
-    ),
-    'utf8',
-  ),
-).sdk;
+const SDK = arrayValuesSdkRoot;
 
 const sha = (b) => createHash('sha256').update(b).digest('hex');
 

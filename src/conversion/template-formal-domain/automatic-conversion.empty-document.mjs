@@ -1,3 +1,4 @@
+import { arrayValuesSdkRoot } from '../../sdk/runtime.mjs';
 import { reifyStringLiteralParameters } from '../exact-function-signatures/string-literal-presets.frontend-scope.mjs';
 import {
   bindLocalizedTextParameters,
@@ -20,8 +21,7 @@ import {
 } from '../native-expression-identity/balanced-script-template-alternate.mjs';
 import { convertUserFunctionBody } from '../runtime-event-public-alias/g2t-trigger-body-alternate.mjs';
 import { parseSharedGalaxySource as parseGalaxySource } from '../runtime-event-public-alias/galaxy-to-trigger.standard-getter.mjs';
-const sdk =
-  'K:\\SC2_MAP_Workspace\\sc2_editor_C++\\map_build_validation_2026-10-01\\bundle\\modkit-extensions-blizzard\\starcraft2-trigger-ast-array-values-2026-10-07';
+const sdk = arrayValuesSdkRoot;
 export async function completeExistingGui(input, signal, service) {
   signal?.throwIfAborted();
   const libraries = new Map();

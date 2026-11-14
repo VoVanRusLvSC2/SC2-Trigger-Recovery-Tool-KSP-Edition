@@ -1,6 +1,6 @@
 {
   "date": "2026-11-14",
-  "basis": "Historical byte-level SHA-256 pins. Original/restored algorithm ASTs match after module/resource specifier relocation and formatting. This does not qualify cross-module runtime bindings.",
+  "basis": "Historical byte-level SHA-256 pins establish the original recovered sources. Specifier-only relocations preserve algorithm ASTs except explicitly described postRecoveryChanges, whose original recovery hashes remain recorded.",
   "scope": "Source provenance and integrity only; converter execution and map equivalence remain unqualified.",
   "files": [
     {
@@ -216,8 +216,15 @@
     {
       "file": "src/utilities/read-authored-trigger-document.mjs",
       "originalSha256": "0a98d14523f73055b3b5301e27be65829ae4719fee3ba95ad80b439514bb7b04",
-      "publishedSha256": "3d4a43bbadcd4c9cf0e616d587f707c5e0626c6b5a5ab7b04507e97598d559e6",
-      "algorithmAstSha256": "30fe75dc5c775e11c85e05303b42599c9df9d8b9d3317c17c05d0295f5453431"
+      "publishedSha256": "3174520ccb7cc10b45557e038a70e85d6d75a6d6117b9988d9a915bc89732938",
+      "algorithmAstSha256": "dddfb7c3807845fb4ef5d1bec3d7736851548aca5ea83f1e1a1384ba36a3511e",
+      "recoveredPublishedSha256": "3d4a43bbadcd4c9cf0e616d587f707c5e0626c6b5a5ab7b04507e97598d559e6",
+      "recoveryAlgorithmAstSha256": "30fe75dc5c775e11c85e05303b42599c9df9d8b9d3317c17c05d0295f5453431",
+      "postRecoveryChanges": {
+        "reason": "Delegate explicit SDK module loading to the portable runtime; authored CST, byte preservation, scope inventory and reference-audit bodies remain unchanged.",
+        "invariantBodyAstSha256": "f869bb8e0ce6bf22881dc09ad688f371bf1d07784cf08ea9d1a58f4defdc1dd6",
+        "verification": "scripts/check-authored-runtime.mjs"
+      }
     },
     {
       "file": "src/utilities/galaxy-ascii-string.mjs",

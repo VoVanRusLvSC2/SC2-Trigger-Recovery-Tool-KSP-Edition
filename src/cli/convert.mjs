@@ -187,6 +187,9 @@ import { quoteAttributeLiterals } from '../utilities/attribute-literal-quotes.ca
 import { compareGalaxyText } from '../conversion/partition-declaration-identity/comparison.mjs';
 
 import { expandLocalScripts } from '../libraries/common/shard1/local-scripts.mjs';
+import { arrayValuesSdkRoot } from '../sdk/runtime.mjs';
+import { conversionUsage, readConversionJob } from './job-input.mjs';
+import { componentVersionForBuild } from './build-version.mjs';
 
 const execute = promisify(execFile),
   sha = (b) => createHash('sha256').update(b).digest('hex');
@@ -209,13 +212,17 @@ const optional = async (p) => {
 };
 
 // Job identity and output isolation are checked before opening source archives.
-const row = await read(process.argv[2]);
+if (process.argv.length === 3 && process.argv[2] === '--help') {
+  console.log(conversionUsage);
+  process.exit(0);
+}
+if (process.argv.length !== 3 || process.argv[2].startsWith('-')) {
+  console.error(conversionUsage);
+  process.exit(2);
+}
+const row = await readConversionJob(process.argv[2]);
 const guiRecoveryMode = row.guiRecoveryMode ?? 'preserve-source';
 assert(['preserve-source', 'full-gui'].includes(guiRecoveryMode), 'Unknown GUI recovery mode');
-assert(
-  path.resolve(row.job).startsWith(path.resolve(import.meta.dirname) + path.sep),
-  'Isolated output job required',
-);
 const job = row.job,
   result = {
     id: row.id,
@@ -269,14 +276,21 @@ try {
 
   const prepared = await read(row.preparationResult),
     cfg = await read(row.config);
+  assert(typeof cfg.installation === 'string' && cfg.installation, 'Config installation required');
+  cfg.installation = path.resolve(path.dirname(row.config), cfg.installation);
 
   assert.equal(await hash(row.original), row.originalSha256);
   assert.equal(await hash(row.archive), row.archiveSha256);
 
-  assert.equal(
-    await hash('C:/Program Files (x86)/StarCraft II/.build.info'),
-    prepared.cascBuildInfoSha256,
-  );
+  const buildInfoBytes = await readFile(path.join(cfg.installation, '.build.info'));
+  assert.equal(sha(buildInfoBytes), prepared.cascBuildInfoSha256);
+  row.editorVersion = componentVersionForBuild(buildInfoBytes.toString('utf8'), row.editorVersion);
+  await save(path.join(job, 'COMPONENT_VERSION_SOURCE.json'), {
+    version: row.editorVersion,
+    source: 'Pinned active installed CASC build; target metadata only, not Editor compilation',
+    buildInfoSha256: prepared.cascBuildInfoSha256,
+    editorVerified: false,
+  });
 
   let folders = [];
 
@@ -770,10 +784,7 @@ try {
     parseGalaxy: parseGalaxySource,
     verifiedSource: verifiedAttributeSource,
     emptySourceEvidence: readExactEmptyOwnAttributeEvidence,
-    indexPath: localResourcePath(
-      new URL('../utilities/result.json', import.meta.url).href,
-      import.meta.dirname,
-    ),
+    indexPath: row.attributeIndex,
     extractedAttributes: await optional(path.join(row.package, 'Attributes')),
     checkExtractedAttributes: true,
   });
@@ -983,14 +994,7 @@ try {
     await save(path.join(job, 'BRANCHED_INTEGER_LOOP_BOUNDS_PROOF.json'), branchedLoopInput.proof);
     await save(path.join(job, 'SHARED_AST_ROOT_PHASE.json'), rootDocument.evidence());
     // Keep this tree through the remaining loop passes.
-    const templateSdk = (
-      await read(
-        new URL(
-          new URL('../ast/config.json', import.meta.url).href,
-          new URL('../conversion/incremental-empty-document/worker.mjs', import.meta.url).href,
-        ),
-      )
-    ).sdk;
+    const templateSdk = arrayValuesSdkRoot;
     const nativeLoopPreserver = preferSourceForForms(
       await readNativeTemplateLoopPreserver(prepared, templateSdk),
     );
@@ -1103,14 +1107,7 @@ try {
 
     await save(path.join(job, 'READONLY_NULL_GUI_PROOF.json'), readonlyNullProof);
 
-    const eventSdk = (
-      await read(
-        new URL(
-          new URL('../ast/config.json', import.meta.url).href,
-          new URL('../conversion/incremental-empty-document/worker.mjs', import.meta.url).href,
-        ),
-      )
-    ).sdk;
+    const eventSdk = arrayValuesSdkRoot;
     const startupProofSource = joined(sourceExpansion.text, ownHeader);
     const startupEventCapability = await createTrustedNativeEventEffects(
       prepared,
@@ -2071,7 +2068,7 @@ try {
   assert.equal(await hash(row.archive), row.archiveSha256);
 
   assert.equal(
-    await hash('C:/Program Files (x86)/StarCraft II/.build.info'),
+    await hash(path.join(cfg.installation, '.build.info')),
     prepared.cascBuildInfoSha256,
   );
 
@@ -2079,8 +2076,10 @@ try {
   result.status = result.variants.some((v) => v.status === 'VARIANT_FAILED')
     ? 'FAILED'
     : 'GENERATED';
+  if (result.status === 'FAILED') process.exitCode = 1;
   result.originalUnchanged = true;
 } catch (e) {
+  process.exitCode = 1;
   result.status = 'FAILED';
   result.error = String(e.stack ?? e);
   result.failedStage = stage;

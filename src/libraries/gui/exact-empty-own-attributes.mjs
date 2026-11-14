@@ -84,6 +84,8 @@ export async function readExactEmptyOwnAttributeEvidence({
   ast,
   originalDefinitions = 0,
 }) {
+  if (!indexPath)
+    return classifyExactEmptyOwnAttributes({ source, ast, originalDefinitions, headers: [] });
   const bytes = await readFile(indexPath),
     index = JSON.parse(bytes),
     matches = index.exact.filter((h) => h.sourceArchiveSha256 === originalSha256),

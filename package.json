@@ -14,7 +14,11 @@
     "verify:retained": "node scripts/check-retained-source.mjs",
     "verify:dependencies": "node scripts/check-runtime-dependencies.mjs",
     "verify:helpers": "node scripts/check-restored-helpers.mjs",
-    "verify:bindings": "node scripts/check-shared-bindings.mjs"
+    "verify:bindings": "node scripts/check-shared-bindings.mjs",
+    "verify:authored": "node scripts/check-authored-runtime.mjs",
+    "verify:cli": "node scripts/check-cli-input.mjs",
+    "verify:integration": "node scripts/check-converter-integration.mjs",
+    "verify:attribute-integration": "node scripts/check-attribute-integration.mjs"
   },
   "devDependencies": {
     "acorn": "8.15.0",

@@ -1,8 +1,9 @@
 // Normalize the UTF-8 signature at the table boundary, never a runtime value.
-// Preserve the historical source adapter and all its exact-source/default gates.
+// Use the general exact-source adapter. Historical per-map pilot policies are
+// not defaults for the supported converter path.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { verifiedAttributeSource as originalSource } from './verified-attribute-source.mjs';
+import { verifiedAttributeSource as originalSource } from '../../utilities/verified-attribute-source.mjs';
 const sha = (t) => createHash('sha256').update(t).digest('hex');
 
 export function normalizeAttributeLocalizationInputs(localizedStrings = []) {

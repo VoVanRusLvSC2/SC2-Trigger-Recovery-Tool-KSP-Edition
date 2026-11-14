@@ -26,7 +26,7 @@ export async function auditAttributeRecovery(input) {
   const runtime = await compareAttributePrograms(input.originalScripts, input.candidateScripts, {
     apiNames: input.schema.bindings.map((b) => b.apiName),
     compare: async (a, b) => {
-      oracle ??= await openPinnedUserOracle();
+      oracle ??= await openPinnedUserOracle({ root: input.benchmarkRoot });
       return oracle.compare(a, b);
     },
   });

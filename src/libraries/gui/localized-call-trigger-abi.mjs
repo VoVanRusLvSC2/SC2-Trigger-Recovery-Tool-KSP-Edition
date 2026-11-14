@@ -1,3 +1,4 @@
+import { arrayValuesSdkRoot } from '../../sdk/runtime.mjs';
 // Extend the established variable-only metadata view. Dependency archives and
 // the source Galaxy remain unchanged; aliases need same-mod locale IDs and ABI.
 import assert from 'node:assert/strict';
@@ -27,9 +28,7 @@ import {
   unwrapArrayType,
 } from '../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/g2t-core.js';
 const sha = (b) => createHash('sha256').update(b).digest('hex');
-const sdk = JSON.parse(
-  await readFile(new URL('../../ast/config.json', import.meta.url), 'utf8'),
-).sdk;
+const sdk = arrayValuesSdkRoot;
 const typeKey = (t) => {
   const { baseType, sizes } = unwrapArrayType(t);
   return [getTypeName(baseType), sizes.length];

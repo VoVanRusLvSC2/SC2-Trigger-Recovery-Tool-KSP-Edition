@@ -1,3 +1,4 @@
+import { arrayValuesSdkRoot } from '../../sdk/runtime.mjs';
 // Display names can be localized; the compiled library ABI must use the actual
 
 // declared symbol. Derive aliases only from locales of the same hashed mod and
@@ -26,9 +27,7 @@ import {
   unwrapArrayType,
 } from '../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/g2t-core.js';
 
-const SDK = JSON.parse(
-  await readFile(new URL('../../ast/config.json', import.meta.url), 'utf8'),
-).sdk;
+const SDK = arrayValuesSdkRoot;
 
 const sha = (b) => createHash('sha256').update(b).digest('hex');
 

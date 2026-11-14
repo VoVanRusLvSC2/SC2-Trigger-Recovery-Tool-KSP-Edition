@@ -4,15 +4,10 @@
  * Nonempty XML may never produce a vacuously successful empty inventory.
  */
 import assert from 'node:assert/strict';
-import { pathToFileURL } from 'node:url';
+import { loadAuthoredSdk } from '../sdk/runtime.mjs';
 export async function readAuthoredTriggerDocument(raw, sdk, triggerStrings = '') {
-  const root = sdk + '/dist/modules/triggers/';
-  const [{ TriggerDocument }, { parseTriggerXmlSync, readTriggerLibrariesFast }, { xmlTree }] =
-    await Promise.all([
-      import(pathToFileURL(root + 'services/galaxy-conversion/trigger-document.js')),
-      import(pathToFileURL(root + 'shared/trigger-document/sax-reader.js')),
-      import(pathToFileURL(root + 'shared/trigger-document/lossless-xml.js')),
-    ]);
+  const { TriggerDocument, parseTriggerXmlSync, readTriggerLibrariesFast, xmlTree } =
+    await loadAuthoredSdk(sdk);
   const cst = xmlTree(raw),
     standards = cst.children.filter((n) => n.tag === 'Standard');
   assert(standards.length <= 1, 'Ambiguous implicit map scope');

@@ -58,6 +58,27 @@
       "originalSha256": "06beeedc55d0dc3e41e4123bee4d9512ee7b434c11bc78174911b02be016bb96",
       "publishedSha256": "59ab3f2c351a03df139143fbe79b1ab669a28e2ba57ed19de3c0efea0f956f96",
       "algorithmAstSha256": "3a648e2bee7e4c887c950532e979949a943abc1c163ba86067023ff5e33ad0de"
+    },
+    {
+      "file": "src/ast/authored-xml-parser.mjs",
+      "sourceOrigin": "Retained corrected authored XML graph/738aa3fd7188-sax-reader.mjs",
+      "originalSha256": "0d826bab68d1e4a53e54b2f859e3462d357c8f809786759acfb98150322fe90a",
+      "publishedSha256": "8b4c211c8977c7a876f56dc799b30f88c9e8169293caab01912a74b26d75ba4b",
+      "algorithmAstSha256": "bdcb131c830279dbdc30e2d6a9ac0e8f7a90efd9028bd4a1d94751c89dc9b4eb"
+    },
+    {
+      "file": "src/ast/authored-xml-writer.mjs",
+      "sourceOrigin": "Retained corrected authored XML graph/667e8c11a224-trigger-xml.mjs",
+      "originalSha256": "7af5464d096745eadf1a451a0d64b29def29321e7c0a92958f8f5b80df8a2f09",
+      "publishedSha256": "3de8270acda745989fb0a85fd81eee99a2f4804689f39aac8434505a639433f0",
+      "algorithmAstSha256": "becbbe37caa665366d78b14e2bce46faba54b3e7398e9070fbff8a6ad29d980a"
+    },
+    {
+      "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/trigger-document.js",
+      "sourceOrigin": "Retained complete TriggerDocument JS body from compiler output",
+      "originalSha256": "9bd2446fea49aca6beae28c04401cbda99ccdc9e1b714280651eff99f4ac110b",
+      "publishedSha256": "7cc67d5fac7de41bcdcf1f42b036e84c35878af902bed2163bb4d9fbd3328f41",
+      "algorithmAstSha256": "8deecbc3098bbd2cc2df47c93fc73d0e5b45d58105f29def13d3f09d94d2393b"
     }
   ]
 }

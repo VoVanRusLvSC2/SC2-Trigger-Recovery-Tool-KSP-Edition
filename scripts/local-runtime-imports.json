@@ -1,4 +1,5 @@
 [
+  "@modkit/blizzard-casc",
   "@modkit/blizzard-casc/installation-node",
   "@modkit/blizzard-common-formats/content-address/cache-handle",
   "@modkit/blizzard-common-formats/s2protocol",
@@ -20,6 +21,7 @@
   "@modkit/codec-kit/audio",
   "@modkit/codec-kit/compression",
   "@modkit/codec-kit/compression/bounded",
+  "@modkit/codec-kit/compression/pkware-dcl",
   "@modkit/codec-kit/crypto",
   "@modkit/codec-kit/graph/isolation",
   "@modkit/core",

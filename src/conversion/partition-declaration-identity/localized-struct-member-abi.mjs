@@ -1,3 +1,4 @@
+import { arrayValuesSdkRoot } from '../../sdk/runtime.mjs';
 // Resolve foreign structure members through the same hashed dependency's
 // locale IDs and compiled owner/field/type. This is a metadata view only.
 import assert from 'node:assert/strict';
@@ -22,15 +23,7 @@ import {
   unwrapArrayType,
 } from '../native-expression-identity/g2t-core.generated-call-provenance.mjs';
 const sha = (b) => createHash('sha256').update(b).digest('hex');
-const sdk = JSON.parse(
-  await readFile(
-    new URL(
-      '../trigger_ast_implementation_2026-10-07/CONFIG.json',
-      new URL('../../libraries/gui/localized-struct-member-abi.mjs', import.meta.url).href,
-    ),
-    'utf8',
-  ),
-).sdk;
+const sdk = arrayValuesSdkRoot;
 export function collectStructAbi(declarations) {
   const structures = new Map(),
     conflicts = new Set();

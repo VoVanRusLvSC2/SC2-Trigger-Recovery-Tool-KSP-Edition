@@ -1,3 +1,4 @@
+import { arrayValuesSdkRoot } from '../../sdk/runtime.mjs';
 // The same three metadata-binding stages, with one source-document parse per
 // locale. Only small final ABI candidate facts survive that locale's scan.
 // No parsed cache, retained cross-call state or dependency archive writes.
@@ -30,9 +31,7 @@ import { patchUniqueIdentifier } from './patch-unique-abi-identifier.lossless.mj
 import { collectStructAbi, patchMemberDisplayName } from './localized-struct-member-abi.mjs';
 export { collectAbiSignatures, patchUniqueIdentifier, collectStructAbi, patchMemberDisplayName };
 const sha = (b) => createHash('sha256').update(b).digest('hex');
-const sdk = JSON.parse(
-  await readFile(new URL('../../ast/config.json', import.meta.url), 'utf8'),
-).sdk;
+const sdk = arrayValuesSdkRoot;
 const limits = { maxArchiveBytes: 1024 ** 3, maxEntries: 100000, maxEntryBytes: 256 * 1024 ** 2 };
 
 export async function bindLocalizedDependencyAbi(prepared, documents, declarations) {

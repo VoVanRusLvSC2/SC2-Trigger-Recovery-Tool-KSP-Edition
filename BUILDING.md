@@ -1,8 +1,8 @@
 # Build preparation
 
-Literal source imports now resolve after setup. Integration is still incomplete:
-historical computed SDK paths prevent converter API and CLI startup.
-See [remaining runtime and qualification work](SOURCE_STATUS.md).
+The component API and prepared-job CLI run after this setup. See [API.md](API.md)
+and [CLI.md](CLI.md) for inputs, and [SOURCE_STATUS.md](SOURCE_STATUS.md) for actual
+check results and remaining release qualification. This is not a bundled app.
 
 ## Prerequisites
 
@@ -46,18 +46,25 @@ npm run verify:language -- --with-runtime
 npm run verify:attribute-source
 npm run format:check
 npm run verify:source
+npm run verify:authored
+npm run verify:cli
 ```
 
 The first two checks cover source provenance and bytes. The language check
 compares the shared scanner and all six retained SDK grammars, including the
 archived parser as an independent reference. The attribute-source check covers
 stored default tokens, selected-variant overrides and invalid-source rejection.
-The dependency check loads all 29 imported package entry points and verifies
+The dependency check loads all 31 checked package entry points and verifies
 schema loading, catalog include paths and an MPQ write/read entirely in memory.
 These are focused preparation checks, not map-acceptance results.
 
-`verify:source` now passes after bootstrap: 1,342 modules parse with no unresolved
-literal imports. Its rules were not relaxed. This does not execute computed imports
-or prove complete converter behavior. API/CLI loading remains blocked by historical
-SDK paths; incremental recovery, attributes and the unchanged external benchmark
-are subsequent release gates.
+`verify:source` passes after bootstrap: 1,348 modules parse with no unresolved
+literal imports. Its rules were not relaxed. Actual API conversion and prepared
+CLI execution are checked separately; static resolution alone cannot prove them.
+
+The [integration commands](API.md#reproduce-integration-checks) require matching
+external NativeLib data and the pinned benchmark distribution. Both six-case
+converter integration and five-case attribute integration passed; the oracle's
+manifest and all 304 asset fingerprints remain unchanged. An actual CLI map job
+completed packaging and preservation checks while retaining its conservative
+REVIEW status. No new corpus-wide or Editor acceptance is claimed.

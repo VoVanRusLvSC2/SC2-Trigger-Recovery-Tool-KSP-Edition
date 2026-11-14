@@ -1,8 +1,8 @@
 # From source snapshot to a working converter
 
-**Updated: 2026-11-14. Current status: source integration, not a standalone release.**
+**Updated: 2026-11-14. Current status: operational API/prepared CLI; standalone distribution and broader qualification pending.**
 
-The recovery pipeline is implemented in the published source, and earlier artifacts have recorded map results. A fresh clone still cannot run the complete converter. The goal of this plan is a reproducible working release with a clear supported scope, useful diagnostics and a small, explicit list of remaining bugs. Silent changes to map behavior are not an acceptable beta limitation.
+The recovery pipeline is implemented in the published source, and earlier artifacts have recorded map results. A clone with the documented pinned runtime and verified inputs can run the component API and prepared-job worker. The goal of this plan is a reproducible working release with a clear supported scope, useful diagnostics and a small, explicit list of remaining bugs. Silent changes to map behavior are not an acceptable beta limitation.
 
 ## What is implemented and what remains open
 
@@ -17,17 +17,16 @@ The recovery pipeline is implemented in the published source, and earlier artifa
 
 ## Current recovery checkpoint
 
-Literal source closure is verified after the pinned local bootstrap:
-**1,342 modules parse with zero unresolved literal imports**. Historical SHA-256
-pins qualify 61 restored modules; 8 other full modules and 3 component restorations
-have separate provenance. Shared implementations replace 18 missing module targets.
-The 113 named binding checks and focused helper/runtime checks pass.
+Source/runtime loading is restored: **1,348 modules**, zero unresolved literal
+imports, portable SDK roots and both API directions executing. The prepared CLI
+also completed an actual map packaging job with original archive/MapScript
+preservation. Nine shared-root migrations preserve other algorithm ASTs. Retained
+provenance covers 61 historical pins, 11 full module bodies and three components.
 
-The API and CLI still stop at a JSON-driven historical SDK/parser path. Sixteen
-computed imports, complete conversion behavior and external qualification remain
-open. This is not a standalone release or a new map pass. See the current
-[exact remaining work and check results](SOURCE_STATUS.md) and
-[dependency setup](BUILDING.md).
+Six converter integration cases and five attribute cases passed with real
+NativeLib and the unchanged pinned benchmark. The real archive candidate remains
+REVIEW under the conservative catalog-interface gate; no corpus or Editor status
+was promoted. See [SOURCE_STATUS.md](SOURCE_STATUS.md), [API.md](API.md) and [CLI.md](CLI.md).
 
 ## 1. Restore a complete, explicit build graph
 
@@ -86,4 +85,4 @@ The [103 recorded strict-pass records](maps/verified.md) and [222 historical acc
 This plan does not promise universal reversal of arbitrary Galaxy into the exact original folders, comments or GUI authoring choices. It targets supported behavioral reconstruction, conservative preservation and explicit results when equivalence is not proved.
 
 
-The local bootstrap and static source closure are verified. Complete API/CLI execution, portable evidence inputs and conversion/Editor qualification remain pending; see [SOURCE_STATUS.md](SOURCE_STATUS.md).
+The local bootstrap, portable runtime, API conversion and a prepared CLI archive run are verified. Bundled preparation/distribution, corpus-wide requalification and Editor validation remain release work; see [SOURCE_STATUS.md](SOURCE_STATUS.md).
