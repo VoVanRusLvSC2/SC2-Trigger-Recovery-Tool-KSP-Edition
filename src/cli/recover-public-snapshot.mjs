@@ -175,6 +175,7 @@ export async function recoverPublicSnapshot(jobFile) {
     snapshotFilesReverifiedAtPreparation: false,
     editorVerified: false,
     attributesRecovered: false,
+    attributeUseEvidence: prepared.attributeUseEvidence ?? null,
     snapshotRevision: prepared.snapshotRevision,
     sourceArchiveSha256: row.originalSha256,
     previewMap: map,

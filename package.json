@@ -20,6 +20,7 @@
     "verify:language": "node scripts/check-language-core.mjs",
     "setup:local": "python scripts/setup-local-dependencies.py",
     "verify:attribute-source": "node scripts/check-attribute-source.mjs",
+    "verify:attribute-use": "node scripts/check-attribute-use-evidence.mjs",
     "verify:retained": "node scripts/check-retained-source.mjs",
     "verify:dependencies": "node scripts/check-runtime-dependencies.mjs",
     "verify:helpers": "node scripts/check-restored-helpers.mjs",
@@ -62,5 +63,5 @@
   "engines": {
     "node": ">=24 <25"
   },
-  "version": "3.0.0-rc.2"
+  "version": "3.0.0-rc.3"
 }

@@ -46,6 +46,13 @@ preparation and again after conversion. New component-version records use that
 active build tuple; existing version records remain unchanged. This is target
 metadata, not proof that the Editor compiled the candidate.
 
+Preparation records `attributeUseEvidence` from all parsed Galaxy sources in
+the resolved include closure. With no original Attributes component and no
+direct `GameAttribute*` calls, it records an explicit assumption that no
+attributes are used. This does not prove that unused lobby definitions were
+absent, or rule out dynamic calls or behavior in unavailable external data.
+Original attribute components are always retained.
+
 ## Preparation contract
 
 Preparation is an input artifact, not a success flag that bypasses verification.

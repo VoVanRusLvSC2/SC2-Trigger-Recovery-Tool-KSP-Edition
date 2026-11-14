@@ -12,6 +12,7 @@ import { removeEmptyDependencyDocuments } from '../libraries/preparation/empty-d
 import { xmlTree } from '../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js';
 import { parseGalaxySource } from '../conversion/runtime-event-public-alias/galaxy-to-trigger.standard-getter.mjs';
 import { SyntaxKind } from '../sdk/core/modules/galaxy/language-core/types.js';
+import { attributeUseInGalaxy } from '../verification/attribute-use-evidence.mjs';
 
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const save = (file, data) => fs.writeFile(file, JSON.stringify(data, null, 2) + '\n');
@@ -198,6 +199,7 @@ export async function prepareMap({
     }
     const pending = [{ fileName: 'MapScript.galaxy', text: script }, ...declarations];
     const seen = new Set(),
+      attributeSources = [],
       declarationKeys = new Set(
         declarations.map((d) => d.fileName.toLowerCase() + '\0' + sha(d.text)),
       );
@@ -213,6 +215,7 @@ export async function prepareMap({
         0,
         'Cannot establish include closure: ' + source.fileName,
       );
+      attributeSources.push(attributeUseInGalaxy(ast, source.fileName));
       for (const node of ast.statements.filter((n) => n.kind === SyntaxKind.IncludeStatement)) {
         const name = safeComponentPath(node.path.value).replace(/\.galaxy$/iu, '');
         let found;
@@ -248,6 +251,23 @@ export async function prepareMap({
         }
       }
     }
+    const originalAttributesPresent = entries.some(
+      (entry) => entry.path.toLowerCase() === 'attributes',
+    );
+    const attributeCalls = attributeSources.flatMap((item) =>
+      item.calls.map((call) => ({ source: item.source, ...call })),
+    );
+    prepared.attributeUseEvidence = {
+      scannedSources: attributeSources.length,
+      calls: attributeCalls,
+      originalAttributesPresent,
+      assumeNoUsedAttributes: !originalAttributesPresent && attributeCalls.length === 0,
+      assumptionOnly: true,
+      limitations: [
+        'Unused lobby definitions cannot be excluded by script inspection',
+        'Dynamic or external code and data-driven behavior are not proven',
+      ],
+    };
     await session.verifyDependencyFiles();
     assert.equal(await session.installationStamp(), beforeBuild, 'SC2 changed during preparation');
     assert.equal(
