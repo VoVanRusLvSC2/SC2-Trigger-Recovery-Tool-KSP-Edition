@@ -1,8 +1,8 @@
 // Comparison-only repair of the SDK's loose StringLiteral.value. Keep every
 // existing semantic shape field; only literal payloads use exact decoded bytes.
 import assert from 'node:assert/strict';
-import {SyntaxKind as K} from "../sdk/array-values/modules/galaxy/language-core/index.js";
-import {readStringLiteralValue} from "../types/string-literal-value.mjs";
+import { SyntaxKind as K } from '../sdk/array-values/modules/galaxy/language-core/index.js';
+import { readStringLiteralValue } from '../types/string-literal-value.mjs';
 
 export function literalByteSyntaxShape(node, syntaxShape) {
   function repair(shape, source) {
@@ -12,7 +12,7 @@ export function literalByteSyntaxShape(node, syntaxShape) {
     if (source.kind === K.StringLiteral) {
       const value = readStringLiteralValue(source.text);
       assert(value, 'UNPROVED_STRING_LITERAL_COMPARISON');
-      return {...shape, value: value.bytes.toString('hex')};
+      return { ...shape, value: value.bytes.toString('hex') };
     }
     for (const name of Object.keys(shape)) shape[name] = repair(shape[name], source[name]);
     return shape;

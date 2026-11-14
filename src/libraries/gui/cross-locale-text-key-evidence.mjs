@@ -1,9 +1,11 @@
 // Locale presence is evidence about an existing key, never a translation or
 // fallback decision. No resource table is merged, synthesized or changed.
-import {parseLocalizedValueTable} from "./localized-value-retention.mjs";
+import { parseLocalizedValueTable } from './localized-value-retention.mjs';
 
 export function nonemptyLocalizedTextKeys(tables = []) {
-  const keys = new Set(), refused = new Set(), locales = new Set();
+  const keys = new Set(),
+    refused = new Set(),
+    locales = new Set();
   for (const table of tables) {
     if (!/^[a-z]{2}[A-Z]{2}$/u.test(table.locale ?? '') || locales.has(table.locale)) {
       throw new TypeError('Distinct real locale tables are required');
@@ -13,7 +15,8 @@ export function nonemptyLocalizedTextKeys(tables = []) {
     for (const field of ['triggerStrings', 'gameStrings']) {
       if (table[field] === undefined) continue;
       if (typeof table[field] !== 'string') throw new TypeError('Localized table must be text');
-      for (const [key, values] of parseLocalizedValueTable(Buffer.from(table[field], 'utf8')).values) {
+      for (const [key, values] of parseLocalizedValueTable(Buffer.from(table[field], 'utf8'))
+        .values) {
         if (!/^Param\/Value\/(?:lib_[A-Za-z0-9]+_)?[0-9A-Fa-f]{8}$/u.test(key)) continue;
         const observed = local.get(key) ?? new Set();
         for (const value of values) observed.add(value);
@@ -43,10 +46,12 @@ export function ownTextKey(library, paramId) {
 const evidence = new WeakMap();
 export function attachLocalizedTextKeyEvidence(library, tables) {
   const prefix = library.implicit === true ? 'Param/Value/' : `Param/Value/lib_${library.id}_`;
-  const keys = new Set([...nonemptyLocalizedTextKeys(tables)].filter(key => {
-    const id = key.startsWith(prefix) ? key.slice(prefix.length) : undefined;
-    return id !== undefined && ownTextKey(library, id) === key;
-  }));
+  const keys = new Set(
+    [...nonemptyLocalizedTextKeys(tables)].filter((key) => {
+      const id = key.startsWith(prefix) ? key.slice(prefix.length) : undefined;
+      return id !== undefined && ownTextKey(library, id) === key;
+    }),
+  );
   evidence.set(library, keys);
   return keys.size;
 }
@@ -57,9 +62,13 @@ export function hasLocalizedTextKeyEvidence(library, paramId) {
 }
 
 export function documentTextLocales(input, normalized) {
-  const primary = normalized.locales.find(table => table.locale === normalized.primaryLocale);
-  return [{locale: normalized.primaryLocale,
-    triggerStrings: input.triggerStrings ?? primary?.triggerStrings,
-    gameStrings: input.gameStrings ?? primary?.gameStrings},
-    ...normalized.locales.filter(table => table.locale !== normalized.primaryLocale)];
+  const primary = normalized.locales.find((table) => table.locale === normalized.primaryLocale);
+  return [
+    {
+      locale: normalized.primaryLocale,
+      triggerStrings: input.triggerStrings ?? primary?.triggerStrings,
+      gameStrings: input.gameStrings ?? primary?.gameStrings,
+    },
+    ...normalized.locales.filter((table) => table.locale !== normalized.primaryLocale),
+  ];
 }

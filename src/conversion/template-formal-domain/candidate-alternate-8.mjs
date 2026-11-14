@@ -1,1 +1,1 @@
-export * from "./candidate-alternate-5.mjs";
+export * from './candidate-alternate-5.mjs';

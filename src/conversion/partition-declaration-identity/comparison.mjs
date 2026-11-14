@@ -1,2 +1,2 @@
-import {compareGalaxyBusiness} from "./comparison-business.mjs";
-export const compareGalaxyText=compareGalaxyBusiness;
+import { compareGalaxyBusiness } from './comparison-business.mjs';
+export const compareGalaxyText = compareGalaxyBusiness;

@@ -1,1 +1,1 @@
-export {resolveBoundStorage} from "../../model/bound-storage-path.source-axes.mjs";
+export { resolveBoundStorage } from '../../model/bound-storage-path.source-axes.mjs';

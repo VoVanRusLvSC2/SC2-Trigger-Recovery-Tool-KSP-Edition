@@ -1,1 +1,5 @@
 * -text
+
+# Copied dependencies stay visible in the tree without dominating GitHub diffs.
+src/sdk/** linguist-vendored
+src/vendor/** linguist-vendored

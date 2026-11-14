@@ -12,6 +12,24 @@ The common AST is the basis for analysis, type resolution, GUI binding and guard
 
 Real map archives, matching SDK dependencies and qualified source inputs are required. This publication is not a self-contained installer, and some dependencies remain unavailable.
 
+The [release roadmap](ROADMAP.md) lists the confirmed integration blockers and completion criteria. The public entry point is a retained interface whose re-export target still needs restoration; it is not currently a runnable example.
+
+## Code reading guide
+
+| Start here | What to follow |
+| --- | --- |
+| [Job orchestration](src/cli/convert.mjs) | Input identity checks, source policy, fresh/incremental routing, packing and final cleanup |
+| [Source ownership](src/model/source-ownership.mjs) | Why matching text alone cannot merge library or include identities |
+| [Mutable source program](src/conversion/exact-function-signatures/galaxy-program.collections.mjs) | Per-job source documents and explicit syntax transfer/disposal |
+| [Immutable syntax views](src/model/conversion-syntax-program.collections.mjs) | Bounded parse reuse within one conversion, never persistent reuse across unrelated jobs |
+| [GUI capability catalog](src/bindings/gui-capability-catalog.mjs) | Existing library/type/ID bindings and conservative ambiguity handling |
+| [Authored GUI inventory](src/incremental/authored-gui-inventory.mjs) | How nonempty or unfamiliar markup stays on the preservation path |
+| [Expression preparation](src/conversion/gui-expression-preparation.mjs) | Ordered transformations against the current shared document |
+| [Attribute preparation](src/conversion/document-attribute-preparation.mjs) | Original versus prepared archives and verified attribute provenance |
+| [Attribute gate](src/conversion/exact-function-signatures/attribute-recovery-gate.indexed.mjs) | Separate document, GUI and runtime-query contracts |
+
+Project-owned JavaScript follows the pinned formatter configuration. Comments explain ownership, refusal conditions and evidence boundaries rather than restating individual assignments. Copied SDK/vendor modules remain unchanged. The readability pass changes source-file hashes, so old byte-bound qualification artifacts still require release qualification even where normalized executable syntax is unchanged.
+
 ## Module responsibilities
 
 | Module | Responsibility |

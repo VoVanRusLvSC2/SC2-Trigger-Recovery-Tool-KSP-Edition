@@ -1,1 +1,1 @@
-export * from "./bound-source-access.concat.mjs";
+export * from './bound-source-access.concat.mjs';

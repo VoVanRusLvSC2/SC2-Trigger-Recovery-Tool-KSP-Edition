@@ -2,6 +2,8 @@
 
 **A reworked Trigger Revizer implementation, developed together with Vise.**
 
+> **Status: source integration in progress.** This checkout is not yet a standalone, install-and-run converter. See the [remaining work and release plan](ROADMAP.md).
+
 **Trigger Revizer KSP** is a StarCraft II (SC2) trigger recovery project. It reconstructs editable GUI trigger markup (`Triggers` XML) from Galaxy source such as `MapScript.galaxy`, and completes missing or changed sections of an existing trigger tree.
 
 The conversion core works with SC2 map and mod components (`.SC2Map` and `.SC2Mod`), library metadata and localized strings. Its goal is to preserve program behavior and existing GUI structure. Recovery depends on the available source and supported GUI bindings; compiled Galaxy alone cannot reveal every detail of the original authoring tree.
@@ -96,6 +98,7 @@ src/
   vendor/         Third-party runtime source
 maps/             The 103 + 222 accepted-map lists
 ARCHITECTURE.md   Design and integration notes
+ROADMAP.md        Current blockers and working-release acceptance criteria
 CONTRIBUTORS.md   Contributors and upstream acknowledgements
 licenses/         Original third-party license notices
 ```
@@ -105,6 +108,24 @@ See [Architecture](ARCHITECTURE.md) for module responsibilities and entry points
 ## Integration status
 
 The conversion core is implemented and has recorded results on real maps. The available source still has missing external dependencies and qualification inputs, so this is **not yet a complete standalone build**. Module paths have been reorganized for readability; historical results remain attached to the previously verified artifacts. No missing implementation is replaced by a stub, and the reorganization does not relax verification rules.
+
+A source audit on **2026-11-14** found **339 unresolved relative-import references to 89 distinct targets** across the published JavaScript modules. These are import sites and targets, not 339 separate bugs or failing maps. Examples include the public entry point's re-export, shared utility modules and SDK internals. External runtime packages, machine-local SDK configuration and external benchmark inputs also need integration. The [roadmap](ROADMAP.md) sets out the order and completion criteria.
+
+The readability update formats 782 project-owned modules and adds comments at the orchestration and contract boundaries. The 483 copied SDK/vendor modules and the map registry are unchanged. Syntax-tree comparison checks the formatting changes; it does not replace conversion benchmarks or a new Editor run. Historical source-hash evidence still needs qualification against a reproducible release build.
+
+## Reading and formatting the source
+
+Start with the [code reading guide](ARCHITECTURE.md#code-reading-guide). Project-owned JavaScript uses two-space indentation, a 100-column formatting target and explanatory comments for ownership, incremental recovery and verification boundaries. Copied SDK/vendor source is excluded from formatting.
+
+To install **formatting tooling only** and check or apply the style:
+
+```sh
+npm ci
+npm run format:check
+npm run format
+```
+
+These commands do not install a complete converter runtime or resolve the integration blockers above. The formatter is pinned in the development dependencies and lockfile.
 
 ## Galaxy to GUI trigger recovery: common questions
 

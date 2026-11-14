@@ -1,1 +1,1 @@
-export {verifySourceInitializerGuiOwnership} from "./source-initializer-gui-ownership.native-slot.mjs";
+export { verifySourceInitializerGuiOwnership } from './source-initializer-gui-ownership.native-slot.mjs';

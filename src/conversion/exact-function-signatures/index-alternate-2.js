@@ -1,8 +1,70 @@
-export * from "../../sdk/production-preparation/modules/galaxy/language-core/types.js";
-export { Scanner, tokenToString, stringToToken } from "../../sdk/production-preparation/modules/galaxy/language-core/scanner.js";
-export { Parser } from "../../sdk/production-preparation/modules/galaxy/language-core/parser.js";
-export { declareSymbol, getDeclarationName, bindSourceFile, unbindSourceFile } from "./binder-alternate.js";
-export { TypeChecker, AbstractType, IntrinsicType, ComplexType, StructType, FunctionType, LiteralType, ReferenceType, ArrayType, TypedefType, SignatureMeta, getNodeId, getSymbolId, getKeywordType, getBinaryResultType, normalizeGalaxyIncludeIdentity } from "./checker-alternate-3.js";
-export { Printer, editorPrinterOptions } from "../../sdk/production-preparation/modules/galaxy/language-core/printer.js";
-export { isToken, getNodeChildren, nodeHasTokens, getTokenAtPosition, isModifierKind, isKeywordKind, isKeywordTypeKind, isComplexTypeKind, isReferenceKeywordKind, isComparisonOperator, isAssignmentOperator, isAssignmentExpression, isLeftHandSideExpressionKind, isContainerKind, isNamedDeclarationKind, isDeclarationKind, isLeftHandSideExpression, isPartOfExpression, isPartOfTypeNode, isRightSideOfPropertyAccess, getKindName, sourceFileToJSON, findAncestor, findAncestorByKind, getSourceFileOfNode, fixupParentReferences, forEachChild, createFileDiagnostic, createDiagnosticForNode, getPositionOfLineAndCharacter, getLineAndCharacterOfPosition, getNodeRange } from "../../sdk/production-preparation/modules/galaxy/language-core/utils.js";
+export * from '../../sdk/production-preparation/modules/galaxy/language-core/types.js';
+export {
+  Scanner,
+  tokenToString,
+  stringToToken,
+} from '../../sdk/production-preparation/modules/galaxy/language-core/scanner.js';
+export { Parser } from '../../sdk/production-preparation/modules/galaxy/language-core/parser.js';
+export {
+  declareSymbol,
+  getDeclarationName,
+  bindSourceFile,
+  unbindSourceFile,
+} from './binder-alternate.js';
+export {
+  TypeChecker,
+  AbstractType,
+  IntrinsicType,
+  ComplexType,
+  StructType,
+  FunctionType,
+  LiteralType,
+  ReferenceType,
+  ArrayType,
+  TypedefType,
+  SignatureMeta,
+  getNodeId,
+  getSymbolId,
+  getKeywordType,
+  getBinaryResultType,
+  normalizeGalaxyIncludeIdentity,
+} from './checker-alternate-3.js';
+export {
+  Printer,
+  editorPrinterOptions,
+} from '../../sdk/production-preparation/modules/galaxy/language-core/printer.js';
+export {
+  isToken,
+  getNodeChildren,
+  nodeHasTokens,
+  getTokenAtPosition,
+  isModifierKind,
+  isKeywordKind,
+  isKeywordTypeKind,
+  isComplexTypeKind,
+  isReferenceKeywordKind,
+  isComparisonOperator,
+  isAssignmentOperator,
+  isAssignmentExpression,
+  isLeftHandSideExpressionKind,
+  isContainerKind,
+  isNamedDeclarationKind,
+  isDeclarationKind,
+  isLeftHandSideExpression,
+  isPartOfExpression,
+  isPartOfTypeNode,
+  isRightSideOfPropertyAccess,
+  getKindName,
+  sourceFileToJSON,
+  findAncestor,
+  findAncestorByKind,
+  getSourceFileOfNode,
+  fixupParentReferences,
+  forEachChild,
+  createFileDiagnostic,
+  createDiagnosticForNode,
+  getPositionOfLineAndCharacter,
+  getLineAndCharacterOfPosition,
+  getNodeRange,
+} from '../../sdk/production-preparation/modules/galaxy/language-core/utils.js';
 //# sourceMappingURL=index.js.map

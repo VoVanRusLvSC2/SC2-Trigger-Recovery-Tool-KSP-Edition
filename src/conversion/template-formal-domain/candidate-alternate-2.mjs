@@ -1,4 +1,4 @@
-export * from "./candidate-alternate.mjs";
+export * from './candidate-alternate.mjs';
 
 // Same conversion API; this snapshot simplifies only the worker analysis path.
 

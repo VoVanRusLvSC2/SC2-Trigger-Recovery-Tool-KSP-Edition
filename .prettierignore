@@ -1,0 +1,6 @@
+# Keep copied upstream source and published map identities byte-for-byte.
+src/sdk/**
+src/vendor/**
+maps/**
+licenses/**
+node_modules/**

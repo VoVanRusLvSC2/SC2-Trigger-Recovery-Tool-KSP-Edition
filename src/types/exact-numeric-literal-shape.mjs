@@ -4,7 +4,11 @@
 export function exactNumericLiteralShape(node) {
   const token = String(node.text ?? node.value);
   let numericType, value;
-  if (/^0[xX][\da-fA-F]+$/u.test(token) || /^0[bB][01]+$/u.test(token) || /^0[oO][0-7]+$/u.test(token)) {
+  if (
+    /^0[xX][\da-fA-F]+$/u.test(token) ||
+    /^0[bB][01]+$/u.test(token) ||
+    /^0[oO][0-7]+$/u.test(token)
+  ) {
     numericType = 'integer';
     value = BigInt(token).toString();
   } else if (/^\d+$/u.test(token)) {
@@ -20,5 +24,5 @@ export function exactNumericLiteralShape(node) {
     numericType = 'unclassified';
     value = token;
   }
-  return {kind: node.kind, numericType, value};
+  return { kind: node.kind, numericType, value };
 }

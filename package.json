@@ -3,6 +3,13 @@
   "private": true,
   "type": "module",
   "description": "Shared-AST SC2 trigger recovery core and accepted map records",
+  "scripts": {
+    "format": "prettier --write \"src/**/*.{mjs,js}\" package.json .prettierrc.json",
+    "format:check": "prettier --check \"src/**/*.{mjs,js}\" package.json .prettierrc.json"
+  },
+  "devDependencies": {
+    "prettier": "3.6.2"
+  },
   "exports": {
     ".": "./src/conversion/index.mjs"
   }

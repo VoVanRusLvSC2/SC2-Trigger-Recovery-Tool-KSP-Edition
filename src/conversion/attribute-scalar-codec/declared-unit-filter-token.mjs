@@ -1,144 +1,19 @@
 // GUI scalar tokens are admitted only by the real mounted engine declarations.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // No prefix guessing, private flag table, Native definition, or cached fallback.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export function declaredUnitFilterToken(identifier, constants) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    if (!/^c_targetFilter[A-Za-z][A-Za-z0-9]*$/u.test(identifier ?? '')) return undefined;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    const token = constants?.stringValue(identifier + 'Name');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    const bit = constants?.evaluate({kind:113, name:identifier});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    return Number.isInteger(bit) && bit >= 0 && bit < 64 &&
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        typeof token === 'string' && /^[A-Za-z][A-Za-z0-9]*$/u.test(token) ? token : undefined;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  if (!/^c_targetFilter[A-Za-z][A-Za-z0-9]*$/u.test(identifier ?? '')) return undefined;
+
+  const token = constants?.stringValue(identifier + 'Name');
+
+  const bit = constants?.evaluate({ kind: 113, name: identifier });
+
+  return Number.isInteger(bit) &&
+    bit >= 0 &&
+    bit < 64 &&
+    typeof token === 'string' &&
+    /^[A-Za-z][A-Za-z0-9]*$/u.test(token)
+    ? token
+    : undefined;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,21 +1,34 @@
-import {guiTypeQualifiers,retainedGuiType} from "../../model/gui-type-qualifiers.mjs";
-import sax from "../../vendor/sax/lib/sax.js";
-import { serializeTriggerLibraryCanonical } from "./trigger-xml.js";
-import { xmlTree } from "../../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js";
-import { parseTriggerStrings, applyTriggerStringsByType } from "../../sdk/array-values/modules/triggers/shared/trigger-document/trigger-strings.js";
+import { guiTypeQualifiers, retainedGuiType } from '../../model/gui-type-qualifiers.mjs';
+import sax from '../../vendor/sax/lib/sax.js';
+import { serializeTriggerLibraryCanonical } from './trigger-xml.js';
+import { xmlTree } from '../../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js';
+import {
+  parseTriggerStrings,
+  applyTriggerStringsByType,
+} from '../../sdk/array-values/modules/triggers/shared/trigger-document/trigger-strings.js';
 function mkRef(a) {
-  return { id: a.Id ?? a.id, library: a.Library ?? a.library ?? void 0, type: a.Type ?? a.type ?? void 0 };
+  return {
+    id: a.Id ?? a.id,
+    library: a.Library ?? a.library ?? void 0,
+    type: a.Type ?? a.type ?? void 0,
+  };
 }
 function extractScriptCodeCatalogRefs(code, path) {
   const refs = [];
   const patterns = [
-    { re: /(?:CreateUnit|UnitCreate|UnitTypeFromName|UnitTypeFromString)\s*\([^)]*"([^"]+)"/g, catalog: "Unit" },
-    { re: /(?:TechTreeAbilityAdd|TechTreeAbilityRemove|AbilityCommand|AbilCreate)\s*\([^)]*"([^"]+)"/g, catalog: "Abil" },
-    { re: /(?:ActorCreate|ActorFromName|ActorTypeFromName)\s*\([^)]*"([^"]+)"/g, catalog: "Actor" },
-    { re: /(?:TechTreeUpgradeAdd|UpgradeCreate)\s*\([^)]*"([^"]+)"/g, catalog: "Upgrade" },
-    { re: /(?:BehaviorAdd|BehaviorRemove)\s*\([^)]*"([^"]+)"/g, catalog: "Behavior" },
-    { re: /(?:EffectCreate|EffectTypeFromName)\s*\([^)]*"([^"]+)"/g, catalog: "Effect" },
-    { re: /(?:WeaponCreate|WeaponTypeFromName)\s*\([^)]*"([^"]+)"/g, catalog: "Weapon" }
+    {
+      re: /(?:CreateUnit|UnitCreate|UnitTypeFromName|UnitTypeFromString)\s*\([^)]*"([^"]+)"/g,
+      catalog: 'Unit',
+    },
+    {
+      re: /(?:TechTreeAbilityAdd|TechTreeAbilityRemove|AbilityCommand|AbilCreate)\s*\([^)]*"([^"]+)"/g,
+      catalog: 'Abil',
+    },
+    { re: /(?:ActorCreate|ActorFromName|ActorTypeFromName)\s*\([^)]*"([^"]+)"/g, catalog: 'Actor' },
+    { re: /(?:TechTreeUpgradeAdd|UpgradeCreate)\s*\([^)]*"([^"]+)"/g, catalog: 'Upgrade' },
+    { re: /(?:BehaviorAdd|BehaviorRemove)\s*\([^)]*"([^"]+)"/g, catalog: 'Behavior' },
+    { re: /(?:EffectCreate|EffectTypeFromName)\s*\([^)]*"([^"]+)"/g, catalog: 'Effect' },
+    { re: /(?:WeaponCreate|WeaponTypeFromName)\s*\([^)]*"([^"]+)"/g, catalog: 'Weapon' },
   ];
   for (const { re, catalog } of patterns) {
     let m;
@@ -38,24 +51,36 @@ function makeElementsByType() {
     Structure: {},
     SubFuncType: {},
     Comment: {},
-    CustomScript: {}
+    CustomScript: {},
   };
 }
 function scriptCodeFromBlock(raw) {
-  const lines = raw.replace(/\r\n?/gu, "\n").split("\n");
+  const lines = raw.replace(/\r\n?/gu, '\n').split('\n');
   const indent = `${lines[lines.length - 1]}    `;
   const body = lines.slice(1, -1);
-  if (lines.length < 3 || lines[0].trim() !== "" || indent.trim() !== "" || !body.every((line) => line.startsWith(indent) || line.trim() === "")) return raw;
-  return body.map((line) => line.startsWith(indent) ? line.slice(indent.length) : "").join("\n");
+  if (
+    lines.length < 3 ||
+    lines[0].trim() !== '' ||
+    indent.trim() !== '' ||
+    !body.every((line) => line.startsWith(indent) || line.trim() === '')
+  )
+    return raw;
+  return body.map((line) => (line.startsWith(indent) ? line.slice(indent.length) : '')).join('\n');
 }
 function normalizeXml(xml, root) {
-  const standard = root.children.find((node) => node.tag === "Standard");
+  const standard = root.children.find((node) => node.tag === 'Standard');
   if (!standard) return xml;
   const id = standard.attributes.Id;
-  if (!/^[A-Za-z0-9_]+$/u.test(id)) throw new TypeError("Invalid Standard library id");
-  const direct = root.children.filter((node) => node.tag !== "Standard" && node.tag !== "Library");
-  const embedded = root.children.filter((node) => node.tag === "Library");
-  return `<TriggerData><Library Id="${id}">` + direct.map((node) => xml.slice(node.start, node.end)).join("") + "</Library>" + embedded.map((node) => xml.slice(node.start, node.end)).join("") + "</TriggerData>";
+  if (!/^[A-Za-z0-9_]+$/u.test(id)) throw new TypeError('Invalid Standard library id');
+  const direct = root.children.filter((node) => node.tag !== 'Standard' && node.tag !== 'Library');
+  const embedded = root.children.filter((node) => node.tag === 'Library');
+  return (
+    `<TriggerData><Library Id="${id}">` +
+    direct.map((node) => xml.slice(node.start, node.end)).join('') +
+    '</Library>' +
+    embedded.map((node) => xml.slice(node.start, node.end)).join('') +
+    '</TriggerData>'
+  );
 }
 function freshEl(type, id, lib) {
   return {
@@ -87,53 +112,80 @@ function freshEl(type, id, lib) {
     isMatchConst: false,
     isAltDisplay: false,
     disabled: false,
-    arraySizes: []
+    arraySizes: [],
   };
 }
 function finalize(b) {
-  const retainedFlags = b.type === "SubFuncType" ? b.flags.filter((flag) => flag !== "Action" && flag !== "Event") : b.flags;
-  const base = { id: b.id, type: b.type, library: b.library, name: b.name, identifier: b.name, grammar: b.grammar, grammarSource: b.grammar === void 0 ? void 0 : "xml", disabled: b.disabled || void 0, flags: retainedFlags.length ? retainedFlags : void 0, unknownXml: b.unknownXml.length ? b.unknownXml : void 0 };
+  const retainedFlags =
+    b.type === 'SubFuncType'
+      ? b.flags.filter((flag) => flag !== 'Action' && flag !== 'Event')
+      : b.flags;
+  const base = {
+    id: b.id,
+    type: b.type,
+    library: b.library,
+    name: b.name,
+    identifier: b.name,
+    grammar: b.grammar,
+    grammarSource: b.grammar === void 0 ? void 0 : 'xml',
+    disabled: b.disabled || void 0,
+    flags: retainedFlags.length ? retainedFlags : void 0,
+    unknownXml: b.unknownXml.length ? b.unknownXml : void 0,
+  };
   const finPT = retainedGuiType;
   switch (b.type) {
-    case "FunctionDef": {
+    case 'FunctionDef': {
       const flags = b.flags.length ? b.flags : void 0;
       const json = {
         ...base,
-        type: "FunctionDef",
+        type: 'FunctionDef',
         scriptCode: b.scriptCode,
         parameters: b.parameters,
         returnType: finPT(b.returnType),
         flags,
-        isSubFunction: b.flags.includes("SubFunctions"),
-        isFuncAction: b.flags.includes("Action"),
-        isFuncCall: b.flags.includes("Call"),
+        isSubFunction: b.flags.includes('SubFunctions'),
+        isFuncAction: b.flags.includes('Action'),
+        isFuncCall: b.flags.includes('Call'),
         subFunctionTypes: b.subFunctionTypes.length ? b.subFunctionTypes : void 0,
-        actions: b.actions.length || !b.scriptCode && (b.flags.includes("Action") || b.flags.includes("Call")) && !b.flags.includes("Native") && !b.flags.includes("CustomScript") ? b.actions : void 0,
+        actions:
+          b.actions.length ||
+          (!b.scriptCode &&
+            (b.flags.includes('Action') || b.flags.includes('Call')) &&
+            !b.flags.includes('Native') &&
+            !b.flags.includes('CustomScript'))
+            ? b.actions
+            : void 0,
         localVariables: b.localVariables.length ? b.localVariables : void 0,
-        section: b.section
+        section: b.section,
       };
       if (b.scriptCode) {
-        const refs = extractScriptCodeCatalogRefs(b.scriptCode, "scriptCode");
+        const refs = extractScriptCodeCatalogRefs(b.scriptCode, 'scriptCode');
         if (refs.length) json.catalogRefs = refs;
       }
       return json;
     }
-    case "SubFuncType":
-      return { ...base, type: "SubFuncType", isAction: b.flags.includes("Action") || void 0, isEvent: b.flags.includes("Event") || void 0, functionDef: b.functionDef };
-    case "FunctionCall":
+    case 'SubFuncType':
       return {
         ...base,
-        type: "FunctionCall",
+        type: 'SubFuncType',
+        isAction: b.flags.includes('Action') || void 0,
+        isEvent: b.flags.includes('Event') || void 0,
+        functionDef: b.functionDef,
+      };
+    case 'FunctionCall':
+      return {
+        ...base,
+        type: 'FunctionCall',
         functionDef: b.functionDef,
         parameters: b.parameters.length ? b.parameters : void 0,
         subFunctions: b.subFunctions.length ? b.subFunctions : void 0,
         subFunctionType: b.subFunctionType,
-        scriptCode: b.scriptCode
+        scriptCode: b.scriptCode,
       };
-    case "Param": {
+    case 'Param': {
       const json = {
         ...base,
-        type: "Param",
+        type: 'Param',
         scriptCode: b.scriptCode,
         customType: b.paramCustomType,
         parameterDef: b.parameterDef,
@@ -145,7 +197,12 @@ function finalize(b) {
         expressionParams: b.expressionParams.length ? b.expressionParams : void 0,
         expressionCode: b.expressionCode,
         valueParams: b.valueParams.length ? b.valueParams : void 0,
-        valueType: b.paramValueType ? { type: b.paramValueType, ...b.paramValueGameType ? { gameType: b.paramValueGameType } : {} } : void 0,
+        valueType: b.paramValueType
+          ? {
+              type: b.paramValueType,
+              ...(b.paramValueGameType ? { gameType: b.paramValueGameType } : {}),
+            }
+          : void 0,
         functionCall: b.functionCall,
         preset: b.preset,
         valueElement: b.valueElement,
@@ -153,21 +210,28 @@ function finalize(b) {
         variable: b.variable,
         structMember: b.structMember,
         paramRef: b.paramRef,
-        array: b.arrayRefs.length === 0 ? void 0 : b.arrayRefs.length === 1 ? b.arrayRefs[0] : b.arrayRefs
+        array:
+          b.arrayRefs.length === 0
+            ? void 0
+            : b.arrayRefs.length === 1
+              ? b.arrayRefs[0]
+              : b.arrayRefs,
       };
       if (b.paramValueType && b.paramValue) {
         const vt = b.paramValueType.toLowerCase();
-        if (vt === "gamelink" || vt === "anygamelink") {
-          json.catalogRefs = [{ catalog: b.paramValueGameType ?? "unknown", entry: b.paramValue, path: "" }];
+        if (vt === 'gamelink' || vt === 'anygamelink') {
+          json.catalogRefs = [
+            { catalog: b.paramValueGameType ?? 'unknown', entry: b.paramValue, path: '' },
+          ];
         }
       }
       return json;
     }
-    case "ParamDef":
+    case 'ParamDef':
       return {
         ...base,
-        type: "ParamDef",
-        paramType: finPT(b.paramType) ?? { type: "unknown" },
+        type: 'ParamDef',
+        paramType: finPT(b.paramType) ?? { type: 'unknown' },
         default: b.defaultRef,
         isReference: b.isReference || void 0,
         isMultiple: b.isMultiple || void 0,
@@ -176,57 +240,57 @@ function finalize(b) {
         isMatchConst: b.isMatchConst || void 0,
         isAltDisplay: b.isAltDisplay || void 0,
         presets: b.presets,
-        preset: b.presets?.length === 1 ? b.presets[0] : undefined
+        preset: b.presets?.length === 1 ? b.presets[0] : undefined,
       };
-    case "Preset":
+    case 'Preset':
       return {
         ...base,
-        type: "Preset",
+        type: 'Preset',
         baseType: b.baseType,
         values: b.values,
         generateConstants: b.generateConstants,
         generateIdentifier: b.generateIdentifier,
         integer: b.integer,
         asBits: b.asBits,
-        ...b.presetExtends ? { extends: b.presetExtends } : {}
+        ...(b.presetExtends ? { extends: b.presetExtends } : {}),
       };
-    case "PresetValue":
+    case 'PresetValue':
       return {
         ...base,
-        type: "PresetValue",
+        type: 'PresetValue',
         value: b.presetValue,
-        definesDefault: b.definesDefault || void 0
+        definesDefault: b.definesDefault || void 0,
       };
-    case "Variable":
+    case 'Variable':
       return {
         ...base,
-        type: "Variable",
+        type: 'Variable',
         variableType: finPT(b.variableType),
         initialValue: b.initialValue,
         isArray: b.isArray || void 0,
         isConstant: b.isConstant || void 0,
-        arraySizes: b.arraySizes.length ? b.arraySizes : void 0
+        arraySizes: b.arraySizes.length ? b.arraySizes : void 0,
       };
-    case "Trigger":
+    case 'Trigger':
       return {
         ...base,
-        type: "Trigger",
+        type: 'Trigger',
         initOff: b.initOff || void 0,
         events: b.events,
         conditions: b.conditions,
         actions: b.actions,
-        localVariables: b.localVariables
+        localVariables: b.localVariables,
       };
-    case "Structure":
-      return { ...base, type: "Structure", variables: b.structVars };
-    case "Category":
-      return { ...base, type: "Category", items: b.items };
-    case "Label":
-      return { ...base, type: "Label" };
-    case "Comment":
-      return { ...base, type: "Comment", comment: b.comment, subFunctionType: b.subFunctionType };
-    case "CustomScript":
-      return { ...base, type: "CustomScript", scriptCode: b.scriptCode, initFunc: b.initFunc };
+    case 'Structure':
+      return { ...base, type: 'Structure', variables: b.structVars };
+    case 'Category':
+      return { ...base, type: 'Category', items: b.items };
+    case 'Label':
+      return { ...base, type: 'Label' };
+    case 'Comment':
+      return { ...base, type: 'Comment', comment: b.comment, subFunctionType: b.subFunctionType };
+    case 'CustomScript':
+      return { ...base, type: 'CustomScript', scriptCode: b.scriptCode, initFunc: b.initFunc };
     default:
       return void 0;
   }
@@ -249,11 +313,11 @@ function parseTriggerXmlSync(xmlContent) {
   let childTag = null;
   let childIsRef = false;
   let inPTContainer = false;
-  let textBuf = "";
+  let textBuf = '';
   function activePT() {
     if (!el) return {};
-    if (childTag === "ReturnType") return el.returnType ?? (el.returnType = {});
-    if (childTag === "VariableType") return el.variableType ?? (el.variableType = {});
+    if (childTag === 'ReturnType') return el.returnType ?? (el.returnType = {});
+    if (childTag === 'VariableType') return el.variableType ?? (el.variableType = {});
     return el.paramType ?? (el.paramType = {});
   }
   function emitLibrary() {
@@ -271,7 +335,7 @@ function parseTriggerXmlSync(xmlContent) {
       elements: libElements,
       elementsByType: libElementsByType,
       rootRefs: libRootRefs.slice(),
-      hasRoot: libHasRoot
+      hasRoot: libHasRoot,
     });
   }
   function startLibrary(id) {
@@ -292,23 +356,23 @@ function parseTriggerXmlSync(xmlContent) {
     depth++;
     const name = node.name;
     const attrs = node.attributes;
-    textBuf = "";
-    if (name === "Library" && (libDepth < 0 ? depth === 2 : depth === libDepth)) {
+    textBuf = '';
+    if (name === 'Library' && (libDepth < 0 ? depth === 2 : depth === libDepth)) {
       startLibrary(attrs.Id ?? attrs.id);
       libDepth = depth;
       return;
     }
     if (!libId) return;
-    if (name === "Root" && depth === libDepth + 1) {
+    if (name === 'Root' && depth === libDepth + 1) {
       rootDepth = depth;
       libHasRoot = true;
       return;
     }
-    if (rootDepth >= 0 && name === "Item" && depth === rootDepth + 1) {
+    if (rootDepth >= 0 && name === 'Item' && depth === rootDepth + 1) {
       libRootRefs.push(mkRef(attrs));
       return;
     }
-    if (name === "Element" && depth === libDepth + 1) {
+    if (name === 'Element' && depth === libDepth + 1) {
       el = freshEl(attrs.Type ?? attrs.type, attrs.Id ?? attrs.id, libId);
       elDepth = depth;
       childTag = null;
@@ -321,276 +385,276 @@ function parseTriggerXmlSync(xmlContent) {
     if (rel === 1) {
       childTag = name;
       childIsRef = !!(attrs.Id ?? attrs.id);
-      inPTContainer = name === "ReturnType" || name === "VariableType" || name === "ParameterType";
+      inPTContainer = name === 'ReturnType' || name === 'VariableType' || name === 'ParameterType';
       const FLAG = {
-        FlagNative: "Native",
-        FlagAction: "Action",
-        FlagCall: "Call",
-        FlagEvent: "Event",
-        Template: "Template",
-        FlagCustomScript: "CustomScript",
-        FlagOperator: "Operator",
-        FlagInline: "Inline",
-        FlagCustomAI: "CustomAI",
-        FlagSubFunctions: "SubFunctions",
-        FlagAllowBreak: "AllowBreak",
-        FlagHidden: "Hidden",
-        FlagNoScriptPrefix: "NoScriptPrefix",
-        Deprecated: "Deprecated",
-        Internal: "Internal",
-        FlagRestricted: "Restricted",
-        FlagCreateThread: "CreateThread",
-        FlagCondition: "Condition",
-        NotYetImplemented: "NotYetImplemented"
+        FlagNative: 'Native',
+        FlagAction: 'Action',
+        FlagCall: 'Call',
+        FlagEvent: 'Event',
+        Template: 'Template',
+        FlagCustomScript: 'CustomScript',
+        FlagOperator: 'Operator',
+        FlagInline: 'Inline',
+        FlagCustomAI: 'CustomAI',
+        FlagSubFunctions: 'SubFunctions',
+        FlagAllowBreak: 'AllowBreak',
+        FlagHidden: 'Hidden',
+        FlagNoScriptPrefix: 'NoScriptPrefix',
+        Deprecated: 'Deprecated',
+        Internal: 'Internal',
+        FlagRestricted: 'Restricted',
+        FlagCreateThread: 'CreateThread',
+        FlagCondition: 'Condition',
+        NotYetImplemented: 'NotYetImplemented',
       };
       if (FLAG[name]) {
         el.flags.push(FLAG[name]);
         return;
       }
-      if (name === "Disabled") {
+      if (name === 'Disabled') {
         el.disabled = true;
         return;
       }
-      if (name === "InitOff") {
+      if (name === 'InitOff') {
         el.initOff = true;
         return;
       }
-      if (el.type === "SubFuncType" && name === "Action") {
-        el.flags.push("Action");
+      if (el.type === 'SubFuncType' && name === 'Action') {
+        el.flags.push('Action');
         return;
       }
-      if (el.type === "SubFuncType" && name === "Event") {
-        el.flags.push("Event");
+      if (el.type === 'SubFuncType' && name === 'Event') {
+        el.flags.push('Event');
         return;
       }
-      if (el.type === "Preset" && name === "PresetGenConstVar") {
+      if (el.type === 'Preset' && name === 'PresetGenConstVar') {
         el.generateConstants = true;
         return;
       }
-      if (el.type === "Preset" && name === "PresetGenIdentFunc") {
+      if (el.type === 'Preset' && name === 'PresetGenIdentFunc') {
         el.generateIdentifier = true;
         return;
       }
-      if (el.type === "Preset" && name === "PresetInteger") {
+      if (el.type === 'Preset' && name === 'PresetInteger') {
         el.integer = true;
         return;
       }
-      if (el.type === "Preset" && name === "PresetAsBits") {
+      if (el.type === 'Preset' && name === 'PresetAsBits') {
         el.asBits = true;
         return;
       }
-      if (el.type === "PresetValue" && name === "DefinesDefault") {
+      if (el.type === 'PresetValue' && name === 'DefinesDefault') {
         el.definesDefault = true;
         return;
       }
-      if (name === "ParamFlagReference") {
+      if (name === 'ParamFlagReference') {
         el.isReference = true;
         return;
       }
-      if (name === "ParamFlagMultiple") {
+      if (name === 'ParamFlagMultiple') {
         el.isMultiple = true;
         return;
       }
-      if (name === "ParamFlagPreload") {
+      if (name === 'ParamFlagPreload') {
         el.isPreload = true;
         return;
       }
-      if (name === "ParamFlagVariableOnly") {
+      if (name === 'ParamFlagVariableOnly') {
         el.isVariableOnly = true;
         return;
       }
-      if (name === "ParamFlagMatchConst") {
+      if (name === 'ParamFlagMatchConst') {
         el.isMatchConst = true;
         return;
       }
-      if (name === "ParamFlagAltDisplay") {
+      if (name === 'ParamFlagAltDisplay') {
         el.isAltDisplay = true;
         return;
       }
-      if (name === "Const") {
+      if (name === 'Const') {
         el.isConstant = true;
         return;
       }
-      if (name === "Section") {
-        el.section = attrs.Value ?? attrs.value ?? "";
+      if (name === 'Section') {
+        el.section = attrs.Value ?? attrs.value ?? '';
         return;
       }
       const knownDirect = /* @__PURE__ */ new Set([
-        "Identifier",
-        "Disabled",
-        "InitOff",
-        "Grammar",
-        "ScriptCode",
-        "ExpressionText",
-        "Comment",
-        "InitFunc",
-        "Value",
-        "ReturnType",
-        "VariableType",
-        "ParameterType",
-        "FunctionDef",
-        "ParameterDef",
-        "Preset",
-        "PresetExtends",
-        "ValueElement",
-        "ValuePreset",
-        "ExpressionParam",
-        "ValueParam",
-        "StructMember",
-        "Default",
-        "Event",
-        "Condition",
-        "Variable",
-        "FunctionCall",
-        "Action",
-        "Parameter",
-        "SubFunctionType",
-        "Item",
-        "InitialValue",
-        "Array",
-        "BaseType",
-        "ValueType",
-        "ExpressionType",
-        "ExpressionCode",
-        "ValueId",
-        "ValueTypeInfo",
-        "CustomType",
-        "ValueGameType",
-        "TypeElement",
-        "Constant",
-        "ArraySize"
+        'Identifier',
+        'Disabled',
+        'InitOff',
+        'Grammar',
+        'ScriptCode',
+        'ExpressionText',
+        'Comment',
+        'InitFunc',
+        'Value',
+        'ReturnType',
+        'VariableType',
+        'ParameterType',
+        'FunctionDef',
+        'ParameterDef',
+        'Preset',
+        'PresetExtends',
+        'ValueElement',
+        'ValuePreset',
+        'ExpressionParam',
+        'ValueParam',
+        'StructMember',
+        'Default',
+        'Event',
+        'Condition',
+        'Variable',
+        'FunctionCall',
+        'Action',
+        'Parameter',
+        'SubFunctionType',
+        'Item',
+        'InitialValue',
+        'Array',
+        'BaseType',
+        'ValueType',
+        'ExpressionType',
+        'ExpressionCode',
+        'ValueId',
+        'ValueTypeInfo',
+        'CustomType',
+        'ValueGameType',
+        'TypeElement',
+        'Constant',
+        'ArraySize',
       ]);
       if (!knownDirect.has(name)) {
         const rawAttributes = {};
         for (const [key, value] of Object.entries(attrs)) {
-          if (typeof value === "string") rawAttributes[key] = value;
+          if (typeof value === 'string') rawAttributes[key] = value;
         }
         el.unknownXml.push({
           tag: name,
-          ...Object.keys(rawAttributes).length === 0 ? {} : { attributes: rawAttributes },
-          position: el.unknownXml.length
+          ...(Object.keys(rawAttributes).length === 0 ? {} : { attributes: rawAttributes }),
+          position: el.unknownXml.length,
         });
         return;
       }
-      if (name === "Array") {
+      if (name === 'Array') {
         if (childIsRef) el.arrayRefs.push(mkRef(attrs));
         else el.isArray = true;
         return;
       }
-      if (name === "BaseType") {
+      if (name === 'BaseType') {
         if (attrs.Value ?? attrs.value) el.baseType = attrs.Value ?? attrs.value;
         return;
       }
-      if (name === "ValueType") {
+      if (name === 'ValueType') {
         if (attrs.Type ?? attrs.type) el.paramValueType = attrs.Type ?? attrs.type;
         return;
       }
-      if (name === "ExpressionType") {
+      if (name === 'ExpressionType') {
         if (attrs.Type ?? attrs.type) el.expressionType = attrs.Type ?? attrs.type;
         return;
       }
-      if (name === "ExpressionCode") {
+      if (name === 'ExpressionCode') {
         el.expressionCode = attrs.Value ?? attrs.value;
         return;
       }
-      if (name === "ValueId") {
+      if (name === 'ValueId') {
         el.paramValueId = attrs.Id ?? attrs.id;
         return;
       }
-      if (name === "ValueTypeInfo") {
+      if (name === 'ValueTypeInfo') {
         el.paramValueTypeInfo = attrs.Value ?? attrs.value;
         return;
       }
-      if (name === "CustomType") {
+      if (name === 'CustomType') {
         el.paramCustomType = attrs.Type ?? attrs.type;
         return;
       }
-      if (name === "ValueGameType") {
+      if (name === 'ValueGameType') {
         if (attrs.Type ?? attrs.type) el.paramValueGameType = attrs.Type ?? attrs.type;
         return;
       }
       if (!childIsRef) return;
       switch (name) {
-        case "FunctionDef":
+        case 'FunctionDef':
           el.functionDef = mkRef(attrs);
           break;
-        case "ParameterDef":
+        case 'ParameterDef':
           el.parameterDef = mkRef(attrs);
           break;
-        case "Preset":
-          if (el.type === "ParamDef") (el.presets ??= []).push(mkRef(attrs));
+        case 'Preset':
+          if (el.type === 'ParamDef') (el.presets ??= []).push(mkRef(attrs));
           else el.preset = mkRef(attrs);
           break;
-        case "PresetExtends":
+        case 'PresetExtends':
           el.presetExtends = mkRef(attrs);
           break;
-        case "ValueElement":
+        case 'ValueElement':
           el.valueElement = mkRef(attrs);
           break;
-        case "ValuePreset":
+        case 'ValuePreset':
           el.valuePresets.push(mkRef(attrs));
           break;
-        case "ExpressionParam":
+        case 'ExpressionParam':
           el.expressionParams.push(mkRef(attrs));
           break;
-        case "ValueParam":
+        case 'ValueParam':
           el.valueParams.push(mkRef(attrs));
           break;
-        case "StructMember":
+        case 'StructMember':
           el.structMember = mkRef(attrs);
           break;
-        case "Default":
+        case 'Default':
           el.defaultRef = mkRef(attrs);
           break;
-        case "Event":
+        case 'Event':
           el.events.push(mkRef(attrs));
           break;
-        case "Condition":
+        case 'Condition':
           el.conditions.push(mkRef(attrs));
           break;
-        case "Variable": {
+        case 'Variable': {
           const vt = attrs.Type ?? attrs.type;
-          if (el.type === "Trigger" && vt === "Variable") el.localVariables.push(mkRef(attrs));
-          else if (el.type === "Structure" && vt === "Variable") el.structVars.push(mkRef(attrs));
-          else if (el.type === "FunctionDef") el.localVariables.push(mkRef(attrs));
+          if (el.type === 'Trigger' && vt === 'Variable') el.localVariables.push(mkRef(attrs));
+          else if (el.type === 'Structure' && vt === 'Variable') el.structVars.push(mkRef(attrs));
+          else if (el.type === 'FunctionDef') el.localVariables.push(mkRef(attrs));
           else el.variable = mkRef(attrs);
           break;
         }
-        case "FunctionCall":
-          if (el.type === "FunctionDef") el.actions.push(mkRef(attrs));
-          else if (el.type === "FunctionCall") el.subFunctions.push(mkRef(attrs));
+        case 'FunctionCall':
+          if (el.type === 'FunctionDef') el.actions.push(mkRef(attrs));
+          else if (el.type === 'FunctionCall') el.subFunctions.push(mkRef(attrs));
           else el.functionCall = mkRef(attrs);
           break;
-        case "Action":
+        case 'Action':
           el.actions.push(mkRef(attrs));
           break;
-        case "Parameter": {
+        case 'Parameter': {
           const t = attrs.Type ?? attrs.type;
-          if (t === "Comment") break;
-          if (t === "ParamDef" && el.type === "Param") el.paramRef = mkRef(attrs);
+          if (t === 'Comment') break;
+          if (t === 'ParamDef' && el.type === 'Param') el.paramRef = mkRef(attrs);
           else el.parameters.push(mkRef(attrs));
           break;
         }
-        case "SubFunctionType": {
+        case 'SubFunctionType': {
           const sfRef = {
-            library: attrs.Library ?? attrs.library ?? "",
-            id: attrs.Id ?? attrs.id ?? "",
-            type: attrs.Type ?? attrs.type ?? "SubFuncType"
+            library: attrs.Library ?? attrs.library ?? '',
+            id: attrs.Id ?? attrs.id ?? '',
+            type: attrs.Type ?? attrs.type ?? 'SubFuncType',
           };
-          if (el.type === "FunctionDef") el.subFunctionTypes.push(sfRef);
+          if (el.type === 'FunctionDef') el.subFunctionTypes.push(sfRef);
           else el.subFunctionType = sfRef;
           break;
         }
-        case "Item": {
+        case 'Item': {
           const t = attrs.Type ?? attrs.type;
-          if (t === "PresetValue") el.values.push(mkRef(attrs));
+          if (t === 'PresetValue') el.values.push(mkRef(attrs));
           else el.items.push(mkRef(attrs));
           break;
         }
-        case "Value":
-          if (el.type === "Variable") el.initialValue = mkRef(attrs);
+        case 'Value':
+          if (el.type === 'Variable') el.initialValue = mkRef(attrs);
           break;
-        case "InitialValue":
+        case 'InitialValue':
           el.initialValue = mkRef(attrs);
           break;
       }
@@ -599,28 +663,34 @@ function parseTriggerXmlSync(xmlContent) {
     if (rel === 2 && inPTContainer) {
       const pt = activePT();
       const qualifier = guiTypeQualifiers[name];
-      if (qualifier) { pt[qualifier] = attrs.Value ?? attrs.value; return; }
+      if (qualifier) {
+        pt[qualifier] = attrs.Value ?? attrs.value;
+        return;
+      }
       switch (name) {
-        case "Type":
+        case 'Type':
           pt.type = attrs.Value ?? attrs.value;
           break;
-        case "GameType":
+        case 'GameType':
           pt.gameType = attrs.Value ?? attrs.value;
           break;
-        case "VariableType":
+        case 'VariableType':
           pt.variableType = attrs.Value ?? attrs.value;
           break;
-        case "TypeElement":
+        case 'TypeElement':
           pt.typeElement = mkRef(attrs);
           break;
-        case "Constant":
+        case 'Constant':
           el.isConstant = true;
           break;
-        case "ArraySize": {
+        case 'ArraySize': {
           el.isArray = true;
           const dim = Number(attrs.Dim ?? attrs.dim ?? 0);
           const val = attrs.Value ?? attrs.value ?? void 0;
-          const varRef = (attrs.Type === "Variable" || attrs.type === "Variable") && (attrs.Id ?? attrs.id) ? mkRef(attrs) : void 0;
+          const varRef =
+            (attrs.Type === 'Variable' || attrs.type === 'Variable') && (attrs.Id ?? attrs.id)
+              ? mkRef(attrs)
+              : void 0;
           el.arraySizes.push({ dim, value: val, variable: varRef });
           break;
         }
@@ -631,34 +701,36 @@ function parseTriggerXmlSync(xmlContent) {
     const rel = depth - elDepth;
     if (el && rel === 1 && childTag === tagName) {
       const text = textBuf;
-      textBuf = "";
+      textBuf = '';
       switch (tagName) {
-        case "Identifier":
+        case 'Identifier':
           el.name = text || void 0;
           break;
-        case "Grammar":
+        case 'Grammar':
           el.grammar = text;
           break;
-        case "ScriptCode":
+        case 'ScriptCode':
           el.scriptCode = scriptCodeFromBlock(text) || void 0;
           break;
-        case "ExpressionText":
+        case 'ExpressionText':
           el.expressionText = text;
           break;
-        case "Comment":
+        case 'Comment':
           el.comment = text;
           break;
-        case "InitFunc":
+        case 'InitFunc':
           el.initFunc = text.trim() || void 0;
           break;
-        case "Value":
+        case 'Value':
           if (!childIsRef) {
-            if (el.type === "PresetValue") el.presetValue = text;
+            if (el.type === 'PresetValue') el.presetValue = text;
             else el.paramValue = text;
           }
           break;
         default: {
-          const extra = [...el.unknownXml].reverse().find((item) => item.tag === tagName && item.text === void 0);
+          const extra = [...el.unknownXml]
+            .reverse()
+            .find((item) => item.tag === tagName && item.text === void 0);
           if (extra !== void 0 && text.length > 0) extra.text = text;
           break;
         }
@@ -667,14 +739,14 @@ function parseTriggerXmlSync(xmlContent) {
       childIsRef = false;
       inPTContainer = false;
     }
-    if (el && rel === 0 && tagName === "Element") {
+    if (el && rel === 0 && tagName === 'Element') {
       const json = finalize(el);
       if (json) registerEl(json);
       el = null;
       elDepth = -1;
     }
-    if (tagName === "Root" && depth === rootDepth) rootDepth = -1;
-    if (libId && tagName === "Library" && depth === libDepth) {
+    if (tagName === 'Root' && depth === rootDepth) rootDepth = -1;
+    if (libId && tagName === 'Library' && depth === libDepth) {
       emitLibrary();
       libId = null;
       libDepth = -1;
@@ -689,14 +761,16 @@ function parseTriggerXmlSync(xmlContent) {
   };
   parser.write(xml).close();
   if (libId) emitLibrary();
-  const standard = originalRoot.children.find((node) => node.tag === "Standard");
+  const standard = originalRoot.children.find((node) => node.tag === 'Standard');
   for (const library of libraryMap.values()) {
     if (standard?.attributes.Id === library.id) library.implicit = true;
     let raw = xmlContent;
     if (libraryMap.size > 1 && !library.implicit) {
-      const node = originalRoot.children.find((node2) => node2.tag === "Library" && node2.attributes.Id === library.id);
+      const node = originalRoot.children.find(
+        (node2) => node2.tag === 'Library' && node2.attributes.Id === library.id,
+      );
       if (!node) continue;
-      raw = "<TriggerData>" + xmlContent.slice(node.start, node.end) + "</TriggerData>";
+      raw = '<TriggerData>' + xmlContent.slice(node.start, node.end) + '</TriggerData>';
     }
     library.xmlSource = { raw, canonical: serializeTriggerLibraryCanonical(library) };
   }
@@ -718,19 +792,21 @@ function applyStrings(result, triggerStrings) {
   const libId = result.library.id;
   result.library.triggerStringsLoaded = true;
   const strings = parseTriggerStrings(triggerStrings);
-  result.library.paramValuesLoaded = [...strings.keys()].some((key) => key.startsWith("ParamValue:"));
+  result.library.paramValuesLoaded = [...strings.keys()].some((key) =>
+    key.startsWith('ParamValue:'),
+  );
   applyTriggerStringsByType(libId, result.library.elementsByType, strings);
   const libName = strings.get(`Library:${libId}`) ?? strings.get(`Library/Name/${libId}`);
   if (libName) result.library.name = libName;
   const sfNames = {};
   for (const [key, name] of strings) {
-    if (key.startsWith("SubFuncType:")) sfNames[key.slice("SubFuncType:".length)] = name;
+    if (key.startsWith('SubFuncType:')) sfNames[key.slice('SubFuncType:'.length)] = name;
   }
   if (Object.keys(sfNames).length > 0) result.library.subFuncTypeNames = sfNames;
 }
 async function readTriggerLibraryFast(xmlContent, triggerStringsContent) {
   const libs = parseTriggerXmlSync(xmlContent);
-  if (libs.size === 0) throw new Error("No libraries found in trigger XML");
+  if (libs.size === 0) throw new Error('No libraries found in trigger XML');
   const [, library] = libs.entries().next().value;
   const result = buildResult(library);
   if (triggerStringsContent !== void 0) applyStrings(result, triggerStringsContent);
@@ -739,7 +815,7 @@ async function readTriggerLibraryFast(xmlContent, triggerStringsContent) {
 async function readTriggerLibrariesFast(xmlContents, triggerStringsMap) {
   const results = /* @__PURE__ */ new Map();
   for (const xml of xmlContents) {
-    for (const [libId, library] of typeof xml === "string" ? parseTriggerXmlSync(xml) : xml) {
+    for (const [libId, library] of typeof xml === 'string' ? parseTriggerXmlSync(xml) : xml) {
       const result = buildResult(library);
       if (triggerStringsMap?.has(libId)) applyStrings(result, triggerStringsMap.get(libId));
       results.set(libId, result);
@@ -751,7 +827,7 @@ export {
   parseTriggerXmlSync,
   readTriggerLibrariesFast,
   readTriggerLibraryFast,
-  scriptCodeFromBlock
+  scriptCodeFromBlock,
 };
 
 //# sourceMappingURL=sax-reader.js.map

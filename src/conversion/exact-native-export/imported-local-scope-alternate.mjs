@@ -4,27 +4,42 @@
  * Never fabricate a duplicate record or replace the type with int.
  */
 // @ts-nocheck
-import {SyntaxKind} from "../exact-function-signatures/index-alternate-2.js";
-import {getTypeName,unwrapArrayType} from "./g2t-core-alternate-2.mjs";
-import {syntaxChildren} from "./script-template-alternate.mjs";
-import {externalStructureDeclaration} from "./external-structure-fields-alternate-2.mjs";
-export function importedLocalScope(body,ctx){
- const pending=[body],seen=new Set(),declarations=[],types=new Map();
- while(pending.length){const n=pending.pop();if(!n||seen.has(n))continue;seen.add(n);
-  if(seen.size>250000)throw Error('Imported local scope scan bound exceeded');
-  if(n.kind===SyntaxKind.VariableDeclaration){
-   const type=getTypeName(unwrapArrayType(n.type).baseType),contract=externalStructureDeclaration(ctx.structureByGalaxyTypeName,type);
-   declarations.push(n);
-   if(contract)types.set(type,contract);
+import { SyntaxKind } from '../exact-function-signatures/index-alternate-2.js';
+import { getTypeName, unwrapArrayType } from './g2t-core-alternate-2.mjs';
+import { syntaxChildren } from './script-template-alternate.mjs';
+import { externalStructureDeclaration } from './external-structure-fields-alternate-2.mjs';
+export function importedLocalScope(body, ctx) {
+  const pending = [body],
+    seen = new Set(),
+    declarations = [],
+    types = new Map();
+  while (pending.length) {
+    const n = pending.pop();
+    if (!n || seen.has(n)) continue;
+    seen.add(n);
+    if (seen.size > 250000) throw Error('Imported local scope scan bound exceeded');
+    if (n.kind === SyntaxKind.VariableDeclaration) {
+      const type = getTypeName(unwrapArrayType(n.type).baseType),
+        contract = externalStructureDeclaration(ctx.structureByGalaxyTypeName, type);
+      declarations.push(n);
+      if (contract) types.set(type, contract);
+    }
+    pending.push(...syntaxChildren(n));
   }
-  pending.push(...syntaxChildren(n));
- }
- if(!types.size)return;
- // The existing Custom Script binding rewriter uses name maps, not a lexical
- // binder. Reject local names which could be mistaken for a parameter/global.
- for(const n of declarations){const name=n.name?.name;
-  if(ctx.globalVarByGalaxyName.has(name)||ctx.paramRefByGalaxyName?.has(name))throw Error('Imported local Custom Script scope has a shadowed binding: '+name);
- }
- return {types:[...types].map(([type,contract])=>({type,file:contract.file,signature:contract.signature})),
-  scope:'complete user-function body; original local declarations and control flow retained'};
+  if (!types.size) return;
+  // The existing Custom Script binding rewriter uses name maps, not a lexical
+  // binder. Reject local names which could be mistaken for a parameter/global.
+  for (const n of declarations) {
+    const name = n.name?.name;
+    if (ctx.globalVarByGalaxyName.has(name) || ctx.paramRefByGalaxyName?.has(name))
+      throw Error('Imported local Custom Script scope has a shadowed binding: ' + name);
+  }
+  return {
+    types: [...types].map(([type, contract]) => ({
+      type,
+      file: contract.file,
+      signature: contract.signature,
+    })),
+    scope: 'complete user-function body; original local declarations and control flow retained',
+  };
 }

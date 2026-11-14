@@ -1,1 +1,1 @@
-export {boundStorageShape} from "../../model/bound-storage-shape.source-axes.mjs";
+export { boundStorageShape } from '../../model/bound-storage-shape.source-axes.mjs';
