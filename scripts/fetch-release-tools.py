@@ -28,9 +28,9 @@ def main():
     args = parser.parse_args()
     pins = json.loads((ROOT / "packaging/tools.json").read_text())
     fetch(pins["mpqcli"]["url"], TOOLS / "mpqcli.exe", pins["mpqcli"]["sha256"])
-    from importlib.machinery import SourceFileLoader
-    pe = SourceFileLoader("pe_check", str(ROOT / "scripts/check-pe-runtime.py")).load_module()
-    if any(name.lower().startswith(("msvcp", "vcruntime", "msvcr")) for name in pe.imports(TOOLS / "mpqcli.exe")):
+    import runpy
+    pe = runpy.run_path(str(ROOT / "scripts/check-pe-runtime.py"))
+    if any(name.lower().startswith(("msvcp", "vcruntime", "msvcr")) for name in pe["imports"](TOOLS / "mpqcli.exe")):
         raise ValueError("MPQ tool requires a separately installed MSVC runtime")
     print("Verified mpqcli 0.10.0 with static CRT")
     if args.installer:
