@@ -5,7 +5,7 @@ export {
 } from '../../bindings/sdk-declaration-source.shared-ast.mjs';
 // SDK naming rules are retained verbatim below; only the declaration reader changes.
 // The state remains owned by the original SDK, shared with all existing emitters.
-import { namingIndexes } from '../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+import { namingIndexes } from '../native-expression-identity/core.mjs';
 import { mapParameterTypeToGalaxy } from './types/types.mjs';
 import { buildDependencyStructureBindings } from '../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/dependency-structure-bindings.js';
 import {

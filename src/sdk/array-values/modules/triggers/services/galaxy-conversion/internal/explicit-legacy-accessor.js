@@ -2,7 +2,7 @@
  * equivalence is assumed. A loaded native companion + exact operator macro
  * only proves the expression's GUI type, not that another call is equivalent.
  */
-import {printNode} from './script-template.js';
+import {printNode} from "../../../../../../../conversion/native-expression-identity/script-template.js";
 export function explicitLegacyAccessor(node,ctx){
  while(node?.kind===126)node=node.expression;
  if(node?.kind!==121||node.expression?.kind!==113||node.arguments?.length!==0)return;

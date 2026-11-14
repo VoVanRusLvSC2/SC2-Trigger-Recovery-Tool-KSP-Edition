@@ -8,7 +8,7 @@ import {
   forEachChild,
 } from '../sdk/array-values/modules/galaxy/language-core/index.js';
 import { xmlTree } from '../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js';
-import { serializeTriggerLibraryCanonical } from '../sdk/array-values/modules/triggers/shared/trigger-document/trigger-xml.js';
+import { serializeTriggerLibraryCanonical } from '../conversion/implicit-gui-localization/trigger-xml.js';
 import { inspectContextualNativeValueCandidates } from '../bindings/contextual-native-source-identity.mjs';
 import { declaredCarrier } from '../conversion/exact-function-signatures/galaxy-program-context.js';
 const sha = (s) => createHash('sha256').update(s).digest('hex'),

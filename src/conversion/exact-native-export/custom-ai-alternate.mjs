@@ -12,7 +12,7 @@ import { triggerFuncName } from './core.mjs';
 import {
   generateCustomAiMapScriptSection,
   generateCustomAiScript,
-} from '../../sdk/lossless-colors/modules/triggers/services/galaxy-conversion/internal/custom-ai-script.js';
+} from '../../libraries/gui/custom-ai-script.source-profile.mjs';
 const AI_SCRIPT_NAME = /^ai[0-9A-F]{8}\.galaxy$/iu;
 /** The map's `ai<Id>.galaxy` files the caller offers; anything else is refused. */
 export function customAiScriptFiles(value, maximumBytes) {

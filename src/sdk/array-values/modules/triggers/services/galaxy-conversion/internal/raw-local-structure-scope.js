@@ -5,7 +5,7 @@
 // @ts-nocheck
 import {SyntaxKind} from '@modkit/blizzard-starcraft2/galaxy/language-core';
 import {getTypeName,unwrapArrayType} from './g2t-core.js';
-import {syntaxChildren} from './script-template.js';
+import {syntaxChildren} from "../../../../../../../conversion/native-expression-identity/script-template.js";
 export function rawLocalStructureScope(body,ctx){
  const pending=[body],seen=new Set(),byName=new Map(),result=new Map();
  while(pending.length){

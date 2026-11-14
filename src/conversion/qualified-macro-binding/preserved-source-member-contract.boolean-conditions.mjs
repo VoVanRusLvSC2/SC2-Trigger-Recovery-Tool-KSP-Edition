@@ -1,4 +1,4 @@
-import { templateParameters } from '../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/script-template.js';
+import { templateParameters } from '../native-expression-identity/script-template.js';
 import { sourceInlineRoleFlags } from '../../bindings/source-inline-role-flags.mjs';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';

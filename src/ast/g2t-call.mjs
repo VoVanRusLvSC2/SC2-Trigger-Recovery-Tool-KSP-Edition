@@ -6,8 +6,8 @@ import { xmlControlLiteralParam } from '../sdk/array-values/modules/triggers/ser
 import { unitFilterSourceSymbol } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/unit-filter-source-symbol.js';
 import { rewriteBoundExpression } from './g2t-actions.mjs';
 import { explicitLegacyAccessor } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/explicit-legacy-accessor.js';
-import { declaredRawForeignTriggerHandle } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/external-structure-fields.js';
-import { singleCallTemplateAlias } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/single-call-template-alias.js';
+import { declaredRawForeignTriggerHandle } from '../conversion/native-expression-identity/external-structure-fields.mjs';
+import { singleCallTemplateAlias } from '../conversion/native-expression-identity/single-call-template-alias.js';
 import { libraryPrefix, lookupElement } from './explicit-numeric-global-model.mjs';
 import {
   mkParamRef,

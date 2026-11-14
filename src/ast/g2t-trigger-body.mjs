@@ -1,7 +1,7 @@
 import { rawLocalStructureScope } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/raw-local-structure-scope.js';
 import { unreachableGuiSuffixStart } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/unreachable-gui-tail.js';
-import { importedLocalScope } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/imported-local-scope.js';
-import { explicitIntegerZeroParam } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/explicit-zero-initializer.js';
+import { importedLocalScope } from '../conversion/native-expression-identity/imported-local-scope.mjs';
+import { explicitIntegerZeroParam } from '../conversion/native-expression-identity/explicit-zero-initializer.mjs';
 import { localizedTextInitializerSequence } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/localized-text-prefix.js';
 import { mkParamRef } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/g2t-core.js';
 import { legacyLocalArrayFill } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/legacy-local-array-fill.js';

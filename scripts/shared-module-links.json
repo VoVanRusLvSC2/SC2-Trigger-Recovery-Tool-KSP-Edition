@@ -1,0 +1,209 @@
+[
+  {
+    "file": "src/analysis/compiler-library-autoload.gui-demand.mjs",
+    "targets": [
+      "src/conversion/native-expression-identity/core.mjs"
+    ]
+  },
+  {
+    "file": "src/ast/balanced-script-template.mjs",
+    "targets": [
+      "src/conversion/native-expression-identity/core.mjs"
+    ]
+  },
+  {
+    "file": "src/ast/g2t-actions.mjs",
+    "targets": [
+      "src/bindings/parameter-script-name.mjs",
+      "src/conversion/native-expression-identity/core.mjs",
+      "src/conversion/native-expression-identity/owned-raw-struct-member.mjs"
+    ]
+  },
+  {
+    "file": "src/ast/g2t-call.mjs",
+    "targets": [
+      "src/conversion/native-expression-identity/external-structure-fields.mjs",
+      "src/conversion/native-expression-identity/single-call-template-alias.js"
+    ]
+  },
+  {
+    "file": "src/ast/g2t-structured.mjs",
+    "targets": [
+      "src/conversion/native-expression-identity/core.mjs",
+      "src/conversion/native-expression-identity/external-structure-fields.mjs"
+    ]
+  },
+  {
+    "file": "src/ast/g2t-trigger-body.mjs",
+    "targets": [
+      "src/conversion/native-expression-identity/explicit-zero-initializer.mjs",
+      "src/conversion/native-expression-identity/imported-local-scope.mjs"
+    ]
+  },
+  {
+    "file": "src/ast/galaxy-to-trigger.mjs",
+    "targets": [
+      "src/conversion/attribute-scalar-codec/ordinal-preset-owners.mjs",
+      "src/conversion/native-expression-identity/core.mjs",
+      "src/conversion/native-expression-identity/explicit-zero-initializer.mjs",
+      "src/conversion/native-expression-identity/external-structure-fields.mjs",
+      "src/conversion/native-expression-identity/g2t-initialization.mjs",
+      "src/conversion/native-expression-identity/galaxy-type-resolution.mjs"
+    ]
+  },
+  {
+    "file": "src/ast/ttg-actions.mjs",
+    "targets": [
+      "src/conversion/native-expression-identity/core.mjs"
+    ]
+  },
+  {
+    "file": "src/ast/ttg-convert.mjs",
+    "targets": [
+      "src/conversion/native-expression-identity/core.mjs"
+    ]
+  },
+  {
+    "file": "src/ast/ttg-params.mjs",
+    "targets": [
+      "src/bindings/parameter-script-name.mjs",
+      "src/conversion/native-expression-identity/core.mjs"
+    ]
+  },
+  {
+    "file": "src/ast/ttg-template.mjs",
+    "targets": [
+      "src/conversion/native-expression-identity/core.mjs"
+    ]
+  },
+  {
+    "file": "src/ast/unit-filter-word-banks.mjs",
+    "targets": [
+      "src/conversion/native-expression-identity/core.mjs"
+    ]
+  },
+  {
+    "file": "src/conversion/attribute-scalar-codec/sdk-index.mjs",
+    "targets": [
+      "src/conversion/native-expression-identity/core.mjs"
+    ]
+  },
+  {
+    "file": "src/conversion/attribute-scalar-codec/types/symbol-core.mjs",
+    "targets": [
+      "src/conversion/native-expression-identity/core.mjs"
+    ]
+  },
+  {
+    "file": "src/conversion/exact-native-export/custom-ai-alternate.mjs",
+    "targets": [
+      "src/libraries/gui/custom-ai-script.source-profile.mjs"
+    ]
+  },
+  {
+    "file": "src/conversion/exact-native-export/custom-ai.mjs",
+    "targets": [
+      "src/libraries/gui/custom-ai-script.source-profile.mjs"
+    ]
+  },
+  {
+    "file": "src/conversion/partition-declaration-identity/galaxy-to-trigger.mjs",
+    "targets": [
+      "src/conversion/attribute-scalar-codec/ordinal-preset-owners.mjs"
+    ]
+  },
+  {
+    "file": "src/conversion/partition-declaration-identity/service-alternate.mjs",
+    "targets": [
+      "src/libraries/gui/custom-ai-recovery.source-profile.mjs"
+    ]
+  },
+  {
+    "file": "src/conversion/partition-declaration-identity/service.mjs",
+    "targets": [
+      "src/libraries/gui/custom-ai-recovery.source-profile.mjs"
+    ]
+  },
+  {
+    "file": "src/conversion/qualified-macro-binding/preserved-source-member-contract.boolean-conditions.mjs",
+    "targets": [
+      "src/conversion/native-expression-identity/script-template.js"
+    ]
+  },
+  {
+    "file": "src/incremental/authored-contextual-native-getters.scoped.mjs",
+    "targets": [
+      "src/conversion/implicit-gui-localization/trigger-xml.js"
+    ]
+  },
+  {
+    "file": "src/libraries/gui/localized-call-trigger-abi.mjs",
+    "targets": [
+      "src/conversion/native-expression-identity/core.mjs"
+    ]
+  },
+  {
+    "file": "src/libraries/gui/localized-dependency-abi.single-locale-lossless.mjs",
+    "targets": [
+      "src/conversion/native-expression-identity/core.mjs"
+    ]
+  },
+  {
+    "file": "src/libraries/gui/localized-struct-member-abi.mjs",
+    "targets": [
+      "src/conversion/native-expression-identity/core.mjs"
+    ]
+  },
+  {
+    "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/explicit-legacy-accessor.js",
+    "targets": [
+      "src/conversion/native-expression-identity/script-template.js"
+    ]
+  },
+  {
+    "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/external-trigger-reference.js",
+    "targets": [
+      "src/conversion/native-expression-identity/core.mjs"
+    ]
+  },
+  {
+    "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/g2t-core.js",
+    "targets": [
+      "src/conversion/native-expression-identity/core.mjs",
+      "src/conversion/native-expression-identity/function-candidates.js",
+      "src/conversion/native-expression-identity/script-template.js",
+      "src/conversion/native-expression-identity/single-call-template-alias.js"
+    ]
+  },
+  {
+    "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/galaxy-constants.js",
+    "targets": [
+      "src/conversion/native-expression-identity/script-template.js"
+    ]
+  },
+  {
+    "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/raw-local-structure-scope.js",
+    "targets": [
+      "src/conversion/native-expression-identity/script-template.js"
+    ]
+  },
+  {
+    "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/preset-identifier-inverse.js",
+    "targets": [
+      "src/conversion/native-expression-identity/core.mjs",
+      "src/conversion/native-expression-identity/script-template.js"
+    ]
+  },
+  {
+    "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/recovery-session.js",
+    "targets": [
+      "src/conversion/native-expression-identity/function-candidates.js"
+    ]
+  },
+  {
+    "file": "src/sdk/array-values/modules/triggers/shared/trigger-document/sax-reader.js",
+    "targets": [
+      "src/conversion/implicit-gui-localization/trigger-xml.js"
+    ]
+  }
+]

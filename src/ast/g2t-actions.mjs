@@ -2,8 +2,8 @@ import { stableGlobalPlayerLoop } from './native-gui-recipes.mjs';
 import { SyntaxKind as ConcatSyntaxKind } from '../sdk/array-values/modules/galaxy/language-core/index.js';
 import { triggerBoolGuard } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/trigger-bool-guard.js';
 import { wrapCustomScriptLines } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/custom-script-line-transport.js';
-import { parameterScriptName } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/parameter-script-name.js';
-import { ownedRawStructMember } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/owned-raw-struct-member.js';
+import { parameterScriptName } from '../bindings/parameter-script-name.mjs';
+import { ownedRawStructMember } from '../conversion/native-expression-identity/owned-raw-struct-member.mjs';
 import { sameStableWaitDuration } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/same-wait-duration.js';
 import { controlNeedsLexicalCondition } from './g2t-structured.mjs';
 import { privateSnapshotIntegerLoop } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/integer-loop-contract.js';
@@ -26,7 +26,7 @@ import {
   triggerHandleName,
   triggerInitFuncName,
   structureTypeName,
-} from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+} from '../conversion/native-expression-identity/core.mjs';
 import { isGeneratedBodyBanner } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/editor-layout.js';
 import {
   mkParamRef,

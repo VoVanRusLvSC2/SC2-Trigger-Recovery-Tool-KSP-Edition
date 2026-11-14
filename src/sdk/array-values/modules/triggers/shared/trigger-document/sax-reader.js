@@ -1,5 +1,5 @@
 import sax from "sax";
-import { serializeTriggerLibraryCanonical } from "./trigger-xml.js";
+import { serializeTriggerLibraryCanonical } from "../../../../../../conversion/implicit-gui-localization/trigger-xml.js";
 import { xmlTree } from "./lossless-xml.js";
 import { parseTriggerStrings, applyTriggerStringsByType } from "./trigger-strings.js";
 function mkRef(a) {

@@ -12,7 +12,9 @@
     "setup:local": "python scripts/setup-local-dependencies.py",
     "verify:attribute-source": "node scripts/check-attribute-source.mjs",
     "verify:retained": "node scripts/check-retained-source.mjs",
-    "verify:dependencies": "node scripts/check-runtime-dependencies.mjs"
+    "verify:dependencies": "node scripts/check-runtime-dependencies.mjs",
+    "verify:helpers": "node scripts/check-restored-helpers.mjs",
+    "verify:bindings": "node scripts/check-shared-bindings.mjs"
   },
   "devDependencies": {
     "acorn": "8.15.0",

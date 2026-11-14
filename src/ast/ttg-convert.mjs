@@ -1,10 +1,7 @@
 import { conversionError, encodePayload, refKey } from './explicit-numeric-global-model.mjs';
 import { createBlock } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ast-factory.js';
 import { convertAction as forwardAction } from './ttg-actions.mjs';
-import {
-  expressionKey,
-  memoExpression,
-} from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+import { expressionKey, memoExpression } from '../conversion/native-expression-identity/core.mjs';
 import { actualParameterType, convertParamExpr as forwardParamExpr } from './ttg-params.mjs';
 import { emitScriptTemplate, isInlineTemplate } from './ttg-template.mjs';
 /**
@@ -39,7 +36,7 @@ import {
   resolveVariableGalaxyName,
   toGalaxyFunctionName,
   isIdentityConversionOperator,
-} from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+} from '../conversion/native-expression-identity/core.mjs';
 import {
   UNKNOWN_SUBFUNC_JSON_SENTINEL,
   UNKNOWN_SUBFUNC_SENTINEL,

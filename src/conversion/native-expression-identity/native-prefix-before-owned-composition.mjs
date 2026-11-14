@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { SyntaxKind as K } from '../exact-function-signatures/index-alternate-3.js';
-import { normalizeVerifiedNativeIncludes } from '../../utilities';
+import { normalizeVerifiedNativeIncludes } from '../../utilities/native-include-proof.mjs';
 import { parseImmutableGalaxySyntax as parse } from '../exact-function-signatures/immutable-galaxy-syntax.collections.mjs';
 import { assertExactAstShape } from '../../verification/exact-ast-shape.mjs';
 import { literalByteSyntaxShape } from '../exact-function-signatures/literal-byte-syntax-shape.mjs';

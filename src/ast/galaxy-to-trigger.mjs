@@ -4,14 +4,14 @@ import { RecoverySession } from '../sdk/array-values/modules/triggers/services/g
 import { bindLegacyLoopAccessor } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/legacy-loop-accessor-binding.js';
 import { SyntaxKind } from '../sdk/array-values/modules/galaxy/language-core/index.js';
 import { ownedTriggerInitPrototypes } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/owned-trigger-init-prototypes.js';
-import { triggerInitFuncName } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+import { triggerInitFuncName } from '../conversion/native-expression-identity/core.mjs';
 import { rewriteBoundInitializationBody } from './g2t-actions.mjs';
-import { recoverOrdinalPresetOwners } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ordinal-preset-owners.js';
+import { recoverOrdinalPresetOwners } from '../conversion/attribute-scalar-codec/ordinal-preset-owners.mjs';
 import { retainInlineCustomGlobals } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/inline-custom-globals.js';
 import { declaredExternalTriggerReferences } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/external-trigger-reference.js';
 import { retainPrimaryCustomIncludes } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/retained-primary-includes.js';
-import { attachExternalStructureFields } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/external-structure-fields.js';
-import { explicitIntegerZeroParam } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/explicit-zero-initializer.js';
+import { attachExternalStructureFields } from '../conversion/native-expression-identity/external-structure-fields.mjs';
+import { explicitIntegerZeroParam } from '../conversion/native-expression-identity/explicit-zero-initializer.mjs';
 import { GalaxyConstantIndex } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/galaxy-constants.js';
 import { structuredNode, structuredParam } from './g2t-structured.mjs';
 import {
@@ -26,10 +26,10 @@ import {
   placeAdditionalScriptFolders,
   restoreEditorLayout,
 } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/editor-layout.js';
-import { recognizeGeneratedInitialization } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/g2t-initialization.js';
+import { recognizeGeneratedInitialization } from '../conversion/native-expression-identity/g2t-initialization.mjs';
 import { contextualAutoAncestor, printNode } from './balanced-script-template.mjs';
 import { Parser, forEachChild } from '../sdk/array-values/modules/galaxy/language-core/index.js';
-import { resolveGalaxyTypeAliases } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/galaxy-type-resolution.js';
+import { resolveGalaxyTypeAliases } from '../conversion/native-expression-identity/galaxy-type-resolution.mjs';
 import {
   generateId,
   idFromKey,
@@ -64,7 +64,7 @@ import {
   namingIndexes,
   withNamingIndexes,
   withIsolatedNamingIndexes,
-} from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+} from '../conversion/native-expression-identity/core.mjs';
 import {
   convertTriggerBody,
   convertUserFunctionBody,

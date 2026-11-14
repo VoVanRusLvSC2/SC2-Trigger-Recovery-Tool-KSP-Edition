@@ -11,7 +11,7 @@ import { SyntaxKind as K } from '../sdk/array-values/modules/galaxy/language-cor
 import {
   libraryInitializationNames,
   withNamingIndexes,
-} from '../conversion/preset-reference-use/types/core.mjs';
+} from '../conversion/native-expression-identity/core.mjs';
 const sha = (s) => createHash('sha256').update(s).digest('hex'),
   canonical = (p) => logicalSourcePath(p).replace(/^base\.sc2data\//u, '');
 const checked = (file) => {

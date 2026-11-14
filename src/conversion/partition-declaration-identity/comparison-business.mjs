@@ -10,7 +10,7 @@ import { normalizeLeadingInitializers } from '../exact-native-export/declaration
 import { normalizeLoopCounterBindings } from '../exact-native-export/loop-counter-binding.mjs';
 import { normalizeControlFlowForms } from '../exact-native-export/control-flow-forms.mjs';
 import { normalizePrivateThreadCaptures } from './private-thread-captures.mjs';
-import { normalizeVerifiedNativeIncludes } from '../../utilities';
+import { normalizeVerifiedNativeIncludes } from '../../utilities/native-include-proof.mjs';
 import { compareGalaxyPrograms } from './index-alternate.mjs';
 import { SyntaxKind as K, forEachChild } from '../exact-function-signatures/index-alternate-4.js';
 import { normalizeIndependentOrder } from '../../recovery/archives/independent-order.mjs';

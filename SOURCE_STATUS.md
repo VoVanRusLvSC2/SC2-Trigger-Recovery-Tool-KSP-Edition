@@ -1,149 +1,120 @@
 # Source integration status
 
-This is a source recovery snapshot, **not a standalone converter release**. The public conversion entry still stops at a missing array-values SDK `trigger-xml.js`. Dependency installation and source restoration are separate gates. No map acceptance status was changed by this work.
+**2026-11-14: static import closure reached; converter execution still blocked.**
+This is a source recovery checkpoint, not an install-and-run release. No historical
+map acceptance was promoted by restoring or reconnecting source modules.
 
-## Recovered and checked
+## What is restored
 
-- **59 missing source modules restored**, including recovery/session models, the reverse-conversion core, exact attribute identity and localization helpers.
-- Every restored module matched a historical SHA-256 pin before relocation. Eleven pinned modules were reproducible from retained TypeScript; the historical compiler/options reproduced their JavaScript bytes. Some modules occur in more than one SDK family.
-- Restored source ASTs matched their recovered originals after excluding relocated module/resource specifiers. In **18 existing modules**, only import/export wiring changed; their algorithm ASTs were unchanged. This does not by itself qualify the runtime bindings.
-- The public API now points to the same retained conversion chain as the CLI. Collapsed utility-directory imports were rebound only when a recovered module exported all requested names.
-- All **1332 JavaScript modules parsed successfully**. Focused local checks passed for disjoint XML patch safety, long-script transport, conservative wait matching and per-map analysis isolation. These are not full converter or map-equivalence tests.
-- Five historical runtime package versions and their npm integrity data are now explicit. Acorn and Prettier are pinned development tools.
+- **61 modules** matched historical whole-file SHA-256 pins before relocation.
+  Original/restored algorithm ASTs match after import/resource relocation and
+  formatting. See [pinned-source provenance](scripts/recovered-sources.json).
+- **8 additional full modules** have matching retained-source algorithm ASTs,
+  recorded in [separate provenance](scripts/retained-sources.json). No historical
+  missing-destination pin is claimed for them.
+- **3 component restorations** have narrower evidence: nondecimal literal
+  transport, legacy loop helpers and explicit historical test-policy construction.
+  See [component provenance](scripts/recovered-components.json). The loop module
+  combines original helpers with a separately recovered nested-loop continue guard;
+  full-file historical equality is not claimed.
+- **18 missing module targets** now use retained shared implementations for types,
+  templates, initialization, parameter names, imported structures, XML output and
+  Custom AI. This reconnects 32 consumers without duplicate implementations.
+  The focused static check verifies **113 named binding contracts**; export
+  availability does not prove runtime state identity or behavior.
+- In **35 existing modules**, only specifier wiring changed; algorithm ASTs match.
+  One intentional refactor moves the existing historical test-policy alias
+  allowlist into data. Its allowed input remains unchanged.
+- Five SDK scanners share the retained core. Parser/types bytes match across six
+  families; focused AST, range and diagnostic comparisons include the archived parser.
 
-The [recovered-source manifest](scripts/recovered-sources.json) records original and published hashes. It contains no maps, game binaries, historical chat data or old run outputs.
+The last checkpoint had **27 missing source files and one invalid directory
+import**, affecting 150 relative-import occurrences. After the documented local
+bootstrap, the unchanged checker now parses **1,342 modules with zero unresolved
+literal imports**. All 29 external package entry points load. **Sixteen computed
+imports still require runtime qualification.**
 
-## Additional recovery evidence
+## Dependencies
 
-Four further missing modules were recovered from retained Git blob objects in the original local workspace: the array-values SAX reader and three SDK-family copies of attribute recovery. All four matched historical SHA-256 pins. Original and restored algorithm ASTs matched; only line endings were normalized. No Git objects were pruned or modified.
+The [local bootstrap](BUILDING.md) verifies the supplied `mk-revizer.zip`, restores
+1,981 archived runtime files under ignored `.runtime`, links nine ModKit package
+roots and installs three pinned generated schemas. Matching public npm packages
+are shared to preserve module/class identity. Archived packages, generated assets,
+maps and private recovery transcripts are not redistributed here.
 
-Six checkers now import `vscode-languageserver-types` and `vscode-uri` through their existing pinned npm package exports. The installed ESM files matched the supplied archive byte for byte, and package imports resolved to the identical ESM module objects. This removes two unnecessary vendor-copy targets and twelve broken import edges without adding packages or changing checker algorithm ASTs.
+This reduces missing source requirements and duplicate internal module targets.
+It does **not** remove all nine external ModKit dependencies. Public acquisition
+and standalone packaging remain unqualified; setup still requires the pinned
+user-supplied archive.
 
-A separate local trial restored the archived ModKit packages and their available transitive dependencies from the supplied `mk-revizer.zip`. Actual Node ESM imports succeeded for all 29 previously unresolved package specifiers. This establishes recoverability of external dependencies, not converter equivalence or a reproducible public installation. Those trial packages are not part of this checkout's dependency manifest or publication; the counts below describe the checkout itself.
+## Check results and limits
 
-The original local v569 conversion candidate also currently fails to load at an absent SDK `lossless-xml.js`; the older modular entry separately references a missing v193 overlay. A currently working complete local conversion chain has not been established.
+| Check | Result | Scope |
+| --- | --- | --- |
+| `verify:recovered` | PASS | Published bytes of 61 historically pinned restorations |
+| `verify:retained` | PASS | Published bytes of 8 retained full-module restorations |
+| `verify:bindings` | PASS | 113 named bindings in 32 reconnected consumers |
+| `verify:helpers` | PASS | Exact nondecimal tokens, continue targeting, conservative native include proofs, scoped attribute GUI/quoting and explicit test-policy scope |
+| `verify:dependencies` | PASS | 29 package entry points, schema/catalog inputs and in-memory MPQ roundtrip |
+| `verify:language -- --with-runtime` | PASS | Six SDK grammars and archived-parser fixtures |
+| `verify:attribute-source` | PASS | Stored default tokens, selected variants, localization and invalid-source rejection |
+| `format:check` | PASS | Project-owned source formatting |
+| `verify:source` | PASS | JavaScript syntax and literal ESM resolution after bootstrap |
+| Converter API load | BLOCKED | JSON-driven historical SDK/parser path escapes the checkout |
+| CLI startup | BLOCKED | Same historical runtime path |
+| Complete conversion / map equivalence | NOT REQUALIFIED | Requires a running assembled converter and the unchanged external oracle |
 
-## Remaining work at a glance
+The first runtime failure starts in `src/ast/read-authored.scope.mjs`:
+`graph-sources.json` points to an old corrected SAX parser outside this checkout.
+That parser imports an absent historical `sax` path. Installing the current `sax`
+package does not repair this configuration. Adding files at the old drive location
+would conceal the portability problem.
 
-With the [pinned local dependency bootstrap](BUILDING.md) completed, 27 source files and one invalid directory target remain. All bare-package import specifiers resolve. Before bootstrap, the generated schema assets and ModKit package roots are intentionally absent from a fresh checkout.
+Focused GUI checks use controlled XML contracts; live NativeLib compatibility and
+complete lobby recovery remain separate gates. Explicit historical **new test
+defaults** stay labeled as new settings, not recovered original defaults or general
+map-specific repair rules.
 
-| Area | Missing files after bootstrap |
-| --- | ---: |
-| Array-values conversion SDK | 18 |
-| Custom AI modules in two SDK families | 4 |
-| Attribute GUI, quoting and policy utilities | 4 |
-| Conversion type barrel | 1 |
-| **Total** | **27** |
+## Exact remaining release work
 
-The invalid directory target is `src/utilities`, referenced three times by native-include normalization. No directory barrel or stub was added to silence it. Sixteen computed imports and runtime configuration paths still need complete execution checks after the remaining source modules are restored.
+1. **Portable SDK runtime:** separate historical provenance JSON from live
+   configuration; derive SDK roots from the checkout or validated explicit inputs.
+   Qualify all 16 computed imports, preserving corrected authored-parser scope and
+   SubFunction behavior.
+2. **Actual API/CLI execution:** load both entry points from a clean installation;
+   check re-export contracts, cyclic initialization and SDK state across the full
+   chain. Static resolution alone cannot establish this.
+3. **Complete conversion and incremental recovery:** exercise both directions;
+   preserve folders, IDs, foreign libraries, authored script and unknown metadata.
+   Prove startup/event completeness.
+4. **Attributes with Galaxy:** qualify definition/default provenance, GUI ownership
+   and runtime query equivalence together. A justified namespace relocation must
+   leave unrelated behavior unchanged.
+5. **Unchanged external benchmark:** configure its pinned location without changing
+   identity checks or acceptance rules. Requalify the assembled build; retain the
+   distinction between 103 recorded strict passes and 222 historical acceptances.
+6. **Usable distribution:** document runtime/metadata acquisition and supported
+   input contracts; validate representative Editor exports and package a tested
+   revision. This checkpoint claims no new Editor or gameplay acceptance.
 
-### Integration progress after the source-recovery checkpoint
+## Reproduce
 
-- Five missing scanner modules now share the retained core scanner. Types and parser files are byte-identical across all six families. Focused checks compare ASTs, source ranges and diagnostics for valid/invalid inputs across those families and the archived parser; this is not a map-equivalence claim.
-- The archive bootstrap restores nine external package roots and their retained transitive dependencies. It preserves shared public-package class identity, checks the archive fingerprint and supports repeat installation without overwriting changed files. No archive package or generated schema was redistributed in Git.
-- Immutable catalog helpers now use the common data SDK; localized caption repair uses the retained localization resolver.
-- Three additional utilities were restored from retained local source files: optional `.s2mh` input, stored attribute defaults and legacy dependency-AI policy. Their original/restored algorithm ASTs match after specifier relocation and formatting. They have [separate retained-source provenance](scripts/retained-sources.json), not newly discovered historical missing-destination pins.
-- The vendored ModKit files now have an ESM package boundary, while the retained SAX code keeps its CommonJS boundary. MPQ-reader loading and the original-AI preservation branch execute successfully.
-- Stored-token and selected-variant tests reject invalid indexes, namespaces, duplicate tokens and missing localization keys. Full attribute/lobby and converter integration are still unqualified.
-
-## Remaining build gaps
-
-After the pinned local bootstrap, the unchanged static source checker reports **150 broken relative-import occurrences to 28 targets**: 147 missing-file occurrences and three directory-import occurrences, covering **27 missing files and one invalid directory target**. All **1332 JavaScript modules parse**; unresolved bare-package imports are **zero** in that installed environment. This is a source-resolution checkpoint, not successful converter execution.
-
-Current source verification deliberately exits with code **1 / INCOMPLETE**. Its rules were not changed to hide unresolved references. It checks JavaScript syntax and literal ESM resolution, not named-export contracts, all computed resources, CommonJS dependency closure or program behavior.
-
-### Missing relative targets
-
-- `src/conversion/preset-reference-use/types/core.mjs`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/function-candidates.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/conversion-model.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/dependency-functions.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/explicit-zero-initializer.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/external-structure-fields.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/g2t-initialization.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/galaxy-type-resolution.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/imported-local-scope.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/legacy-native-while-template.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/nondecimal-literal.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ordinal-preset-owners.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/owned-raw-struct-member.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/parameter-script-name.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/script-template.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/single-call-template-alias.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/unreachable-gui-tail.js`
-- `src/sdk/array-values/modules/triggers/shared/trigger-document/trigger-xml.js`
-- `src/sdk/lossless-colors/modules/triggers/services/galaxy-conversion/internal/custom-ai-recovery.js`
-- `src/sdk/lossless-colors/modules/triggers/services/galaxy-conversion/internal/custom-ai-script.js`
-- `src/sdk/production-preparation/modules/triggers/services/galaxy-conversion/internal/custom-ai-recovery.js`
-- `src/sdk/production-preparation/modules/triggers/services/galaxy-conversion/internal/custom-ai-script.js`
-- `src/utilities/attribute-gui.mjs`
-- `src/utilities/attribute-literal-quotes.canonical-only.mjs`
-- `src/utilities/attribute-literal-quotes.mjs`
-- `src/utilities/attributes-policy.mjs`
-
-The remaining directory import is `src/utilities`, used by unresolved native-include normalization. A permissive barrel or stub was not added.
-
-### Package entry points supplied by the bootstrap
-
-- `@modkit/blizzard-casc/installation-node`
-- `@modkit/blizzard-common-formats/content-address/cache-handle`
-- `@modkit/blizzard-common-formats/s2protocol`
-- `@modkit/blizzard-mpq/header-protection`
-- `@modkit/blizzard-mpq/reader`
-- `@modkit/blizzard-starcraft2/data/authoring-index`
-- `@modkit/blizzard-starcraft2/data/catalog`
-- `@modkit/blizzard-starcraft2/data/engine-resolution`
-- `@modkit/blizzard-starcraft2/data/entity-cards`
-- `@modkit/blizzard-starcraft2/data/format`
-- `@modkit/blizzard-starcraft2/data/gamedata-order`
-- `@modkit/blizzard-starcraft2/data/xml`
-- `@modkit/blizzard-starcraft2/galaxy/analysis/language-service.js`
-- `@modkit/blizzard-starcraft2/galaxy/language-core`
-- `@modkit/blizzard-starcraft2/layout/runtime`
-- `@modkit/blizzard-starcraft2/map/catalog-usages`
-- `@modkit/blizzard-starcraft2/schema`
-- `@modkit/codec-kit`
-- `@modkit/codec-kit/audio`
-- `@modkit/codec-kit/compression`
-- `@modkit/codec-kit/compression/bounded`
-- `@modkit/codec-kit/crypto`
-- `@modkit/codec-kit/graph/isolation`
-- `@modkit/core`
-- `@modkit/sdk`
-- `@modkit/sdk/data`
-- `@modkit/vfs`
-- `@modkit/vfs/content-sources/node`
-- `modkit-extension-archives/formats/zip/codec`
-
-## Reproduce source checks
-
-See [build preparation](BUILDING.md) for the archive bootstrap and additional focused checks.
-
-The preparation environment was Windows with Node.js **24.14.1**. Use Node 24 for these checks:
+Use Node.js 24 (checked locally with 24.14.1) and [BUILDING.md](BUILDING.md).
+Integrity manifests do not independently reproduce the unavailable original
+workspace or replace the external oracle.
 
 ```sh
-npm ci --ignore-scripts
-npm run format:check
 npm run verify:recovered
+npm run verify:retained
+npm run verify:bindings
+npm run verify:helpers
+npm run verify:dependencies
+npm run verify:language -- --with-runtime
+npm run verify:attribute-source
+npm run format:check
 npm run verify:source
 ```
 
-`verify:recovered` checks published file bytes against the recovery manifest. It cannot independently reproduce the unavailable original workspace. `verify:source` currently reports INCOMPLETE and exits nonzero. Neither command substitutes for the unchanged external benchmark or Editor export comparison.
-
-For a detailed local report:
-
-```sh
-node scripts/check-source.mjs --report source-status.local.json
-```
-
-Do not commit generated reports. Runtime package versions preserve the historical baseline rather than silently upgrading its behavior. `npm audit` currently reports a moderate advisory for the pinned `fast-xml-parser`; a dependency upgrade requires its own compatibility checks before a usable release.
-
-## Next qualification gates
-
-1. Recover the exact remaining SDK generation and its local package exports. Same-named upstream files were examined but not substituted when their fingerprints differed.
-2. Make SDK, metadata, benchmark and output configuration portable. Resolve runtime assets and dynamic imports, then load both entry points from a fresh checkout.
-3. Qualify incremental completion, attributes, complete initialization/event composition and equivalence with the original strict benchmark.
-4. Validate the exact assembled candidate using Editor compilation and exported Galaxy. Only then publish an install-and-run release.
-
-The [release roadmap](ROADMAP.md) defines completion criteria. The 103 recorded strict passes and 222 historical acceptances remain historical evidence with separate verification levels.
+The pinned `fast-xml-parser` baseline retains a reported moderate npm advisory.
+Upgrading it needs separate compatibility checks; dependencies were not silently
+upgraded during restoration. See [ROADMAP.md](ROADMAP.md).

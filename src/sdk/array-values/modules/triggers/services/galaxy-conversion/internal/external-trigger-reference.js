@@ -2,7 +2,7 @@
  * No invented/unused reference or startup call. An actual expression becomes
  * the same ValueElement the Editor writes for selecting that foreign trigger.
  */
-import {triggerHandleName} from './ttg-core.js';
+import {triggerHandleName} from "../../../../../../../conversion/native-expression-identity/core.mjs";
 import {getTypeName} from './g2t-core.js';
 
 export function declaredExternalTriggerReferences(sources, libraries, ownLibraryId) {

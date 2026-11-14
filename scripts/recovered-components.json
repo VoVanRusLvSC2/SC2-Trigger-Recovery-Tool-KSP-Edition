@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-14",
+  "scope": "Component restorations; distinct from historical whole-file pin recovery.",
+  "files": [
+    {
+      "file": "src/utilities/attributes-policy.mjs",
+      "sourceSha256": "26efe603d7e179bd016691416c70e406dcab1527fdc4d9bb63581f6a3f044629",
+      "publishedSha256": "f7514b5914ca35f5b4afc903b93cd52e7bb29bf893329ebbb3a8ecf78a18a362",
+      "qualification": "Selected declarations match retained source AST; no historical missing-file pin claimed."
+    },
+    {
+      "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/nondecimal-literal.js",
+      "sourceSha256": "74a55431ae034fabbc2a59fb44e1fe55d7a50c53909befe675787f2d4628b464",
+      "publishedSha256": "74a55431ae034fabbc2a59fb44e1fe55d7a50c53909befe675787f2d4628b464",
+      "qualification": "Selected declarations match retained source AST; no historical missing-file pin claimed."
+    },
+    {
+      "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/legacy-native-while-template.js",
+      "sourceSha256": "6a1cc09933223850ea10274eaf2403a8f5a9ecd1b19a04e76f067dc523ae37a4",
+      "publishedSha256": "615eb3499b0eaf66e34d391e242874a81df871f607c76c1046575e395644405b",
+      "qualification": "Selected declarations match retained source AST; no historical missing-file pin claimed. The separately recovered nested-loop continue guard is covered by focused behavior checks; full-file AST equality is not claimed."
+    }
+  ]
+}

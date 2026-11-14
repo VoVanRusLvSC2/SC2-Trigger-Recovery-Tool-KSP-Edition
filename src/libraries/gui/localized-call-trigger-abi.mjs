@@ -21,7 +21,7 @@ import {
   withIsolatedNamingIndexes,
   resolveRefFull,
   deriveNativeTypeMapping,
-} from '../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+} from '../../conversion/native-expression-identity/core.mjs';
 import {
   getTypeName,
   unwrapArrayType,

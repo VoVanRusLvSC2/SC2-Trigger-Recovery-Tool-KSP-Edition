@@ -1,7 +1,7 @@
 import { SyntaxKind as K } from '../sdk/array-values/modules/galaxy/language-core/index.js';
 import { unwrapParens } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/g2t-core.js';
 import { unitFilterStringFromCall } from './g2t-params.mjs';
-import { namingIndexes } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+import { namingIndexes } from '../conversion/native-expression-identity/core.mjs';
 /** Preserve the actual four int32 words, rather than the spelling of a flag.
  * Galaxy masks a shift count to five bits. A Stasis shift32 in the LOW word
  * therefore sets low bit0 (Self); calling it Stasis moves it to the high word

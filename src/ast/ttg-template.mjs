@@ -29,7 +29,7 @@ import {
   declaredReturnType,
   presetIdentifierFunctionName,
   namingIndexes,
-} from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+} from '../conversion/native-expression-identity/core.mjs';
 import { convertParamExpr, actualParameterType } from './ttg-params.mjs';
 import { convertFunctionCallExpr } from './ttg-convert.mjs';
 import {

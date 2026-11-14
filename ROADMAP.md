@@ -15,21 +15,19 @@ The recovery pipeline is implemented in the published source, and earlier artifa
 | Distribution | Source modules and earlier packaged releases | Provide one supported entry point, declared runtime dependencies and a repeatable package build |
 | Map evidence | 103 recorded strict passes and 222 historical acceptances | Requalify the release build; do not relabel historical records as new passes |
 
-## Confirmed blockers in the published source
+## Current recovery checkpoint
 
-The 2026-11-14 audit parsed 1,265 JavaScript modules and checked literal relative imports and re-exports, including literal dynamic imports. It found 339 unresolved references to 89 distinct targets. This is a source-resolution audit, not a complete runtime or resource audit; computed imports and data loaded from configuration need separate checks.
+Literal source closure is verified after the pinned local bootstrap:
+**1,342 modules parse with zero unresolved literal imports**. Historical SHA-256
+pins qualify 61 restored modules; 8 other full modules and 3 component restorations
+have separate provenance. Shared implementations replace 18 missing module targets.
+The 113 named binding checks and focused helper/runtime checks pass.
 
-- The public [conversion entry point](src/conversion/index.mjs) re-exports a missing `preset-reference-use/index.standard-getter-overlay.mjs` module. Matching export names in another overlay are not sufficient grounds to substitute it.
-- Shared utility imports such as `src/utilities/attribute-identity-context.mjs`, `src/utilities/attribute-gui.mjs` and `src/utilities` are unresolved.
-- Included SDK code still references missing scanner and conversion-internal modules, including `conversion-model.js`, `g2t-core.js` and `ttg-core.js`.
-- External runtime package imports are not represented by a complete root dependency manifest. The current root installation supports the formatting tools, not the converter runtime.
-- [SDK configuration](src/ast/config.json) contains machine-local paths. The CLI also assumes local game installation and job paths.
-- The [pinned oracle adapter](src/verification/pinned-user-oracle.mjs) expects benchmark assets at an old workspace-relative location. Their identity checks remain required; the published tree does not contain those assets.
-- Earlier qualification data refers to prior source artifacts. Directory migration and formatting change file hashes, even when executable syntax is preserved. That evidence must be regenerated or explicitly rebound through an appropriate qualification process, not silently updated to match new hashes.
-
-## Source recovery checkpoint - 2026-11-14
-
-59 missing modules have been restored against historical SHA-256 pins. Their algorithm ASTs were preserved; 18 existing modules received specifier-only wiring changes. Source completeness improved, but the SDK/runtime graph still has unresolved targets and both entry points remain blocked. See [the exact remaining gaps and reproducible source checks](SOURCE_STATUS.md). This checkpoint does not complete phase 1 or promote any map status.
+The API and CLI still stop at a JSON-driven historical SDK/parser path. Sixteen
+computed imports, complete conversion behavior and external qualification remain
+open. This is not a standalone release or a new map pass. See the current
+[exact remaining work and check results](SOURCE_STATUS.md) and
+[dependency setup](BUILDING.md).
 
 ## 1. Restore a complete, explicit build graph
 
@@ -88,4 +86,4 @@ The [103 recorded strict-pass records](maps/verified.md) and [222 historical acc
 This plan does not promise universal reversal of arbitrary Galaxy into the exact original folders, comments or GUI authoring choices. It targets supported behavioral reconstruction, conservative preservation and explicit results when equivalence is not proved.
 
 
-The local dependency bootstrap and shared language-core checks are now available; see [BUILDING.md](BUILDING.md). Three more utilities were recovered from retained source with separate provenance. Source closure and complete API/CLI execution remain pending.
+The local bootstrap and static source closure are verified. Complete API/CLI execution, portable evidence inputs and conversion/Editor qualification remain pending; see [SOURCE_STATUS.md](SOURCE_STATUS.md).

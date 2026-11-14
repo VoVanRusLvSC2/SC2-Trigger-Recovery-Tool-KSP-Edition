@@ -12,7 +12,7 @@ The common AST is the basis for analysis, type resolution, GUI binding and guard
 
 Real map archives, matching SDK dependencies and qualified source inputs are required. This publication is not a self-contained installer, and some dependencies remain unavailable.
 
-The [release roadmap](ROADMAP.md) lists the confirmed integration blockers and completion criteria. The public entry point is a retained interface whose re-export target still needs restoration; it is not currently a runnable example.
+The [release roadmap](ROADMAP.md) lists integration blockers and completion criteria. Literal imports of the public entry point now resolve after local setup, but computed historical SDK paths still block execution. It is not currently a runnable example.
 
 ## Code reading guide
 

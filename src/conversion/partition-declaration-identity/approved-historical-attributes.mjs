@@ -17,18 +17,17 @@ const sha = (b) => createHash('sha256').update(b).digest('hex');
 // Cold's attributes 2..6 are bank encryption inputs through a wrapper: do not
 // synthesize their tokens/defaults from labels or recover only attribute 7.
 // Historical Rainbow 0011 is the 2019 revision, NOT approved latest-replay 0010.
-const historicalPolicyIds = new Map([['previous13-0001', '0001']]);
 export async function approvedHistoricalAttributeSource({
   row,
   localizedStrings,
   originalGalaxy,
   indexPath = 'map_autonomous_recovery_v129_2026-10-05/HISTORICAL_13_INTEGRITY.json',
 }) {
-  const policyId = historicalPolicyIds.get(row.id);
-  if (!policyId) return { used: false, reason: 'No explicit approved policy for this input' };
+  const policy = policies.find((candidate) => candidate.archivedAliases?.includes(row.id));
+  if (!policy) return { used: false, reason: 'No explicit approved policy for this input' };
   const bytes = await readFile(indexPath),
     index = JSON.parse(bytes),
-    entry = index.pairs.find((r) => 'previous13-' + r.id === row.id);
+    entry = index.pairs.find((r) => String(r.id) === policy.id);
   assert(entry?.allHashesBound);
   assert.equal(
     row.originalSha256,
@@ -36,8 +35,6 @@ export async function approvedHistoricalAttributeSource({
     'Approved test policy must match the EXACT historical archive',
   );
   assert.equal(sha(await readFile(row.original)), entry.hashes.originalMap);
-  const policy = policies.find((p) => p.id === policyId);
-  assert(policy);
   const namespace = Number(/\/(\d+)\]/u.exec(policy.owner)[1]);
   const labels = localizedStrings
     .filter((l) => typeof l.gameStrings === 'string')
@@ -119,7 +116,7 @@ export async function approvedHistoricalAttributeSource({
       expandedOriginalGalaxySha256: sha(originalGalaxy),
       registry: indexPath,
       registrySha256: sha(bytes),
-      policyId,
+      policyId: policy.id,
       namespace,
       definitionsAndNameKeysFromOriginalLocalization: true,
       labelSources: labels.map((l) => ({ path: l.path, sha256: sha(l.values.join('\n')) })),

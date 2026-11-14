@@ -1,7 +1,8 @@
 # Build preparation
 
-The integration is still incomplete: installing dependencies does not yet make
-the converter API or CLI usable. See [the remaining source gaps](SOURCE_STATUS.md).
+Literal source imports now resolve after setup. Integration is still incomplete:
+historical computed SDK paths prevent converter API and CLI startup.
+See [remaining runtime and qualification work](SOURCE_STATUS.md).
 
 ## Prerequisites
 
@@ -38,6 +39,8 @@ are involved.
 ```sh
 npm run verify:recovered
 npm run verify:retained
+npm run verify:bindings
+npm run verify:helpers
 npm run verify:dependencies
 npm run verify:language -- --with-runtime
 npm run verify:attribute-source
@@ -53,6 +56,8 @@ The dependency check loads all 29 imported package entry points and verifies
 schema loading, catalog include paths and an MPQ write/read entirely in memory.
 These are focused preparation checks, not map-acceptance results.
 
-`verify:source` still exits nonzero because conversion modules remain missing.
-It must remain strict. API/CLI loading, incremental GUI recovery, attribute
-integration and the unchanged external benchmark are subsequent release gates.
+`verify:source` now passes after bootstrap: 1,342 modules parse with no unresolved
+literal imports. Its rules were not relaxed. This does not execute computed imports
+or prove complete converter behavior. API/CLI loading remains blocked by historical
+SDK paths; incremental recovery, attributes and the unchanged external benchmark
+are subsequent release gates.

@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { SyntaxKind as K } from '../sdk/array-values/modules/galaxy/language-core/index.js';
-import { normalizeVerifiedNativeIncludes } from '../utilities';
+import { normalizeVerifiedNativeIncludes } from '../utilities/native-include-proof.mjs';
 import { parseImmutableGalaxySyntax as parse } from '../model/immutable-galaxy-syntax.collections.mjs';
 import { assertExactAstShape } from './exact-ast-shape.mjs';
 import { literalByteSyntaxShape } from './literal-byte-syntax-shape.mjs';

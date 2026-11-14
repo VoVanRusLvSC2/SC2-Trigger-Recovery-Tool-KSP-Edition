@@ -1,0 +1,70 @@
+[
+  {
+    "id": "0001",
+    "owner": "[bnet:local/0.0/223150]",
+    "archivedAliases": [
+      "previous13-0001"
+    ],
+    "attributes": [
+      {
+        "id": "1",
+        "type": "Player",
+        "defaultId": "1",
+        "slots": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "0002",
+    "owner": "[bnet:local/0.0/280606]",
+    "attributes": [
+      {
+        "id": "7",
+        "type": "Global",
+        "defaultId": "1",
+        "slots": [
+          "Global"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "0010",
+    "owner": "[bnet:local/0.0/271215]",
+    "attributes": [
+      {
+        "id": "1",
+        "type": "Global",
+        "defaultId": "2",
+        "slots": [
+          "Global"
+        ]
+      },
+      {
+        "id": "2",
+        "type": "Global",
+        "defaultId": "2",
+        "slots": [
+          "Global"
+        ]
+      }
+    ]
+  }
+]

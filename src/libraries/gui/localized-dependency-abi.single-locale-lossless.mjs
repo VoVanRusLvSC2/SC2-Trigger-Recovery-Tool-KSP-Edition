@@ -19,7 +19,7 @@ import {
   deriveNativeTypeMapping,
   memberVarName,
   structureTypeName,
-} from '../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+} from '../../conversion/native-expression-identity/core.mjs';
 import { parseGalaxySource } from '../../ast/galaxy-to-trigger.mjs';
 import {
   getTypeName,

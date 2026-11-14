@@ -1,5 +1,5 @@
 import { conversionError } from './conversion-model.js';
-import { printNode } from './script-template.js';
+import { printNode } from "../../../../../../../conversion/native-expression-identity/script-template.js";
 /** Integer constant expressions only: never execute user Galaxy or guess symbol names. */
 export class GalaxyConstantIndex {
     folds;

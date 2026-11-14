@@ -1,11 +1,11 @@
 // Preserve the existing SDK singleton and its conversion-scoped indexes.
 // This adapter overrides one pure naming operation, not the whole compiler.
-export * from '../../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+export * from '../../native-expression-identity/core.mjs';
 import {
   resolveRefFull,
   namingIndexes,
   sanitizeName,
-} from '../../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+} from '../../native-expression-identity/core.mjs';
 import {
   refKey,
   libraryPrefix,
@@ -32,7 +32,7 @@ export function structureTypeName(typeRef, library, nativeLibrary, allLibraries)
   );
 }
 
-import * as legacyLocalSymbols from '../../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+import * as legacyLocalSymbols from '../../native-expression-identity/core.mjs';
 import { createEditorLocalSymbols } from '../../../model/editor-local-symbols.mjs';
 import {
   createElementAccessExpression,

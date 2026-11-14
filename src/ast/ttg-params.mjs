@@ -1,13 +1,13 @@
-import { parameterScriptName } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/parameter-script-name.js';
+import { parameterScriptName } from '../bindings/parameter-script-name.mjs';
 import {
   applyParamAccessors,
   lowerInitial,
-} from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+} from '../conversion/native-expression-identity/core.mjs';
 import {
   memoExpression,
   expressionKey,
   namingIndexes,
-} from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+} from '../conversion/native-expression-identity/core.mjs';
 import { refKey, conversionError, libraryPrefix } from './explicit-numeric-global-model.mjs';
 /**
  * ttg-params — Trigger XML parameter → Galaxy expression conversion.
@@ -42,7 +42,7 @@ import {
   STRING_BACKED_TRIGGER_TYPES,
   isDeclaredGalaxySymbol,
   declaredPresetValueName,
-} from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+} from '../conversion/native-expression-identity/core.mjs';
 import { convertFunctionCallExpr } from './ttg-convert.mjs';
 import { parseTemplateFragment, printTemplateExpression } from './balanced-script-template.mjs';
 /** Which Preset owns each of its values, built once per library.

@@ -1,6 +1,6 @@
 import { Parser } from '../../../galaxy/language-core/index.js';
-import { shapeText } from './internal/script-template.js';
-import { presetIdentifierFunctionName, presetValueConstantName, sanitizeName } from './internal/ttg-core.js';
+import { shapeText } from "../../../../../../conversion/native-expression-identity/script-template.js";
+import { presetIdentifierFunctionName, presetValueConstantName, sanitizeName } from "../../../../../../conversion/native-expression-identity/core.mjs";
 import { declaredCarrier } from './galaxy-program-context.js';
 /** A narrow contextual inverse. A spelling alone never proves a generated
  * identifier function; the exact enum metadata, source body and const binding

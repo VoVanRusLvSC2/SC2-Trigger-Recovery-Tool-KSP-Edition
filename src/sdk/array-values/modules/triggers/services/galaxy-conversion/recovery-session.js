@@ -1,5 +1,5 @@
 import { GalaxyProgramContext, declaredCarrier } from './galaxy-program-context.js';
-import { FunctionCandidateIndex } from './function-candidates.js';
+import { FunctionCandidateIndex } from "../../../../../../conversion/native-expression-identity/function-candidates.js";
 import { RecoveryPlan } from './recovery-plan.js';
 const registry = new WeakMap();
 export const recoverySessionFor = (elements) => registry.get(elements);

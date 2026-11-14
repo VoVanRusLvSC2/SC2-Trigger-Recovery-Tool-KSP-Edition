@@ -1,9 +1,9 @@
-import { FunctionCandidateIndex } from '../function-candidates.js';
+import { FunctionCandidateIndex } from "../../../../../../../conversion/native-expression-identity/function-candidates.js";
 import { recoverySessionFor } from '../recovery-session.js';
 import { SyntaxKind } from '@modkit/blizzard-starcraft2/galaxy/language-core';
-import { memberVarName, toGalaxyFunctionName } from './ttg-core.js';
-import { printNode } from './script-template.js';
-import { singleCallTemplateAlias } from './single-call-template-alias.js';
+import { memberVarName, toGalaxyFunctionName } from "../../../../../../../conversion/native-expression-identity/core.mjs";
+import { printNode } from "../../../../../../../conversion/native-expression-identity/script-template.js";
+import { singleCallTemplateAlias } from "../../../../../../../conversion/native-expression-identity/single-call-template-alias.js";
 import { tokenToString, isKeywordTypeKind, stringToToken } from '@modkit/blizzard-starcraft2/galaxy/language-core';
 import { conversionError, libraryPrefix, lookupElementIn, sanitizeIdentifier, startupFunctionName } from './conversion-model.js';
 let allocation = { counter: 0, used: new Set() };

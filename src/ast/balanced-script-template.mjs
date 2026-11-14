@@ -14,7 +14,7 @@ import {
   mapParameterTypeToGalaxy,
   isResolvedGalaxyType,
   STRING_BACKED_TRIGGER_TYPES,
-} from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+} from '../conversion/native-expression-identity/core.mjs';
 export function templateMacros(code) {
   const out = [];
   let quote = false;

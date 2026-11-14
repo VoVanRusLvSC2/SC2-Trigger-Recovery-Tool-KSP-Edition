@@ -15,7 +15,7 @@ import { SyntaxKind } from '../exact-function-signatures/index-alternate-3.js';
 import { ownedTriggerInitPrototypes } from '../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/owned-trigger-init-prototypes.js';
 import { triggerInitFuncName } from '../native-expression-identity/core-alternate.mjs';
 import { rewriteBoundInitializationBody } from './g2t-actions.mjs';
-import { recoverOrdinalPresetOwners } from '../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ordinal-preset-owners.js';
+import { recoverOrdinalPresetOwners } from '../attribute-scalar-codec/ordinal-preset-owners.mjs';
 import { retainInlineCustomGlobals } from '../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/inline-custom-globals.js';
 import { declaredExternalTriggerReferences } from '../native-expression-identity/external-trigger-reference.mjs';
 import { retainPrimaryCustomIncludes } from '../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/retained-primary-includes.js';

@@ -46,7 +46,7 @@ import {
   toGalaxyFunctionName,
 } from '../exact-native-export/core-alternate-2.mjs';
 import { isInlineTemplate } from '../selector-metadata-private-handles/ttg-template-alternate-2.mjs';
-import { recoverCustomAi } from '../../sdk/production-preparation/modules/triggers/services/galaxy-conversion/internal/custom-ai-recovery.js';
+import { recoverCustomAi } from '../../libraries/gui/custom-ai-recovery.source-profile.mjs';
 import {
   customAiScriptFiles,
   emitCustomAi,

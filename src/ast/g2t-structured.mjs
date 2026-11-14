@@ -22,7 +22,7 @@ import {
   externalStructureMemberType,
   importedRawPropertyPathType,
   declaredRawForeignTriggerHandle,
-} from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/external-structure-fields.js';
+} from '../conversion/native-expression-identity/external-structure-fields.mjs';
 import { replaceStructuredMarkers } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/structured-markers.js';
 import { getKindName } from '../sdk/array-values/modules/galaxy/language-core/index.js';
 import {
@@ -96,7 +96,7 @@ import {
   localVarName,
   memberVarName,
   triggerInitFuncName,
-} from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+} from '../conversion/native-expression-identity/core.mjs';
 function unitFilterValue(call, ctx) {
   return unitFilterWithWordBanks(call, ctx, (identifier) => {
     const preset = ctx.galaxyConstToPreset.get(identifier);

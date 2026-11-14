@@ -35,7 +35,7 @@ import {
   createReturnStatement,
   createStringLiteral,
 } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ast-factory.js';
-import { resolveRefFull } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js';
+import { resolveRefFull } from '../conversion/native-expression-identity/core.mjs';
 import { convertFunctionCallExpr } from './ttg-convert.mjs';
 function expressionContainsInvalidIdentifier(expr) {
   if (!expr) return false;

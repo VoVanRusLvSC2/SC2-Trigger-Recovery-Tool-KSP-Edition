@@ -1,6 +1,6 @@
 {
   "date": "2026-11-14",
-  "basis": "Historical byte-level SHA-256 pins. Restored ASTs were compared with recovered originals after module/resource specifier relocation; existing module algorithm ASTs were unchanged.",
+  "basis": "Historical byte-level SHA-256 pins. Original/restored algorithm ASTs match after module/resource specifier relocation and formatting. This does not qualify cross-module runtime bindings.",
   "scope": "Source provenance and integrity only; converter execution and map equivalence remain unqualified.",
   "files": [
     {
@@ -210,7 +210,7 @@
     {
       "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/g2t-core.js",
       "originalSha256": "5101526c2a85afa547f49c4f5687dc3c29a1e660188419583a95deba64d0f824",
-      "publishedSha256": "5101526c2a85afa547f49c4f5687dc3c29a1e660188419583a95deba64d0f824",
+      "publishedSha256": "5bb304ba22c4bbddd9befaff91e3e035b6cd63278965fc24db598cbbb3acb50e",
       "algorithmAstSha256": "b6f5e55df18f939a31b13cf8a5fb04011f43695e8523db2ea9e5de7342284506"
     },
     {
@@ -264,7 +264,7 @@
     {
       "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/recovery-session.js",
       "originalSha256": "2d7f772eae879598b2698e0c914b3971de3b5dfe6fd02798c2783fc2418d3671",
-      "publishedSha256": "2d7f772eae879598b2698e0c914b3971de3b5dfe6fd02798c2783fc2418d3671",
+      "publishedSha256": "f24ab0ed8124557cb9bb3702f9e68e47e95a75ea9d812487355178739de60b8c",
       "algorithmAstSha256": "4b99e01b9a3db5024070a5b721f457f437975f211d117f38b03e1843b03fa003"
     },
     {
@@ -276,19 +276,19 @@
     {
       "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/external-trigger-reference.js",
       "originalSha256": "2ab4d79deefe322371ee3f54bd1e6314dfbef754aaa0689930b1d2f1ec509c99",
-      "publishedSha256": "2ab4d79deefe322371ee3f54bd1e6314dfbef754aaa0689930b1d2f1ec509c99",
+      "publishedSha256": "27a7e2714b8ef7210f1e198c0540197cbdfb73d00433673c5ae49d14296522c9",
       "algorithmAstSha256": "53c6c69c3f28537d60bc8f664c5bbcdef81ef20d58b99977128bf25a181c2d79"
     },
     {
       "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/galaxy-constants.js",
       "originalSha256": "0d03634ca00de22ab58c5b8d5d7c8d435e366779841c30c1847531ab6e5089f7",
-      "publishedSha256": "f752445f6efb8e65f2731424136865f9904f3155d28d009aed2e18ee40515867",
+      "publishedSha256": "1c06f67815729e637cbf784e1afbe292c79c631c4029df047b38575f362d7dbc",
       "algorithmAstSha256": "8a0255b66753a02440154a9cfa69378db5e9251ba33c85b3799f8310e5988ea1"
     },
     {
       "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/raw-local-structure-scope.js",
       "originalSha256": "8fd202fc9a7d60c699ccfd64932a1f428ab7c12fd7db24b5aee157ba9af20334",
-      "publishedSha256": "bbe3bca91abf9dbae76b8362558c549e67960538d77e168ba5ce37891d79ec74",
+      "publishedSha256": "9c20bde3d095c7833734fb6713170d4c7b20438560478fbb4b856c1dbebddee4",
       "algorithmAstSha256": "df212f8fd73b8a2928a6e36c1a4ab8851f1e5a4d567f5c87d3c5b8e01dc16ace"
     },
     {
@@ -312,13 +312,13 @@
     {
       "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/explicit-legacy-accessor.js",
       "originalSha256": "6e6d46b4aa3b07a3cc77ff300ed9f9a0ff7426d84ca0bb7e3416a97bb03290ee",
-      "publishedSha256": "0b8575386ff81d851dbae4c806e73c240b42245483437e91067d235e008193c5",
+      "publishedSha256": "065a76e03538c40aebb8cb2e3c87a06cf7d0991174d6b56ba119b5679cefabf5",
       "algorithmAstSha256": "490a8d80c98e09b548bbf20df5bf553aec06e0d60381cea61c9caa6d45a8f61c"
     },
     {
       "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/preset-identifier-inverse.js",
       "originalSha256": "29993b6a5c3b3f3a00080c7077fe30a926c04890672df116567908e0086f6819",
-      "publishedSha256": "29993b6a5c3b3f3a00080c7077fe30a926c04890672df116567908e0086f6819",
+      "publishedSha256": "8a3919405a47d464ff5b1885949416f72cb6bc4a9a399ca44cdd5a74da71c2c6",
       "algorithmAstSha256": "4baa3acf33be0938cb2d99cac83b6196176322e03da44323502d6ee55c9bda32"
     },
     {
@@ -336,7 +336,7 @@
     {
       "file": "src/sdk/array-values/modules/triggers/shared/trigger-document/sax-reader.js",
       "originalSha256": "01fea70ed0cea2e3e8882417608f97f5768097cab920818a7a92708912a7faa9",
-      "publishedSha256": "01fea70ed0cea2e3e8882417608f97f5768097cab920818a7a92708912a7faa9",
+      "publishedSha256": "b46c2fb3ece60ce368b79d21e369c4fefd85c539d36b77c9fd43264116da68ae",
       "algorithmAstSha256": "4ebafda845d21edcf34af425e3cda2d5b6979859859d6940d9eca70756a598e2"
     },
     {
@@ -356,6 +356,18 @@
       "originalSha256": "94393914b96a3ef4312cab7f3f06f0eba03684c0f9a5e6095c4317f289caca02",
       "publishedSha256": "94393914b96a3ef4312cab7f3f06f0eba03684c0f9a5e6095c4317f289caca02",
       "algorithmAstSha256": "550f21cc53be8b3970a6039fcb95e2475e24d24519dae5e2d1edaa0e93e38bd1"
+    },
+    {
+      "file": "src/utilities/native-include-proof.mjs",
+      "originalSha256": "0428c825d017abbd64b096482e5cc1e597b7918d26a6cea237fc9a6d8974890c",
+      "publishedSha256": "30669adf758aab92ea6908c1cb3e9ca5d64ee9834233d18c7e0c4c63780aba6d",
+      "algorithmAstSha256": "51774a74019381cc9432a7d148a0a43e4d2c12ba8b84d9e76eb78287d988b207"
+    },
+    {
+      "file": "src/utilities/attribute-literal-quotes.canonical-only.mjs",
+      "originalSha256": "9cc72a3e4d797cf145d1ac584a156bacd9dda6f5d214416787ca44c295fc68ec",
+      "publishedSha256": "54be9172864351f43d3931a0ea482edf4ab07c521a322ca75149e8d6f347b442",
+      "algorithmAstSha256": "262cc0af9d65cd2cd6d170ee4e8093262f3c445fc09d7b9bcfa28060fdaf4a1c"
     }
   ]
 }
