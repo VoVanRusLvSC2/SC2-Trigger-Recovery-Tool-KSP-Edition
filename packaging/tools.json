@@ -11,7 +11,9 @@
   },
   "mpqcli": {
     "version": "0.10.0",
-    "url": "https://github.com/thegraydot/mpqcli/releases/download/v0.10.0/mpqcli-windows-amd64.exe",
-    "sha256": "efed6d68060b70b5f71b383f3dc3b87db84ff1a299f02f8e32ae6be93eb6dcfc"
+    "url": "https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/download/runtime-tools-v1/mpqcli-0.10.0-windows-x64-static.exe",
+    "sha256": "b578d160e053d4c40299333b8d8e0b3ae6372aed98316da0819eaf58be7cbd71",
+    "source": "https://github.com/thegraydot/mpqcli/tree/c515a1b9668c1f43fed9f740db34f67e4ddcaabf",
+    "build": "packaging/build-mpq-static.ps1; MSVC static CRT; no upstream source edits"
   }
 }

@@ -30,10 +30,18 @@ try {
   Invoke-Checked node @('scripts/stage-release.mjs', $stage)
   Invoke-Checked (Join-Path $stage 'node/node.exe') @((Join-Path $stage 'scripts/verify-distribution.mjs'))
   Invoke-Checked (Join-Path $stage 'node/node.exe') @((Join-Path $stage 'trigger-recovery.mjs'), 'doctor')
-  # Inno 6 uses Win32 paths while enumerating source files. An extended prefix
-  # keeps builds independent of the clone/runner checkout path length.
-  $compilerStage = if ($stage.StartsWith('\\')) { '\\?\UNC\' + $stage.Substring(2) } else { '\\?\' + $stage }
-  Invoke-Checked $compiler @('/Qp', ('/DStageRoot=' + $compilerStage), ('/DReleaseDir=' + $releaseRoot), 'packaging/windows.iss')
+  # Inno 6's source/license readers do not share long-path handling. Give the
+  # compiler a temporary short view; nothing in the payload uses this drive.
+  $compilerDrive = $null
+  try {
+    foreach ($letter in 'ZYXWVUTSRQPONM'.ToCharArray()) {
+      $candidate = [string]$letter + ':'
+      & subst.exe $candidate $stage 2>$null
+      if ($LASTEXITCODE -eq 0) { $compilerDrive = $candidate; break }
+    }
+    if (-not $compilerDrive) { throw 'No free temporary drive for the installer compiler' }
+    Invoke-Checked $compiler @('/Qp', ('/DStageRoot=' + $compilerDrive + '\'), ('/DReleaseDir=' + $releaseRoot), 'packaging/windows.iss')
+  } finally { if ($compilerDrive) { & subst.exe $compilerDrive /D } }
   $zip = Join-Path $releaseRoot 'SC2-Trigger-Recovery-KSP-3.0.0-rc.1-Windows-x64.zip'
   if (Test-Path -LiteralPath $zip) { throw 'Release ZIP already exists; preserve it and use a clean build directory' }
   Invoke-Checked python @('scripts/archive-release.py', $stage, $zip)

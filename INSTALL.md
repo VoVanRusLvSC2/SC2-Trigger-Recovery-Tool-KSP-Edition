@@ -8,6 +8,9 @@ Both contain this reworked converter, Node.js 24.14.1, the public ModKit runtime
 mpqcli and their notices. No Node, npm, Python, Git, private archive or K: drive
 is required on the target machine. Windows 10/11 x64 is the supported target.
 The installer runs per user and does not need administrator rights.
+The MPQ tool uses a static C++ runtime, so it does not depend on a separately
+installed Visual C++ Redistributable. Its source revision, reproduction script
+and binary fingerprint are included in the repository.
 
 Install StarCraft II separately. Its actual CASC data supplies the correct GUI
 libraries and Galaxy declarations. Custom mod dependencies must also be available.
@@ -72,6 +75,9 @@ emits runtime JavaScript, runs checks and assembles a fresh release directory.
 Upstream TypeScript emission is not an upstream typecheck. Executable conversion
 checks and the unchanged external oracle remain separate qualifications.
 All download identities, manifests and build steps are in source control.
+Rebuilding the optional MPQ tool itself additionally needs MSVC C++ Build Tools
+and CMake; see `packaging/build-mpq-static.ps1`. Ordinary application builds fetch
+its pinned, licensed static binary.
 
 The application is currently a release candidate. Corpus-wide requalification,
 actual Editor exports and gameplay acceptance are separate remaining work.
