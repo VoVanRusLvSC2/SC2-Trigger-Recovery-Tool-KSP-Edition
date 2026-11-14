@@ -151,7 +151,7 @@ Compilation checks whether code is accepted; it does not prove that initializati
 
 ### Where are the source code and download instructions?
 
-Browse [the source modules](src/) and [integration entry points](ARCHITECTURE.md#entry-points). This checkout is not yet a self-contained application; its missing dependencies are noted above. [Earlier packaged releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases) are separate from the reworked source tree.
+Browse [the source modules](src/) and [integration entry points](ARCHITECTURE.md#entry-points). This checkout is not yet a self-contained application; its missing dependencies are noted above. [Earlier packaged releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery/releases) are separate from the reworked source tree.
 
 ## Contributors and reverse engineering
 
@@ -159,4 +159,4 @@ The reworked implementation was developed together with **Vise**. Thanks to **[h
 
 Development included reverse engineering and analysis of SC2 formats, Galaxy, NativeLib, GUI bindings, event ABI and actual Editor exports. [Contributors](CONTRIBUTORS.md) and [third-party notices](THIRD_PARTY_NOTICES.md) document attribution.
 
-Earlier packaged application releases remain available under [Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases); they are separate from this reworked source publication.
+Earlier packaged application releases remain available under [Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery/releases); they are separate from this reworked source publication.
