@@ -29,6 +29,12 @@ for (const file of tracked) {
 await fs.cp(path.join(root, 'node_modules'), path.join(destination, 'node_modules'), {
   recursive: true,
   dereference: true,
+  // Upstream fixture corpora and tool caches are not application dependencies.
+  filter: (file) =>
+    !path
+      .relative(path.join(root, 'node_modules'), file)
+      .split(path.sep)
+      .some((part) => ['test', 'tests', 'fixtures', '.cache'].includes(part)),
 });
 for (const family of ['core', 'private-switch', 'production-preparation']) {
   const file = `src/sdk/${family}/modules/data/services/schema/generated/sc2-data-schema.json`;

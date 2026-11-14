@@ -30,7 +30,10 @@ try {
   Invoke-Checked node @('scripts/stage-release.mjs', $stage)
   Invoke-Checked (Join-Path $stage 'node/node.exe') @((Join-Path $stage 'scripts/verify-distribution.mjs'))
   Invoke-Checked (Join-Path $stage 'node/node.exe') @((Join-Path $stage 'trigger-recovery.mjs'), 'doctor')
-  Invoke-Checked $compiler @('/Qp', ('/DStageRoot=' + $stage), ('/DReleaseDir=' + $releaseRoot), 'packaging/windows.iss')
+  # Inno 6 uses Win32 paths while enumerating source files. An extended prefix
+  # keeps builds independent of the clone/runner checkout path length.
+  $compilerStage = if ($stage.StartsWith('\\')) { '\\?\UNC\' + $stage.Substring(2) } else { '\\?\' + $stage }
+  Invoke-Checked $compiler @('/Qp', ('/DStageRoot=' + $compilerStage), ('/DReleaseDir=' + $releaseRoot), 'packaging/windows.iss')
   $zip = Join-Path $releaseRoot 'SC2-Trigger-Recovery-KSP-3.0.0-rc.1-Windows-x64.zip'
   if (Test-Path -LiteralPath $zip) { throw 'Release ZIP already exists; preserve it and use a clean build directory' }
   Invoke-Checked python @('scripts/archive-release.py', $stage, $zip)
