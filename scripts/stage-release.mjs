@@ -24,6 +24,10 @@ for (const file of tracked) {
   await fs.mkdir(path.dirname(target), { recursive: true });
   await fs.copyFile(path.join(root, file), target);
 }
+// The TypeScript GUI is built before staging. End users need no compiler/Java.
+await fs.cp(path.join(root, 'gui/dist'), path.join(destination, 'gui/dist'), {
+  recursive: true,
+});
 // Materialize junctions. Absolute links to the build machine must never escape
 // into the installed copy, including npm's four local workspace package links.
 await fs.cp(path.join(root, 'node_modules'), path.join(destination, 'node_modules'), {

@@ -76,6 +76,12 @@ the absence of verified recovery evidence. It does not create map definitions
 from stock queries or invent defaults. Historical map-specific pilot policies
 are disconnected from the default worker path.
 
+Pass it during automatic preparation with
+`trigger-recovery recover <map> --sc2 <installation> --out <new-folder> --attribute-index <index.json>`.
+The same flag is supported by `prepare`. The index is optional evidence, not a
+switch that authorizes invented attributes. `run` uses the prepared job's
+`attributeIndex` field. The GUI exposes the same optional input.
+
 When attribute comparison requires the external benchmark, set
 `SC2_TRIGGER_BENCHMARK_ROOT` to the pinned distribution root containing
 `benchmark/MANIFEST.json`. Missing evidence remains explicit. The benchmark's

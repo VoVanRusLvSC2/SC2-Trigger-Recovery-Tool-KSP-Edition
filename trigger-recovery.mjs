@@ -6,7 +6,7 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { spawn } from 'node:child_process';
 
-const usage = `SC2 Trigger Recovery KSP 3.0.0-rc.1
+const usage = `SC2 Trigger Recovery KSP 3.0.0-rc.2
 Usage:
   trigger-recovery recover <map.SC2Map> --sc2 <installation> --out <new-directory>
   trigger-recovery prepare <map.SC2Map> --sc2 <installation> --out <new-directory>
@@ -14,6 +14,7 @@ Usage:
   trigger-recovery doctor
 
 Optional: --mpq <mpqcli.exe>, --benchmark <pinned-distribution>, --full-gui
+For recover/prepare: --attribute-index <verified-header-index.json>
 The default preserves authored script and GUI structure. Originals stay unchanged.
 Outputs are candidates with explicit offline evidence, not Editor/gameplay acceptance.
 An installed StarCraft II supplies NativeLib and dependency metadata.
@@ -26,6 +27,7 @@ try {
       out: { type: 'string' },
       mpq: { type: 'string' },
       benchmark: { type: 'string' },
+      'attribute-index': { type: 'string' },
       'full-gui': { type: 'boolean' },
       help: { type: 'boolean', short: 'h' },
     },
@@ -51,10 +53,15 @@ try {
         output: values.out,
         mpq: values.mpq ?? path.join(import.meta.dirname, '.runtime/tools/mpqcli.exe'),
         guiRecoveryMode: values['full-gui'] ? 'full-gui' : 'preserve-source',
+        attributeIndex: values['attribute-index'],
       });
       jobFile = result.jobFile;
       console.log(JSON.stringify(result));
     }
+    if (command === 'run' && values['attribute-index'])
+      throw Error(
+        'Set attributeIndex in the prepared job or use recover/prepare --attribute-index',
+      );
     if (command !== 'prepare') {
       const env = { ...process.env };
       if (values.benchmark) env.SC2_TRIGGER_BENCHMARK_ROOT = path.resolve(values.benchmark);

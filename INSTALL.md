@@ -2,7 +2,7 @@
 
 ## Windows x64 application
 
-Download the **3.0.0-rc.1 Setup.exe** or portable ZIP from this repository's
+Download the **3.0.0-rc.2 Setup.exe** or portable ZIP from this repository's
 [Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases).
 Both contain this reworked converter, Node.js 24.14.1, the public ModKit runtime,
 mpqcli and their notices. No Node, npm, Python, Git, private archive or K: drive
@@ -17,8 +17,9 @@ libraries and Galaxy declarations. Custom mod dependencies must also be availabl
 Neither game binaries nor game data are included in this application.
 
 Open **SC2 Trigger Recovery KSP** from the Start menu, choose a packed `.SC2Map`,
-the SC2 installation and a **new** output directory, then select **Recover triggers**.
-The portable edition opens the same form with `Open Recovery.cmd`.
+the SC2 installation and a **new** output directory, then select **GENERATE TRIGGERS**.
+The portable edition opens the same local TypeScript interface with `Open Recovery.cmd`.
+It runs in your browser on a loopback address; Java is not required. Use the **X** button to stop the local server. See the [GUI guide](gui/README.md).
 Original maps are read-only. Recovery runs once in the background and writes
 progress, a candidate map and evidence under the chosen output directory.
 
@@ -48,7 +49,9 @@ contract requires it, pass `--benchmark <distribution>` or set
 `SC2_TRIGGER_BENCHMARK_ROOT`. Missing required proof remains an error/review;
 the installer does not replace or weaken that oracle. Original attributes are
 preserved, and missing defaults are never guessed. Recovery from an external
-attribute header still requires the separately verified header evidence.
+attribute header still requires the separately verified header evidence. Supply
+it with `--attribute-index <index.json>` or the corresponding GUI field. An
+attribute query alone does not reveal the original definitions or defaults.
 
 ## Build from public source
 

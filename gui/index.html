@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="session-token" content="__SESSION_TOKEN__" />
+    <title>Trigger Revize KSP</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <div class="trigger-frame">
+      <header class="trigger-topbar">
+        <div class="trigger-topbar-main">
+          <button id="openFile" class="file-chooser-btn" title="Open map" aria-label="Open file">
+            <span class="folder-icon"></span>
+          </button>
+          <div class="file-info">
+            <h1>OPEN FILE <small>TRIGGER REVIZE KSP · TYPESCRIPT</small></h1>
+            <div id="selectedFile" class="file-label">Open a packed .SC2Map file</div>
+          </div>
+          <div class="progress-box">
+            <div id="status" role="status">READY</div>
+            <progress id="progress" max="1" value="0"></progress>
+          </div>
+          <button id="settingsButton">SETTINGS</button><button id="fullscreen">FULL SCREEN</button
+          ><button id="shutdown" class="close-button" aria-label="Exit application">X</button>
+        </div>
+        <nav class="trigger-topbar-actions" aria-label="Recovery actions">
+          <button id="generate" class="primary">GENERATE TRIGGERS</button
+          ><button id="fullMode" aria-pressed="false">FULL GUI: OFF</button
+          ><button id="librariesButton">LIBRARIES</button
+          ><button id="saveMarkup" disabled>SAVE TRIGGERS</button
+          ><button id="exportFile" disabled>EXPORT FILE</button
+          ><button id="treeButton" disabled>VIEW TREE</button
+          ><button id="infoButton">GEN INFO</button><button id="cancel" disabled>CANCEL</button>
+        </nav>
+      </header>
+      <main class="trigger-center-wrap">
+        <section class="editor-panel">
+          <div class="panel-header">
+            <h2>Trigger Markup</h2>
+            <span id="markupMetric" class="metric">No markup loaded</span
+            ><button id="searchMarkup">SEARCH</button>
+          </div>
+          <textarea
+            id="markup"
+            readonly
+            spellcheck="false"
+            aria-label="Trigger Markup"
+            placeholder="Recovered Triggers XML appears here. Existing markup is preserved by default."
+          ></textarea>
+        </section>
+        <div class="divider" role="separator" aria-label="Resize editor panels" tabindex="0"></div>
+        <section class="editor-panel">
+          <div class="panel-header">
+            <h2>Galaxy Source</h2>
+            <span id="sourceMetric" class="metric">No source loaded</span
+            ><button id="searchSource">SEARCH</button>
+          </div>
+          <textarea
+            id="source"
+            readonly
+            spellcheck="false"
+            aria-label="Galaxy Source"
+            placeholder="Open a map to view its original MapScript.galaxy. No SC2 Editor is needed for this view."
+          ></textarea>
+        </section>
+      </main>
+      <footer>
+        <span id="notice" role="alert"
+          >Original files stay unchanged. Code panels are read-only previews.</span
+        ><span id="output"></span>
+      </footer>
+    </div>
+    <dialog id="settingsDialog">
+      <div class="dialog-heading">
+        <h2>SETTINGS</h2>
+        <button data-close="settingsDialog" aria-label="Close settings">X</button>
+      </div>
+      <form id="recovery">
+        <fieldset id="settings">
+          <label for="adapter">FORMAT ADAPTER</label
+          ><select id="adapter"></select>
+          <p id="description"></p>
+          <div id="fields"></div>
+          <section class="recovery-section">
+            <h3>RESTORATION</h3>
+            <div class="mode-card">
+              AUTOMATIC
+              <small
+                >Preserve usable Triggers and reconstruct supported missing or changed GUI.</small
+              >
+            </div>
+            <label class="check"
+              ><input type="checkbox" id="fullGui" />Translate authored script into GUI too</label
+            ><small
+              >Off by default. Unsupported constructs remain a refusal. No invented stubs or Native
+              wrappers.</small
+            >
+          </section>
+          <button class="primary" type="submit">GENERATE TRIGGERS</button>
+        </fieldset>
+      </form>
+    </dialog>
+    <dialog id="infoDialog">
+      <div class="dialog-heading">
+        <h2>GENERATION INFO</h2>
+        <button data-close="infoDialog" aria-label="Close information">X</button>
+      </div>
+      <div id="verdict">No recovery job yet.</div>
+      <details>
+        <summary>Full JSON evidence</summary>
+        <pre id="result"></pre>
+      </details>
+      <h3>Activity</h3>
+      <pre id="log"></pre>
+      <h3>Job artifacts</h3>
+      <nav id="artifacts" aria-label="Job artifacts"></nav>
+    </dialog>
+    <dialog id="treeDialog">
+      <div class="dialog-heading">
+        <h2>TRIGGER HIERARCHY</h2>
+        <button data-close="treeDialog" aria-label="Close hierarchy">X</button>
+      </div>
+      <p>Literal XML hierarchy. Expand nodes on demand.</p>
+      <div id="hierarchy"></div>
+    </dialog>
+    <dialog id="librariesDialog">
+      <div class="dialog-heading">
+        <h2>LOCAL LIBRARIES</h2>
+        <button data-close="librariesDialog" aria-label="Close libraries">X</button>
+      </div>
+      <p>
+        SC2 dependencies are resolved from the installed game and the map. Choose the game folder in
+        Settings. Additional formats require a real backend adapter.
+      </p>
+      <pre id="librariesInfo">Run recovery to inspect its actual prepared dependency chain.</pre>
+    </dialog>
+    <dialog id="searchDialog">
+      <div class="dialog-heading">
+        <h2>SEARCH</h2>
+        <button data-close="searchDialog" aria-label="Close search">X</button>
+      </div>
+      <label for="query">Find text</label><input id="query" type="search" /><button id="findNext">
+        FIND NEXT</button
+      ><span id="searchStatus"></span>
+    </dialog>
+  </body>
+</html>

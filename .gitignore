@@ -15,5 +15,8 @@ __pycache__/
 /output/
 /tmp/
 /release/
+/gui/dist/
+/output/playwright/
+/.playwright-cli/
 
 source-status.local.json

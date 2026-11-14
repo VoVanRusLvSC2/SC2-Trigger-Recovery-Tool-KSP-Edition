@@ -10,6 +10,7 @@ Requirements: Node.js 24 with npm, Python 3.10+, Git. Windows x64 is the qualifi
 ```sh
 npm run setup:public
 node trigger-recovery.mjs doctor
+npm run gui
 ```
 
 Setup verifies public ModKit revision d4218ef890064108384e8b871081a02acaa86c87, installs locked npm packages without lifecycle scripts, emits the SC2/archive runtime, and downloads fingerprint-pinned mpqcli. Run setup before npm ci on a fresh checkout: four runtime packages are local file links below .runtime. Keep that directory. The public schema replaces the former private schema after compatibility checks; the generated native API catalog is not downloaded. TypeScript emission is not a full upstream typecheck.

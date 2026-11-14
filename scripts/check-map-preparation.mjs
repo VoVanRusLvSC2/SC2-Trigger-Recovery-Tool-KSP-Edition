@@ -18,6 +18,18 @@ await assert.rejects(
   /contain original|protected/,
 );
 const existing = path.join(temporary, 'existing');
+const absentIndexOutput = path.join(temporary, 'no-attribute-index-output');
+await assert.rejects(
+  prepareMap({
+    original,
+    installation: temporary,
+    output: absentIndexOutput,
+    mpq: original,
+    attributeIndex: path.join(temporary, 'missing-index.json'),
+  }),
+  /ENOENT/,
+);
+await assert.rejects(fs.access(absentIndexOutput), /ENOENT/);
 await fs.mkdir(existing);
 await assert.rejects(
   prepareMap({ original, installation: os.tmpdir(), output: existing, mpq: original }),

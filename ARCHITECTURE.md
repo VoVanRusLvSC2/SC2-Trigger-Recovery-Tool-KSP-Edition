@@ -22,6 +22,11 @@ The [release roadmap](ROADMAP.md) lists integration blockers and completion crit
 
 ## Code reading guide
 
+The [TypeScript front end](gui/README.md) is separate from the conversion core:
+typed adapter descriptors → browser form → local bridge → existing CLI/worker.
+The bridge adds no alternate GUI generator, attribute inference or benchmark
+rules. Its output is the same isolated candidate/evidence tree as a CLI run.
+
 | Start here | What to follow |
 | --- | --- |
 | [Job orchestration](src/cli/convert.mjs) | Input identity checks, source policy, fresh/incremental routing, packing and final cleanup |

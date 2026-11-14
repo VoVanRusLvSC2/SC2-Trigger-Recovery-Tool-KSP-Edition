@@ -36,9 +36,14 @@ export async function prepareMap({
   output,
   mpq,
   guiRecoveryMode = 'preserve-source',
+  attributeIndex,
 }) {
   original = await fs.realpath(original);
   installation = await fs.realpath(installation);
+  if (attributeIndex !== undefined) {
+    attributeIndex = await fs.realpath(attributeIndex);
+    assert((await fs.stat(attributeIndex)).isFile(), 'Expected an attribute index file');
+  }
   assert(
     /\.sc2map$/iu.test(original),
     'The archive worker accepts .SC2Map files; use the API for mod libraries',
@@ -239,6 +244,7 @@ export async function prepareMap({
       job: path.join(output, 'candidates', 'recovered'),
       mpq: path.resolve(mpq),
       guiRecoveryMode,
+      ...(attributeIndex === undefined ? {} : { attributeIndex }),
     };
     const jobFile = path.join(output, 'job.json');
     await save(jobFile, row);
