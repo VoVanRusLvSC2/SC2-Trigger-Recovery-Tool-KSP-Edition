@@ -74,7 +74,7 @@ Upstream format and Galaxy support comes in part from [hometlt/modkit-extensions
 
 The public tree intentionally omits test suites, benchmark distributions, raw exports, worker jobs, historical run reports, binaries and caches. The `verification` module contains production safeguards, not a bundled test project.
 Historical benchmark rules have not been relaxed or replaced. Their original distributions and qualification inputs are external to this source-only tree.
-The directory migration updates module/resource references; it is not a new correctness qualification for the maps. Missing dependencies and old hash-bound qualification inputs still require integration work before a standalone release.
+The directory migration updates module/resource references; it is not a new correctness qualification for the maps. The public dependency/build path and automatic map preparation are documented in INSTALL.md. Old qualification inputs remain external and must not be treated as fresh release acceptance.
 
 ## Map records
 

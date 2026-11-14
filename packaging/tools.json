@@ -1,0 +1,17 @@
+{
+  "node": {
+    "version": "24.14.1",
+    "url": "https://nodejs.org/dist/v24.14.1/node-v24.14.1-win-x64.zip",
+    "sha256": "6e50ce5498c0cebc20fd39ab3ff5df836ed2f8a31aa093cecad8497cff126d70"
+  },
+  "innoSetup": {
+    "version": "6.7.4",
+    "url": "https://github.com/jrsoftware/issrc/releases/download/is-6_7_4/innosetup-6.7.4.exe",
+    "sha256": "a549929319f9120716677c685535ca4671e4b937b5fdc87e2585f32d8eb30e8c"
+  },
+  "mpqcli": {
+    "version": "0.10.0",
+    "url": "https://github.com/thegraydot/mpqcli/releases/download/v0.10.0/mpqcli-windows-amd64.exe",
+    "sha256": "efed6d68060b70b5f71b383f3dc3b87db84ff1a299f02f8e32ae6be93eb6dcfc"
+  }
+}

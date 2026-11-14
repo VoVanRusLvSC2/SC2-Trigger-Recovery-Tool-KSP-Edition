@@ -14,5 +14,6 @@ __pycache__/
 *.log
 /output/
 /tmp/
+/release/
 
 source-status.local.json

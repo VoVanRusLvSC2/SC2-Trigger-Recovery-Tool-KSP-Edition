@@ -1,6 +1,6 @@
 /**
  * Public conversion surface shared with the retained CLI orchestration path.
- * Runtime closure is still incomplete; inspect SOURCE_STATUS.md before use.
+ * Public dependency setup and remaining qualification are in SOURCE_STATUS.md.
  */
 export {
   convertGalaxyToTriggers,

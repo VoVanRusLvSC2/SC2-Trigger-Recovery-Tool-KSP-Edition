@@ -1,8 +1,11 @@
 # Prepared map recovery jobs
 
-The CLI executes an existing, hash-bound preparation. It is not an automatic
-download/dependency resolver or an Editor automation tool. Install the local
-runtime first using [BUILDING.md](BUILDING.md).
+The worker executes a hash-bound preparation. The user-facing
+`trigger-recovery recover <map> --sc2 <installation> --out <new-directory>`
+command now creates that preparation automatically from the archive and actual
+installed libraries, then runs this worker. See [INSTALL.md](INSTALL.md).
+It does not automate the Editor. Prepare source dependencies with
+[BUILDING.md](BUILDING.md) or use the bundled Windows application.
 
 ```sh
 node src/cli/convert.mjs --help
@@ -62,8 +65,10 @@ It supplies:
 `config.entries` is the original component census: `{path, sha256, ...}` records.
 The extracted package and original MapScript must match it. Root declaration and
 include closure must be available; missing input is an error or review case.
-Preparation artifacts can be produced by an existing preparation pipeline; a
-general end-user preparation command is not yet included in this publication.
+`trigger-recovery prepare` creates these artifacts without running conversion.
+It verifies the original archive, dependency chain and complete actual include
+closure, refuses existing output directories, and never edits the input map.
+The automatic archive preparation currently supports packed `.SC2Map` inputs.
 
 An optional attribute index contains exact source-archive matches and header
 fingerprints. Without it, the worker preserves original Attributes and reports

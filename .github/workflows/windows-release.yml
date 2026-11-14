@@ -1,0 +1,30 @@
+name: Windows release build
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v3.*']
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.14.1'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build from public dependencies
+        shell: powershell
+        run: ./packaging/build-windows.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SC2-Trigger-Recovery-KSP-Windows-x64
+          path: |
+            release/*.exe
+            release/*.zip
+            release/SHA256SUMS.txt
+          if-no-files-found: error

@@ -1,40 +1,20 @@
-# Build preparation
+# Build and verify
 
-The component API and prepared-job CLI run after this setup. See [API.md](API.md)
-and [CLI.md](CLI.md) for inputs, and [SOURCE_STATUS.md](SOURCE_STATUS.md) for actual
-check results and remaining release qualification. This is not a bundled app.
+See [INSTALL.md](INSTALL.md) for the Windows installer, portable application and full build steps.
+The public build no longer needs the private mk-revizer.zip or the author workspace.
 
-## Prerequisites
+## Clean public setup
 
-- Node.js 24 and npm. The checked preparation environment uses Node 24.14.1.
-- Python 3.10 or later for the archive bootstrap; it uses only the standard library.
-- The retained `mk-revizer.zip` distribution supplied with this project work.
-  Its SHA-256 is `aaa8df28cbfb5f61f52a0e38181cf93b938d8cf67fdd9e81a46e8fc7e295f0d4`.
-  Another archive or an arbitrary newer ModKit checkout is not automatically
-  compatible. Automatic acquisition from public upstream remains unqualified.
-
-## Install dependencies
-
-From the repository root:
+Requirements: Node.js 24 with npm, Python 3.10+, Git. Windows x64 is the qualified target.
 
 ```sh
-npm ci --ignore-scripts
-python scripts/setup-local-dependencies.py --archive /path/to/mk-revizer.zip
+npm run setup:public
+node trigger-recovery.mjs doctor
 ```
 
-On Windows, pass the archive's Windows path. The bootstrap verifies the complete
-archive fingerprint, extracts the retained compiled runtime under `.runtime`,
-shares compatible public npm packages, and links nine ModKit package roots into
-`node_modules`. It also installs three pinned generated schema assets. These
-local dependencies and assets are ignored by Git; the bootstrap does not grant
-redistribution rights or upload them. It executes no package lifecycle scripts.
+Setup verifies public ModKit revision d4218ef890064108384e8b871081a02acaa86c87, installs locked npm packages without lifecycle scripts, emits the SC2/archive runtime, and downloads fingerprint-pinned mpqcli. Run setup before npm ci on a fresh checkout: four runtime packages are local file links below .runtime. Keep that directory. The public schema replaces the former private schema after compatibility checks; the generated native API catalog is not downloaded. TypeScript emission is not a full upstream typecheck.
 
-Run the bootstrap again after `npm ci`, which removes the package links.
-Repeated setup verifies existing runtime files and refuses to overwrite a
-different file or package location. No maps, Editor sessions or game binaries
-are involved.
-
-## Verify the preparation
+## Checks
 
 ```sh
 npm run verify:recovered
@@ -44,27 +24,21 @@ npm run verify:helpers
 npm run verify:dependencies
 npm run verify:language -- --with-runtime
 npm run verify:attribute-source
-npm run format:check
-npm run verify:source
 npm run verify:authored
 npm run verify:cli
+npm run verify:preparation
+npm run verify:source
+npm run format:check
 ```
 
-The first two checks cover source provenance and bytes. The language check
-compares the shared scanner and all six retained SDK grammars, including the
-archived parser as an independent reference. The attribute-source check covers
-stored default tokens, selected-variant overrides and invalid-source rejection.
-The dependency check loads all 31 checked package entry points and verifies
-schema loading, catalog include paths and an MPQ write/read entirely in memory.
-These are focused preparation checks, not map-acceptance results.
+The [integration checks](API.md#reproduce-integration-checks) additionally need real matching NativeLib and the original pinned benchmark. All 304 oracle assets remain hash-checked. Game metadata and qualification evidence are external inputs; missing proof never becomes PASS.
 
-`verify:source` passes after bootstrap: 1,348 modules parse with no unresolved
-literal imports. Its rules were not relaxed. Actual API conversion and prepared
-CLI execution are checked separately; static resolution alone cannot prove them.
+## Windows artifacts
 
-The [integration commands](API.md#reproduce-integration-checks) require matching
-external NativeLib data and the pinned benchmark distribution. Both six-case
-converter integration and five-case attribute integration passed; the oracle's
-manifest and all 304 asset fingerprints remain unchanged. An actual CLI map job
-completed packaging and preservation checks while retaining its conservative
-REVIEW status. No new corpus-wide or Editor acceptance is claimed.
+```powershell
+npm run release:windows
+```
+
+The script repeats setup/checks and builds Setup.exe, portable ZIP and SHA256SUMS.txt under ignored release/. It downloads verified Node 24.14.1, mpqcli 0.10.0 and Inno Setup 6.7.4. All package junctions become ordinary files; an installation manifest checks the payload. The installed application needs no build tools or build-machine paths.
+
+The legacy setup:local script is retained for historical recovery only. It is not the public release path and must not be mixed with the public npm layout.

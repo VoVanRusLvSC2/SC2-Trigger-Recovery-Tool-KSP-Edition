@@ -2,7 +2,7 @@
 
 **A reworked Trigger Revizer implementation, developed together with Vise.**
 
-> **Status: component API and prepared-job CLI operational after pinned setup.** This source distribution still needs external runtime/game data; it is not a bundled standalone app. See [build preparation](BUILDING.md), the [source recovery status](SOURCE_STATUS.md) and [remaining work and release plan](ROADMAP.md).
+> **Windows release candidate: installer, portable app and reproducible public build.** See [Install and run](INSTALL.md), [build instructions](BUILDING.md), [source status](SOURCE_STATUS.md) and [remaining qualification](ROADMAP.md). Node and runtime dependencies are bundled; game metadata comes from your installed SC2.
 
 **Trigger Revizer KSP** is a StarCraft II (SC2) trigger recovery project. It reconstructs editable GUI trigger markup (`Triggers` XML) from Galaxy source such as `MapScript.galaxy`, and completes missing or changed sections of an existing trigger tree.
 
@@ -108,11 +108,11 @@ See [Architecture](ARCHITECTURE.md) for module responsibilities and entry points
 
 ## Integration status
 
-The conversion core is implemented and has recorded results on real maps. The [local bootstrap](BUILDING.md) restores pinned dependencies and all literal source imports resolve. Both conversion directions and a complete prepared archive job execute. A bundled distribution and full release qualification remain open. Module paths have been reorganized for readability; historical results remain attached to the previously verified artifacts. No missing implementation is replaced by a stub, and the reorganization does not relax verification rules.
+The public build downloads a fingerprint-pinned licensed ModKit revision and locked npm dependencies. The Windows application includes Node.js and mpqcli, and the user-facing CLI automatically prepares packed maps from the actual installed SC2 libraries. Neither a private runtime ZIP nor the author's drive layout is needed.
 
-A source audit on **2026-11-14** found **339 unresolved relative-import references to 89 distinct targets** across the published JavaScript modules. These are import sites and targets, not 339 separate bugs or failing maps. Examples include the public entry point's re-export, shared utility modules and SDK internals. External runtime packages, machine-local SDK configuration and external benchmark inputs also need integration. The [roadmap](ROADMAP.md) sets out the order and completion criteria.
+Both API directions, six fresh/incremental conversion cases, five attribute cases and a complete real-map archive job were exercised with the public runtime. The real map retained its original Galaxy and unrelated payloads; its conservative REVIEW verdict was preserved. This is release-candidate integration evidence, not a new corpus-wide or Editor acceptance claim. The [103 + 222 registry levels](maps/catalog.json) are unchanged.
 
-The readability update formats 782 project-owned modules and adds comments at the orchestration and contract boundaries. The 483 copied SDK/vendor modules and the map registry are unchanged. Syntax-tree comparison checks the formatting changes; it does not replace conversion benchmarks or a new Editor run. Historical source-hash evidence still needs qualification against a reproducible release build.
+The installer supports Windows 10/11 x64. Automatic archive jobs currently target packed maps; mod-library work is exposed through the component API. Applicable strict attribute comparisons still require the original external benchmark and verified header evidence. See [remaining work](SOURCE_STATUS.md#remaining-release-work).
 
 ## Reading and formatting the source
 
@@ -121,12 +121,12 @@ Start with the [code reading guide](ARCHITECTURE.md#code-reading-guide). Project
 To install **formatting tooling only** and check or apply the style:
 
 ```sh
-npm ci
+npm run setup:public
 npm run format:check
 npm run format
 ```
 
-These commands do not install a complete converter runtime or resolve the integration blockers above. The formatter is pinned in the development dependencies and lockfile.
+Run `npm run setup:public` before these commands on a fresh clone. The formatter is pinned in the development dependencies and lockfile.
 
 ## Galaxy to GUI trigger recovery: common questions
 
@@ -152,7 +152,7 @@ Compilation checks whether code is accepted; it does not prove that initializati
 
 ### Where are the source code and download instructions?
 
-Browse [the source modules](src/), [API usage](API.md), [prepared CLI jobs](CLI.md) and [integration entry points](ARCHITECTURE.md#entry-points). This checkout is not yet a self-contained application; its remaining runtime and qualification requirements are noted above. [Earlier packaged releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery/releases) are separate from the reworked source tree.
+Browse [the source modules](src/), [API usage](API.md), [prepared CLI jobs](CLI.md) and [integration entry points](ARCHITECTURE.md#entry-points). Download this revision's installer or portable ZIP from [this repository's Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases). See [INSTALL.md](INSTALL.md) for public-source builds and supported scope. [Earlier packaged releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery/releases) are separate from the reworked source tree.
 
 ## Contributors and reverse engineering
 

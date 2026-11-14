@@ -1,9 +1,10 @@
 # Source integration status
 
-**2026-11-14: API and prepared-job CLI execute after pinned local setup.**
-The component API and prepared-job runner now work. This remains a source-based
-distribution with explicit external runtime/game-data requirements, not a bundled
-standalone application. Historical corpus acceptance levels are unchanged.
+**2026-11-14: public-source Windows release candidate and API/CLI.**
+Public runtime acquisition, automatic map preparation and Windows packaging are
+implemented. See [installation](INSTALL.md) and [build instructions](BUILDING.md).
+The application bundles Node and runtime dependencies; installed SC2 supplies
+game metadata. Historical corpus acceptance levels are unchanged.
 
 ## What is restored
 
@@ -40,16 +41,18 @@ by their own input contracts.
 
 ## Dependencies
 
-The [local bootstrap](BUILDING.md) verifies the supplied `mk-revizer.zip`, restores
-1,981 archived runtime files under ignored `.runtime`, links nine ModKit package
-roots and installs three pinned generated schemas. Matching public npm packages
-are shared to preserve module/class identity. Archived packages, generated assets,
-maps and private recovery transcripts are not redistributed here.
+The public setup uses licensed ModKit revision
+`d4218ef890064108384e8b871081a02acaa86c87`, pinned platform tarballs and locked npm
+packages. It emits 761 runtime modules/assets, supplies the public schema and
+passes the 31-entry-point runtime check. The old private archive is no longer a
+build prerequisite. Its earlier restoration checks remain historical provenance.
 
-This reduces missing source requirements and duplicate internal module targets.
-It does **not** remove all nine external ModKit dependencies. Public acquisition
-and standalone packaging remain unqualified; setup still requires the pinned
-user-supplied archive.
+The release retains upstream MIT and dependency notices, Node's notices and
+mpqcli/StormLib/CLI11 licenses. It includes no maps, installed game binaries,
+private recovery transcripts or game-derived native API catalog. Source package
+manifest adaptations are documented in the public fetch script and receipt.
+Unused legacy `extract-zip` is excluded and `xml2js` is pinned to 0.6.2. The
+existing fast-xml-parser compatibility baseline still has a moderate npm advisory.
 
 ## Check results and limits
 
@@ -113,9 +116,10 @@ map-specific repair rules.
 
 ## Remaining release work
 
-1. **Prepare a convenient distribution:** the pinned archive bootstrap works,
-   but runtime/metadata acquisition and an end-user preparation command are not
-   bundled. The documented CLI consumes an existing verified preparation.
+1. **Broaden application qualification:** repeat clean install/upgrade and
+   representative map jobs on other Windows installations. Automatic preparation
+   currently targets packed maps; mod libraries use the component API. External
+   benchmark/header evidence is still required for applicable attribute proofs.
 2. **Broaden qualification:** recheck corpus inputs with the assembled revision;
    retain the distinction between 103 recorded strict passes and 222 historical
    acceptances. Current integration fixtures are not new corpus passes.
@@ -126,8 +130,9 @@ map-specific repair rules.
    the Editor service when separately authorized. Offline generation is not
    Editor or gameplay acceptance.
 
-The build's source/runtime loading blockers are resolved. These remaining release
-qualification and convenience tasks do not justify weakening any acceptance gate.
+The build's source/runtime loading blockers are resolved and the public dependency
+path is executable. Remaining release qualification does not justify weakening
+any acceptance gate.
 See [API.md](API.md), [CLI.md](CLI.md) and [ROADMAP.md](ROADMAP.md).
 
 ## Reproduce

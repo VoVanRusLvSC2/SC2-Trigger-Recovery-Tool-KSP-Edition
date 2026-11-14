@@ -1,6 +1,6 @@
 # From source snapshot to a working converter
 
-**Updated: 2026-11-14. Current status: operational API/prepared CLI; standalone distribution and broader qualification pending.**
+**Updated: 2026-11-14. Current status: public-source Windows release candidate; broader map/Editor qualification pending.**
 
 The recovery pipeline is implemented in the published source, and earlier artifacts have recorded map results. A clone with the documented pinned runtime and verified inputs can run the component API and prepared-job worker. The goal of this plan is a reproducible working release with a clear supported scope, useful diagnostics and a small, explicit list of remaining bugs. Silent changes to map behavior are not an acceptable beta limitation.
 
@@ -12,7 +12,7 @@ The recovery pipeline is implemented in the published source, and earlier artifa
 | GUI recovery | Binding catalogs, fresh reconstruction and incremental completion | Exercise both paths end to end and prove preservation of existing GUI |
 | Attributes | Provenance preparation, GUI/document checks and runtime query comparison | Supply portable verified inputs and qualify all three contracts together |
 | Verification | Production safeguards and an adapter to a pinned external oracle | Make the exact oracle and qualification inputs reproducibly available |
-| Distribution | Source modules and earlier packaged releases | Provide one supported entry point, declared runtime dependencies and a repeatable package build |
+| Distribution | Public setup, automatic map preparation, portable Windows app and installer build | Qualify other Windows machines, upgrades and broader input coverage |
 | Map evidence | 103 recorded strict passes and 222 historical acceptances | Requalify the release build; do not relabel historical records as new passes |
 
 ## Current recovery checkpoint
@@ -85,4 +85,4 @@ The [103 recorded strict-pass records](maps/verified.md) and [222 historical acc
 This plan does not promise universal reversal of arbitrary Galaxy into the exact original folders, comments or GUI authoring choices. It targets supported behavioral reconstruction, conservative preservation and explicit results when equivalence is not proved.
 
 
-The local bootstrap, portable runtime, API conversion and a prepared CLI archive run are verified. Bundled preparation/distribution, corpus-wide requalification and Editor validation remain release work; see [SOURCE_STATUS.md](SOURCE_STATUS.md).
+Public runtime acquisition, API conversion, automatic preparation and a real CLI archive run are verified. Corpus-wide requalification and Editor validation remain release work; see [SOURCE_STATUS.md](SOURCE_STATUS.md).
