@@ -332,6 +332,30 @@
       "originalSha256": "3b47c1b795fb64665384e334f97a096385d1471d2798f6fb0a3b9ddd2871e791",
       "publishedSha256": "ff1bfc660d8d39df4bb3fe0306b0d102fefd34b87ae694998c2938fa3b317bd0",
       "algorithmAstSha256": "cd37a3cdb19a99214a54746158fe59c378dba783b56c906b40cdb32fd17f652a"
+    },
+    {
+      "file": "src/sdk/array-values/modules/triggers/shared/trigger-document/sax-reader.js",
+      "originalSha256": "01fea70ed0cea2e3e8882417608f97f5768097cab920818a7a92708912a7faa9",
+      "publishedSha256": "01fea70ed0cea2e3e8882417608f97f5768097cab920818a7a92708912a7faa9",
+      "algorithmAstSha256": "4ebafda845d21edcf34af425e3cda2d5b6979859859d6940d9eca70756a598e2"
+    },
+    {
+      "file": "src/sdk/production-preparation/modules/triggers/services/galaxy-conversion/internal/attributes-recovery.js",
+      "originalSha256": "94393914b96a3ef4312cab7f3f06f0eba03684c0f9a5e6095c4317f289caca02",
+      "publishedSha256": "94393914b96a3ef4312cab7f3f06f0eba03684c0f9a5e6095c4317f289caca02",
+      "algorithmAstSha256": "550f21cc53be8b3970a6039fcb95e2475e24d24519dae5e2d1edaa0e93e38bd1"
+    },
+    {
+      "file": "src/sdk/lossless-colors/modules/triggers/services/galaxy-conversion/internal/attributes-recovery.js",
+      "originalSha256": "94393914b96a3ef4312cab7f3f06f0eba03684c0f9a5e6095c4317f289caca02",
+      "publishedSha256": "94393914b96a3ef4312cab7f3f06f0eba03684c0f9a5e6095c4317f289caca02",
+      "algorithmAstSha256": "550f21cc53be8b3970a6039fcb95e2475e24d24519dae5e2d1edaa0e93e38bd1"
+    },
+    {
+      "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/attributes-recovery.js",
+      "originalSha256": "94393914b96a3ef4312cab7f3f06f0eba03684c0f9a5e6095c4317f289caca02",
+      "publishedSha256": "94393914b96a3ef4312cab7f3f06f0eba03684c0f9a5e6095c4317f289caca02",
+      "algorithmAstSha256": "550f21cc53be8b3970a6039fcb95e2475e24d24519dae5e2d1edaa0e93e38bd1"
     }
   ]
 }

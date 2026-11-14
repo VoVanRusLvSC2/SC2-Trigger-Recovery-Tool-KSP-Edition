@@ -4,20 +4,28 @@ This is a source recovery snapshot, **not a standalone converter release**. The 
 
 ## Recovered and checked
 
-- **55 missing source modules restored**, including recovery/session models, the reverse-conversion core, exact attribute identity and localization helpers.
+- **59 missing source modules restored**, including recovery/session models, the reverse-conversion core, exact attribute identity and localization helpers.
 - Every restored module matched a historical SHA-256 pin before relocation. Eleven pinned modules were reproducible from retained TypeScript; the historical compiler/options reproduced their JavaScript bytes. Some modules occur in more than one SDK family.
 - Restored source ASTs matched their recovered originals after excluding relocated module/resource specifiers. In **18 existing modules**, only import/export wiring changed; their algorithm ASTs were unchanged. This does not by itself qualify the runtime bindings.
 - The public API now points to the same retained conversion chain as the CLI. Collapsed utility-directory imports were rebound only when a recovered module exported all requested names.
-- All **1320 JavaScript modules parsed successfully**. Focused local checks passed for disjoint XML patch safety, long-script transport, conservative wait matching and per-map analysis isolation. These are not full converter or map-equivalence tests.
+- All **1324 JavaScript modules parsed successfully**. Focused local checks passed for disjoint XML patch safety, long-script transport, conservative wait matching and per-map analysis isolation. These are not full converter or map-equivalence tests.
 - Five historical runtime package versions and their npm integrity data are now explicit. Acorn and Prettier are pinned development tools.
 
 The [recovered-source manifest](scripts/recovered-sources.json) records original and published hashes. It contains no maps, game binaries, historical chat data or old run outputs.
 
+## Additional recovery evidence
+
+Four further missing modules were recovered from retained Git blob objects in the original local workspace: the array-values SAX reader and three SDK-family copies of attribute recovery. All four matched historical SHA-256 pins. Original and restored algorithm ASTs matched; only line endings were normalized. No Git objects were pruned or modified.
+
+A separate local trial restored the archived ModKit packages and their available transitive dependencies from the supplied `mk-revizer.zip`. Actual Node ESM imports succeeded for all 29 previously unresolved package specifiers. This establishes recoverability of external dependencies, not converter equivalence or a reproducible public installation. Those trial packages are not part of this checkout's dependency manifest or publication; the counts below describe the checkout itself.
+
+The original local v569 conversion candidate also currently fails to load at an absent SDK `lossless-xml.js`; the older modular entry separately references a missing v193 overlay. A currently working complete local conversion chain has not been established.
+
 ## Remaining build gaps
 
-The same static source checker found **339 broken relative-import edges to 89 targets** before recovery. It now reports **208 edges to 49 unresolved relative targets**: 48 missing files and one invalid utility-directory target. This count includes newly exposed transitive dependencies.
+The same static source checker found **339 broken relative-import edges to 89 targets** before recovery. It now reports **203 edges to 45 unresolved relative targets**: 44 missing files and one invalid utility-directory target. This count includes newly exposed transitive dependencies.
 
-There are also **166 unresolved bare-package import occurrences**, representing **29 distinct specifiers**. These include local ModKit package exports; installing the five public npm dependencies does not supply those SDK packages. Sixteen imports resolve paths at runtime and need separate execution/configuration checks.
+There are also **169 unresolved bare-package import occurrences**, representing **29 distinct specifiers**. These include local ModKit package exports; installing the five public npm dependencies does not supply those SDK packages. Sixteen imports resolve paths at runtime and need separate execution/configuration checks.
 
 Current source verification deliberately exits with code **1 / INCOMPLETE**. Its rules were not changed to hide unresolved references. It checks JavaScript syntax and literal ESM resolution, not named-export contracts, all computed resources, CommonJS dependency closure or program behavior.
 
@@ -29,7 +37,6 @@ Current source verification deliberately exits with code **1 / INCOMPLETE**. Its
 - `src/sdk/array-values/modules/data/shared/catalog-engine/xml/parser.js`
 - `src/sdk/array-values/modules/galaxy/language-core/scanner.js`
 - `src/sdk/array-values/modules/triggers/services/galaxy-conversion/function-candidates.js`
-- `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/attributes-recovery.js`
 - `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/conversion-model.js`
 - `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/dependency-functions.js`
 - `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/explicit-zero-initializer.js`
@@ -46,18 +53,15 @@ Current source verification deliberately exits with code **1 / INCOMPLETE**. Its
 - `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/single-call-template-alias.js`
 - `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/ttg-core.js`
 - `src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/unreachable-gui-tail.js`
-- `src/sdk/array-values/modules/triggers/shared/trigger-document/sax-reader.js`
 - `src/sdk/array-values/modules/triggers/shared/trigger-document/trigger-xml.js`
 - `src/sdk/core/modules/data/services/schema/generated/sc2-data-schema.json`
 - `src/sdk/literal-native/modules/galaxy/language-core/scanner.js`
 - `src/sdk/lossless-colors/modules/galaxy/language-core/scanner.js`
-- `src/sdk/lossless-colors/modules/triggers/services/galaxy-conversion/internal/attributes-recovery.js`
 - `src/sdk/lossless-colors/modules/triggers/services/galaxy-conversion/internal/custom-ai-recovery.js`
 - `src/sdk/lossless-colors/modules/triggers/services/galaxy-conversion/internal/custom-ai-script.js`
 - `src/sdk/private-switch/modules/data/services/schema/generated/sc2-data-schema.json`
 - `src/sdk/production-preparation/modules/data/services/schema/generated/sc2-data-schema.json`
 - `src/sdk/production-preparation/modules/galaxy/language-core/scanner.js`
-- `src/sdk/production-preparation/modules/triggers/services/galaxy-conversion/internal/attributes-recovery.js`
 - `src/sdk/production-preparation/modules/triggers/services/galaxy-conversion/internal/custom-ai-recovery.js`
 - `src/sdk/production-preparation/modules/triggers/services/galaxy-conversion/internal/custom-ai-script.js`
 - `src/sdk/thread-analysis/modules/galaxy/language-core/scanner.js`

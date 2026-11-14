@@ -29,7 +29,7 @@ The 2026-11-14 audit parsed 1,265 JavaScript modules and checked literal relativ
 
 ## Source recovery checkpoint - 2026-11-14
 
-55 missing modules have been restored against historical SHA-256 pins. Their algorithm ASTs were preserved; 18 existing modules received specifier-only wiring changes. Source completeness improved, but the SDK/runtime graph still has unresolved targets and both entry points remain blocked. See [the exact remaining gaps and reproducible source checks](SOURCE_STATUS.md). This checkpoint does not complete phase 1 or promote any map status.
+59 missing modules have been restored against historical SHA-256 pins. Their algorithm ASTs were preserved; 18 existing modules received specifier-only wiring changes. Source completeness improved, but the SDK/runtime graph still has unresolved targets and both entry points remain blocked. See [the exact remaining gaps and reproducible source checks](SOURCE_STATUS.md). This checkpoint does not complete phase 1 or promote any map status.
 
 ## 1. Restore a complete, explicit build graph
 
