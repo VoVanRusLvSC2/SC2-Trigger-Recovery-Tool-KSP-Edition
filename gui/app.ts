@@ -61,7 +61,7 @@ async function inspectMap(file: string) {
   notice(
     value.hasAttributes
       ? 'Original Attributes found. Recovery preserves them automatically.'
-      : 'No Attributes component. Missing definitions require verified source evidence.',
+      : 'No Attributes component. Recovery analyzes Galaxy and localization automatically.',
   );
 }
 function configure() {

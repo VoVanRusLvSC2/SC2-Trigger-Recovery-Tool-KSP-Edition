@@ -71,7 +71,7 @@ const sc2: BackendAdapter = {
         key: 'attributeIndex',
         label: 'Verified attribute header index (optional)',
         picker: 'json',
-        help: 'Existing Attributes are retained automatically. Missing definitions require evidence bound to the exact original archive; values are never guessed.',
+        help: 'Galaxy and localization are analyzed automatically. Existing Attributes are retained. An exact header can add verified definitions and defaults; unknown defaults are never guessed.',
       },
     ],
   },
