@@ -11,7 +11,7 @@ import {
 import { parseOwnedTriggerDocument } from './trigger-document-scope.mjs';
 import { xmlTree } from '../../sdk/local-identifier/modules/triggers/shared/trigger-document/lossless-xml.js';
 import { parseLocalizedValueTable } from '../../libraries/gui/localized-value-retention.mjs';
-import { applyDisjointXmlPatches } from '../../utilities';
+import { applyDisjointXmlPatches } from '../../utilities/apply-disjoint-xml-patches.mjs';
 import { recoverLocalizedExternalGui as original } from './localized-external-gui.mjs';
 const sha = (s) => createHash('sha256').update(s).digest('hex');
 const escape = (s) =>

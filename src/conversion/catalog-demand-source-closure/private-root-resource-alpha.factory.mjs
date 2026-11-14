@@ -2,7 +2,7 @@ import {
   sourceNeedsUserStringCatalog,
   readUserStringCatalogOnDemand,
 } from '../../model/user-string-catalog-demand.mjs';
-import { decodeBoundAsciiString } from '../../utilities';
+import { decodeBoundAsciiString } from '../../utilities/galaxy-ascii-string.mjs';
 import { inspectNamedStorageObservers } from '../../analysis/named-storage-observers.mjs';
 import {
   verifyActualTriggerHandleTargets,

@@ -2,7 +2,7 @@
 
 **A reworked Trigger Revizer implementation, developed together with Vise.**
 
-> **Status: source integration in progress.** This checkout is not yet a standalone, install-and-run converter. See the [remaining work and release plan](ROADMAP.md).
+> **Status: source integration in progress.** This checkout is not yet a standalone, install-and-run converter. See the [source recovery status](SOURCE_STATUS.md) and [remaining work and release plan](ROADMAP.md).
 
 **Trigger Revizer KSP** is a StarCraft II (SC2) trigger recovery project. It reconstructs editable GUI trigger markup (`Triggers` XML) from Galaxy source such as `MapScript.galaxy`, and completes missing or changed sections of an existing trigger tree.
 
@@ -83,6 +83,7 @@ See [Architecture](ARCHITECTURE.md#conversion-flow) for the implementation bound
 src/
   cli/            Conversion entry point
   ast/            Galaxy program model and syntax services
+  utilities/      Recovered shared source and attribute helpers
   model/          Symbol identity and source ownership
   analysis/       Dependency and initialization analysis
   types/          Type inference and compatibility

@@ -27,6 +27,10 @@ The 2026-11-14 audit parsed 1,265 JavaScript modules and checked literal relativ
 - The [pinned oracle adapter](src/verification/pinned-user-oracle.mjs) expects benchmark assets at an old workspace-relative location. Their identity checks remain required; the published tree does not contain those assets.
 - Earlier qualification data refers to prior source artifacts. Directory migration and formatting change file hashes, even when executable syntax is preserved. That evidence must be regenerated or explicitly rebound through an appropriate qualification process, not silently updated to match new hashes.
 
+## Source recovery checkpoint - 2026-11-14
+
+55 missing modules have been restored against historical SHA-256 pins. Their algorithm ASTs were preserved; 18 existing modules received specifier-only wiring changes. Source completeness improved, but the SDK/runtime graph still has unresolved targets and both entry points remain blocked. See [the exact remaining gaps and reproducible source checks](SOURCE_STATUS.md). This checkpoint does not complete phase 1 or promote any map status.
+
 ## 1. Restore a complete, explicit build graph
 
 - Recover the missing project and SDK modules from authoritative source or appropriately licensed upstream revisions.

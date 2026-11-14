@@ -1,4 +1,4 @@
-import { decodeBoundAsciiString } from '../utilities';
+import { decodeBoundAsciiString } from '../utilities/galaxy-ascii-string.mjs';
 import { qualifyPrivateTriggerHandleIdentities } from '../verification/private-trigger-handle-identities.mjs';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';

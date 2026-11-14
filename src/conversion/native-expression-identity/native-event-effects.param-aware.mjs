@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 import { Parser, SyntaxKind as K } from '../exact-function-signatures/index-alternate-3.js';
 import { getTypeName } from './g2t-core.generated-call-provenance.mjs';
 import { resolveNativeRoleCandidate } from '../../ast/native-role-candidate.mjs';
-import { readAuthoredTriggerDocument } from '../../utilities';
+import { readAuthoredTriggerDocument } from '../../utilities/read-authored-trigger-document.mjs';
 import { formalGalaxyCarrier } from '../../types/formal-galaxy-carrier.native-formals.mjs';
 
 // Each facade owns one producer/verifier context. Inject the frozen ABI index

@@ -1,5 +1,5 @@
 import { proveBoundedByteLiteralAliasAbsence } from '../libraries/gui/bounded-byte-literal-alias-absence.mjs';
-import { decodeBoundAsciiString } from '../utilities';
+import { decodeBoundAsciiString } from '../utilities/galaxy-ascii-string.mjs';
 /** In-memory lexical canonicalization of explicitly declared trigger bindings.
  * Preserve every body/operator/literal except the exact registered callback
  * name and its bound identifiers. Existing converter validators still decide

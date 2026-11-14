@@ -11,7 +11,7 @@ import {
   reference,
   blob,
 } from '../../sdk/core/modules/game/battlenet/content-sources/cache-header.js';
-import { decodeBoundAsciiString } from '../../utilities';
+import { decodeBoundAsciiString } from '../../utilities/galaxy-ascii-string.mjs';
 const sha = (b) => createHash('sha256').update(b).digest('hex');
 export function classifyExactEmptyOwnAttributes({ source, ast, originalDefinitions = 0, headers }) {
   const no = (reason) => ({ applicable: false, reason });

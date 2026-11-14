@@ -1,4 +1,4 @@
-import { applyDisjointXmlPatches } from '../../utilities';
+import { applyDisjointXmlPatches } from '../../utilities/apply-disjoint-xml-patches.mjs';
 /** GUI localized literals where exact, otherwise the actual native GUI call.
  * Empty/missing external keys remain StringExternal(key), not StringToText("").
  * All FunctionDef/ParamDef identities come from the mounted NativeLib document.

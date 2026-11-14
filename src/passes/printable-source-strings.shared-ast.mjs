@@ -2,7 +2,7 @@
  * Keep controls/non-ASCII/unsupported escapes verbatim for separate transport.
  * No calls, identifiers, operators, comments or statement order are edited.
  */
-import { decodeBoundAsciiString } from '../utilities';
+import { decodeBoundAsciiString } from '../utilities/galaxy-ascii-string.mjs';
 const ignored = new Set(['parent', 'symbol', 'locals', 'flowNode', 'syntaxTokens']);
 export function normalizePrintableSourceStrings(text, parse, document) {
   const ast = document ? document.input(text) : parse(text);

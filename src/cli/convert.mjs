@@ -108,15 +108,18 @@ import { attributeVariantModes, runVariantBatch } from '../ast/variant-batch.mjs
 
 import { normalizePrintableSourceStrings } from '../passes/printable-source-strings.shared-ast.mjs';
 
-import { dependencyAiPackPolicy, verifiedDependencyAiDocuments } from '../utilities';
+import {
+  dependencyAiPackPolicy,
+  verifiedDependencyAiDocuments,
+} from '../utilities/dependency-ai-pack-policy.mjs';
 
 import { canonicalizeSourceBoundTriggerAliases } from '../passes/qualified-root-trigger-aliases.mjs';
 
 import { getTypeName as triggerAliasTypeName } from '../conversion/native-expression-identity/g2t-core.generated-call-provenance.mjs';
 
-import { verifiedDependencyAiInputs } from '../utilities';
+import { verifiedDependencyAiInputs } from '../utilities/verified-dependency-ai.mjs';
 
-import { createVariantAnalysisCache } from '../utilities';
+import { createVariantAnalysisCache } from '../utilities/variant-analysis-cache.mjs';
 
 import { recoverLocalizedExternalGui } from '../conversion/implicit-gui-localization/localized-external-key-retention.mjs';
 

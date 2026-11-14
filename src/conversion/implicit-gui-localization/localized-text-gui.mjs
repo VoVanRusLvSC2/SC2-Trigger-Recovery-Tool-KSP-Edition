@@ -1,4 +1,4 @@
-import { applyDisjointXmlPatches } from '../../utilities';
+import { applyDisjointXmlPatches } from '../../utilities/apply-disjoint-xml-patches.mjs';
 /** Replace exact self-owned localized text ScriptCode with a GUI text value.
  * The parameter ID/key and every available locale value must remain identical.
  * Empty/missing values refuse: their compiler semantics can differ by ParamDef.

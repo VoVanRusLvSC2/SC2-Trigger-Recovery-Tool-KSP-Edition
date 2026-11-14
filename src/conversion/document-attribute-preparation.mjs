@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readAttributes } from '../sdk/array-values/modules/map/shared/format/formats/attributes.js';
 import { readAttributeArchiveInputs } from '../verification/attribute-archive-inputs.mjs';
 import { describeAttributeSourcePolicy } from '../verification/attribute-source-policy.mjs';
-import { originalAttributePresence } from '../utilities';
+import { originalAttributePresence } from '../utilities/original-attribute-presence.mjs';
 import { createVerifiedDocumentAttributeContext } from '../utilities/attribute-identity-context.mjs';
 
 /**

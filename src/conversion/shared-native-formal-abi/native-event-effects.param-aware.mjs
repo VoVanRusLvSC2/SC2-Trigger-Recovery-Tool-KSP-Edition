@@ -10,7 +10,7 @@ import {
 } from '../../sdk/array-values/modules/galaxy/language-core/index.js';
 import { getTypeName } from '../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/g2t-core.js';
 import { resolveNativeRoleCandidate } from '../../ast/native-role-candidate.mjs';
-import { readAuthoredTriggerDocument } from '../../utilities';
+import { readAuthoredTriggerDocument } from '../../utilities/read-authored-trigger-document.mjs';
 import { formalGalaxyCarrier } from '../../types/formal-galaxy-carrier.native-formals.mjs';
 
 // Each facade owns one producer/verifier context. Inject the frozen ABI index

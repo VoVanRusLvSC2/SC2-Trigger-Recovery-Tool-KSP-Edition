@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { readAuthoredTriggerDocument } from '../../utilities';
+import { readAuthoredTriggerDocument } from '../../utilities/read-authored-trigger-document.mjs';
 import { deriveNativeLoopTemplatePreserver } from '../exact-function-signatures/native-loop-template-shapes.mjs';
 import { templateMacros } from './balanced-script-template-alternate.mjs';
 export async function readNativeTemplateLoopPreserver(prepared, sdk) {

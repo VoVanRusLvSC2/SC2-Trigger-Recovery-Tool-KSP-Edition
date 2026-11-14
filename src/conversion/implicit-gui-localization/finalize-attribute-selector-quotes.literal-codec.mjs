@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import { xmlTree } from '../../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js';
 import { parseOwnedTriggerDocument } from './trigger-document-scope.mjs';
-import { applyDisjointXmlPatches } from '../../utilities';
+import { applyDisjointXmlPatches } from '../../utilities/apply-disjoint-xml-patches.mjs';
 import { quoteAttributeSelectorScalar } from '../exact-function-signatures/attribute-selector-domain.literal-codec.mjs';
 const escape = (s) =>
   s

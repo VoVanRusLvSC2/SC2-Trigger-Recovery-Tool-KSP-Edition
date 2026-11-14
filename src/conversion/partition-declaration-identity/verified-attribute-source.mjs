@@ -4,7 +4,7 @@
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import assert from 'node:assert/strict';
-import { verifiedAttributeSource as exactSource } from '../../utilities';
+import { verifiedAttributeSource as exactSource } from '../../utilities/verified-attribute-source.mjs';
 import { approvedHistoricalAttributeSource } from './approved-historical-attributes.mjs';
 import {
   readAttributes,

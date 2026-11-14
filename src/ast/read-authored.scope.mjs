@@ -11,7 +11,7 @@ const { TriggerDocument } = await import(
 const { xmlTree } = await import(
   pathToFileURL(graph.sdk + '/dist/modules/triggers/shared/trigger-document/lossless-xml.js')
 );
-export { validateAuthoredReferences } from '../utilities';
+export { validateAuthoredReferences } from '../utilities/read-authored-trigger-document.mjs';
 export async function readAuthoredTriggerDocument(raw, sdk, strings = '') {
   assert.equal(sdk, graph.sdk);
   const cst = xmlTree(raw),

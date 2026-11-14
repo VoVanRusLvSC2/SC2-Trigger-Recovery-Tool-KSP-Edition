@@ -1,11 +1,10 @@
 /**
- * Public conversion surface retained from the qualified module chain.
- * Its re-export target is missing from this source snapshot; see ROADMAP.md.
- * Do not substitute another overlay merely because it exports the same names.
+ * Public conversion surface shared with the retained CLI orchestration path.
+ * Runtime closure is still incomplete; inspect SOURCE_STATUS.md before use.
  */
 export {
   convertGalaxyToTriggers,
   convertTriggersToGalaxy,
   createTriggerConversionContext,
   triggerConversionBounds,
-} from './preset-reference-use/index.standard-getter-overlay.mjs';
+} from './template-formal-domain/candidate-alternate-2.mjs';

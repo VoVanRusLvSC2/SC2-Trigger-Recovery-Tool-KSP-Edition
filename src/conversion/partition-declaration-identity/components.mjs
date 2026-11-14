@@ -1,6 +1,6 @@
 import { verifyArchiveStorageSourceComponents } from '../native-expression-identity/owned-trigger-storage-preparation.archive-bound.gui-payload.mjs';
-import { mergeLocalization } from '../../utilities';
-import { restoreQualifiedAttributeGui } from '../../utilities';
+import { mergeLocalization } from '../../utilities/merge-localization.mjs';
+import { restoreQualifiedAttributeGui } from '../../utilities/qualified-attribute-gui.mjs';
 import { customAiComponentPlan } from '../../libraries/custom-ai/custom-ai-component-plan.mjs';
 import { ensureEmptyMapCategory } from '../../recovery/repairs/empty-map-category.mjs';
 /** Read-only MPQ inspection and additive recovered-component preparation.
