@@ -7,10 +7,16 @@ The common AST is the basis for analysis, type resolution, GUI binding and guard
 
 ## Entry points
 
+- [User-facing CLI](trigger-recovery.mjs): `prepare`, `recover`, `run` and `doctor`.
+- [Automatic map preparation](src/cli/prepare-map.mjs): reads a packed map and actual SC2 dependencies, verifies include closure, and writes hash-bound job inputs.
 - [Conversion job entry](src/cli/convert.mjs): consumes a prepared job configuration and coordinates archive, source, dependency and markup processing.
 - [Conversion library](src/conversion/index.mjs): exposes the conversion-stage interface.
 
-Real map archives, matching SDK dependencies and qualified source inputs are required. This publication is not a self-contained installer, and some dependencies remain unavailable.
+The Windows installer and portable application bundle Node and runtime dependencies;
+the public build obtains them from pinned public sources. Installed SC2 and any
+required custom mods provide the actual game metadata. Automatic archive jobs
+currently accept packed `.SC2Map` files; the component API also supports explicit
+mod-library inputs. See [INSTALL.md](INSTALL.md).
 
 The [release roadmap](ROADMAP.md) lists integration blockers and completion criteria. The public API and prepared-job CLI execute after local setup; they use portable checkout-relative SDK modules. See [API usage](API.md) and [CLI jobs](CLI.md). Source/input qualification and Editor acceptance remain separate.
 
@@ -48,12 +54,13 @@ Descriptive namespaces keep distinct implementations separate where their scope 
 
 ## Conversion flow
 
-1. Read the map source, available trigger markup, libraries and localized strings.
-2. Establish the AST, symbol ownership, types and initialization relationships.
-3. Resolve GUI functions and presets by library, element type, ID and expected parameter contract.
-4. Reconstruct missing sections or update changed sections of the existing tree.
-5. Keep attribute identities and their Galaxy references consistent when confirmed source data exists.
-6. Apply semantic safeguards before accepting the output for further Editor and equivalence verification.
+1. The archive frontend verifies source/build identity, reads components, resolves actual dependency and include closure, and records immutable preparation inputs. Component API callers supply their inputs directly.
+2. Establish shared AST/program views, symbol ownership, types and initialization relationships. Source-bound attribute identity/query provenance is prepared before GUI recovery.
+3. Resolve GUI functions and presets by library, element type, ID and parameter/event contract; apply guarded source transformations where needed.
+4. In preservation mode, reconstruct absent/genuinely empty markup, retain unchanged markup, or complete supported additions/changes. Preserve unknown authoring metadata or refuse unsupported edits instead of silently rebuilding the tree. `full-gui` is a separate explicit mode.
+5. Assemble recovered components. The archive worker packs a separate candidate, reopens its actual components and regenerates Galaxy from the packed GUI using the matching metadata.
+6. Compare the original and regenerated program and check types, startup, events, applicable attribute contracts and archive payload preservation. Record static-match/review/failure evidence with Editor verification still pending. Any earlier stage can refuse invalid or unsupported input.
+7. Actual Editor compilation/export and comparison with the original are separate qualification steps; the offline archive worker does not perform them.
 
 ## Preservation rules
 
@@ -70,10 +77,14 @@ Development used SC2 archive/format analysis, NativeLib and GUI metadata, compar
 Matching native names do not prove matching GUI semantics. Successful compilation alone does not prove program equivalence.
 Upstream format and Galaxy support comes in part from [hometlt/modkit-extensions-blizzard](https://github.com/hometlt/modkit-extensions-blizzard).
 
-## Source-only publication
+## Source and release boundaries
 
-The public tree intentionally omits test suites, benchmark distributions, raw exports, worker jobs, historical run reports, binaries and caches. The `verification` module contains production safeguards, not a bundled test project.
-Historical benchmark rules have not been relaxed or replaced. Their original distributions and qualification inputs are external to this source-only tree.
+The source tree contains production safeguards and focused verification/build scripts.
+Full external benchmarks, game/map corpora, raw exports, worker jobs, private run
+reports, binaries and caches are not checked into source control. Installers,
+portable builds and release evidence are separate Release assets.
+Historical benchmark rules have not been relaxed or replaced. Their original
+distributions and qualification inputs remain external.
 The directory migration updates module/resource references; it is not a new correctness qualification for the maps. The public dependency/build path and automatic map preparation are documented in INSTALL.md. Old qualification inputs remain external and must not be treated as fresh release acceptance.
 
 ## Map records

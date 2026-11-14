@@ -32,48 +32,75 @@ The last strict registry is dated **2026-10-30**. Publication and source reorgan
 
 ## How trigger recovery works
 
+This diagram follows the packed-map CLI (`recover`). The component API exposes
+GUI conversion and incremental completion for map or mod-library components;
+its caller supplies the components and metadata instead of invoking the archive
+preparation/packaging stages. See [API.md](API.md) and [CLI.md](CLI.md).
+
 ```mermaid
 flowchart TB
-    archive["SC2 map or mod<br/>.SC2Map / .SC2Mod"] --> inputs["Read archive components<br/>Keep original source as reference"]
+    archive["Original .SC2Map<br/>Read-only reference"] --> inputs["Prepare hash-bound inputs<br/>Verify dependencies and include closure"]
+    game["Installed SC2 CASC<br/>and required mod dependencies"] --> inputs
     inputs --> source["MapScript.galaxy<br/>and owned Galaxy sources"]
-    inputs --> markup["Existing Triggers XML<br/>if available"]
-    inputs --> metadata["Libraries, SDK GUI definitions<br/>and localized strings"]
-    inputs --> attributes["Original attributes or verified recovery data<br/>when available"]
+    inputs --> markup["Existing Triggers XML<br/>and localized strings"]
+    inputs --> metadata["Actual dependency GUI definitions<br/>and Galaxy declarations"]
+    inputs --> attributes["Original attributes, if present"]
+    evidence["Optional verified attribute<br/>header/index evidence"] --> identity
 
-    source --> ast["Shared Galaxy AST<br/>Symbols, types, ownership and initialization"]
-    ast --> bindings["Resolve GUI bindings and presets<br/>Check parameter and event contracts"]
-    metadata --> bindings
-    markup --> inventory["Inspect authored GUI<br/>Folders, identities and existing sections"]
-    attributes --> identity["Establish attribute identity<br/>and matching Galaxy references"]
-
-    bindings --> plan["Plan supported GUI reconstruction<br/>Apply guarded transformations when needed"]
-    inventory --> mode{"Authored markup exists?"}
-    mode -->|No| fresh["Build a new trigger tree"]
-    mode -->|Yes| incremental["Complete missing or changed sections<br/>Preserve unchanged GUI and folders"]
-    plan --> fresh
-    plan --> incremental
+    source --> ast["Shared AST and program model<br/>Types, ownership, includes and startup"]
+    markup --> inventory["Inspect authored GUI<br/>Folders, typed identities and content"]
+    ast --> identity["Prepare attribute identity<br/>and Galaxy query provenance"]
+    attributes --> identity
+    ast --> plan["Resolve GUI bindings and presets<br/>Plan guarded source transformations"]
+    metadata --> plan
     identity --> plan
-    fresh --> output["Assemble candidate components<br/>Triggers XML, strings and applicable attributes"]
+    inventory --> mode{"Existing GUI and source delta?"}
+    plan --> mode
+    mode -->|Absent or genuinely empty| fresh["Reconstruct a new trigger tree"]
+    mode -->|Unchanged| preserve["Retain authored XML and identities"]
+    mode -->|Supported additions or changes| incremental["Complete selected sections<br/>Preserve unaffected GUI and folders"]
+    fresh --> output["Assemble recovered components<br/>Triggers, strings and applicable attributes"]
+    preserve --> output
     incremental --> output
 
-    output --> safeguards["Offline semantic safeguards<br/>Signatures, initialization, events and attributes"]
+    output --> packed["Pack a separate candidate archive<br/>Keep the original unchanged"]
+    packed --> regenerate["Reopen packed components<br/>Regenerate Galaxy from recovered GUI"]
+    metadata --> regenerate
+    regenerate --> safeguards["Offline comparison and contract gates<br/>Program, types, startup, events,<br/>attributes and archive payloads"]
     source --> safeguards
-    safeguards -->|Unresolved or rejected| review["REVIEW / failure<br/>No equivalence claim"]
-    safeguards -->|Checks satisfied| candidate["Recovered candidate<br/>Not yet an Editor confirmation"]
+    identity --> safeguards
+    safeguards --> result["Record offline verdict and evidence<br/>Static match / review / failure<br/>Editor still pending"]
 
-    candidate -.-> editor["External validation<br/>Editor compilation and Galaxy export"]
-    editor -.-> comparison["Compare exported behavior with original<br/>Including applicable attribute contracts"]
-    comparison -.-> result["Recorded result<br/>PASS / REVIEW / failure"]
+    result -.-> editor["Separate external qualification<br/>Editor compilation and Galaxy export"]
+    editor -.-> comparison["Compare actual Editor export<br/>with the original program"]
+    source -.-> comparison
 
     classDef core fill:#eee6ff,stroke:#b9a0e3,color:#30204f;
     classDef external fill:#eaf2ff,stroke:#86a9d7,color:#193858;
     classDef attention fill:#fff3da,stroke:#d5ad5a,color:#62480b;
-    class archive,inputs,source,markup,metadata,attributes,ast,bindings,inventory,identity,plan,mode,fresh,incremental,output,safeguards,candidate core;
-    class editor,comparison,result external;
-    class review attention;
+    class archive,inputs,source,markup,metadata,attributes,ast,inventory,identity,plan,mode,fresh,preserve,incremental,output,packed,regenerate,safeguards core;
+    class game,evidence,editor,comparison external;
+    class result attention;
 ```
 
-This is the logical data flow, not a promise that every input is convertible. Attribute identity is prepared before GUI recovery; original attribute absence does not authorize inventing definitions. The default `preserve-source` mode retains authored script and separate libraries; `full-gui` is an explicit mode. Dashed arrows show the external validation workflow, whose Editor service and benchmark distributions are not bundled here. A candidate or successful compilation alone is not a strict equivalence pass.
+This is a logical data flow, not a claim that every stage uses one AST instance
+or that every Galaxy construct is representable. Attribute identity is prepared
+before GUI recovery; an attribute query alone does not authorize inventing
+map-owned definitions. The default `preserve-source` mode retains authored script
+and separate libraries; `full-gui` explicitly requests expanded reconstruction.
+The three GUI branches describe preservation-mode routing. Unknown authored
+metadata is preserved or refused; unsupported declaration changes and function
+deletions are not silently handled by replacing the whole tree.
+
+The archive worker regenerates Galaxy from the **packed** GUI and compares it
+with the original using the applicable program, type, initialization, event,
+attribute and payload contracts. Its variant verdict is
+`STATIC_MATCH_EDITOR_PENDING`, `REVIEW_REQUIRED_EDITOR_PENDING` or failure;
+the top-level `GENERATED` status only means candidate generation completed.
+The unchanged external benchmark is required where the strict attribute runtime
+contract calls for it. Dashed arrows show separate Editor qualification, which
+the offline worker does not execute. Neither candidate creation nor successful
+compilation alone proves full behavioral equivalence.
 
 See [Architecture](ARCHITECTURE.md#conversion-flow) for the implementation boundaries and [integration status](#integration-status) for the current build limitations.
 
@@ -97,6 +124,9 @@ src/
   libraries/      Shared library support
   sdk/            Included SDK source modules
   vendor/         Third-party runtime source
+trigger-recovery.mjs  User-facing map preparation/recovery CLI
+packaging/        Windows launcher and installer build
+scripts/          Public dependency setup, build and focused checks
 maps/             The 103 + 222 accepted-map lists
 ARCHITECTURE.md   Design and integration notes
 ROADMAP.md        Current blockers and working-release acceptance criteria
@@ -104,7 +134,10 @@ CONTRIBUTORS.md   Contributors and upstream acknowledgements
 licenses/         Original third-party license notices
 ```
 
-See [Architecture](ARCHITECTURE.md) for module responsibilities and entry points. This repository contains production source, accepted-map records and documentation; test suites, benchmark distributions, run logs and generated verification reports are not included.
+See [Architecture](ARCHITECTURE.md) for module responsibilities and entry points.
+The source tree includes focused verification scripts; full external benchmark
+distributions, map corpora, worker outputs and private run logs remain outside it.
+Built applications and their release evidence are published separately in Releases.
 
 ## Integration status
 
@@ -118,7 +151,7 @@ The installer supports Windows 10/11 x64. Automatic archive jobs currently targe
 
 Start with the [code reading guide](ARCHITECTURE.md#code-reading-guide). Project-owned JavaScript uses two-space indentation, a 100-column formatting target and explanatory comments for ownership, incremental recovery and verification boundaries. Copied SDK/vendor source is excluded from formatting.
 
-To install **formatting tooling only** and check or apply the style:
+To prepare the public dependencies and check or apply the style:
 
 ```sh
 npm run setup:public
