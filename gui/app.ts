@@ -9,6 +9,7 @@ let shownArtifacts = '';
 let shownResult = '';
 let searchTarget: 'markup' | 'source' = 'source';
 let selectedMarkup: Artifact | undefined;
+let originalMarkupText = '';
 const notice = (text: string) => {
   element('notice').textContent = text;
 };
@@ -35,6 +36,8 @@ function metrics(target: 'markup' | 'source', text: string) {
     ? `${text.split('\n').length.toLocaleString()} lines · ${text.length.toLocaleString()} chars`
     : 'No ' + target + ' loaded';
   if (target === 'markup') {
+    // Textarea.value normalizes CRLF. Retain source text for exact XML export.
+    originalMarkupText = text;
     element<HTMLButtonElement>('saveMarkup').disabled = !text;
     element<HTMLButtonElement>('treeButton').disabled = !text;
   }
@@ -327,11 +330,10 @@ element('treeButton').onclick = () => {
     fail(error);
   }
 };
-element('saveMarkup').onclick = () =>
-  download(
-    new Blob([element<HTMLTextAreaElement>('markup').value], { type: 'application/xml' }),
-    selectedMarkup?.title.split('/').at(-1) ?? 'Triggers',
-  );
+element('saveMarkup').onclick = () => {
+  if (selectedMarkup) downloadArtifact(selectedMarkup).catch(fail);
+  else download(new Blob([originalMarkupText], { type: 'application/xml' }), 'Triggers');
+};
 element('exportFile').onclick = () => {
   const archive = snapshot?.artifacts.find((a) => a.kind === 'archive');
   if (archive) downloadArtifact(archive).catch(fail);
