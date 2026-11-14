@@ -34,6 +34,9 @@ the **X** button to stop its server; closing a tab alone does not stop a job.
 Cancellation stops the job's process tree on Windows. A partial output directory
 is retained for diagnosis and must not be reused. `finished` means the process
 exited successfully, not that Editor equivalence or gameplay was proved.
+On certain GUI binding failures, **GEN INFO** exposes an explicitly unverified
+preview. An `UNVERIFIED-*.SC2Map` is an inspection draft, may contain Native
+definitions and raw templates, and is not proof of behavior or Editor validity.
 
 ## Migration scope
 

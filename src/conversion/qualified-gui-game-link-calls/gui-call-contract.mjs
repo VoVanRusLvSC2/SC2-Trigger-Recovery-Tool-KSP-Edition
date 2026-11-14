@@ -39,17 +39,29 @@ export function createGuiCallTypeResolver({ resolve, key, argumentType, declared
       return reject('GUI_CALL_RETURN_DOMAIN_UNQUALIFIED');
     const arguments_ = call.parameters ?? [],
       formals = definition.parameters ?? [];
-    if (arguments_.length !== formals.length) return reject('GUI_CALL_ARGUMENT_COUNT');
-    for (let i = 0; i < formals.length; i++) {
-      const actualOwner = call.library ?? owner,
-        formalOwner = definition.library ?? owner;
+    const formalOwner = definition.library ?? owner;
+    const declaredFormals = formals.map((ref) => resolve(ref, formalOwner));
+    const repeated = declaredFormals.findIndex((formal) => formal?.isMultiple);
+    if (
+      declaredFormals.some((formal) => formal?.type !== 'ParamDef') ||
+      (repeated < 0 && arguments_.length !== formals.length) ||
+      (repeated >= 0 &&
+        (repeated !== formals.length - 1 ||
+          arguments_.length < formals.length ||
+          declaredFormals.slice(0, repeated).some((formal) => formal.isMultiple)))
+    )
+      return reject('GUI_CALL_ARGUMENT_COUNT');
+    for (let i = 0; i < arguments_.length; i++) {
+      const actualOwner = call.library ?? owner;
+      const formalIndex = repeated >= 0 ? Math.min(i, repeated) : i;
       const argument = resolve(arguments_[i], actualOwner),
-        formal = resolve(formals[i], formalOwner);
+        formal = declaredFormals[formalIndex];
       if (
         argument?.type !== 'Param' ||
         formal?.type !== 'ParamDef' ||
         !argument.parameterDef ||
-        key(argument.parameterDef, argument.library ?? actualOwner) !== key(formals[i], formalOwner)
+        key(argument.parameterDef, argument.library ?? actualOwner) !==
+          key(formals[formalIndex], formalOwner)
       )
         return;
       const actual = argumentType(argument, argument.library ?? actualOwner, new Set(seen));
@@ -63,7 +75,7 @@ export function createGuiCallTypeResolver({ resolve, key, argumentType, declared
           actual,
           expected,
           value: arguments_[i],
-          formal: formals[i],
+          formal: formals[formalIndex],
         });
       // Preserve the existing conservative numeric-only wildcard rule.
       if (['any', 'anycompare', 'anyvariable', 'sameas'].includes(expected)) {
@@ -90,7 +102,7 @@ export function createGuiCallTypeResolver({ resolve, key, argumentType, declared
           actual,
           expected,
           value: arguments_[i],
-          formal: formals[i],
+          formal: formals[formalIndex],
         });
     }
     return definition.returnType.type === 'gamelink'

@@ -336,7 +336,11 @@ element('saveMarkup').onclick = () => {
 };
 element('exportFile').onclick = () => {
   const archive = snapshot?.artifacts.find((a) => a.kind === 'archive');
-  if (archive) downloadArtifact(archive).catch(fail);
+  if (archive) {
+    if (snapshot?.phase === 'failed')
+      notice('This is an unverified diagnostic map; inspect GEN INFO before using it.');
+    downloadArtifact(archive).catch(fail);
+  }
 };
 element('fullMode').onclick = () => {
   const input = element<HTMLInputElement>('fullGui');

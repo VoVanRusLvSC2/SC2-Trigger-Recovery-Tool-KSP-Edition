@@ -1408,7 +1408,7 @@ const assignmentOperators = new Set([
 ]);
 
 function booleanReferenceCondition(node, ctx, role) {
-  if (!role || expressionParameterType(node, ctx)?.type !== 'bool') return undefined;
+  if (expressionParameterType(node, ctx)?.type !== 'bool') return undefined;
 
   let root = unwrapParens(node);
 
@@ -1455,7 +1455,7 @@ function booleanReferenceCondition(node, ctx, role) {
         structuredParam({ kind: 67 /* SyntaxKind.TrueKeyword */ }, ctx, comparison.parameters[2]),
       ],
 
-      subFunctionType: role,
+      ...(role ? { subFunctionType: role } : {}),
     },
     ctx,
   );

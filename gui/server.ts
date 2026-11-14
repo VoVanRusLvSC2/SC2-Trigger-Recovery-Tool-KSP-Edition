@@ -41,7 +41,7 @@ async function collectArtifacts(output: string) {
         (/\.(galaxy|sc2map)$/i.test(item.name) ||
           item.name === 'Triggers' ||
           item.name === 'preparation.json' ||
-          /^(RESULT|ATTRIBUTE.*|MANIFEST)\.json$/i.test(item.name))
+          /^(RESULT|PREVIEW_REPORT|ATTRIBUTE.*|MANIFEST)\.json$/i.test(item.name))
       ) {
         const title = path.relative(output, file).replaceAll('\\', '/');
         const kind = /\.sc2map$/i.test(file)

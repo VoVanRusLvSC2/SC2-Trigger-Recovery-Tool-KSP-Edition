@@ -35,12 +35,14 @@ export class MapSession {
   constructor({
     installation = 'C:/Program Files (x86)/StarCraft II',
     sources,
+    sourceIdentityFile,
     conversionContext,
     parser = parseGalaxySource,
     maxAstBytes = 8 * 1024 ** 2,
     maxAstEntries = 12,
   } = {}) {
     this.installation = installation;
+    this.sourceIdentityFile = sourceIdentityFile ?? path.join(installation, '.build.info');
     this.sources = sources ?? new Sc2DesktopContentSources({ installationDirectory: installation });
     this.conversionContext = conversionContext ?? createTriggerConversionContext();
     this.parser = parser;
@@ -189,7 +191,7 @@ export class MapSession {
     return source;
   };
   async installationStamp() {
-    return sha(await readFile(path.join(this.installation, '.build.info')));
+    return sha(await readFile(this.sourceIdentityFile));
   }
   snapshot() {
     return {

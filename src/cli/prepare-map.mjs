@@ -33,13 +33,29 @@ export function safeComponentPath(name) {
 export async function prepareMap({
   original,
   installation,
+  resourceSnapshot,
   output,
   mpq,
   guiRecoveryMode = 'preserve-source',
   attributeIndex,
 }) {
   original = await fs.realpath(original);
-  installation = await fs.realpath(installation);
+  assert(!(installation && resourceSnapshot), 'Choose either --sc2 or --resources');
+  const publicResources = resourceSnapshot !== undefined;
+  installation = await fs.realpath(publicResources ? resourceSnapshot : installation);
+  const sourceIdentityFile = path.join(
+    installation,
+    publicResources ? 'RESOURCE_MANIFEST.json' : '.build.info',
+  );
+  if (publicResources) {
+    const manifest = JSON.parse(await fs.readFile(sourceIdentityFile, 'utf8'));
+    assert(
+      manifest.resourceType === 'public-snapshot-not-installed-game' &&
+        manifest.verifiedGitBlobs === true &&
+        manifest.revision === '6dd323aae4209a01f110719a00b4e8f7a88389bc',
+      'Unsupported or incomplete public resource snapshot',
+    );
+  }
   if (attributeIndex !== undefined) {
     attributeIndex = await fs.realpath(attributeIndex);
     assert((await fs.stat(attributeIndex)).isFile(), 'Expected an attribute index file');
@@ -102,7 +118,12 @@ export async function prepareMap({
     reader.dispose();
   }
 
-  const session = new MapSession({ installation, maxAstEntries: 0, maxAstBytes: 0 });
+  const session = new MapSession({
+    installation,
+    sourceIdentityFile,
+    maxAstEntries: 0,
+    maxAstBytes: 0,
+  });
   const sourceInput = async (text, label) => {
     const digest = sha(text),
       folder = path.join(output, 'inputs', digest);
@@ -146,6 +167,14 @@ export async function prepareMap({
       package: pkg,
       originalScriptSha256: sha(scriptBytes),
       cascBuildInfoSha256: beforeBuild,
+      sourceKind: publicResources ? 'public-resource-snapshot' : 'installed-casc',
+      ...(publicResources
+        ? {
+            snapshotRevision: '6dd323aae4209a01f110719a00b4e8f7a88389bc',
+            snapshotAuthority: 'UNVERIFIED_NOT_INSTALLED_GAME',
+            snapshotFilesReverifiedAtPreparation: false,
+          }
+        : {}),
       actualChain: context.layers,
       omittedEmptyDependencyDocuments: omitted,
       declarationInputs: [],
@@ -226,7 +255,11 @@ export async function prepareMap({
       originalSha256,
       'Original changed during preparation',
     );
-    await save(path.join(output, 'config.json'), { installation, entries });
+    await save(path.join(output, 'config.json'), {
+      installation,
+      entries,
+      ...(publicResources ? { resourceSnapshot: true } : {}),
+    });
     const preparationResult = path.join(output, 'preparation.json');
     await save(preparationResult, prepared);
     const row = {

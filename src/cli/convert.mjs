@@ -37,6 +37,11 @@ import { localResourcePath } from '../model/local-resource-path.mjs';
 import { lowerRootSnapshotReferenceActions } from '../conversion/exact-function-signatures/root-snapshot-reference-actions.mjs';
 import { prepareDocumentAttributes } from '../conversion/document-attribute-preparation.mjs';
 import { authoredGuiInventory } from '../incremental/authored-gui-inventory.mjs';
+import { createUnverifiedPreviewMap } from './unverified-preview-map.mjs';
+import {
+  normalizeTriggerLibrary,
+  serializeTriggerLibrary,
+} from '../conversion/implicit-gui-localization/trigger-xml.mjs';
 import {
   documentAttributeContext,
   assertDocumentAttributeModel,
@@ -276,6 +281,10 @@ try {
 
   const prepared = await read(row.preparationResult),
     cfg = await read(row.config);
+  if (cfg.resourceSnapshot || prepared.sourceKind === 'public-resource-snapshot')
+    throw Error(
+      'PUBLIC_SNAPSHOT_CONVERSION_NOT_READY: snapshot preparation is available, but recovery requires installed SC2 until snapshot source authority and target Editor version are verified',
+    );
   assert(typeof cfg.installation === 'string' && cfg.installation, 'Config installation required');
   cfg.installation = path.resolve(path.dirname(row.config), cfg.installation);
 
@@ -765,7 +774,9 @@ try {
     customAiScripts: [...customAiScripts, ...dependencyAi.files],
     additionalScripts,
     guiRecoveryMode,
-    allowTransparentConditionFunctions: row.allowTransparentConditionFunctions === true,
+    // Only otherwise-unrepresentable condition regions require these ordinary
+    // GUI functions. Set false in a prepared job to retain strict refusal.
+    allowTransparentConditionFunctions: row.allowTransparentConditionFunctions !== false,
     convertAdditionalScripts: guiRecoveryMode === 'full-gui',
     primaryGalaxyIncludeFiles: [
       ...new Set(
@@ -856,6 +867,19 @@ try {
   const authoredInventory = authoredGuiInventory(originalTriggerXml);
   await save(path.join(job, 'SOURCE_GUI_STRUCTURE_INVENTORY.json'), authoredInventory);
   result.guiRecoveryMode = guiRecoveryMode;
+  let previousProgress;
+  const reportProgress = (event) => {
+    const key = `${event.phase}:${event.stage ?? ''}`;
+    if (key === previousProgress) return;
+    previousProgress = key;
+    console.log(
+      JSON.stringify({
+        id: row.id,
+        phase: event.phase,
+        ...(event.stage ? { stage: event.stage } : {}),
+      }),
+    );
+  };
   let forward;
   if (originalTriggerXml?.trim() && !authoredInventory.effectivelyEmpty) {
     enter('COMPLETE_OR_PRESERVE_ORIGINAL_GUI');
@@ -871,7 +895,7 @@ try {
       sourceCheckpoint,
       script,
       header: ownHeader,
-      onProgress: (e) => console.log(JSON.stringify({ id: row.id, phase: e.phase })),
+      onProgress: reportProgress,
     });
   } else {
     enter('GENERATE_FRESH_TRIGGERS');
@@ -1179,7 +1203,7 @@ try {
                       : includePrunedOperations,
                   script: preservedInput.text,
                   header: ownHeader,
-                  onProgress: (e) => console.log(JSON.stringify({ id: row.id, phase: e.phase })),
+                  onProgress: reportProgress,
                 }),
               ),
             ),
@@ -2085,6 +2109,87 @@ try {
   result.failedStage = stage;
   result.errorContext = e.context ?? null;
   result.nominalGuiReplay = e.nominalGuiReplay ?? null;
+  if (e.unverifiedGuiSnapshot && e.context?.conversionCode === 'GUI_BINDING_INCOMPLETE') {
+    try {
+      const preview = path.join(job, 'UNVERIFIED_PREVIEW');
+      await mkdir(preview);
+      const model = normalizeTriggerLibrary({ ...e.unverifiedGuiSnapshot, implicit: true });
+      const triggerData = serializeTriggerLibrary(model);
+      const names = Object.values(model.elements)
+        .filter((item) => item.id && item.type && (item.displayName || item.name))
+        .map(
+          (item) =>
+            `${item.type}/Name/${item.id}=${String(item.displayName || item.name).replace(/[\r\n]/gu, ' ')}`,
+        )
+        .sort();
+      await writeFile(path.join(preview, 'Triggers'), triggerData, { flag: 'wx' });
+      await writeFile(path.join(preview, 'TriggerStrings.txt'), `\ufeff${names.join('\n')}\n`, {
+        flag: 'wx',
+      });
+      const raw = e.context.raw ?? [];
+      const unresolved = e.context.unresolved ?? [];
+      const counts = Object.values(model.elements).reduce((out, item) => {
+        out[item.type] = (out[item.type] ?? 0) + 1;
+        return out;
+      }, {});
+      const warning = {
+        status: 'UNVERIFIED_PARTIAL_PREVIEW',
+        sourceArchiveSha256: row.originalSha256,
+        reason: e.message,
+        rawCount: raw.length,
+        rawElements: raw.map((item) => ({
+          id: item.id,
+          type: item.type,
+          name: item.name,
+          field: item.field,
+          codeSample: item.codeSample,
+        })),
+        nativeDefinitions: Object.values(model.elements)
+          .filter((item) => item.type === 'FunctionDef' && item.flags?.includes('Native'))
+          .map((item) => ({ id: item.id, name: item.identifier ?? item.name })),
+        unresolvedCount: unresolved.length,
+        expressionIssueCount: e.context.guiExpressionIssues?.length ?? 0,
+        conditionFunctions: Object.values(model.elements).filter(
+          (item) => item.type === 'FunctionDef' && item.name?.startsWith('ConditionRegion_'),
+        ).length,
+        elementCounts: counts,
+        triggerDataSha256: sha(triggerData),
+        sourceArchiveModified: false,
+        strictBenchmarkPassed: false,
+        editorVerified: false,
+        accepted: false,
+        warning:
+          'Diagnostic preview only. May include generated Native definitions and unresolved raw/template code; localization and runtime equivalence have not been verified. Do not treat as a playable or accepted map.',
+      };
+      try {
+        warning.draftMap = await createUnverifiedPreviewMap({ row, preview, triggerData, names });
+        console.error('UNVERIFIED draft map: ' + warning.draftMap.path);
+      } catch (mapError) {
+        warning.draftMap = {
+          status: 'DRAFT_MAP_NOT_CREATED',
+          reason: String(mapError.message ?? mapError),
+        };
+        console.error('Draft map unavailable: ' + warning.draftMap.reason);
+      }
+      await save(path.join(preview, 'PREVIEW_REPORT.json'), warning);
+      await writeFile(
+        path.join(preview, 'README.txt'),
+        warning.warning + '\nSee PREVIEW_REPORT.json and the parent RESULT.json for details.\n',
+        { flag: 'wx' },
+      );
+      result.unverifiedPreview = {
+        directory: preview,
+        triggerData: path.join(preview, 'Triggers'),
+        ...warning,
+      };
+      console.error('Unverified GUI preview saved: ' + preview);
+    } catch (previewError) {
+      result.unverifiedPreview = {
+        status: 'PREVIEW_FAILED',
+        error: String(previewError.stack ?? previewError),
+      };
+    }
+  }
   console.error(result.error);
 } finally {
   // Release job-owned syntax, contexts and mounted archive handles on every exit.

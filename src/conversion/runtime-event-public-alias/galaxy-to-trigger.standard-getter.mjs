@@ -3568,16 +3568,24 @@ function convertGalaxyToTriggerLibraryBody(galaxySource, headerSource, options) 
         automaticConstructors: generatedInitializers,
       },
     );
-  assertGuiBindingsComplete(
-    elements,
-    libId,
-    conversionError,
-    options.nativeLibrary,
-    options.dependencyLibraries,
-    result.items,
-    reifiedExpressions,
-    idFromKey,
-  );
+  try {
+    assertGuiBindingsComplete(
+      elements,
+      libId,
+      conversionError,
+      options.nativeLibrary,
+      options.dependencyLibraries,
+      result.items,
+      reifiedExpressions,
+      idFromKey,
+    );
+  } catch (error) {
+    // Carry a snapshot only for a diagnostic artifact. The same gate still
+    // throws, and no snapshot can enter the normal candidate or PASS path.
+    if (error?.context?.conversionCode === 'GUI_BINDING_INCOMPLETE')
+      Object.defineProperty(error, 'unverifiedGuiSnapshot', { value: result });
+    throw error;
+  }
   assertGeneratedEntryOwnership(
     { ...result, implicit: options.implicitLibrary === true },
     ['InitLib', 'InitLibraries', 'InitVariables', 'InitCustomScript', 'InitTriggers'].map((role) =>

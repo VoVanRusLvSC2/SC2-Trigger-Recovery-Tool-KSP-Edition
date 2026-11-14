@@ -14,6 +14,7 @@ try {
   Invoke-Checked node @('scripts/build-public-runtime.mjs')
   Invoke-Checked npm.cmd @('run', 'verify:gui')
   Invoke-Checked python @('scripts/fetch-release-tools.py', '--installer')
+  Invoke-Checked npm.cmd @('run', 'verify:preview')
   foreach ($check in @('verify:recovered', 'verify:retained', 'verify:bindings', 'verify:helpers', 'verify:source', 'verify:dependencies', 'verify:authored', 'verify:attribute-source', 'verify:cli', 'verify:preparation')) {
     Invoke-Checked npm.cmd @('run', $check)
   }

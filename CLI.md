@@ -76,6 +76,18 @@ the absence of verified recovery evidence. It does not create map definitions
 from stock queries or invent defaults. Historical map-specific pilot policies
 are disconnected from the default worker path.
 
+If a fresh reconstruction reaches the GUI binding gate with unresolved raw
+constructs, the job remains `FAILED` and exits nonzero. It also writes an
+`UNVERIFIED_PREVIEW` with diagnostic markup and a report. When the original had
+no Triggers, a separately named `UNVERIFIED-*.SC2Map` inspection copy may be
+created after original payloads and original Galaxy are checked. This draft may
+contain generated Native definitions, raw templates and extra GUI condition
+functions; its localization, Editor compilation and behavior are not proved.
+No existing authored Triggers are overwritten by this fallback. The strict
+benchmark and PASS criteria are unchanged. Ordinary condition functions are
+used only when a condition region otherwise cannot be represented; prepared
+jobs can set `allowTransparentConditionFunctions` to `false` to refuse them.
+
 Pass it during automatic preparation with
 `trigger-recovery recover <map> --sc2 <installation> --out <new-folder> --attribute-index <index.json>`.
 The same flag is supported by `prepare`. The index is optional evidence, not a
@@ -86,3 +98,21 @@ When attribute comparison requires the external benchmark, set
 `SC2_TRIGGER_BENCHMARK_ROOT` to the pinned distribution root containing
 `benchmark/MANIFEST.json`. Missing evidence remains explicit. The benchmark's
 manifest fingerprint and all asset checks are unchanged.
+
+### Download the complete public snapshot
+
+```powershell
+trigger-recovery download-resources 'K:\SC2-Public-Resources'
+```
+
+This downloads the full pinned public repository snapshot (about 1.17 GB expanded), verifies every file against its Git blob hash, and records a manifest. The output folder must not already exist. The archived community snapshot is not a Blizzard installation and does not provide custom dependencies or prove an Editor version. Files are verified at download, not rechecked against the full Git tree at preparation.
+
+A diagnostic recovery can use it without installing SC2:
+
+```powershell
+trigger-recovery recover 'C:\Maps\Input.SC2Map' --resources 'K:\SC2-Public-Resources' --out 'K:\Recovery-Output'
+```
+
+Alternatively replace `--resources` with `--download-resources 'K:\SC2-Public-Resources'` to download before preparing. Both output directories must be new.
+
+**This is an experimental preview, not a finished or validated recovery.** It refuses maps with existing GUI markup, cannot restore attributes, and cannot run the strict benchmark. It may contain generated Native or Custom Script. Its status is `UNVERIFIED_PUBLIC_SNAPSHOT`, the process exits nonzero, and an optional draft map retains original Galaxy. Saving or compiling the draft in Editor may change behavior. Use `--sc2` for the established installed-data workflow; Editor/gameplay verification remains separate.

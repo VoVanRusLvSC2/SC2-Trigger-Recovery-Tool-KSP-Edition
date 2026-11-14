@@ -8,22 +8,26 @@ import { spawn } from 'node:child_process';
 
 const usage = `SC2 Trigger Recovery KSP 3.0.0-rc.2
 Usage:
-  trigger-recovery recover <map.SC2Map> --sc2 <installation> --out <new-directory>
-  trigger-recovery prepare <map.SC2Map> --sc2 <installation> --out <new-directory>
+  trigger-recovery recover <map.SC2Map> (--sc2 <installation> | --resources <snapshot>) --out <new-directory>
+  trigger-recovery prepare <map.SC2Map> (--sc2 <installation> | --resources <snapshot>) --out <new-directory>
   trigger-recovery run <job.json> [--benchmark <distribution>]
   trigger-recovery doctor
+  trigger-recovery download-resources <new-directory>
 
 Optional: --mpq <mpqcli.exe>, --benchmark <pinned-distribution>, --full-gui
+Use --download-resources <new-directory> on recover to download the snapshot first.
 For recover/prepare: --attribute-index <verified-header-index.json>
 The default preserves authored script and GUI structure. Originals stay unchanged.
 Outputs are candidates with explicit offline evidence, not Editor/gameplay acceptance.
-An installed StarCraft II supplies NativeLib and dependency metadata.
+The public snapshot mode is experimental: it never reports PASS or Editor verification.
 `;
 try {
   const { values, positionals } = parseArgs({
     allowPositionals: true,
     options: {
       sc2: { type: 'string' },
+      resources: { type: 'string' },
+      'download-resources': { type: 'string' },
       out: { type: 'string' },
       mpq: { type: 'string' },
       benchmark: { type: 'string' },
@@ -34,7 +38,13 @@ try {
   });
   const [command, input] = positionals;
   if (values.help) console.log(usage);
-  else if (command === 'doctor') {
+  else if (command === 'download-resources' && input && positionals.length === 2) {
+    const { fetchPublicPack } = await import('./src/resources/fetch-public-pack.mjs');
+    const result = await fetchPublicPack(input, {
+      onProgress: (value) => console.log(JSON.stringify(value)),
+    });
+    console.log(JSON.stringify(result));
+  } else if (command === 'doctor') {
     await import('./scripts/check-runtime-dependencies.mjs');
     await import('./src/conversion/index.mjs');
     await fs.access(path.join(import.meta.dirname, '.runtime/tools/mpqcli.exe'));
@@ -44,12 +54,58 @@ try {
   } else if (['recover', 'prepare', 'run'].includes(command) && input && positionals.length === 2) {
     let jobFile = path.resolve(input);
     if (command !== 'run') {
-      if (!values.sc2 || !values.out) throw Error('--sc2 and --out are required');
+      if (!values.out) throw Error('--out is required');
+      if (values['download-resources']) {
+        if (values.sc2 || values.resources) throw Error('Choose one SC2 resource source');
+        const original = await fs.realpath(input);
+        if (!/\.sc2map$/iu.test(original) || !(await fs.stat(original)).isFile())
+          throw Error('Expected an existing packed .SC2Map');
+        const newPath = async (value) => {
+          const resolved = path.resolve(value);
+          const parent = await fs.realpath(path.dirname(resolved));
+          const target = path.join(parent, path.basename(resolved));
+          try {
+            await fs.lstat(target);
+            throw Error('Output already exists: ' + target);
+          } catch (error) {
+            if (error.code !== 'ENOENT') throw error;
+          }
+          return target;
+        };
+        const resources = await newPath(values['download-resources']);
+        const output = await newPath(values.out);
+        const inside = (parent, child) => {
+          const rel = path.relative(parent, child);
+          return (
+            !rel || (!rel.startsWith('..' + path.sep) && rel !== '..' && !path.isAbsolute(rel))
+          );
+        };
+        if (
+          inside(resources, output) ||
+          inside(output, resources) ||
+          inside(resources, original) ||
+          inside(output, original)
+        )
+          throw Error('Resource, output and original paths must not overlap');
+        const { fetchPublicPack } = await import('./src/resources/fetch-public-pack.mjs');
+        console.log(
+          'Downloading the optional public SC2 data snapshot; Editor version is not verified.',
+        );
+        await fetchPublicPack(values['download-resources'], {
+          onProgress: (value) => console.log(JSON.stringify(value)),
+        });
+        values.resources = values['download-resources'];
+      }
+      if (!values.sc2 && !values.resources)
+        throw Error(
+          'Select --sc2 <installation> or --resources <snapshot>. If SC2 is unavailable, download the optional snapshot with: trigger-recovery download-resources <new-directory>.',
+        );
       const { prepareMap } = await import('./src/cli/prepare-map.mjs');
-      console.log('Preparing archive, installed metadata and include closure...');
+      console.log('Preparing archive, selected metadata and include closure...');
       const result = await prepareMap({
         original: input,
         installation: values.sc2,
+        resourceSnapshot: values.resources,
         output: values.out,
         mpq: values.mpq ?? path.join(import.meta.dirname, '.runtime/tools/mpqcli.exe'),
         guiRecoveryMode: values['full-gui'] ? 'full-gui' : 'preserve-source',
@@ -63,18 +119,32 @@ try {
         'Set attributeIndex in the prepared job or use recover/prepare --attribute-index',
       );
     if (command !== 'prepare') {
-      const env = { ...process.env };
-      if (values.benchmark) env.SC2_TRIGGER_BENCHMARK_ROOT = path.resolve(values.benchmark);
-      const child = spawn(
-        process.execPath,
-        [path.join(import.meta.dirname, 'src/cli/convert.mjs'), jobFile],
-        { env, stdio: 'inherit', windowsHide: true },
-      );
-      const code = await new Promise((resolve, reject) => {
-        child.once('error', reject);
-        child.once('exit', (code) => resolve(code ?? 1));
-      });
-      process.exitCode = code;
+      const job = JSON.parse(await fs.readFile(jobFile, 'utf8'));
+      const config = JSON.parse(await fs.readFile(job.config, 'utf8'));
+      if (config.resourceSnapshot) {
+        if (values.benchmark)
+          throw Error('Public snapshot mode cannot run the strict benchmark yet');
+        const { recoverPublicSnapshot } = await import('./src/cli/recover-public-snapshot.mjs');
+        console.log(
+          'Public snapshot mode: diagnostic only, no benchmark PASS or Editor verification.',
+        );
+        const result = await recoverPublicSnapshot(jobFile);
+        console.log(JSON.stringify(result));
+        process.exitCode = 1;
+      } else {
+        const env = { ...process.env };
+        if (values.benchmark) env.SC2_TRIGGER_BENCHMARK_ROOT = path.resolve(values.benchmark);
+        const child = spawn(
+          process.execPath,
+          [path.join(import.meta.dirname, 'src/cli/convert.mjs'), jobFile],
+          { env, stdio: 'inherit', windowsHide: true },
+        );
+        const code = await new Promise((resolve, reject) => {
+          child.once('error', reject);
+          child.once('exit', (code) => resolve(code ?? 1));
+        });
+        process.exitCode = code;
+      }
     }
   } else {
     console.log(usage);
