@@ -33,7 +33,7 @@ try {
   Invoke-Checked $compiler @('/Qp', ('/DStageRoot=' + $stage), ('/DReleaseDir=' + $releaseRoot), 'packaging/windows.iss')
   $zip = Join-Path $releaseRoot 'SC2-Trigger-Recovery-KSP-3.0.0-rc.1-Windows-x64.zip'
   if (Test-Path -LiteralPath $zip) { throw 'Release ZIP already exists; preserve it and use a clean build directory' }
-  Compress-Archive -LiteralPath $stage -DestinationPath $zip -CompressionLevel Optimal
+  Invoke-Checked python @('scripts/archive-release.py', $stage, $zip)
   $artifacts = Get-ChildItem -LiteralPath $releaseRoot -File | Where-Object { $_.Extension -in @('.exe', '.zip') }
   $lines = foreach ($file in $artifacts) { ((Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()) + '  ' + $file.Name }
   [IO.File]::WriteAllLines((Join-Path $releaseRoot 'SHA256SUMS.txt'), [string[]]$lines, (New-Object Text.UTF8Encoding($false)))
