@@ -17,13 +17,47 @@ The [recovered-source manifest](scripts/recovered-sources.json) records original
 
 Four further missing modules were recovered from retained Git blob objects in the original local workspace: the array-values SAX reader and three SDK-family copies of attribute recovery. All four matched historical SHA-256 pins. Original and restored algorithm ASTs matched; only line endings were normalized. No Git objects were pruned or modified.
 
+Six checkers now import `vscode-languageserver-types` and `vscode-uri` through their existing pinned npm package exports. The installed ESM files matched the supplied archive byte for byte, and package imports resolved to the identical ESM module objects. This removes two unnecessary vendor-copy targets and twelve broken import edges without adding packages or changing checker algorithm ASTs.
+
 A separate local trial restored the archived ModKit packages and their available transitive dependencies from the supplied `mk-revizer.zip`. Actual Node ESM imports succeeded for all 29 previously unresolved package specifiers. This establishes recoverability of external dependencies, not converter equivalence or a reproducible public installation. Those trial packages are not part of this checkout's dependency manifest or publication; the counts below describe the checkout itself.
 
 The original local v569 conversion candidate also currently fails to load at an absent SDK `lossless-xml.js`; the older modular entry separately references a missing v193 overlay. A currently working complete local conversion chain has not been established.
 
+## Remaining work at a glance
+
+The unresolved targets below are files and package entry points, not unverified map counts.
+
+| Area | Missing files | Required work |
+| --- | ---: | --- |
+| Array-values SDK | 22 | Recover the scanner, conversion/type/template stages, XML/catalog helpers and schema entry point for the retained revision. |
+| Other SDK families | 11 | Recover four scanner variants, four Custom AI modules and three schema JSON files. |
+| Project utilities | 8 | Restore attribute display/GUI/policy helpers, dependency policy, source handling and the correct AI-data resource path. |
+| Conversion types | 1 | Restore `preset-reference-use/types/core.mjs`. |
+| **Total** | **42** | Recover compatible implementations; the exact paths are listed below. |
+
+There is also **one invalid directory target** (`src/utilities`, referenced three times): bind native-include normalization to its actual implementation. No directory barrel or stub should be used to silence it.
+
+The external dependency set comprises **nine packages with 29 imported entry points**, not 29 separate libraries:
+
+| Package | Version in the retained archive |
+| --- | --- |
+| `@modkit/blizzard-casc` | `1.0.0` |
+| `@modkit/blizzard-common-formats` | `0.1.0` |
+| `@modkit/blizzard-mpq` | `1.0.0` |
+| `@modkit/blizzard-starcraft2` | `1.0.0` |
+| `@modkit/codec-kit` | `1.0.0` |
+| `@modkit/core` | `0.1.0` |
+| `@modkit/sdk` | `0.1.0` |
+| `@modkit/vfs` | `0.1.0` |
+| `modkit-extension-archives` | `1.0.0` |
+
+Their archived module-load trial passed. Public installation still needs a reproducible acquisition/build procedure, transitive version pins and per-component redistribution review. Archive packages marked `UNLICENSED` were not added to the public source tree. A matching package version alone does not qualify the locally modified SDK families.
+
+After source closure, validate **16 computed imports**, runtime metadata/configuration paths and both API/CLI entry points from a fresh installation. Then run incremental-GUI, attribute and business-logic checks with the unchanged benchmark, followed by Editor compilation/export validation. No new map PASS follows from resolving imports alone.
+
 ## Remaining build gaps
 
-The same static source checker found **339 broken relative-import edges to 89 targets** before recovery. It now reports **203 edges to 45 unresolved relative targets**: 44 missing files and one invalid utility-directory target. This count includes newly exposed transitive dependencies.
+The same static source checker found **339 broken relative-import edges to 89 targets** before recovery. It now reports **191 edges to 43 unresolved relative targets**: 42 missing files and one invalid utility-directory target. This count includes newly exposed transitive dependencies.
 
 There are also **169 unresolved bare-package import occurrences**, representing **29 distinct specifiers**. These include local ModKit package exports; installing the five public npm dependencies does not supply those SDK packages. Sixteen imports resolve paths at runtime and need separate execution/configuration checks.
 
@@ -73,8 +107,6 @@ Current source verification deliberately exits with code **1 / INCOMPLETE**. Its
 - `src/utilities/dependency_ai_pack_policy_v1285.mjs`
 - `src/utilities/map_build_validation_2026-10-01/bundle/modkit-extensions-blizzard/starcraft2-raw-local-structure-scope-v1368-2026-10-07/dist/modules/map/shared/format/formats/ai-data.js`
 - `src/utilities/s2mh-source.mjs`
-- `src/vendor/vscode-languageserver-types/lib/esm/main.js`
-- `src/vendor/vscode-uri/lib/esm/index.mjs`
 
 The remaining directory import is `src/utilities`, used by unresolved native-include normalization. A permissive barrel or stub was not added.
 

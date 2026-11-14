@@ -1,5 +1,5 @@
-import * as lsp from '../../vendor/vscode-languageserver-types/lib/esm/main.js';
-import { URI } from '../../vendor/vscode-uri/lib/esm/index.mjs';
+import * as lsp from 'vscode-languageserver-types';
+import { URI } from 'vscode-uri';
 import * as gt from '../../sdk/lossless-colors/modules/galaxy/language-core/types.js';
 import {
   isComplexTypeKind,
