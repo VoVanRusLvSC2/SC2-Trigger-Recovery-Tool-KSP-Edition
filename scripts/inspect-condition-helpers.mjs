@@ -1,15 +1,18 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { inspectConditionHelpers } from '../src/verification/condition-helper-evidence.mjs';
+import { assumeCallAliases } from '../src/verification/conditional-call-aliases.mjs';
 
-const [originalPath, generatedPath, reportPath] = process.argv.slice(2);
+const [originalPath, generatedPath, reportPath, aliasesPath] = process.argv.slice(2);
 if (!originalPath || !generatedPath || !reportPath)
   throw new Error('Usage: node scripts/inspect-condition-helpers.mjs ORIGINAL GENERATED REPORT');
 const [original, generated] = await Promise.all([
   readFile(originalPath, 'utf8'),
   readFile(generatedPath, 'utf8'),
 ]);
-const result = inspectConditionHelpers(original, generated);
+const aliases = aliasesPath ? JSON.parse(await readFile(aliasesPath, 'utf8')) : undefined;
+const hypothesis = aliases ? assumeCallAliases(generated, aliases) : undefined;
+const result = inspectConditionHelpers(original, hypothesis?.assumed ?? generated);
 const c = result.comparison;
 const summary = (section) => ({
   exact: section.exact?.length ?? null,
@@ -24,6 +27,9 @@ const report = {
   kind: 'STATIC_CONDITION_HELPER_EVIDENCE',
   originalSha256: createHash('sha256').update(original).digest('hex'),
   generatedSha256: createHash('sha256').update(generated).digest('hex'),
+  conditionalAliasHypothesis: hypothesis
+    ? { aliases, callCounts: hypothesis.counts, proven: false, benchmarkAcceptance: false }
+    : null,
   helpersExpanded: result.helpersExpanded,
   helpersRefused: result.helpersRefused,
   strictExactAfterExpansion: result.strictExactAfterExpansion,
