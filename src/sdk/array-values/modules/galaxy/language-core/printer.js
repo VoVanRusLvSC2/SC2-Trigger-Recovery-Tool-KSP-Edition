@@ -221,7 +221,7 @@ export class Printer {
                 {
                     const expr = node;
                     this.emitNode(expr.expression);
-                    this.write("./index.js");
+                    this.write('.');
                     this.emitNode(expr.name);
                     break;
                 }

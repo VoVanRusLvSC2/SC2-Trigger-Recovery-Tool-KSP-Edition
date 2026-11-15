@@ -26,6 +26,7 @@ npm run verify:dependencies
 npm run verify:language -- --with-runtime
 npm run verify:attribute-source
 npm run verify:authored
+npm run verify:string-append
 npm run verify:cli
 npm run verify:preparation
 npm run verify:source
@@ -33,6 +34,14 @@ npm run format:check
 ```
 
 The [integration checks](API.md#reproduce-integration-checks) additionally need real matching NativeLib and the original pinned benchmark. All 304 oracle assets remain hash-checked. Game metadata and qualification evidence are external inputs; missing proof never becomes PASS.
+
+String append recovery also has an end-to-end public API check against matching game metadata:
+
+```powershell
+npm run verify:string-append -- --native-root "<TriggerLibs directory>"
+```
+
+It checks standard GUI recovery of global and record-field appends without expression helpers, including conservative refusal of effectful calls and indexed targets.
 
 ## Windows artifacts
 

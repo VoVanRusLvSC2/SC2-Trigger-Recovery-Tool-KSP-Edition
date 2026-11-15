@@ -31,7 +31,8 @@
     "verify:attribute-integration": "node scripts/check-attribute-integration.mjs",
     "setup:public": "python scripts/fetch-public-runtime.py && npm ci --ignore-scripts && node scripts/build-public-runtime.mjs && npm run build:gui && python scripts/fetch-release-tools.py",
     "verify:preparation": "node scripts/check-map-preparation.mjs",
-    "release:windows": "powershell -NoProfile -ExecutionPolicy Bypass -File packaging/build-windows.ps1"
+    "release:windows": "powershell -NoProfile -ExecutionPolicy Bypass -File packaging/build-windows.ps1",
+    "verify:string-append": "node scripts/check-string-append.mjs"
   },
   "devDependencies": {
     "@types/node": "24.0.0",
