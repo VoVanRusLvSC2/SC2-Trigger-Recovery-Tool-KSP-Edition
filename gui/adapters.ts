@@ -51,13 +51,10 @@ const sc2: BackendAdapter = {
       { key: 'input', label: 'Source map', required: true, picker: 'map' },
       {
         key: 'installation',
-        label: 'Game installation',
+        label: 'StarCraft II folder (automatic; override if needed)',
         required: true,
         picker: 'folder',
-        initial: path.join(
-          process.env['ProgramFiles(x86)'] ?? 'C:\\Program Files (x86)',
-          'StarCraft II',
-        ),
+        help: 'Detected automatically. Only change this if you use another installation.',
       },
       {
         key: 'output',
@@ -66,7 +63,13 @@ const sc2: BackendAdapter = {
         picker: 'output',
         help: 'Browse selects a parent and proposes a new child folder. The original map is never overwritten.',
       },
-      { key: 'benchmark', label: 'Strict benchmark (optional)', picker: 'folder' },
+      {
+        key: 'benchmark',
+        label: 'Strict benchmark (enabled by default)',
+        required: true,
+        picker: 'folder',
+        help: 'The verified bundled benchmark is selected automatically. Only change this for an original external benchmark distribution.',
+      },
       {
         key: 'attributeIndex',
         label: 'Verified attribute header index (optional)',

@@ -7,6 +7,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { selectAdapter } from '../gui/dist/adapters.js';
+import { findInstallation } from '../gui/dist/defaults.js';
 
 const root = path.resolve(import.meta.dirname, '..');
 const request = {
@@ -16,12 +17,14 @@ const request = {
     installation: 'C:\\SC2',
     output: 'C:\\new',
     attributeIndex: 'C:\\proof.json',
+    benchmark: 'C:\\benchmark',
   },
   fullGui: false,
 };
 const argv = selectAdapter(request).command(request, root);
 assert.equal(argv[2], request.fields.input);
 assert(argv.includes('--attribute-index'));
+assert(argv.includes('--benchmark'));
 assert(!argv.includes('--full-gui'));
 assert.throws(() => selectAdapter({ ...request, adapter: 'invented' }), /Unsupported/);
 assert.throws(() => selectAdapter({ ...request, fields: {} }), /Choose/);
@@ -76,16 +79,33 @@ try {
     return { status: response.status, value: await response.json() };
   }
   assert.equal((await api('adapters')).value[0].id, 'sc2');
+  const automatic = await api('defaults');
+  assert.equal(automatic.status, 200);
+  assert.equal(typeof automatic.value.installationStatus, 'string');
+  assert.equal(typeof automatic.value.benchmarkStatus, 'string');
   assert.equal((await api('artifact?id=../../package.json')).status, 400);
   assert.equal((await api('download?id=../../package.json')).status, 400);
   assert.equal((await api('inspect', { adapter: 'other', path: 'anything' })).status, 400);
   assert.equal((await api('recover', { ...request, adapter: 'other' })).status, 400);
   const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'recovery-gui-'));
   const original = path.join(temporary, 'original.SC2Map');
+  const customInstallation = path.join(temporary, 'CustomSC2');
+  await fs.mkdir(customInstallation);
+  await fs.writeFile(path.join(customInstallation, '.build.info'), 'fixture');
+  assert.equal(
+    await findInstallation([temporary, customInstallation]),
+    await fs.realpath(customInstallation),
+  );
+  assert.equal(await findInstallation([temporary]), '');
   await fs.writeFile(original, 'deliberately invalid archive');
   assert.equal((await api('inspect', { adapter: 'sc2', path: original })).status, 400);
   assert.equal(await fs.readFile(original, 'utf8'), 'deliberately invalid archive');
-  const fields = { input: original, installation: temporary, output: temporary };
+  const fields = {
+    input: original,
+    installation: temporary,
+    output: temporary,
+    benchmark: automatic.value.benchmark || 'C:\\benchmark',
+  };
   assert.equal((await api('recover', { adapter: 'sc2', fields, fullGui: false })).status, 400);
   fields.output = path.join(temporary, 'new-output');
   const started = await api('recover', { adapter: 'sc2', fields, fullGui: false });

@@ -12,12 +12,17 @@
     <div class="trigger-frame">
       <header class="trigger-topbar">
         <div class="trigger-topbar-main">
-          <button id="openFile" class="file-chooser-btn" title="Open map" aria-label="Open file">
+          <button
+            id="openFile"
+            class="file-chooser-btn"
+            title="Select a .SC2Map file"
+            aria-label="Open map file"
+          >
             <span class="folder-icon"></span>
           </button>
           <div class="file-info">
-            <h1>OPEN FILE <small>TRIGGER REVIZE KSP · TYPESCRIPT</small></h1>
-            <div id="selectedFile" class="file-label">Open a packed .SC2Map file</div>
+            <h1>OPEN MAP <small>TRIGGER REVIZE KSP</small></h1>
+            <div id="selectedFile" class="file-label">Choose your .SC2Map file to begin</div>
           </div>
           <div class="progress-box">
             <div id="status" role="status">READY</div>
@@ -36,6 +41,16 @@
           ><button id="infoButton">GEN INFO</button><button id="cancel" disabled>CANCEL</button>
         </nav>
       </header>
+      <section class="quick-start" aria-label="How to recover a map">
+        <p>
+          <strong>1.</strong> Open a map file. <strong>2.</strong> Generate triggers.
+          <strong>3.</strong> Export the recovered map.
+        </p>
+        <p>
+          <span id="installationStatus" role="status">Finding StarCraft II…</span
+          ><span id="benchmarkStatus" role="status">Checking the default benchmark…</span>
+        </p>
+      </section>
       <main class="trigger-center-wrap">
         <section class="editor-panel">
           <div class="panel-header">
@@ -69,7 +84,8 @@
       </main>
       <footer>
         <span id="notice" role="alert"
-          >Original files stay unchanged. Code panels are read-only previews.</span
+          >Select a map to preview its Galaxy and triggers. A new output folder is suggested
+          automatically.</span
         ><span id="output"></span>
       </footer>
     </div>
@@ -80,6 +96,10 @@
       </div>
       <form id="recovery">
         <fieldset id="settings">
+          <p>
+            StarCraft II and the benchmark are selected automatically. These fields let you override
+            their locations. Results go into a new folder beside your map.
+          </p>
           <label for="adapter">FORMAT ADAPTER</label
           ><select id="adapter"></select>
           <p id="description"></p>
@@ -132,8 +152,8 @@
         <button data-close="librariesDialog" aria-label="Close libraries">X</button>
       </div>
       <p>
-        SC2 dependencies are resolved from the installed game and the map. Choose the game folder in
-        Settings. Additional formats require a real backend adapter.
+        SC2 dependencies are resolved from the automatically detected game installation and the map.
+        Settings lets you choose another installation if needed.
       </p>
       <pre id="librariesInfo">Run recovery to inspect its actual prepared dependency chain.</pre>
     </dialog>

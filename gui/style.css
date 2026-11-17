@@ -87,6 +87,26 @@ textarea:focus {
   max-width: 2400px;
   margin: auto;
 }
+.quick-start {
+  padding: 8px 14px;
+  border: 1px solid var(--edge);
+  background: #061b14;
+  color: var(--muted);
+}
+.quick-start p {
+  margin: 2px 0;
+}
+.quick-start strong {
+  color: var(--green);
+  margin-left: 12px;
+}
+.quick-start strong:first-child {
+  margin-left: 0;
+}
+.quick-start span {
+  display: inline-block;
+  margin-right: 24px;
+}
 .trigger-topbar {
   background: #000e;
   border: 1px solid var(--edge);
@@ -203,7 +223,7 @@ progress::-webkit-progress-value {
 }
 .trigger-topbar-actions {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
   gap: 10px;
   margin-top: 12px;
 }

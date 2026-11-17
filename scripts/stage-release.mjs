@@ -1,11 +1,22 @@
 /** Materialize a relocatable application from tracked source + public runtime.
- * No archive from Downloads, game installation, benchmark or run evidence enters it. */
+ * No map archive, game installation or run evidence enters it. An optional
+ * bundled benchmark is copied only after its original pinned hashes verify. */
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 const root = path.resolve(import.meta.dirname, '..');
 const destination = path.resolve(process.argv[2] ?? path.join(root, 'release/portable'));
+const benchmark = path.join(root, '.runtime', 'pinned-benchmark');
+let bundledBenchmark = false;
+try {
+  await fs.access(benchmark);
+  const { openPinnedUserOracle } = await import('../src/verification/pinned-user-oracle.mjs');
+  await openPinnedUserOracle({ root: benchmark });
+  bundledBenchmark = true;
+} catch (error) {
+  if (error.code !== 'ENOENT') throw error;
+}
 const relative = path.relative(root, destination);
 if (
   !relative ||
@@ -58,6 +69,28 @@ await fs.copyFile(
   path.join(root, '.runtime/tools/mpqcli.exe'),
   path.join(destination, '.runtime/tools/mpqcli.exe'),
 );
+if (bundledBenchmark) {
+  const manifest = JSON.parse(
+    (await fs.readFile(path.join(benchmark, 'benchmark', 'MANIFEST.json'), 'utf8')).replace(
+      /^\uFEFF/u,
+      '',
+    ),
+  );
+  for (const name of ['MANIFEST.json', ...manifest.files.map((entry) => entry.path)]) {
+    const relative = path.normalize(name);
+    if (path.isAbsolute(relative) || relative.split(path.sep).includes('..'))
+      throw Error('Invalid benchmark asset path.');
+    const target = path.join(destination, '.runtime', 'pinned-benchmark', 'benchmark', relative);
+    await fs.mkdir(path.dirname(target), { recursive: true });
+    await fs.copyFile(
+      path.join(benchmark, 'benchmark', relative),
+      target,
+      fs.constants.COPYFILE_EXCL,
+    );
+  }
+  const { openPinnedUserOracle } = await import('../src/verification/pinned-user-oracle.mjs');
+  await openPinnedUserOracle({ root: path.join(destination, '.runtime', 'pinned-benchmark') });
+}
 // Preserve native-tool licenses next to the executable in every distribution.
 await fs.cp(path.join(root, 'licenses/mpqcli'), path.join(destination, '.runtime/tools/licenses'), {
   recursive: true,

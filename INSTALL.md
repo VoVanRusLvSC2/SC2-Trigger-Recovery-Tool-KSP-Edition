@@ -2,7 +2,7 @@
 
 ## Windows x64 application
 
-Download the **3.0.0-rc.3 Setup.exe** or portable ZIP from this repository's
+Download the **3.0.0-rc.4 Setup.exe** or portable ZIP from this repository's
 [Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases).
 Both contain this reworked converter, Node.js 24.14.1, the public ModKit runtime,
 mpqcli and their notices. No Node, npm, Python, Git, private archive or K: drive
@@ -43,11 +43,16 @@ maps; explicit mod-library conversion is available through [the component API](A
 
 ## Strict benchmark and attributes
 
-The optional benchmark folder is the original, separately supplied pinned
-distribution containing `benchmark/MANIFEST.json`. When an attribute runtime
-contract requires it, pass `--benchmark <distribution>` or set
-`SC2_TRIGGER_BENCHMARK_ROOT`. Missing required proof remains an error/review;
-the installer does not replace or weaken that oracle. Original attributes are
+The Windows application includes the original hash-verified strict benchmark and
+enables it by default. It detects StarCraft II automatically; normally you only
+select a map, choose **GENERATE TRIGGERS**, then **EXPORT FILE**. Settings provides
+manual overrides. The map chooser selects one `.SC2Map` file, never a game folder.
+
+For CLI use, pass `--benchmark <distribution>` or set
+`SC2_TRIGGER_BENCHMARK_ROOT`. That benchmark checks the whole regenerated program;
+its report is `STRICT_BENCHMARK.json`. A difference keeps the result in REVIEW.
+Missing required proof remains an error/review;
+the application does not replace or weaken that oracle. Original attributes are
 preserved, and missing defaults are never guessed. Recovery from an external
 attribute header still requires the separately verified header evidence. Supply
 it with `--attribute-index <index.json>` or the corresponding GUI field. An

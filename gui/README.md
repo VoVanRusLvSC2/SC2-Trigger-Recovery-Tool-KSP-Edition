@@ -9,6 +9,7 @@ The existing converter remains the only conversion implementation.
 
 ```powershell
 npm run setup:public
+node scripts/bundle-benchmark.mjs <original-benchmark-distribution>
 npm run gui
 ```
 
@@ -18,18 +19,25 @@ the **X** button to stop its server; closing a tab alone does not stop a job.
 
 ## Workflow
 
-1. Choose **OPEN FILE**, or open **SETTINGS** and enter the original packed `.SC2Map` path. The original Galaxy and any existing markup are shown immediately. The **StarCraft II** adapter is selected by default.
-2. In **SETTINGS**, select the actual game installation and a **new** output directory. Opening a map proposes a new sibling output folder.
-3. Leave expanded script translation off to preserve authored GUI and source.
-4. Optionally supply the original strict benchmark distribution and an exact,
-   verified attribute-header index. Existing attributes are retained automatically;
-   missing attribute values are never invented.
-5. Choose **GENERATE TRIGGERS**. Open **GEN INFO** for live activity and unchanged worker evidence.
-6. Inspect the two code panels. **VIEW TREE** opens the literal XML hierarchy;
+1. Choose **OPEN MAP** and select one `.SC2Map` file. This button only opens the map-file chooser. The original Galaxy and any existing markup appear immediately.
+2. Choose **GENERATE TRIGGERS**. StarCraft II is detected from environment overrides, the Windows registry and standard installation folders. The unchanged strict benchmark is selected from the application bundle or `SC2_TRIGGER_BENCHMARK_ROOT`. A new output folder beside the map is suggested automatically.
+3. Choose **EXPORT FILE** to download the recovered candidate. Open **GEN INFO** to inspect live activity, the verdict and evidence.
+
+**SETTINGS** provides manual overrides for the installation, output and benchmark,
+plus an optional exact attribute-header index. Missing or invalid benchmark files
+are reported rather than silently disabling verification. Leave **FULL GUI** off
+to preserve authored GUI and source.
+
+Inspect the two code panels. **VIEW TREE** opens the literal XML hierarchy;
    each panel has **SEARCH**. **SAVE TRIGGERS** downloads the displayed markup;
    **EXPORT FILE** downloads the completed candidate copy. Other artifacts are
    available in **GEN INFO**. Exports over 128 MiB stay in the output folder.
-7. Find the candidate path and the applicable verdict in `RESULT.json`.
+Find the candidate path and the applicable verdict in `RESULT.json`.
+
+To prepare a source checkout with the original pinned benchmark, run
+`node scripts/bundle-benchmark.mjs <original-distribution>`. It copies only the
+304 manifest-listed assets and verifies their original hashes. Release staging
+includes this verified bundle when available; game data and map corpora are not included.
 
 Cancellation stops the job's process tree on Windows. A partial output directory
 is retained for diagnosis and must not be reused. `finished` means the process

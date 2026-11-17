@@ -9,9 +9,11 @@ import { randomBytes } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { adapters, selectAdapter } from './adapters.js';
 import type { JobSnapshot, RecoveryRequest, Artifact } from './contracts.js';
+import { discoverDefaults } from './defaults.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const assets = path.join(root, 'gui');
+const defaults = await discoverDefaults(root);
 const token = randomBytes(32).toString('hex');
 const limit = 2 * 1024 * 1024;
 let state: JobSnapshot = { phase: 'idle', log: '', artifacts: [] };
@@ -41,7 +43,7 @@ async function collectArtifacts(output: string) {
         (/\.(galaxy|sc2map)$/i.test(item.name) ||
           item.name === 'Triggers' ||
           item.name === 'preparation.json' ||
-          /^(RESULT|PREVIEW_REPORT|ATTRIBUTE.*|MANIFEST)\.json$/i.test(item.name))
+          /^(RESULT|PREVIEW_REPORT|ATTRIBUTE.*|MANIFEST|STRICT_BENCHMARK)\.json$/i.test(item.name))
       ) {
         const title = path.relative(output, file).replaceAll('\\', '/');
         const kind = /\.sc2map$/i.test(file)
@@ -72,6 +74,16 @@ async function startJob(request: RecoveryRequest) {
   if (inspecting) throw Error('Wait for the archive preview to finish.');
   if (starting || worker || state.phase === 'running')
     throw Error('A recovery job is already running.');
+  if (request?.adapter === 'sc2' && request.fields && typeof request.fields === 'object') {
+    request = {
+      ...request,
+      fields: {
+        ...request.fields,
+        installation: request.fields.installation?.trim() || defaults.installation,
+        benchmark: request.fields.benchmark?.trim() || defaults.benchmark,
+      },
+    };
+  }
   const adapter = selectAdapter(request);
   starting = true;
   try {
@@ -138,7 +150,7 @@ async function browse(kind: string) {
   if (!['map', 'folder', 'json', 'output'].includes(kind)) throw Error('Unsupported picker.');
   browsing = true;
   const filter = kind === 'map' ? 'StarCraft II maps|*.SC2Map' : 'JSON files|*.json';
-  const script = `Add-Type -AssemblyName System.Windows.Forms; [Console]::OutputEncoding = New-Object Text.UTF8Encoding($false); $d = New-Object Windows.Forms.${kind === 'folder' || kind === 'output' ? 'FolderBrowserDialog' : 'OpenFileDialog'}; ${kind === 'map' || kind === 'json' ? `$d.Filter = '${filter}';` : ''} if ($d.ShowDialog() -eq 'OK') { [Console]::Write($d.${kind === 'folder' || kind === 'output' ? 'SelectedPath' : 'FileName'}) }; $d.Dispose()`;
+  const script = `Add-Type -AssemblyName System.Windows.Forms; [Console]::OutputEncoding = New-Object Text.UTF8Encoding($false); $d = New-Object Windows.Forms.${kind === 'folder' || kind === 'output' ? 'FolderBrowserDialog' : 'OpenFileDialog'}; ${kind === 'map' || kind === 'json' ? `$d.Filter = '${filter}'; $d.CheckFileExists = $true; $d.Multiselect = $false; $d.Title = '${kind === 'map' ? 'Select a StarCraft II map file' : 'Select a JSON file'}';` : ''} if ($d.ShowDialog() -eq 'OK') { [Console]::Write($d.${kind === 'folder' || kind === 'output' ? 'SelectedPath' : 'FileName'}) }; $d.Dispose()`;
   try {
     const selected = await new Promise<string>((resolve, reject) => {
       const child = spawn(
@@ -204,6 +216,7 @@ const server = http.createServer(async (req, res) => {
       if (req.headers['x-recovery-token'] !== token)
         return json(res, { error: 'Session token required.' }, 403);
       if (req.method === 'GET' && url.pathname === '/api/state') return json(res, state);
+      if (req.method === 'GET' && url.pathname === '/api/defaults') return json(res, defaults);
       if (req.method === 'GET' && url.pathname === '/api/adapters')
         return json(
           res,

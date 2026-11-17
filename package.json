@@ -7,6 +7,7 @@
     "build:gui": "tsc -p gui/tsconfig.json",
     "gui": "npm run build:gui && node gui/dist/server.js",
     "verify:gui": "npm run build:gui && node scripts/check-gui.mjs",
+    "bundle:benchmark": "node scripts/bundle-benchmark.mjs",
     "verify:preview": "node scripts/check-unverified-preview.mjs",
     "resources:public-core": "node src/resources/fetch-public-core.mjs",
     "verify:public-core": "node scripts/check-public-core.mjs",
@@ -64,5 +65,5 @@
   "engines": {
     "node": ">=24 <25"
   },
-  "version": "3.0.0-rc.3"
+  "version": "3.0.0-rc.4"
 }

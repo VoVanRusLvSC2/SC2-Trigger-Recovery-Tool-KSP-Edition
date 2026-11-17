@@ -37,6 +37,7 @@ import { localResourcePath } from '../model/local-resource-path.mjs';
 import { lowerRootSnapshotReferenceActions } from '../conversion/exact-function-signatures/root-snapshot-reference-actions.mjs';
 import { prepareDocumentAttributes } from '../conversion/document-attribute-preparation.mjs';
 import { authoredGuiInventory } from '../incremental/authored-gui-inventory.mjs';
+import { openPinnedUserOracle } from '../verification/pinned-user-oracle.mjs';
 import { createUnverifiedPreviewMap } from './unverified-preview-map.mjs';
 import {
   normalizeTriggerLibrary,
@@ -281,6 +282,9 @@ try {
 
   const prepared = await read(row.preparationResult),
     cfg = await read(row.config);
+  const pinnedBenchmark = process.env.SC2_TRIGGER_BENCHMARK_ROOT
+    ? await openPinnedUserOracle()
+    : undefined;
   if (cfg.resourceSnapshot || prepared.sourceKind === 'public-resource-snapshot')
     throw Error(
       'PUBLIC_SNAPSHOT_CONVERSION_NOT_READY: snapshot preparation is available, but recovery requires installed SC2 until snapshot source authority and target Editor version are verified',
@@ -1894,6 +1898,36 @@ try {
         leftAi: additionalScripts,
         rightAi: packedAi,
       });
+      let rootBenchmark;
+      if (pinnedBenchmark) {
+        const originalProgram = expandLocalScripts(
+          joined(script, ownHeader),
+          additionalScripts,
+          session.parseGalaxy,
+        );
+        const checkedProgram = pinnedBenchmark.compare(
+          originalProgram.text,
+          expandedGenerated.text,
+        );
+        await pinnedBenchmark.verify();
+        const evidence = {
+          manifestSha256: pinnedBenchmark.manifestSha256,
+          assets: pinnedBenchmark.assets,
+          originalGalaxySha256: sha(originalProgram.text),
+          generatedGalaxySha256: sha(expandedGenerated.text),
+          passed: checkedProgram.syntaxValid && checkedProgram.exact,
+          comparison: checkedProgram,
+          editorVerified: false,
+        };
+        const evidencePath = path.join(directory, 'STRICT_BENCHMARK.json');
+        await save(evidencePath, evidence);
+        rootBenchmark = {
+          path: evidencePath,
+          passed: evidence.passed,
+          manifestSha256: evidence.manifestSha256,
+        };
+      }
+      const benchmarkPassed = !rootBenchmark || rootBenchmark.passed;
 
       const profile = compareGalaxyText(baselineText, galaxy, {
         parseGalaxy: session.parseGalaxy,
@@ -1993,6 +2027,7 @@ try {
 
         originalScriptSha256: prepared.originalScriptSha256,
         comparison,
+        benchmark: rootBenchmark ?? { enabled: false },
         profile,
         typedComplete,
         typedSourceDeclarationsComplete,
@@ -2025,6 +2060,7 @@ try {
           : null,
 
         staticEquivalent:
+          benchmarkPassed &&
           comparison.equivalent &&
           profile.equivalent &&
           typedComplete &&
@@ -2035,6 +2071,7 @@ try {
         editorVerified: false,
         comparedActualEditorExport: false,
         status:
+          benchmarkPassed &&
           comparison.equivalent &&
           profile.equivalent &&
           typedComplete &&

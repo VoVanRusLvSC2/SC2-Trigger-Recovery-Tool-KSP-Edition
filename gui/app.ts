@@ -10,6 +10,9 @@ let shownResult = '';
 let searchTarget: 'markup' | 'source' = 'source';
 let selectedMarkup: Artifact | undefined;
 let originalMarkupText = '';
+let opening = false;
+let automaticDefaults: Record<string, string> = {};
+let suggestedOutput = '';
 const notice = (text: string) => {
   element('notice').textContent = text;
 };
@@ -60,7 +63,8 @@ async function inspectMap(file: string) {
   element('selectedFile').textContent = value.name;
   element<HTMLInputElement>('field-input').value = value.name;
   const output = element<HTMLInputElement>('field-output');
-  if (!output.value) output.value = value.suggestedOutput;
+  if (!output.value || output.value === suggestedOutput) output.value = value.suggestedOutput;
+  suggestedOutput = value.suggestedOutput;
   notice(
     value.hasAttributes
       ? 'Original Attributes found. Recovery preserves them automatically.'
@@ -83,7 +87,7 @@ function configure() {
     input.id = 'field-' + field.key;
     input.name = field.key;
     input.required = field.required ?? false;
-    input.value = field.initial ?? '';
+    input.value = automaticDefaults[field.key] || field.initial || '';
     row.append(input);
     if (field.key === 'input')
       input.onchange = () => {
@@ -162,7 +166,7 @@ function render(state: JobSnapshot) {
     'librariesButton',
     'shutdown',
   ])
-    element<HTMLButtonElement>(id).disabled = active;
+    element<HTMLButtonElement>(id).disabled = active || opening;
   element<HTMLFieldSetElement>('settings').disabled = active;
   element<HTMLButtonElement>('cancel').disabled = !active;
   element<HTMLButtonElement>('exportFile').disabled =
@@ -170,7 +174,9 @@ function render(state: JobSnapshot) {
   const log = element('log'),
     bottom = log.scrollTop + log.clientHeight >= log.scrollHeight - 30;
   if (log.textContent !== state.log)
-    log.textContent = state.log || 'Ready. Open a map and choose a new output folder in Settings.';
+    log.textContent =
+      state.log ||
+      'Ready. Choose OPEN MAP, then GENERATE TRIGGERS. The output folder is created automatically.';
   if (bottom) log.scrollTop = log.scrollHeight;
   element('output').textContent = state.output ?? '';
   const resultText = JSON.stringify(state.result, null, 2) ?? '';
@@ -178,7 +184,12 @@ function render(state: JobSnapshot) {
     shownResult = resultText;
     element('result').textContent = resultText;
     const report = state.result as
-      | { status?: string; error?: string; variants?: { status?: string; candidate?: string }[] }
+      | {
+          status?: string;
+          error?: string;
+          benchmark?: { passed?: boolean };
+          variants?: { status?: string; candidate?: string; benchmark?: { passed?: boolean } }[];
+        }
       | undefined;
     element('verdict').replaceChildren();
     if (report) {
@@ -187,6 +198,13 @@ function render(state: JobSnapshot) {
         row.textContent = variant.status ?? 'No qualified verdict';
         row.className = 'verdict';
         element('verdict').append(row);
+        if (typeof variant.benchmark?.passed === 'boolean') {
+          const benchmark = document.createElement('p');
+          benchmark.textContent = variant.benchmark.passed
+            ? 'Strict benchmark: matched'
+            : 'Strict benchmark: review required';
+          element('verdict').append(benchmark);
+        }
         if ('candidate' in variant && variant.candidate) {
           const path = document.createElement('p');
           path.className = 'output';
@@ -313,11 +331,17 @@ element('generate').onclick = () => {
   } else form.requestSubmit();
 };
 element('openFile').onclick = async () => {
+  if (opening) return;
+  opening = true;
+  element<HTMLButtonElement>('openFile').disabled = true;
   try {
     const value = await api<{ path: string }>('browse', { kind: 'map' });
     if (value.path) await inspectMap(value.path);
   } catch (error) {
     fail(error);
+  } finally {
+    opening = false;
+    element<HTMLButtonElement>('openFile').disabled = false;
   }
 };
 element('settingsButton').onclick = () => show('settingsDialog');
@@ -417,6 +441,10 @@ window.addEventListener('beforeunload', (event) => {
 });
 async function initialize() {
   adapters = await api<RecoveryAdapter[]>('adapters');
+  const defaults = await api<Record<string, string>>('defaults');
+  automaticDefaults = defaults;
+  element('installationStatus').textContent = defaults.installationStatus ?? '';
+  element('benchmarkStatus').textContent = defaults.benchmarkStatus ?? '';
   for (const adapter of adapters) {
     const option = document.createElement('option');
     option.value = adapter.id;
