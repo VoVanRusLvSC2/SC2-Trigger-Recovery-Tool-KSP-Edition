@@ -32,7 +32,7 @@
           ><button id="shutdown" class="close-button" aria-label="Exit application">X</button>
         </div>
         <nav class="trigger-topbar-actions" aria-label="Recovery actions">
-          <button id="generate" class="primary">GENERATE TRIGGERS</button
+          <button id="generate" class="primary" disabled>GENERATE TRIGGERS</button
           ><button id="fullMode" aria-pressed="false">FULL GUI: OFF</button
           ><button id="librariesButton">LIBRARIES</button
           ><button id="saveMarkup" disabled>SAVE TRIGGERS</button
@@ -89,6 +89,36 @@
         ><span id="output"></span>
       </footer>
     </div>
+    <dialog id="fileDialog" aria-labelledby="fileTitle">
+      <div class="dialog-heading">
+        <h2 id="fileTitle">SELECT A MAP FILE</h2>
+        <button id="fileCancelX" aria-label="Close file picker">X</button>
+      </div>
+      <p id="fileHelp">
+        Choose one .SC2Map file. Double-click to open, or select it and press OPEN FILE.
+      </p>
+      <form id="fileNavigation">
+        <label for="filePath">Folder or full file path</label>
+        <div class="path">
+          <input id="filePath" autocomplete="off" spellcheck="false" /><button
+            type="submit"
+            id="fileGo"
+          >
+            GO
+          </button>
+        </div>
+      </form>
+      <nav class="file-navigation" aria-label="Folder navigation">
+        <button id="fileUp">UP</button><button id="fileHome">HOME</button>
+      </nav>
+      <p id="fileStatus" role="status"></p>
+      <div id="fileEntries" role="group" aria-label="Files and folders"></div>
+      <p id="fileSelection"></p>
+      <div class="file-actions">
+        <button id="fileCancel">CANCEL</button
+        ><button id="fileAccept" class="primary" disabled>OPEN FILE</button>
+      </div>
+    </dialog>
     <dialog id="settingsDialog">
       <div class="dialog-heading">
         <h2>SETTINGS</h2>
@@ -113,13 +143,21 @@
               >
             </div>
             <label class="check"
+              ><input type="checkbox" id="recoverAttributes" checked />Recover attributes when
+              available</label
+            >
+            <small
+              >Preserve existing attributes and restore supported missing definitions and GUI
+              references from verified map data. Off keeps existing Attributes unchanged.</small
+            >
+            <label class="check"
               ><input type="checkbox" id="fullGui" />Translate authored script into GUI too</label
             ><small
               >Off by default. Unsupported constructs remain a refusal. No invented stubs or Native
               wrappers.</small
             >
           </section>
-          <button class="primary" type="submit">GENERATE TRIGGERS</button>
+          <button type="button" data-close="settingsDialog">DONE</button>
         </fieldset>
       </form>
     </dialog>

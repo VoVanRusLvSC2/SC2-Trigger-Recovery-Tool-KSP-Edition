@@ -123,3 +123,12 @@ trigger-recovery recover 'C:\Maps\Input.SC2Map' --resources 'K:\SC2-Public-Resou
 Alternatively replace `--resources` with `--download-resources 'K:\SC2-Public-Resources'` to download before preparing. Both output directories must be new.
 
 **This is an experimental preview, not a finished or validated recovery.** It refuses maps with existing GUI markup, cannot restore attributes, and cannot run the strict benchmark. It may contain generated Native or Custom Script. Its status is `UNVERIFIED_PUBLIC_SNAPSHOT`, the process exits nonzero, and an optional draft map retains original Galaxy. Saving or compiling the draft in Editor may change behavior. Use `--sc2` for the established installed-data workflow; Editor/gameplay verification remains separate.
+
+### Preserve attributes without reconstruction
+
+Attribute recovery is enabled by default. For trigger recovery alone, add
+`--no-attribute-recovery` to `recover` or `prepare`. Existing Attributes bytes are
+preserved; the optional reconstruction and GUI enrichment are skipped. All
+semantic and attribute evidence checks remain active, so an unproven attribute
+contract still produces REVIEW. When running a prepared job, use its boolean
+`recoverAttributes` field (absent means enabled).

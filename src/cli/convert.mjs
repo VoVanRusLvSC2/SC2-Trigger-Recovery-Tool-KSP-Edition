@@ -1383,7 +1383,15 @@ try {
   // actual candidate follows the source's attribute policy; it is not duplicated.
   const availableVariants = attributeVariantModes(usesAttributes);
 
-  const variants = [usesAttributes ? 'with-attribute-recovery' : 'without-attribute-recovery'];
+  const variants = [
+    usesAttributes && row.recoverAttributes !== false
+      ? 'with-attribute-recovery'
+      : 'without-attribute-recovery',
+  ];
+
+  // Opting out selects the existing preservation mode. All equivalence and
+  // attribute evidence gates still run; missing definitions cannot become PASS.
+  result.attributeRecoveryRequested = row.recoverAttributes !== false;
 
   assert(availableVariants.includes(variants[0]), 'Original-attribute variant must be supported');
 

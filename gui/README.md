@@ -80,3 +80,22 @@ Node/filesystem privileges and displays source using text nodes or textarea valu
 Build: `npm run build:gui`. Verify: `npm run verify:gui`. Compiled output is
 ignored by Git, built before release staging and included in the application
 file manifest. No compiler is required by the installed application.
+
+## File selection and settings
+
+**OPEN MAP** opens a file picker inside the application. Browse folders or paste a
+full path, select one `.SC2Map`, and press **OPEN FILE**. Double-clicking a map also
+opens it. **CANCEL**, the close button and Escape dismiss the picker without
+leaving the interface locked. Folder and JSON settings use the same visible picker.
+No external PowerShell file-dialog process is required.
+
+The main **GENERATE TRIGGERS** button stays disabled until a map opens successfully.
+Settings contains parameters and **DONE**, with no recovery action. Installation,
+output and benchmark paths are under **Advanced settings** because they are filled
+automatically. The strict benchmark remains enabled.
+
+**Recover attributes when available** defaults on. Turning it off preserves
+existing Attributes and skips their reconstruction/GUI enrichment; it does not
+suppress strict attribute checks or turn missing evidence into PASS. The CLI
+counterpart is `--no-attribute-recovery` for `recover` and `prepare`. Prepared jobs
+store `recoverAttributes: false` explicitly when this is selected.

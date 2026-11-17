@@ -1,4 +1,11 @@
-import type { RecoveryAdapter, JobSnapshot, Artifact, DocumentPreview } from './contracts.js';
+import type {
+  RecoveryAdapter,
+  JobSnapshot,
+  Artifact,
+  DocumentPreview,
+  FileListing,
+  PickerKind,
+} from './contracts.js';
 
 const element = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const token = document.querySelector<HTMLMetaElement>('meta[name="session-token"]')!.content;
@@ -11,8 +18,11 @@ let searchTarget: 'markup' | 'source' = 'source';
 let selectedMarkup: Artifact | undefined;
 let originalMarkupText = '';
 let opening = false;
+let loadedMap = '';
+let inspectingMap = false;
 let automaticDefaults: Record<string, string> = {};
 let suggestedOutput = '';
+let configuredAdapter = '';
 const notice = (text: string) => {
   element('notice').textContent = text;
 };
@@ -33,6 +43,129 @@ function show(id: string) {
   const dialog = element<HTMLDialogElement>(id);
   if (!dialog.open) dialog.showModal();
 }
+// One modal owns each selection. Closing it invalidates pending directory reads.
+const fileDialog = element<HTMLDialogElement>('fileDialog');
+let picker:
+  | {
+      kind: PickerKind;
+      directory: string;
+      parent: string;
+      home: string;
+      selected: string;
+      resolve: (value: string) => void;
+    }
+  | undefined;
+let navigation = 0;
+function finishPicker(value = '') {
+  const current = picker;
+  picker = undefined;
+  navigation++;
+  fileDialog.close();
+  current?.resolve(value);
+}
+async function navigateFiles(requested = '') {
+  const current = picker;
+  if (!current) return;
+  const revision = ++navigation;
+  element('fileStatus').textContent = 'Reading folder…';
+  element<HTMLButtonElement>('fileAccept').disabled = true;
+  element('fileEntries').replaceChildren();
+  current.selected = '';
+  element('fileSelection').textContent = '';
+  try {
+    const listing = await api<FileListing>('files', { kind: current.kind, path: requested });
+    if (picker !== current || revision !== navigation) return;
+    Object.assign(current, {
+      directory: listing.directory,
+      parent: listing.parent,
+      home: listing.home,
+      selected: listing.selected,
+    });
+    element<HTMLInputElement>('filePath').value = listing.directory;
+    element<HTMLButtonElement>('fileUp').disabled = listing.parent === listing.directory;
+    for (const entry of listing.entries) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = (entry.directory ? '[Folder] ' : '') + entry.name;
+      button.title = entry.path;
+      button.className = 'file-entry';
+      button.setAttribute('aria-pressed', String(entry.path === current.selected));
+      button.onclick = () => {
+        if (entry.directory) {
+          void navigateFiles(entry.path);
+          return;
+        }
+        current.selected = entry.path;
+        for (const other of element('fileEntries').querySelectorAll('button'))
+          other.setAttribute('aria-pressed', String(other === button));
+        updatePicker();
+      };
+      if (!entry.directory) button.ondblclick = () => finishPicker(entry.path);
+      element('fileEntries').append(button);
+    }
+    element('fileStatus').textContent = listing.truncated
+      ? 'Showing the first 5,000 entries. Paste a full path to select another file.'
+      : listing.entries.length
+        ? `${listing.entries.length} entries`
+        : 'No matching files or folders.';
+    updatePicker();
+  } catch (error) {
+    if (picker !== current || revision !== navigation) return;
+    current.directory = '';
+    element('fileStatus').textContent = String(error);
+  }
+}
+function updatePicker() {
+  if (!picker) return;
+  const folder = ['folder', 'output'].includes(picker.kind);
+  element('fileSelection').textContent =
+    picker.selected || (folder ? picker.directory : 'No file selected');
+  element<HTMLButtonElement>('fileAccept').disabled = !(folder
+    ? picker.directory
+    : picker.selected);
+}
+function choosePath(kind: PickerKind, initial = ''): Promise<string> {
+  if (picker) return Promise.reject(Error('A file picker is already open.'));
+  const folder = kind === 'folder' || kind === 'output';
+  element('fileTitle').textContent = folder
+    ? 'SELECT A FOLDER'
+    : kind === 'map'
+      ? 'SELECT A MAP FILE'
+      : 'SELECT A JSON FILE';
+  element('fileHelp').textContent =
+    kind === 'output'
+      ? 'Choose a parent folder. Recovery creates a new folder inside it.'
+      : folder
+        ? 'Open the folder you need, then press USE THIS FOLDER.'
+        : `Choose one ${kind === 'map' ? '.SC2Map' : '.json'} file. Double-click to open, or select it and press OPEN FILE.`;
+  element('fileAccept').textContent = folder ? 'USE THIS FOLDER' : 'OPEN FILE';
+  return new Promise((resolve) => {
+    picker = { kind, directory: '', parent: '', home: '', selected: '', resolve };
+    element<HTMLInputElement>('filePath').value = initial;
+    show('fileDialog');
+    void navigateFiles(initial);
+  });
+}
+element<HTMLFormElement>('fileNavigation').onsubmit = (event) => {
+  event.preventDefault();
+  void navigateFiles(element<HTMLInputElement>('filePath').value);
+};
+element('fileUp').onclick = () => {
+  if (picker?.parent) void navigateFiles(picker.parent);
+};
+element('fileHome').onclick = () => {
+  void navigateFiles(picker?.home || '');
+};
+element('fileAccept').onclick = () => {
+  if (picker)
+    finishPicker(['folder', 'output'].includes(picker.kind) ? picker.directory : picker.selected);
+};
+for (const id of ['fileCancel', 'fileCancelX']) element(id).onclick = () => finishPicker();
+fileDialog.oncancel = (event) => {
+  event.preventDefault();
+  finishPicker();
+};
+
 function metrics(target: 'markup' | 'source', text: string) {
   element<HTMLTextAreaElement>(target).value = text;
   element(target + 'Metric').textContent = text
@@ -52,29 +185,45 @@ function fullMode() {
 }
 async function inspectMap(file: string) {
   if (!file) return;
+  loadedMap = '';
+  inspectingMap = true;
+  if (snapshot) render(snapshot);
   notice('Reading original archive...');
-  const value = await api<DocumentPreview>('inspect', {
-    adapter: element<HTMLSelectElement>('adapter').value,
-    path: file,
-  });
-  metrics('source', value.source);
-  metrics('markup', value.markup);
-  selectedMarkup = undefined;
-  element('selectedFile').textContent = value.name;
-  element<HTMLInputElement>('field-input').value = value.name;
-  const output = element<HTMLInputElement>('field-output');
-  if (!output.value || output.value === suggestedOutput) output.value = value.suggestedOutput;
-  suggestedOutput = value.suggestedOutput;
-  notice(
-    value.hasAttributes
-      ? 'Original Attributes found. Recovery preserves them automatically.'
-      : 'No Attributes component. Recovery analyzes Galaxy and localization automatically.',
-  );
+  try {
+    const value = await api<DocumentPreview>('inspect', {
+      adapter: element<HTMLSelectElement>('adapter').value,
+      path: file,
+    });
+    metrics('source', value.source);
+    metrics('markup', value.markup);
+    selectedMarkup = undefined;
+    loadedMap = value.name;
+    element('selectedFile').textContent = value.name;
+    element<HTMLInputElement>('field-input').value = value.name;
+    const output = element<HTMLInputElement>('field-output');
+    if (!output.value || output.value === suggestedOutput) output.value = value.suggestedOutput;
+    suggestedOutput = value.suggestedOutput;
+    notice(
+      value.hasAttributes
+        ? 'Original Attributes found. Recovery preserves them automatically.'
+        : 'No Attributes component. Recovery analyzes Galaxy and localization automatically.',
+    );
+  } finally {
+    inspectingMap = false;
+    if (snapshot) render(snapshot);
+  }
 }
 function configure() {
   const adapter = adapters.find((a) => a.id === element<HTMLSelectElement>('adapter').value)!;
+  if (configuredAdapter === adapter.id) return;
+  configuredAdapter = adapter.id;
+  loadedMap = '';
   element('description').textContent = adapter.description;
   element('fields').replaceChildren();
+  const advanced = document.createElement('details');
+  const summary = document.createElement('summary');
+  summary.textContent = 'Advanced settings';
+  advanced.append(summary);
   for (const field of adapter.fields) {
     const container = document.createElement('div');
     container.className = 'field';
@@ -89,10 +238,15 @@ function configure() {
     input.required = field.required ?? false;
     input.value = automaticDefaults[field.key] || field.initial || '';
     row.append(input);
-    if (field.key === 'input')
+    if (field.key === 'input') {
+      input.oninput = () => {
+        loadedMap = '';
+        if (snapshot) render(snapshot);
+      };
       input.onchange = () => {
         inspectMap(input.value).catch(fail);
       };
+    }
     if (field.picker) {
       const button = document.createElement('button');
       button.type = 'button';
@@ -100,10 +254,16 @@ function configure() {
       button.onclick = async () => {
         button.disabled = true;
         try {
-          const result = await api<{ path: string }>('browse', { kind: field.picker });
-          if (result.path) {
-            input.value = result.path;
-            if (field.key === 'input') await inspectMap(result.path);
+          // Output is deliberately a new, nonexistent child. Start in its parent.
+          const initial =
+            field.picker === 'output' ? input.value.replace(/[^\\/]+$/, '') : input.value;
+          const selected = await choosePath(field.picker!, initial);
+          if (selected) {
+            input.value =
+              field.picker === 'output'
+                ? selected.replace(/[\\/]$/, '') + '/Recovered-' + Date.now()
+                : selected;
+            if (field.key === 'input') await inspectMap(selected);
           }
         } catch (error) {
           fail(error);
@@ -119,8 +279,10 @@ function configure() {
       help.textContent = field.help;
       container.append(help);
     }
-    element('fields').append(container);
+    if (['installation', 'output', 'benchmark'].includes(field.key)) advanced.append(container);
+    else element('fields').append(container);
   }
+  element('fields').append(advanced);
 }
 async function artifactText(artifact: Artifact) {
   return (await api<{ text: string }>('artifact?id=' + encodeURIComponent(artifact.id))).text;
@@ -166,9 +328,13 @@ function render(state: JobSnapshot) {
     'librariesButton',
     'shutdown',
   ])
-    element<HTMLButtonElement>(id).disabled = active || opening;
+    element<HTMLButtonElement>(id).disabled =
+      active ||
+      ((opening || inspectingMap) && ['generate', 'openFile'].includes(id)) ||
+      (id === 'generate' &&
+        (!loadedMap || loadedMap !== element<HTMLInputElement>('field-input').value));
   element<HTMLFieldSetElement>('settings').disabled = active;
-  element<HTMLButtonElement>('cancel').disabled = !active;
+  element<HTMLButtonElement>('cancel').disabled = !active && !opening;
   element<HTMLButtonElement>('exportFile').disabled =
     active || !state.artifacts.some((a) => a.kind === 'archive');
   const log = element('log'),
@@ -301,8 +467,18 @@ function showTree() {
   element('hierarchy').append(branch(xml.documentElement, 0));
   show('treeDialog');
 }
-element<HTMLFormElement>('recovery').onsubmit = async (event) => {
-  event.preventDefault();
+// Settings never starts work. Only the main toolbar action can run recovery.
+element<HTMLFormElement>('recovery').onsubmit = (event) => event.preventDefault();
+element('generate').onclick = async () => {
+  if (!loadedMap || inspectingMap || opening) return;
+  const form = element<HTMLFormElement>('recovery');
+  if (!form.checkValidity()) {
+    show('settingsDialog');
+    const details = form.querySelector('input:invalid, select:invalid')?.closest('details');
+    if (details) details.open = true;
+    form.reportValidity();
+    return;
+  }
   const fields = Object.fromEntries(
     [...element('fields').querySelectorAll('input')].map((input) => [
       input.name,
@@ -315,33 +491,29 @@ element<HTMLFormElement>('recovery').onsubmit = async (event) => {
         adapter: element<HTMLSelectElement>('adapter').value,
         fields,
         fullGui: element<HTMLInputElement>('fullGui').checked,
+        recoverAttributes: element<HTMLInputElement>('recoverAttributes').checked,
       }),
     );
-    settingsDialog.close();
     notice('Recovery running. See GEN INFO for live output.');
   } catch (error) {
     fail(error);
   }
 };
-element('generate').onclick = () => {
-  const form = element<HTMLFormElement>('recovery');
-  if (!form.checkValidity()) {
-    show('settingsDialog');
-    form.reportValidity();
-  } else form.requestSubmit();
-};
 element('openFile').onclick = async () => {
   if (opening) return;
   opening = true;
   element<HTMLButtonElement>('openFile').disabled = true;
+  element<HTMLButtonElement>('cancel').disabled = false;
+  notice('Choose one map in the file picker.');
   try {
-    const value = await api<{ path: string }>('browse', { kind: 'map' });
-    if (value.path) await inspectMap(value.path);
+    const selected = await choosePath('map', element<HTMLInputElement>('field-input').value);
+    if (selected) await inspectMap(selected);
+    else notice('File selection cancelled. You can also paste the map path in Settings.');
   } catch (error) {
     fail(error);
   } finally {
     opening = false;
-    element<HTMLButtonElement>('openFile').disabled = false;
+    if (snapshot) render(snapshot);
   }
 };
 element('settingsButton').onclick = () => show('settingsDialog');
@@ -373,6 +545,10 @@ element('fullMode').onclick = () => {
 };
 element('fullGui').onchange = fullMode;
 element('cancel').onclick = () => {
+  if (opening) {
+    finishPicker();
+    return;
+  }
   api<JobSnapshot>('cancel', {}).then(render).catch(fail);
 };
 element('shutdown').onclick = () => {
@@ -461,6 +637,9 @@ async function initialize() {
     }
   if (state.request) {
     element<HTMLInputElement>('fullGui').checked = state.request.fullGui;
+    element<HTMLInputElement>('recoverAttributes').checked =
+      state.request.recoverAttributes !== false;
+    loadedMap = state.request.fields.input ?? '';
     element('selectedFile').textContent = state.request.fields.input ?? '';
   }
   fullMode();

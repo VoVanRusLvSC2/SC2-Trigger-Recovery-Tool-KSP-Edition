@@ -2,7 +2,7 @@
 
 ## Windows x64 application
 
-Download the **3.0.0-rc.4 Setup.exe** or portable ZIP from this repository's
+Download the **3.0.0-rc.5 Setup.exe** or portable ZIP from this repository's
 [Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases).
 Both contain this reworked converter, Node.js 24.14.1, the public ModKit runtime,
 mpqcli and their notices. No Node, npm, Python, Git, private archive or K: drive
@@ -17,7 +17,8 @@ libraries and Galaxy declarations. Custom mod dependencies must also be availabl
 Neither game binaries nor game data are included in this application.
 
 Open **SC2 Trigger Recovery KSP** from the Start menu, choose a packed `.SC2Map`,
-the SC2 installation and a **new** output directory, then select **GENERATE TRIGGERS**.
+then select **GENERATE TRIGGERS**. The game installation and strict benchmark are
+detected automatically; a new output folder is suggested beside the map.
 The portable edition opens the same local TypeScript interface with `Open Recovery.cmd`.
 It runs in your browser on a loopback address; Java is not required. Use the **X** button to stop the local server. See the [GUI guide](gui/README.md).
 Original maps are read-only. Recovery runs once in the background and writes
@@ -46,7 +47,12 @@ maps; explicit mod-library conversion is available through [the component API](A
 The Windows application includes the original hash-verified strict benchmark and
 enables it by default. It detects StarCraft II automatically; normally you only
 select a map, choose **GENERATE TRIGGERS**, then **EXPORT FILE**. Settings provides
-manual overrides. The map chooser selects one `.SC2Map` file, never a game folder.
+manual overrides under **Advanced settings**. The in-app chooser selects one
+`.SC2Map` file, never a game folder, and supports Cancel and Escape. Generation is
+available only after a map opens successfully. Settings contains no generation action.
+**Recover attributes when available** defaults on; disabling it preserves existing
+Attributes without reconstructing missing definitions or their GUI. Strict
+verification is unchanged. The CLI equivalent is `--no-attribute-recovery`.
 
 For CLI use, pass `--benchmark <distribution>` or set
 `SC2_TRIGGER_BENCHMARK_ROOT`. That benchmark checks the whole regenerated program;

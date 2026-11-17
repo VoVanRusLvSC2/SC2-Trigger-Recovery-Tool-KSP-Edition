@@ -17,6 +17,7 @@ export interface RecoveryRequest {
   adapter: string;
   fields: Record<string, string>;
   fullGui: boolean;
+  recoverAttributes?: boolean;
 }
 export interface Artifact {
   id: string;
@@ -38,4 +39,14 @@ export interface JobSnapshot {
   artifacts: Artifact[];
   result?: unknown;
   request?: RecoveryRequest;
+}
+
+export type PickerKind = 'map' | 'folder' | 'json' | 'output';
+export interface FileListing {
+  directory: string;
+  parent: string;
+  home: string;
+  selected: string;
+  truncated: boolean;
+  entries: { name: string; path: string; directory: boolean }[];
 }

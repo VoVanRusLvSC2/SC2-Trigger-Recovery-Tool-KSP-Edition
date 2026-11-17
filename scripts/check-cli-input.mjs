@@ -58,6 +58,7 @@ for (const change of [
   { original: 'outputs/job/source.SC2Map' },
   { package: 'outputs' },
   { originalSha256: 'bad' },
+  { recoverAttributes: 'false' },
   { name: '../Original.SC2Map' },
   { name: '..' },
 ])

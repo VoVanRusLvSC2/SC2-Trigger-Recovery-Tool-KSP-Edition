@@ -6,7 +6,7 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { spawn } from 'node:child_process';
 
-const usage = `SC2 Trigger Recovery KSP 3.0.0-rc.4
+const usage = `SC2 Trigger Recovery KSP 3.0.0-rc.5
 Usage:
   trigger-recovery recover <map.SC2Map> (--sc2 <installation> | --resources <snapshot>) --out <new-directory>
   trigger-recovery prepare <map.SC2Map> (--sc2 <installation> | --resources <snapshot>) --out <new-directory>
@@ -16,7 +16,8 @@ Usage:
 
 Optional: --mpq <mpqcli.exe>, --benchmark <pinned-distribution>, --full-gui
 Use --download-resources <new-directory> on recover to download the snapshot first.
-For recover/prepare: --attribute-index <verified-header-index.json>
+For recover/prepare: --attribute-index <verified-header-index.json>, --no-attribute-recovery
+Attribute recovery is enabled by default; disabling it preserves existing Attributes bytes.
 The default preserves authored script and GUI structure. Originals stay unchanged.
 Outputs are candidates with explicit offline evidence, not Editor/gameplay acceptance.
 The public snapshot mode is experimental: it never reports PASS or Editor verification.
@@ -33,6 +34,7 @@ try {
       benchmark: { type: 'string' },
       'attribute-index': { type: 'string' },
       'full-gui': { type: 'boolean' },
+      'no-attribute-recovery': { type: 'boolean' },
       help: { type: 'boolean', short: 'h' },
     },
   });
@@ -110,10 +112,15 @@ try {
         mpq: values.mpq ?? path.join(import.meta.dirname, '.runtime/tools/mpqcli.exe'),
         guiRecoveryMode: values['full-gui'] ? 'full-gui' : 'preserve-source',
         attributeIndex: values['attribute-index'],
+        recoverAttributes: !values['no-attribute-recovery'],
       });
       jobFile = result.jobFile;
       console.log(JSON.stringify(result));
     }
+    if (command === 'run' && values['no-attribute-recovery'])
+      throw Error(
+        'Set recoverAttributes in the prepared job or use recover/prepare --no-attribute-recovery',
+      );
     if (command === 'run' && values['attribute-index'])
       throw Error(
         'Set attributeIndex in the prepared job or use recover/prepare --attribute-index',

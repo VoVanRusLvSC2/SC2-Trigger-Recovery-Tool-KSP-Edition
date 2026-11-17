@@ -26,6 +26,13 @@ assert.equal(argv[2], request.fields.input);
 assert(argv.includes('--attribute-index'));
 assert(argv.includes('--benchmark'));
 assert(!argv.includes('--full-gui'));
+assert(!argv.includes('--no-attribute-recovery'));
+assert(
+  selectAdapter({ ...request, recoverAttributes: false })
+    .command({ ...request, recoverAttributes: false }, root)
+    .includes('--no-attribute-recovery'),
+);
+assert.throws(() => selectAdapter({ ...request, recoverAttributes: 'no' }), /Invalid attribute/);
 assert.throws(() => selectAdapter({ ...request, adapter: 'invented' }), /Unsupported/);
 assert.throws(() => selectAdapter({ ...request, fields: {} }), /Choose/);
 
@@ -98,6 +105,30 @@ try {
   );
   assert.equal(await findInstallation([temporary]), '');
   await fs.writeFile(original, 'deliberately invalid archive');
+  const proof = path.join(temporary, 'attributes.json');
+  await fs.writeFile(proof, '{}');
+  const mapListing = await api('files', { kind: 'map', path: temporary });
+  assert.equal(mapListing.status, 200);
+  assert(mapListing.value.entries.some((e) => e.path === original && !e.directory));
+  assert(!mapListing.value.entries.some((e) => e.path === proof));
+  assert(mapListing.value.entries.some((e) => e.name === 'CustomSC2' && e.directory));
+  const pasted = await api('files', { kind: 'map', path: original });
+  assert.equal(pasted.value.selected, await fs.realpath(original));
+  assert.equal(pasted.value.directory, await fs.realpath(temporary));
+  const jsonListing = await api('files', { kind: 'json', path: temporary });
+  assert(jsonListing.value.entries.some((e) => e.path === proof));
+  assert(!jsonListing.value.entries.some((e) => e.path === original));
+  for (const kind of ['folder', 'output']) {
+    const folders = await api('files', { kind, path: temporary });
+    assert.equal(folders.status, 200);
+    assert(folders.value.entries.every((e) => e.directory));
+  }
+  assert.equal((await api('files', { kind: 'invented', path: temporary })).status, 400);
+  assert.equal((await api('files', { kind: 'map', path: 12 })).status, 400);
+  assert.equal((await api('files', { kind: 'map', path: temporary + '/missing' })).status, 400);
+  assert.equal((await api('files', { kind: 'map', path: temporary })).status, 200);
+  assert.equal((await api('files', { kind: 'map' })).status, 200);
+  assert.equal(await fs.readFile(proof, 'utf8'), '{}');
   assert.equal((await api('inspect', { adapter: 'sc2', path: original })).status, 400);
   assert.equal(await fs.readFile(original, 'utf8'), 'deliberately invalid archive');
   const fields = {

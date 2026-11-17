@@ -1,5 +1,5 @@
 /** Local desktop bridge. Only bundled CLI jobs and their own allowlisted artifacts
- * are exposed; the browser never receives filesystem or shell access. */
+ * are exposed. The authenticated picker lists paths without shell commands. */
 import http from 'node:http';
 import fs from 'node:fs/promises';
 import { createReadStream } from 'node:fs';
@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { adapters, selectAdapter } from './adapters.js';
 import type { JobSnapshot, RecoveryRequest, Artifact } from './contracts.js';
 import { discoverDefaults } from './defaults.js';
+import { listFiles } from './files.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const assets = path.join(root, 'gui');
@@ -18,7 +19,6 @@ const token = randomBytes(32).toString('hex');
 const limit = 2 * 1024 * 1024;
 let state: JobSnapshot = { phase: 'idle', log: '', artifacts: [] };
 let worker: ChildProcess | undefined;
-let browsing = false;
 let starting = false;
 let inspecting = false;
 let artifacts = new Map<string, string>();
@@ -143,45 +143,6 @@ async function cancelJob() {
   } else worker.kill('SIGTERM');
 }
 
-async function browse(kind: string) {
-  if (process.platform !== 'win32')
-    throw Error('Native browsing is available on Windows. Enter a path manually.');
-  if (browsing) throw Error('A file chooser is already open.');
-  if (!['map', 'folder', 'json', 'output'].includes(kind)) throw Error('Unsupported picker.');
-  browsing = true;
-  const filter = kind === 'map' ? 'StarCraft II maps|*.SC2Map' : 'JSON files|*.json';
-  const script = `Add-Type -AssemblyName System.Windows.Forms; [Console]::OutputEncoding = New-Object Text.UTF8Encoding($false); $d = New-Object Windows.Forms.${kind === 'folder' || kind === 'output' ? 'FolderBrowserDialog' : 'OpenFileDialog'}; ${kind === 'map' || kind === 'json' ? `$d.Filter = '${filter}'; $d.CheckFileExists = $true; $d.Multiselect = $false; $d.Title = '${kind === 'map' ? 'Select a StarCraft II map file' : 'Select a JSON file'}';` : ''} if ($d.ShowDialog() -eq 'OK') { [Console]::Write($d.${kind === 'folder' || kind === 'output' ? 'SelectedPath' : 'FileName'}) }; $d.Dispose()`;
-  try {
-    const selected = await new Promise<string>((resolve, reject) => {
-      const child = spawn(
-        'powershell.exe',
-        [
-          '-NoProfile',
-          '-STA',
-          '-EncodedCommand',
-          Buffer.from(script, 'utf16le').toString('base64'),
-        ],
-        { windowsHide: true },
-      );
-      let value = '',
-        error = '';
-      child.stdout.setEncoding('utf8').on('data', (s) => {
-        value += s;
-      });
-      child.stderr.on('data', (s) => {
-        error += s;
-      });
-      child.once('error', reject);
-      child.once('close', (code) => (code === 0 ? resolve(value) : reject(Error(error))));
-    });
-    return kind === 'output' && selected
-      ? path.join(selected, 'Recovered-' + Date.now())
-      : selected;
-  } finally {
-    browsing = false;
-  }
-}
-
 async function body(req: http.IncomingMessage) {
   let bytes = 0,
     chunks = '';
@@ -272,10 +233,12 @@ const server = http.createServer(async (req, res) => {
         await cancelJob();
         return json(res, state);
       }
-      if (req.method === 'POST' && url.pathname === '/api/browse')
-        return json(res, { path: await browse((await body(req)).kind) });
+      if (req.method === 'POST' && url.pathname === '/api/files') {
+        const input = await body(req);
+        return json(res, await listFiles(input.kind, input.path));
+      }
       if (req.method === 'POST' && url.pathname === '/api/shutdown') {
-        if (starting || worker || browsing || inspecting)
+        if (starting || worker || inspecting)
           throw Error('Finish or cancel the active operation first.');
         json(res, { closed: true });
         server.close();

@@ -78,7 +78,7 @@ const sc2: BackendAdapter = {
       },
     ],
   },
-  command({ fields, fullGui }, root) {
+  command({ fields, fullGui, recoverAttributes }, root) {
     if (!/\.sc2map$/i.test(fields.input ?? '')) throw Error('Select a packed .SC2Map file.');
     const args = [
       path.join(root, 'trigger-recovery.mjs'),
@@ -92,6 +92,7 @@ const sc2: BackendAdapter = {
     if (fields.benchmark?.trim()) args.push('--benchmark', fields.benchmark);
     if (fields.attributeIndex?.trim()) args.push('--attribute-index', fields.attributeIndex);
     if (fullGui) args.push('--full-gui');
+    if (recoverAttributes === false) args.push('--no-attribute-recovery');
     return args;
   },
 };
@@ -101,6 +102,8 @@ export function selectAdapter(request: RecoveryRequest): BackendAdapter {
   if (!adapter) throw Error('Unsupported recovery adapter.');
   if (!request.fields || typeof request.fields !== 'object' || typeof request.fullGui !== 'boolean')
     throw Error('Invalid recovery request.');
+  if (request.recoverAttributes !== undefined && typeof request.recoverAttributes !== 'boolean')
+    throw Error('Invalid attribute recovery option.');
   for (const field of adapter.info.fields) {
     const value = request.fields[field.key];
     if ((value !== undefined && typeof value !== 'string') || (field.required && !value?.trim()))

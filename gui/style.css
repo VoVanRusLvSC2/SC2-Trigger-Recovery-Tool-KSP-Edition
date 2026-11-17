@@ -41,10 +41,9 @@ button {
   padding: 0 14px;
   border: 1px solid #438361;
   border-radius: 0;
-  background: linear-gradient(90deg, #133b2c, #061b14 24%, #05150e 76%, #133b2c);
+  background: #123b2b;
   box-shadow:
-    inset 0 0 0 3px #020b07,
-    inset 0 0 12px #24664766,
+    inset 0 0 10px #24664733,
     0 0 7px #44fbae22;
   color: #b8f3d4;
   font-size: 12px;
@@ -57,10 +56,10 @@ button:hover,
 button[aria-pressed='true'] {
   border-color: var(--orange);
   color: #ffe8c3;
-  background: linear-gradient(90deg, #643204, #24180a 24%, #132119 76%, #643204);
+  background: #20523b;
   box-shadow:
-    inset 0 0 0 3px #160d04,
-    0 0 12px #ff8e3744;
+    inset 0 0 10px #4bcb7f22,
+    0 0 7px #ff8e3733;
 }
 button:active {
   transform: translateY(1px);
@@ -569,4 +568,57 @@ summary {
   .file-label {
     font-size: 11px;
   }
+}
+
+#fileDialog {
+  width: min(760px, 94vw);
+}
+.file-navigation,
+.file-actions {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0;
+}
+.file-actions {
+  justify-content: flex-end;
+}
+#fileEntries {
+  height: min(42dvh, 360px);
+  min-height: 120px;
+  overflow: auto;
+  border: 1px solid #32694b;
+}
+.file-entry {
+  display: block;
+  width: 100%;
+  text-align: left;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 0;
+  border-bottom: 1px solid #183529;
+  box-shadow: none;
+  text-transform: none;
+  overflow-wrap: anywhere;
+}
+.file-entry[aria-pressed='true'] {
+  background: #204d37;
+  color: #fff;
+  outline: 1px solid #65ffb5;
+  outline-offset: -2px;
+}
+#fileStatus,
+#fileSelection {
+  overflow-wrap: anywhere;
+  min-height: 1.4em;
+}
+#fields > details {
+  margin: 18px 0;
+}
+
+/* Hover, keyboard focus and selection share one inset frame; row sizes stay fixed. */
+.file-entry:hover,
+.file-entry:focus-visible {
+  outline: 1px solid var(--orange);
+  outline-offset: -2px;
+  box-shadow: none;
 }

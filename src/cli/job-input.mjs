@@ -26,6 +26,10 @@ const within = (root, target) => {
 };
 export function validateConversionJob(input, jobFile) {
   assert(input && typeof input === 'object' && !Array.isArray(input), 'Job must be an object');
+  assert(
+    input.recoverAttributes === undefined || typeof input.recoverAttributes === 'boolean',
+    'Invalid recoverAttributes',
+  );
   const row = { ...input },
     base = path.dirname(path.resolve(jobFile));
   for (const field of ['id', 'name'])

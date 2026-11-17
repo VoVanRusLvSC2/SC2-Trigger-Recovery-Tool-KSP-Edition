@@ -39,7 +39,9 @@ export async function prepareMap({
   mpq,
   guiRecoveryMode = 'preserve-source',
   attributeIndex,
+  recoverAttributes = true,
 }) {
+  assert.equal(typeof recoverAttributes, 'boolean', 'Invalid attribute recovery option');
   original = await fs.realpath(original);
   assert(!(installation && resourceSnapshot), 'Choose either --sc2 or --resources');
   const publicResources = resourceSnapshot !== undefined;
@@ -297,6 +299,7 @@ export async function prepareMap({
       job: path.join(output, 'candidates', 'recovered'),
       mpq: path.resolve(mpq),
       guiRecoveryMode,
+      recoverAttributes,
       ...(attributeIndex === undefined ? {} : { attributeIndex }),
     };
     const jobFile = path.join(output, 'job.json');
