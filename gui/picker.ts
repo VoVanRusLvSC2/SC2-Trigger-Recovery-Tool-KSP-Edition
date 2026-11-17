@@ -9,6 +9,12 @@ export function createFilePicker(api: Api) {
   const dialog = el<HTMLDialogElement>('fileDialog');
   const name = el<HTMLInputElement>('fileName');
   const search = el<HTMLInputElement>('fileSearch');
+  const pathField = el<HTMLInputElement>('filePath');
+  let pathEdits = 0;
+  let nameEdits = 0;
+  pathField.oninput = () => {
+    pathEdits++;
+  };
   let current:
     | {
         kind: PickerKind;
@@ -94,6 +100,9 @@ export function createFilePicker(api: Api) {
     const owner = current;
     if (!owner) return;
     const request = ++revision;
+    const pathVersion = pathEdits;
+    const nameVersion = nameEdits;
+    pathField.value = requested;
     owner.directory = '';
     owner.parent = '';
     owner.entries = [];
@@ -112,9 +121,14 @@ export function createFilePicker(api: Api) {
         entries: listing.entries,
         truncated: listing.truncated,
       });
-      owner.selected = listing.entries.find((entry) => entry.path === listing.selected);
-      name.value = owner.selected?.name || '';
-      el<HTMLInputElement>('filePath').value = listing.directory;
+      // Async navigation must not overwrite a path or filename typed meanwhile.
+      owner.selected = listing.entries.find((entry) =>
+        nameEdits !== nameVersion
+          ? !entry.directory && entry.name.toLocaleLowerCase() === name.value.toLocaleLowerCase()
+          : entry.path === listing.selected,
+      );
+      if (nameEdits === nameVersion) name.value = owner.selected?.name || '';
+      if (pathEdits === pathVersion) pathField.value = listing.directory;
       el<HTMLButtonElement>('fileUp').disabled = listing.parent === listing.directory;
       for (const button of el('filePlaces').querySelectorAll<HTMLButtonElement>('button'))
         button.setAttribute('aria-pressed', String(button.dataset.path === listing.directory));
@@ -189,6 +203,7 @@ export function createFilePicker(api: Api) {
   };
   el('fileAccept').onclick = accept;
   name.oninput = () => {
+    nameEdits++;
     if (!current) return;
     current.selected = current.entries.find(
       (entry) =>
