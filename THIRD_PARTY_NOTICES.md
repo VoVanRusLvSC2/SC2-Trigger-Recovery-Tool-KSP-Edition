@@ -21,3 +21,10 @@ Windows builds bundle Node.js 24.14.1 and its complete LICENSE, plus
 [mpqcli 0.10.0](https://github.com/thegraydot/mpqcli) with its MIT, StormLib and
 CLI11 notices in [licenses/mpqcli](licenses/mpqcli). Inno Setup is a build tool
 downloaded from its publisher, not included in the application runtime.
+
+## Localization Editor SC2 KSP UI
+
+The Open File layout and visual conventions are adapted from Localization Editor
+SC2 KSP (2026, vlencmanissc-dotcom), distributed under the MIT License. The
+TypeScript implementation does not ship Java code or proprietary game textures.
+See [the retained license](licenses/LOCALIZATION_EDITOR_UI_LICENSE.txt).

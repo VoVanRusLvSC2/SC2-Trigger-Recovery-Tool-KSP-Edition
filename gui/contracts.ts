@@ -50,3 +50,8 @@ export interface FileListing {
   truncated: boolean;
   entries: { name: string; path: string; directory: boolean }[];
 }
+
+export interface FilePlace {
+  name: string;
+  path: string;
+}

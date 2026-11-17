@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { adapters, selectAdapter } from './adapters.js';
 import type { JobSnapshot, RecoveryRequest, Artifact } from './contracts.js';
 import { discoverDefaults } from './defaults.js';
-import { listFiles } from './files.js';
+import { listFiles, filePlaces } from './files.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const assets = path.join(root, 'gui');
@@ -177,6 +177,8 @@ const server = http.createServer(async (req, res) => {
       if (req.headers['x-recovery-token'] !== token)
         return json(res, { error: 'Session token required.' }, 403);
       if (req.method === 'GET' && url.pathname === '/api/state') return json(res, state);
+      if (req.method === 'GET' && url.pathname === '/api/places')
+        return json(res, await filePlaces());
       if (req.method === 'GET' && url.pathname === '/api/defaults') return json(res, defaults);
       if (req.method === 'GET' && url.pathname === '/api/adapters')
         return json(
@@ -255,6 +257,7 @@ const server = http.createServer(async (req, res) => {
     const files: Record<string, [string, string]> = {
       '/': ['index.html', 'text/html; charset=utf-8'],
       '/app.js': ['dist/app.js', 'text/javascript'],
+      '/picker.js': ['dist/picker.js', 'text/javascript'],
       '/style.css': ['style.css', 'text/css'],
     };
     const asset = files[url.pathname];

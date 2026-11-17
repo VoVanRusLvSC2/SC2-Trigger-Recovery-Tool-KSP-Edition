@@ -99,3 +99,17 @@ existing Attributes and skips their reconstruction/GUI enrichment; it does not
 suppress strict attribute checks or turn missing evidence into PASS. The CLI
 counterpart is `--no-attribute-recovery` for `recover` and `prepare`. Prepared jobs
 store `recoverAttributes: false` explicitly when this is selected.
+
+## Shared KSP Open File layout
+
+The picker follows the Localization Editor SC2 KSP's `InAppSwingFileChooserDialog`
+and `FileOpenDialogStyle`: quick locations and local disks on the left, a
+searchable Name/Type file list on the right, a path bar, file-name entry, filter
+and explicit Open/Cancel actions. It is implemented in TypeScript in `picker.ts`;
+no Java, Swing bridge or game textures are shipped. The original UI project's
+MIT attribution is retained in `licenses/LOCALIZATION_EDITOR_UI_LICENSE.txt`.
+
+Single-click selects a row; double-click or Enter opens a directory or file.
+The map picker accepts only one packed `.SC2Map`. Search filters the current
+folder. Folder and JSON settings use the same component. Both editor headings
+always display line counts; character counts are available as tooltips.

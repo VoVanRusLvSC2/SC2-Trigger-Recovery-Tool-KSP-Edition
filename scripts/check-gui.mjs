@@ -77,6 +77,7 @@ try {
   );
   assert.equal((await fetch(url + '/../../package.json')).status, 404);
   assert.equal((await fetch(url + '/app.js')).status, 200);
+  assert.equal((await fetch(url + '/picker.js')).status, 200);
   async function api(route, data) {
     const response = await fetch(url + '/api/' + route, {
       method: data === undefined ? 'GET' : 'POST',
@@ -86,6 +87,12 @@ try {
     return { status: response.status, value: await response.json() };
   }
   assert.equal((await api('adapters')).value[0].id, 'sc2');
+  const locations = await api('places');
+  assert.equal(locations.status, 200);
+  assert(locations.value.some((place) => place.name === 'Home' && path.isAbsolute(place.path)));
+  assert(
+    locations.value.every((place) => typeof place.name === 'string' && path.isAbsolute(place.path)),
+  );
   const automatic = await api('defaults');
   assert.equal(automatic.status, 200);
   assert.equal(typeof automatic.value.installationStatus, 'string');

@@ -259,6 +259,7 @@ progress::-webkit-progress-value {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
   margin-bottom: 8px;
 }
 .panel-header h2 {
@@ -535,9 +536,6 @@ summary {
   .trigger-topbar-actions button {
     font-size: 10px;
   }
-  .metric {
-    display: none;
-  }
   .trigger-frame {
     padding: 8px;
     gap: 8px;
@@ -570,56 +568,175 @@ summary {
   }
 }
 
+/* Open File follows the Localization Editor KSP layout, without Java or game textures. */
 #fileDialog {
-  width: min(760px, 94vw);
+  width: min(1040px, 95vw);
+  border-radius: 6px;
+  background: linear-gradient(#05100d, #071612);
 }
-.file-navigation,
-.file-actions {
+#fileDialog .dialog-heading h2 {
+  font:
+    600 22px 'Segoe UI',
+    sans-serif;
+}
+.file-path-bar {
   display: flex;
-  gap: 10px;
-  margin: 12px 0;
+  align-items: flex-end;
+  gap: 8px;
+  margin: 14px 0;
 }
-.file-actions {
-  justify-content: flex-end;
+.file-path-label {
+  flex: 1;
+  min-width: 0;
 }
-#fileEntries {
-  height: min(42dvh, 360px);
-  min-height: 120px;
+.file-search-label {
+  width: 220px;
+}
+.file-path-bar input {
+  width: 100%;
+}
+.file-browser {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 8px;
+  height: min(46dvh, 420px);
+  min-height: 180px;
+}
+#filePlaces,
+.file-table {
+  min-width: 0;
   overflow: auto;
-  border: 1px solid #32694b;
+  border: 1px solid #336b57;
+  border-radius: 4px;
+  background: #06120f;
 }
-.file-entry {
+#filePlaces {
+  padding: 5px;
+}
+#filePlaces button {
   display: block;
   width: 100%;
+  min-height: 34px;
   text-align: left;
-  min-height: 36px;
-  padding: 8px 12px;
-  border: 0;
-  border-bottom: 1px solid #183529;
+  padding: 4px 10px;
+  margin-bottom: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   box-shadow: none;
+}
+.file-table {
+  display: flex;
+  flex-direction: column;
+}
+.file-columns,
+.file-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 130px;
+  gap: 12px;
+  align-items: center;
+}
+.file-columns {
+  flex-shrink: 0;
+  background: #081a14;
+  color: #8be8c8;
+  font-weight: 600;
+  padding: 9px 12px;
+  border-bottom: 1px solid #244c3e;
+}
+#fileEntries {
+  flex: 1;
+  overflow: auto;
+}
+.file-entry {
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
+  text-align: left;
   text-transform: none;
-  overflow-wrap: anywhere;
+  background: #06120f;
+  font-weight: 400;
+}
+.file-entry-name,
+.file-entry-type {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.file-entry-type {
+  color: #77cdb2;
+  font-size: 11px;
 }
 .file-entry[aria-pressed='true'] {
-  background: #204d37;
-  color: #fff;
-  outline: 1px solid #65ffb5;
+  background: #2e1c0c;
+  color: #ffe9c8;
+  outline: 1px solid #d68d42;
   outline-offset: -2px;
+}
+.file-entry:hover,
+.file-entry:focus-visible {
+  background: #0e261e;
+  color: #f6fff9;
+  outline: 1px solid #50ffd0;
+  outline-offset: -2px;
+  box-shadow: none;
+}
+.file-entry[aria-pressed='true']:hover {
+  background: #2e1c0c;
+  outline-color: #d68d42;
+}
+.file-name-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 12px;
+}
+.file-name-row[hidden] {
+  display: none;
+}
+.file-name-row input {
+  flex: 1;
+  min-width: 0;
+}
+.file-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+.file-actions select {
+  width: auto;
+  flex: 1;
+  min-width: 0;
 }
 #fileStatus,
 #fileSelection {
+  font-size: 12px;
+  color: #77cdb2;
   overflow-wrap: anywhere;
   min-height: 1.4em;
+  margin: 8px 0;
 }
 #fields > details {
   margin: 18px 0;
 }
-
-/* Hover, keyboard focus and selection share one inset frame; row sizes stay fixed. */
-.file-entry:hover,
-.file-entry:focus-visible {
-  background: linear-gradient(90deg, #643204, #24180a 24%, #132119 76%, #643204);
-  outline: 1px solid var(--orange);
-  outline-offset: -2px;
-  box-shadow: none;
+.metric {
+  flex-shrink: 0;
+}
+@media (max-width: 850px) {
+  .file-browser {
+    grid-template-columns: 140px minmax(0, 1fr);
+  }
+  .file-search-label {
+    width: 150px;
+  }
+  .file-columns,
+  .file-entry {
+    grid-template-columns: minmax(0, 1fr) 95px;
+  }
+  .panel-header .metric {
+    font-size: 11px;
+  }
 }

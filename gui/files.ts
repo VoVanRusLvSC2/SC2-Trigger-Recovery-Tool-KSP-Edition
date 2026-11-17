@@ -2,7 +2,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import type { FileListing, PickerKind } from './contracts.js';
+import type { FileListing, PickerKind, FilePlace } from './contracts.js';
 
 export async function listFiles(kind: PickerKind, requested?: string): Promise<FileListing> {
   if (!['map', 'json', 'folder', 'output'].includes(kind)) throw Error('Unsupported picker.');
@@ -48,4 +48,29 @@ export async function listFiles(kind: PickerKind, requested?: string): Promise<F
     selected:
       selected && extension && path.extname(selected).toLowerCase() === extension ? selected : '',
   };
+}
+
+/** The same places offered by the Localization Editor: Home, user folders, disks. */
+export async function filePlaces(): Promise<FilePlace[]> {
+  const home = os.homedir();
+  const candidates = [
+    { name: 'Home', path: home },
+    ...['Desktop', 'Documents', 'Downloads'].map((name) => ({ name, path: path.join(home, name) })),
+    ...(process.platform === 'win32'
+      ? Array.from({ length: 26 }, (_, index) => {
+          const drive = String.fromCharCode(65 + index) + ':\\';
+          return { name: drive, path: drive };
+        })
+      : [{ name: 'File system', path: '/' }]),
+  ];
+  const checked = await Promise.all(
+    candidates.map(async (place) => {
+      try {
+        return (await fs.stat(place.path)).isDirectory() ? place : undefined;
+      } catch {
+        return undefined;
+      }
+    }),
+  );
+  return checked.filter((place): place is FilePlace => place !== undefined);
 }

@@ -55,7 +55,7 @@
         <section class="editor-panel">
           <div class="panel-header">
             <h2>Trigger Markup</h2>
-            <span id="markupMetric" class="metric">No markup loaded</span
+            <span id="markupMetric" class="metric" aria-live="polite">0 lines</span
             ><button id="searchMarkup">SEARCH</button>
           </div>
           <textarea
@@ -70,7 +70,7 @@
         <section class="editor-panel">
           <div class="panel-header">
             <h2>Galaxy Source</h2>
-            <span id="sourceMetric" class="metric">No source loaded</span
+            <span id="sourceMetric" class="metric" aria-live="polite">0 lines</span
             ><button id="searchSource">SEARCH</button>
           </div>
           <textarea
@@ -97,26 +97,38 @@
       <p id="fileHelp">
         Choose one .SC2Map file. Double-click to open, or select it and press OPEN FILE.
       </p>
-      <form id="fileNavigation">
-        <label for="filePath">Folder or full file path</label>
-        <div class="path">
-          <input id="filePath" autocomplete="off" spellcheck="false" /><button
-            type="submit"
-            id="fileGo"
-          >
-            GO
-          </button>
-        </div>
+      <form id="fileNavigation" class="file-path-bar">
+        <button type="button" id="fileUp" title="Parent folder">UP</button>
+        <label class="file-path-label"
+          >Folder or full file path<input id="filePath" autocomplete="off" spellcheck="false"
+        /></label>
+        <button type="submit" id="fileGo">GO</button>
+        <label class="file-search-label"
+          >Search in folder<input
+            id="fileSearch"
+            type="search"
+            autocomplete="off"
+            placeholder="Search in folder"
+        /></label>
       </form>
-      <nav class="file-navigation" aria-label="Folder navigation">
-        <button id="fileUp">UP</button><button id="fileHome">HOME</button>
-      </nav>
+      <div class="file-browser">
+        <nav id="filePlaces" aria-label="Quick locations"></nav>
+        <section class="file-table" aria-label="Folder contents">
+          <div class="file-columns" aria-hidden="true"><span>Name</span><span>Type</span></div>
+          <div id="fileEntries" role="group" aria-label="Files and folders"></div>
+        </section>
+      </div>
       <p id="fileStatus" role="status"></p>
-      <div id="fileEntries" role="group" aria-label="Files and folders"></div>
+      <div class="file-name-row" id="fileNameRow">
+        <label for="fileName">File name</label
+        ><input id="fileName" autocomplete="off" spellcheck="false" />
+      </div>
       <p id="fileSelection"></p>
       <div class="file-actions">
-        <button id="fileCancel">CANCEL</button
-        ><button id="fileAccept" class="primary" disabled>OPEN FILE</button>
+        <label for="fileFilter">Filter</label
+        ><select id="fileFilter"></select>
+        <button id="fileAccept" class="primary" disabled>OPEN FILE</button
+        ><button id="fileCancel">CANCEL</button>
       </div>
     </dialog>
     <dialog id="settingsDialog">

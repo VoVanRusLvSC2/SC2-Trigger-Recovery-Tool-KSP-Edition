@@ -7,7 +7,7 @@
 [Setup]
 AppId={{12A42223-5F31-482C-BD20-DC03C98795D7}
 AppName=SC2 Trigger Recovery KSP
-AppVersion=3.0.0-rc.5
+AppVersion=3.0.0-rc.6
 AppPublisher=Trigger Revizer KSP contributors
 AppPublisherURL=https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition
 DefaultDirName={localappdata}\Programs\SC2 Trigger Recovery KSP
@@ -17,7 +17,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 OutputDir={#ReleaseDir}
-OutputBaseFilename=SC2-Trigger-Recovery-KSP-3.0.0-rc.5-Setup
+OutputBaseFilename=SC2-Trigger-Recovery-KSP-3.0.0-rc.6-Setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern

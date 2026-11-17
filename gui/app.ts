@@ -1,11 +1,5 @@
-import type {
-  RecoveryAdapter,
-  JobSnapshot,
-  Artifact,
-  DocumentPreview,
-  FileListing,
-  PickerKind,
-} from './contracts.js';
+import { createFilePicker } from './picker.js';
+import type { RecoveryAdapter, JobSnapshot, Artifact, DocumentPreview } from './contracts.js';
 
 const element = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const token = document.querySelector<HTMLMetaElement>('meta[name="session-token"]')!.content;
@@ -43,134 +37,13 @@ function show(id: string) {
   const dialog = element<HTMLDialogElement>(id);
   if (!dialog.open) dialog.showModal();
 }
-// One modal owns each selection. Closing it invalidates pending directory reads.
-const fileDialog = element<HTMLDialogElement>('fileDialog');
-let picker:
-  | {
-      kind: PickerKind;
-      directory: string;
-      parent: string;
-      home: string;
-      selected: string;
-      resolve: (value: string) => void;
-    }
-  | undefined;
-let navigation = 0;
-function finishPicker(value = '') {
-  const current = picker;
-  picker = undefined;
-  navigation++;
-  fileDialog.close();
-  current?.resolve(value);
-}
-async function navigateFiles(requested = '') {
-  const current = picker;
-  if (!current) return;
-  const revision = ++navigation;
-  element('fileStatus').textContent = 'Reading folder…';
-  element<HTMLButtonElement>('fileAccept').disabled = true;
-  element('fileEntries').replaceChildren();
-  current.selected = '';
-  element('fileSelection').textContent = '';
-  try {
-    const listing = await api<FileListing>('files', { kind: current.kind, path: requested });
-    if (picker !== current || revision !== navigation) return;
-    Object.assign(current, {
-      directory: listing.directory,
-      parent: listing.parent,
-      home: listing.home,
-      selected: listing.selected,
-    });
-    element<HTMLInputElement>('filePath').value = listing.directory;
-    element<HTMLButtonElement>('fileUp').disabled = listing.parent === listing.directory;
-    for (const entry of listing.entries) {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.textContent = (entry.directory ? '[Folder] ' : '') + entry.name;
-      button.title = entry.path;
-      button.className = 'file-entry';
-      button.setAttribute('aria-pressed', String(entry.path === current.selected));
-      button.onclick = () => {
-        if (entry.directory) {
-          void navigateFiles(entry.path);
-          return;
-        }
-        current.selected = entry.path;
-        for (const other of element('fileEntries').querySelectorAll('button'))
-          other.setAttribute('aria-pressed', String(other === button));
-        updatePicker();
-      };
-      if (!entry.directory) button.ondblclick = () => finishPicker(entry.path);
-      element('fileEntries').append(button);
-    }
-    element('fileStatus').textContent = listing.truncated
-      ? 'Showing the first 5,000 entries. Paste a full path to select another file.'
-      : listing.entries.length
-        ? `${listing.entries.length} entries`
-        : 'No matching files or folders.';
-    updatePicker();
-  } catch (error) {
-    if (picker !== current || revision !== navigation) return;
-    current.directory = '';
-    element('fileStatus').textContent = String(error);
-  }
-}
-function updatePicker() {
-  if (!picker) return;
-  const folder = ['folder', 'output'].includes(picker.kind);
-  element('fileSelection').textContent =
-    picker.selected || (folder ? picker.directory : 'No file selected');
-  element<HTMLButtonElement>('fileAccept').disabled = !(folder
-    ? picker.directory
-    : picker.selected);
-}
-function choosePath(kind: PickerKind, initial = ''): Promise<string> {
-  if (picker) return Promise.reject(Error('A file picker is already open.'));
-  const folder = kind === 'folder' || kind === 'output';
-  element('fileTitle').textContent = folder
-    ? 'SELECT A FOLDER'
-    : kind === 'map'
-      ? 'SELECT A MAP FILE'
-      : 'SELECT A JSON FILE';
-  element('fileHelp').textContent =
-    kind === 'output'
-      ? 'Choose a parent folder. Recovery creates a new folder inside it.'
-      : folder
-        ? 'Open the folder you need, then press USE THIS FOLDER.'
-        : `Choose one ${kind === 'map' ? '.SC2Map' : '.json'} file. Double-click to open, or select it and press OPEN FILE.`;
-  element('fileAccept').textContent = folder ? 'USE THIS FOLDER' : 'OPEN FILE';
-  return new Promise((resolve) => {
-    picker = { kind, directory: '', parent: '', home: '', selected: '', resolve };
-    element<HTMLInputElement>('filePath').value = initial;
-    show('fileDialog');
-    void navigateFiles(initial);
-  });
-}
-element<HTMLFormElement>('fileNavigation').onsubmit = (event) => {
-  event.preventDefault();
-  void navigateFiles(element<HTMLInputElement>('filePath').value);
-};
-element('fileUp').onclick = () => {
-  if (picker?.parent) void navigateFiles(picker.parent);
-};
-element('fileHome').onclick = () => {
-  void navigateFiles(picker?.home || '');
-};
-element('fileAccept').onclick = () => {
-  if (picker)
-    finishPicker(['folder', 'output'].includes(picker.kind) ? picker.directory : picker.selected);
-};
-for (const id of ['fileCancel', 'fileCancelX']) element(id).onclick = () => finishPicker();
-fileDialog.oncancel = (event) => {
-  event.preventDefault();
-  finishPicker();
-};
+const { choosePath, cancel: finishPicker } = createFilePicker(api);
 
 function metrics(target: 'markup' | 'source', text: string) {
   element<HTMLTextAreaElement>(target).value = text;
-  element(target + 'Metric').textContent = text
-    ? `${text.split('\n').length.toLocaleString()} lines · ${text.length.toLocaleString()} chars`
-    : 'No ' + target + ' loaded';
+  const lines = text ? text.split(/\r\n|\r|\n/).length - (/(?:\r\n|\r|\n)$/.test(text) ? 1 : 0) : 0;
+  element(target + 'Metric').textContent = `${lines.toLocaleString()} lines`;
+  element(target + 'Metric').title = `${text.length.toLocaleString()} characters`;
   if (target === 'markup') {
     // Textarea.value normalizes CRLF. Retain source text for exact XML export.
     originalMarkupText = text;
