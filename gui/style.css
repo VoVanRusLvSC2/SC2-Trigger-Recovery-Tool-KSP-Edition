@@ -41,12 +41,17 @@ textarea {
 button {
   min-height: 44px;
   padding: 0 14px;
-  border: 1px solid #438361;
+  border: 1px solid #60ae83;
   border-radius: 0;
-  background: #123b2b;
+  background:
+    linear-gradient(180deg, #83ffc41a, transparent 45%, #0005),
+    linear-gradient(90deg, #245b40, #123626 24%, #123626 76%, #245b40);
   box-shadow:
-    inset 0 0 10px #24664733,
-    0 0 7px #44fbae22;
+    inset 0 0 0 2px #06170fa6,
+    inset 0 2px 0 #9bffd04d,
+    inset 0 -2px 0 #020d09cc,
+    inset 0 0 18px #59ffab1f,
+    0 0 9px #44fbae29;
   color: #b8f3d4;
   font-size: 12px;
   font-weight: 700;
