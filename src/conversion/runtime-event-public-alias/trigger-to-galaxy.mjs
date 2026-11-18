@@ -748,7 +748,7 @@ function buildStructureDeclaration(structure, library, nativeLibrary, allLibrari
 
     .map((ref) => resolveRefFull(ref, library, nativeLibrary, allLibraries))
 
-    .filter((member) => member?.type === 'Variable')
+    .filter((member) => member?.type === 'Variable' && !member.disabled)
 
     .map((member) => {
       const baseType = mapParameterTypeToGalaxy(
@@ -1033,7 +1033,10 @@ function structureVariableInitializations(
     for (const memberRef of structure.variables ?? []) {
       const member = resolveRefFull(memberRef, ctx.library, ctx.nativeLibrary, ctx.allLibraries);
 
-      if (!member || member.disabled || member.isConstant) continue;
+      // Structure fields are instance storage in Galaxy, including GUI Constant
+      // fields. Their explicit defaults still run for each instance; only a
+      // standalone compile-time constant can omit runtime initialization.
+      if (!member || member.disabled) continue;
 
       const memberName = memberVarName(member, ctx.library.id);
 

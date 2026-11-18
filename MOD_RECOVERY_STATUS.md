@@ -1,4 +1,4 @@
-# Experimental mod archive worker: acceptance failed
+# Mod archive recovery: diagnosis and qualification
 
 This local branch is not a published release. The local RC12 patch enables recovery
 attempts for every opened map or mod and dispatches mod libraries to the worker.
@@ -25,30 +25,54 @@ The prototype prepares actual installed SC2 dependencies and the mod's 49 compon
 resolves 337 include edges, and sends library `17E432E7` to the existing conversion API.
 It never invents a MapScript or InitMap wrapper. The source package remains unchanged.
 
-Acceptance fails at incremental declaration validation. The internal baseline has
-8 nonfunction statements; the source body has 14. Six auxiliary globals for generated
-YouTube helper triggers are missing from that internal baseline. Actual source include
-paths must be supplied, but doing so does not resolve this remaining ownership issue.
-Reusing the preserved-Custom-Script predicate did not qualify these globals; that
-experimental core change was reverted. The strict guard was not removed.
+## Diagnosed causes and general fixes
 
-An independent direct GUI-to-Galaxy baseline contains all 81 functions and signatures,
-but the unchanged strict benchmark rejects it. It reports 12 differing function bodies,
-one differing structure layout, and five missing `DialogControlHookupStandard` calls.
-Some structural differences may be code-generation choices; the lost calls cannot
-be dismissed without proof. No recovered mod or equivalence PASS was produced.
+The first failure was a locale selection bug in the new mod archive worker,
+not missing thread support. It chose the first archive table (`deDE` here).
+That table lacks two FunctionDef names; `enUS` contains them. The forward emitter
+then skipped the unnamed definitions and their six generated thread globals.
+A minimal named-through-TriggerStrings thread fixture reproduces the failure with
+the sparse locale and completes unchanged with the authoritative compiler locale.
+The shared map/mod locale selector now follows the existing map compiler policy:
+prefer the standard `enUS` table when present. Other translations remain separate.
+The same selected locale is used when merging strings and rereading the packed mod.
 
-## Remaining work before qualifying full mod recovery
+After that fix, the real mod passed declaration validation and stopped at
+`lib17E432E7_InitVariables`. Five structure fields marked GUI Constant had explicit
+`DialogControlHookupStandard` defaults. The emitter incorrectly skipped all Constant
+structure members. Galaxy structure fields are per-instance storage; their GUI
+read-only marker does not cancel runtime initialization. The generic member walk
+now processes those defaults without changing standalone constant handling.
+A separate fixture verifies a Constant playergroup member initialized with the
+existing native `PlayerGroupEmpty`, unchanged XML, and strict round-trip comparison.
 
-1. Carry authoritative ownership for template-generated auxiliary storage through
-   the forward emission and incremental comparison stages. Do not filter by helper
-   names or permit missing declarations on the basis of a checkpoint alone.
-2. Preserve source-qualified initializers, member identities and compiler-local
-   bindings. Confirm that every missing call survives regeneration from packed GUI.
-3. Complete real-mod recovery and a deliberately incomplete-GUI fixture through the
-   UI, download the resulting mod, reopen it and run the unchanged benchmark.
-4. Qualify mod-specific missing-attribute reconstruction; the prototype currently
-   preserves existing attribute/runtime components and marks queries as REVIEW.
+The next observed difference was the empty standard Or condition. The source
+Galaxy emitted from this GUI contains `(true)`; the converter's template expander
+substituted mathematical empty-disjunction identity `false`. Empty boolean role
+expansion now uses the existing Editor boolean default, including OR. This changes
+the generator, not the benchmark. No raw identity definition or Native was added.
+
+The last mismatch after those fixes was a disabled structure member: the GUI
+contains a `Disabled` field that is absent from the original Galaxy header.
+Initialization already skipped it, but structure declaration emission included it.
+The header now filters disabled members using the same rule; XML is retained.
+The runtime-default regression also retains an unused disabled GUI member and
+checks that neither its declaration nor its initializer leaks into Galaxy.
+
+The real package now completes with `PASS_OFFLINE_EDITOR_PENDING`. The unchanged
+strict oracle compares the original Galaxy with Galaxy regenerated from packed GUI:
+all 81 function bodies/signatures, all 47 declarations, 7 includes, 5 global
+initializers, calls and trigger registrations match. Incremental mode is UNCHANGED;
+the existing GUI was not rebuilt. No new Native or Custom Script was introduced.
+Original component/runtime hashes remain unchanged. No Editor or gameplay validation
+was performed; this is an offline proof for this package, not acceptance of all mods.
+The detailed local evidence is in `output/MOD_ERROR_ANALYSIS.txt`.
+
+## Qualification still required
+
+- Compile/export this candidate in the actual Editor before claiming Editor acceptance.
+- Qualify mod-specific missing-attribute reconstruction. The archive worker currently
+  preserves existing attribute/runtime components and marks attribute queries REVIEW.
 
 The prototype's package-boundary checks pass: scoped library replacement, unchanged
 localized keys, rejection of new Native/Custom Script identities, and preservation

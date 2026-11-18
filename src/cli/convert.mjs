@@ -1,3 +1,4 @@
+import { primaryLocalizedTable } from '../libraries/gui/primary-localized-table.mjs';
 /**
  * Historical job orchestrator: verify inputs, reconstruct GUI, pack one policy
  * variant and record offline evidence. GENERATED is not an Editor or gameplay
@@ -531,11 +532,8 @@ try {
       }
   }
 
-  const locale = localized.some((l) => l.locale === 'enUS')
-    ? 'enUS'
-    : (localized[0]?.locale ?? 'enUS');
-
-  const primary = localized.find((l) => l.locale === locale) ?? {};
+  const primary = primaryLocalizedTable(localized);
+  const locale = primary.locale ?? 'enUS';
 
   const customAiScripts = [];
 

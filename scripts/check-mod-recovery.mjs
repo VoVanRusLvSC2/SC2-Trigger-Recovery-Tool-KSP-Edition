@@ -1,3 +1,4 @@
+import { primaryLocalizedTable } from '../src/libraries/gui/primary-localized-table.mjs';
 /** Library/package boundaries: no map wrapper, no unrelated GUI or payload loss. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -8,6 +9,14 @@ import { modLibraryUnits } from '../src/cli/mod-library-units.mjs';
 import { mergeLibrary, mergeStringTable, assertNoNewRawGui } from '../src/cli/mod-document.mjs';
 import { writePackageCandidate } from '../src/cli/package-candidate.mjs';
 import { encodeFreshMpq } from '../src/vendor/@modkit/blizzard-mpq/src/mpq/fresh-writer.js';
+const german = { locale: 'deDE', triggerStrings: 'Sparse table' };
+const english = { locale: 'enUS', triggerStrings: 'Original compiler names' };
+assert.equal(primaryLocalizedTable([german, english]), english);
+assert.equal(primaryLocalizedTable([english, german]), english);
+assert.equal(primaryLocalizedTable([german]), german);
+assert.equal(primaryLocalizedTable([german, english], 'deDE'), german);
+assert.deepEqual(primaryLocalizedTable([]), {});
+assert.equal(german.triggerStrings, 'Sparse table');
 const a =
   '<Library Id="A"><Root/><Element Type="Category" Id="folder"><Identifier>Keep</Identifier></Element></Library>';
 const b = '<Library Id="B"><Root/></Library>';

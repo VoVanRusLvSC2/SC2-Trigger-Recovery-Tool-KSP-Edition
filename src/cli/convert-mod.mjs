@@ -1,3 +1,4 @@
+import { primaryLocalizedTable } from '../libraries/gui/primary-localized-table.mjs';
 /** Explicit-library archive worker: no synthetic MapScript or startup wrappers. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -101,6 +102,8 @@ try {
       gameStrings: await component(folder + '/LocalizedData/GameStrings.txt'),
     })),
   );
+  const primary = primaryLocalizedTable(tables);
+  result.primaryLocale = primary.locale;
   const originalXml = await component('Triggers');
   let markup = originalXml;
   const options = new Map();
@@ -124,9 +127,9 @@ try {
       strictSymbols: true,
       guiRecoveryMode: row.guiRecoveryMode,
       conversionContext: context,
-      locale: tables[0].locale,
-      triggerStrings: tables[0].triggerStrings,
-      gameStrings: tables[0].gameStrings,
+      locale: primary.locale,
+      triggerStrings: primary.triggerStrings,
+      gameStrings: primary.gameStrings,
       localizedStrings: tables,
       primaryGalaxyIncludeFiles: prepared.includeEvidence
         .filter((edge) => edge.from.toLowerCase() === unit.body.toLowerCase())
@@ -171,11 +174,11 @@ try {
       );
       table.triggerStrings = mergeStringTable(
         table.triggerStrings,
-        update?.triggerStrings ?? (table === tables[0] ? recovered.output.triggerStrings : ''),
+        update?.triggerStrings ?? (table === primary ? recovered.output.triggerStrings : ''),
       );
       table.gameStrings = mergeStringTable(
         table.gameStrings,
-        update?.gameStrings ?? (table === tables[0] ? recovered.output.gameStrings : ''),
+        update?.gameStrings ?? (table === primary ? recovered.output.gameStrings : ''),
       );
     }
     options.set(unit.libraryId, {
@@ -218,6 +221,7 @@ try {
         gameStrings: await text(table.folder + '/LocalizedData/GameStrings.txt'),
       })),
     );
+    const actualPrimary = primaryLocalizedTable(actualTables, primary.locale);
     for (const [index, unit] of prepared.libraryUnits.entries()) {
       progress(
         'Verifying packed library ' + unit.libraryId,
@@ -231,9 +235,9 @@ try {
         galaxyDeclarations: external,
         strictSymbols: true,
         conversionContext: context,
-        locale: actualTables[0].locale,
-        triggerStrings: actualTables[0].triggerStrings,
-        gameStrings: actualTables[0].gameStrings,
+        locale: actualPrimary.locale,
+        triggerStrings: actualPrimary.triggerStrings,
+        gameStrings: actualPrimary.gameStrings,
         localizedStrings: actualTables,
       });
       const comparison = oracle?.compare(

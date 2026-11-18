@@ -1,3 +1,4 @@
+import { primaryLocalizedTable } from '../src/libraries/gui/primary-localized-table.mjs';
 /** End-to-end API checks against real NativeLib and the unchanged external oracle.
  * Required game data stays outside the repository; no Editor is involved. */
 import assert from 'node:assert/strict';
@@ -163,6 +164,117 @@ try {
       console.log(JSON.stringify(results.at(-1)));
     }
   }
+  // Compiler-created threaded storage belongs to GUI functions, even when their
+  // only name is in TriggerStrings. An alphabetically earlier sparse locale must
+  // not make that function and its argument storage disappear during completion.
+  const threadedXml = `<TriggerData><Library Id="AB123456"><Root><Item Type="FunctionDef" Library="AB123456" Id="F"/></Root>
+<Element Type="FunctionDef" Id="F"><FlagAction/><FlagCreateThread/><FlagNoScriptPrefix/><Parameter Type="ParamDef" Library="AB123456" Id="A"/><Parameter Type="ParamDef" Library="AB123456" Id="B"/></Element>
+<Element Type="ParamDef" Id="A"><Identifier>duration</Identifier><ParameterType><Type Value="fixed"/></ParameterType></Element>
+<Element Type="ParamDef" Id="B"><Identifier>count</Identifier><ParameterType><Type Value="int"/></ParameterType></Element></Library></TriggerData>`;
+  const locales = [
+    { locale: 'deDE', triggerStrings: '', gameStrings: '' },
+    {
+      locale: 'enUS',
+      triggerStrings: 'FunctionDef/Name/lib_AB123456_F=Delay Dispatch\n',
+      gameStrings: '',
+    },
+  ];
+  const threadedInput = {
+    ...common,
+    ...primaryLocalizedTable(locales),
+    localizedStrings: locales,
+    libraryId: 'AB123456',
+    documentKind: 'library',
+  };
+  const threaded = await convertTriggersToGalaxy(threadedXml, threadedInput);
+  assert.equal((threaded.output.script.match(/^(?:trigger|fixed|int) auto_/gm) ?? []).length, 3);
+  const completeInput = {
+    ...threadedInput,
+    existingTriggerData: threadedXml,
+    script: threaded.output.script,
+    header: threaded.output.header,
+  };
+  await assert.rejects(
+    convertGalaxyToTriggers({ ...completeInput, ...locales[0] }),
+    /Changes to globals\/includes\/structures/,
+    'The sparse locale must reproduce the missing threaded declarations failure',
+  );
+  const completed = await convertGalaxyToTriggers(completeInput);
+  assert.equal(completed.incremental.mode, 'UNCHANGED');
+  assert.equal(completed.output.triggerData, threadedXml);
+  noWrappers(completed.output.triggerData);
+  const emitted = await convertTriggersToGalaxy(completed.output.triggerData, threadedInput);
+  assertEquivalent(program(threaded.output), program(emitted.output));
+  await assert.rejects(
+    convertGalaxyToTriggers({
+      ...completeInput,
+      script: threaded.output.script + '\nint newGlobal = 4;\n',
+    }),
+    /Changes to globals\/includes\/structures/,
+  );
+  results.push({ kind: 'library', mode: 'threaded-localized-unchanged', changes: [] });
+  console.log(JSON.stringify(results.at(-1)));
+  // GUI Constant marks a structure field as read-only in the editor. It does
+  // not remove its per-instance runtime default, including a native call.
+  const constantMemberXml = `<TriggerData><Library Id="AB123456"><Root><Item Type="Variable" Library="AB123456" Id="D"/></Root>
+<Element Type="Structure" Id="A"><Identifier>State</Identifier><Variable Type="Variable" Library="AB123456" Id="B"/><Variable Type="Variable" Library="AB123456" Id="F"/></Element>
+<Element Type="Variable" Id="F"><Identifier>disabledPlayers</Identifier><Disabled/><VariableType><Type Value="playergroup"/></VariableType><Value Type="Param" Library="AB123456" Id="C"/></Element>
+<Element Type="Variable" Id="B"><Identifier>players</Identifier><VariableType><Type Value="playergroup"/><Constant/></VariableType><Value Type="Param" Library="AB123456" Id="C"/></Element>
+<Element Type="Param" Id="C"><FunctionCall Type="FunctionCall" Library="AB123456" Id="E"/></Element>
+<Element Type="FunctionCall" Id="E"><FunctionDef Type="FunctionDef" Library="Ntve" Id="00000056"/></Element>
+<Element Type="Variable" Id="D"><Identifier>state</Identifier><VariableType><Type Value="struct"/><TypeElement Type="Structure" Library="AB123456" Id="A"/></VariableType></Element></Library></TriggerData>`;
+  const constantInput = { ...common, libraryId: 'AB123456', documentKind: 'library' };
+  const initialized = await convertTriggersToGalaxy(constantMemberXml, constantInput);
+  assert.equal((initialized.output.script.match(/PlayerGroupEmpty\(\)/g) ?? []).length, 1);
+  assert(!initialized.output.header.includes('lv_disabledPlayers'));
+  assert(!initialized.output.script.includes('lv_disabledPlayers'));
+  assert(
+    initialized.output.script.includes('libAB123456_gv_state.lv_players = PlayerGroupEmpty();'),
+  );
+  const retained = await convertGalaxyToTriggers({
+    ...constantInput,
+    existingTriggerData: constantMemberXml,
+    script: initialized.output.script,
+    header: initialized.output.header,
+  });
+  assert.equal(retained.incremental.mode, 'UNCHANGED');
+  assert.equal(retained.output.triggerData, constantMemberXml);
+  noWrappers(retained.output.triggerData);
+  const constantForward = await convertTriggersToGalaxy(retained.output.triggerData, constantInput);
+  assertEquivalent(program(initialized.output), program(constantForward.output));
+  results.push({ kind: 'library', mode: 'constant-structure-runtime-default', changes: [] });
+  console.log(JSON.stringify(results.at(-1)));
+  // Editor emits its bool default for an empty condition list. Empty OR is
+  // therefore true here; replacing it with mathematical OR identity is unsafe.
+  const emptyOrXml = `<TriggerData><Library Id="AB123456"><Root><Item Type="FunctionDef" Library="AB123456" Id="A"/></Root>
+<Element Type="FunctionDef" Id="A"><Identifier>EmptyCondition</Identifier><FlagAction/><FunctionCall Type="FunctionCall" Library="AB123456" Id="B"/></Element>
+<Element Type="FunctionCall" Id="B"><FunctionDef Type="FunctionDef" Library="Ntve" Id="00000137"/><FunctionCall Type="FunctionCall" Library="AB123456" Id="C"/><FunctionCall Type="FunctionCall" Library="AB123456" Id="D"/></Element>
+<Element Type="FunctionCall" Id="C"><FunctionDef Type="FunctionDef" Library="Ntve" Id="00000133"/><SubFunctionType Type="SubFuncType" Library="Ntve" Id="00000003"/></Element>
+<Element Type="FunctionCall" Id="D"><FunctionDef Type="FunctionDef" Library="Ntve" Id="00000139"/><SubFunctionType Type="SubFuncType" Library="Ntve" Id="00000004"/></Element></Library></TriggerData>`;
+  const emptyOr = await convertTriggersToGalaxy(emptyOrXml, constantInput);
+  assert(emptyOr.output.script.includes('if ((true))'));
+  const emptyOrRecovered = await convertGalaxyToTriggers({
+    ...constantInput,
+    existingTriggerData: emptyOrXml,
+    script: emptyOr.output.script,
+    header: emptyOr.output.header,
+  });
+  assert.equal(emptyOrRecovered.incremental.mode, 'UNCHANGED');
+  assert.equal(emptyOrRecovered.output.triggerData, emptyOrXml);
+  noWrappers(emptyOrRecovered.output.triggerData);
+  const emptyOrForward = await convertTriggersToGalaxy(
+    emptyOrRecovered.output.triggerData,
+    constantInput,
+  );
+  assertEquivalent(program(emptyOr.output), program(emptyOrForward.output));
+  assert(
+    !oracle.compare(
+      program(emptyOr.output),
+      program(emptyOr.output).replace('if ((true))', 'if ((false))'),
+    ).exact,
+  );
+  results.push({ kind: 'library', mode: 'empty-or-editor-default', changes: [] });
+  console.log(JSON.stringify(results.at(-1)));
   await oracle.verify();
 } finally {
   conversionContext.clear();

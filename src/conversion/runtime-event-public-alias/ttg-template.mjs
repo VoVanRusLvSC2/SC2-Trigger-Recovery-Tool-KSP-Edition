@@ -1079,10 +1079,10 @@ function renderScriptTemplate(call, definition, ctx, unroled = []) {
             join.left.kind === 67 /* SyntaxKind.TrueKeyword */ &&
             join.right.kind === 68 /* SyntaxKind.FalseKeyword */
           ) {
-            if (join.operatorToken.kind === 34 /* SyntaxKind.AmpersandAmpersandToken */)
-              return 'true';
-
-            if (join.operatorToken.kind === 35 /* SyntaxKind.BarBarToken */) return 'false';
+            // Editor fills an empty boolean subfunction role with its boolean
+            // default, even for OR. A mathematical empty-disjunction identity
+            // would change the authored GUI's generated condition.
+            if ([34, 35].includes(join.operatorToken.kind)) return defaultReturnSource('bool');
           }
         }
 
