@@ -203,14 +203,7 @@ function render(state: JobSnapshot) {
   const progress = element<HTMLProgressElement>('progress');
   if (active) progress.removeAttribute('value');
   else progress.value = state.phase === 'finished' ? 1 : 0;
-  for (const id of [
-    'generate',
-    'openFile',
-    'settingsButton',
-    'fullMode',
-    'librariesButton',
-    'shutdown',
-  ])
+  for (const id of ['generate', 'openFile', 'settingsButton', 'librariesButton', 'shutdown'])
     element<HTMLButtonElement>(id).disabled =
       active ||
       ((opening || inspectingMap) && ['generate', 'openFile'].includes(id)) ||
@@ -432,7 +425,6 @@ element<HTMLFormElement>('exportForm').onsubmit = (event) => {
   download(new Blob([originalMarkupText], { type: 'application/xml' }), name);
   element<HTMLDialogElement>('exportDialog').close();
 };
-element('fullMode').onclick = () => show('accessDialog');
 element('cancel').onclick = () => {
   if (opening) {
     finishPicker();

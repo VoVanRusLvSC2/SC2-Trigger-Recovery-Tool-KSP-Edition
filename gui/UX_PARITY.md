@@ -5,7 +5,7 @@ This is a behavioral port, not a redistribution of its private source or game as
 
 | Area | Previous web UI | Target behavior |
 | --- | --- | --- |
-| Main window | Extra instruction band; FULL GUI toolbar toggle | Two toolbar rows, equal code panes, status footer; FULL ACCESS information |
+| Main window | Extra instruction band; FULL GUI toolbar toggle | Two toolbar rows, equal code panes and status footer; full access is always included |
 | Settings | Paths first; no persistent appearance preferences | Restoration first, Automatic card, attribute and embedded-script options, music/volume/opacity, Close; paths under Advanced |
 | Hierarchy | Raw XML nesting, truncated child lists | Resolve Root/Item references, scope IDs by Library, preserve order, show cycles and missing references, keyboard navigation and node count |
 | Search | Find next only; closes after a match | Live literal search, result snippets and line numbers, Previous/Next/Clear/Close, Ctrl+F and F3/Shift+F3 |
@@ -21,7 +21,7 @@ This is a behavioral port, not a redistribution of its private source or game as
   Export is available whenever markup is loaded.
 - Attribute recovery and the strict benchmark are enabled by default, as requested.
   SC2 and the benchmark are discovered automatically.
-- FULL ACCESS is included in the public edition; there is no private license login.
+- Full access is always included in the public edition; no access button or license login is needed.
 - Music uses an optional user-selected local audio file. No Blizzard soundtrack is bundled.
 - Galaxy remains a read-only view of the actual recovery input. Editing an input
   without passing that edit through preparation and proof would be misleading.

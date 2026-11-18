@@ -202,7 +202,7 @@ progress::-webkit-progress-value {
 }
 .trigger-topbar-actions {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 10px;
   margin-top: 12px;
 }
@@ -920,8 +920,7 @@ summary {
   color: var(--muted);
 }
 #infoDialog > button,
-#librariesDialog > button,
-#accessDialog > button {
+#librariesDialog > button {
   min-width: 140px;
   display: block;
   margin: 16px auto 0;
