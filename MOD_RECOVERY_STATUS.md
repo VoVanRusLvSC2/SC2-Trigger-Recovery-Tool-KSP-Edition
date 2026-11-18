@@ -1,7 +1,7 @@
 # Mod archive recovery: diagnosis and qualification
 
-This local branch is not a published release. The local RC12 patch enables recovery
-attempts for every opened map or mod and dispatches mod libraries to the worker.
+Version 3.0.0-rc.13 enables recovery attempts for every opened map or mod and
+dispatches mod libraries to the explicit-library archive worker.
 Availability of Generate Triggers is not a claim that recovery passes validation.
 
 ## Installed application, tested through the browser
@@ -15,13 +15,13 @@ one duplicate-name extraction wrapper.
 - Export File downloads the original XML, byte for byte: 963,518 bytes,
   SHA-256 `9921b334fa44331f074180aca19a8822c4f9f376d47e5123b0466b6e455edd3f`.
 - No browser console errors or warnings occurred.
-- Published RC12 disabled Generate Triggers for mods. The local patch removes that
+- Published RC12 disabled Generate Triggers for mods. Version 3.0.0-rc.13 removes that
   restriction, including packages without a complete library pair or MapScript.
   The worker reports missing source and conversion errors after starting validation.
 
 ## Full recovery experiment
 
-The prototype prepares actual installed SC2 dependencies and the mod's 49 components,
+The archive worker prepares actual installed SC2 dependencies and the mod's 49 components,
 resolves 337 include edges, and sends library `17E432E7` to the existing conversion API.
 It never invents a MapScript or InitMap wrapper. The source package remains unchanged.
 
@@ -66,7 +66,8 @@ initializers, calls and trigger registrations match. Incremental mode is UNCHANG
 the existing GUI was not rebuilt. No new Native or Custom Script was introduced.
 Original component/runtime hashes remain unchanged. No Editor or gameplay validation
 was performed; this is an offline proof for this package, not acceptance of all mods.
-The detailed local evidence is in `output/MOD_ERROR_ANALYSIS.txt`.
+Nine integration scenarios passed against 304 unchanged hash-verified benchmark assets.
+The local run evidence is retained outside the source distribution.
 
 ## Qualification still required
 
@@ -74,7 +75,7 @@ The detailed local evidence is in `output/MOD_ERROR_ANALYSIS.txt`.
 - Qualify mod-specific missing-attribute reconstruction. The archive worker currently
   preserves existing attribute/runtime components and marks attribute queries REVIEW.
 
-The prototype's package-boundary checks pass: scoped library replacement, unchanged
+The package-boundary checks pass: scoped library replacement, unchanged
 localized keys, rejection of new Native/Custom Script identities, and preservation
 of runtime files, Attributes, unrelated assets and the original archive. These checks
 are not a successful converter acceptance test.

@@ -2,7 +2,7 @@
 
 ## Windows x64 application
 
-Download the **3.0.0-rc.12 Setup.exe** or portable ZIP from this repository's
+Download the **3.0.0-rc.13 Setup.exe** or portable ZIP from this repository's
 [Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases).
 Both contain this reworked converter, Node.js 24.14.1, the public ModKit runtime,
 mpqcli and their notices. No Node, npm, Python, Git, private archive or K: drive
@@ -16,7 +16,7 @@ Install StarCraft II separately. Its actual CASC data supplies the correct GUI
 libraries and Galaxy declarations. Custom mod dependencies must also be available.
 Neither game binaries nor game data are included in this application.
 
-Open **SC2 Trigger Recovery KSP** from the Start menu, choose a `.SC2Map` archive or component folder,
+Open **SC2 Trigger Recovery KSP** from the Start menu, choose a `.SC2Map` or `.SC2Mod` archive or component folder,
 then select **GENERATE TRIGGERS**. The game installation and strict benchmark are
 detected automatically; a new output folder is suggested beside the map.
 The portable edition opens the same local TypeScript interface with `Open Recovery.cmd`.
@@ -40,9 +40,13 @@ Errors return a nonzero process exit code. Unresolved dependencies are refused.
 The default mode preserves existing authored GUI, folders and script. `--full-gui`
 requests the separate expanded recovery mode; it does not permit fabricated
 Native definitions, stubs or raw wrappers. The archive worker supports packed
-maps and `.SC2Map` component folders; explicit mod-library conversion is available through [the component API](API.md).
+maps and mods as packed archives or component folders. Mods use their real library
+body/header pairs and require installed SC2 metadata. No artificial MapScript is
+created. Mod-specific missing-attribute reconstruction is not yet qualified;
+original attributes are preserved, and owned attribute queries retain REVIEW.
 
-OPEN FILE also previews `.SC2Mod` archives and component folders. For map component
+GENERATE TRIGGERS is available after any map or mod opens. Source incompleteness
+is reported by the worker instead of disabling the button. For component
 folders, recovery creates a separate packed source snapshot and checks each component
 against its original SHA-256. MPQ container tables are regenerated; the original folder
 is never written. The normal strict benchmark then checks the candidate.
@@ -59,8 +63,8 @@ enables it by default. It detects StarCraft II automatically; normally you only
 select a map, choose **GENERATE TRIGGERS**, then **SAVE TRIGGERS** to download the
 recovered map. **EXPORT FILE** saves standalone Triggers XML. Settings provides
 manual overrides under **Advanced settings**. The in-app chooser selects one
-`.SC2Map` file, never a game folder, and supports Cancel and Escape. Generation is
-available only after a map opens successfully. Settings contains no generation action.
+`.SC2Map` or `.SC2Mod` package, never a game folder, and supports Cancel and Escape. Generation is
+available after a map or mod opens successfully. Settings contains no generation action.
 **Recover attributes when available** defaults on; disabling it preserves existing
 Attributes without reconstructing missing definitions or their GUI. Strict
 verification is unchanged. The CLI equivalent is `--no-attribute-recovery`.

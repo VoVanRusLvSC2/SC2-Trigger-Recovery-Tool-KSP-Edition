@@ -141,3 +141,18 @@ root; ordinary directories are used directly. Preparation and conversion use the
 same SDK resolver and dependency identity checks. Only referenced packages are
 loaded. Missing dependencies still fail closed; standalone Galaxy files are not
 injected as invented bindings. This is the CLI equivalent of GUI **LIBRARIES**.
+
+## Mod archives and component folders
+
+`recover` also accepts `.SC2Mod` packages with generated library body/header pairs:
+
+```powershell
+.\trigger-recovery.cmd recover "C:\Mods\Example.SC2Mod" --sc2 "C:\Program Files (x86)\StarCraft II" --out "C:\Mods\Example-Recovered" --benchmark "C:\Benchmark"
+```
+
+The worker processes the real library entry points, preserves runtime files and
+unrelated components, and regenerates Galaxy from the packed GUI for comparison.
+It does not manufacture MapScript or InitMap. Existing attributes are retained;
+missing mod-attribute reconstruction is not qualified, and detected owned queries
+remain REVIEW. A benchmark PASS is offline evidence; Editor acceptance is separate.
+See [mod recovery qualification](MOD_RECOVERY_STATUS.md).

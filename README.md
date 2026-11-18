@@ -10,6 +10,16 @@ The conversion core works with SC2 map and mod components (`.SC2Map` and `.SC2Mo
 
 Start with the [converter architecture](ARCHITECTURE.md), [103 recorded strict-pass map records](maps/verified.md) and [222 historical acceptance records](maps/previously-accepted.md). See [integration status](#integration-status) before trying to build this source publication.
 
+## Version 3.0.0-rc.13
+
+The Windows installer now includes map/mod generation from the main toolbar,
+compiler-locale selection shared by map and mod recovery, runtime defaults for
+read-only structure fields, correct empty boolean conditions, and disabled-field
+filtering. One real component mod passed the unchanged strict packed-GUI benchmark:
+81 functions and 47 declarations matched. Nine integration scenarios passed.
+This is offline verification; Editor/gameplay qualification remains separate.
+See [mod recovery details and limits](MOD_RECOVERY_STATUS.md).
+
 ## Accepted map records
 
 | Verification level | Archive records | Complete list |

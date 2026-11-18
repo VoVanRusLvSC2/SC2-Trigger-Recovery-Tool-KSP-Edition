@@ -16,6 +16,7 @@ try {
   Invoke-Checked npm.cmd @('run', 'verify:gui')
   Invoke-Checked python @('scripts/fetch-release-tools.py', '--installer')
   Invoke-Checked npm.cmd @('run', 'verify:preview')
+  Invoke-Checked node @('scripts/check-mod-recovery.mjs')
   foreach ($check in @('verify:recovered', 'verify:retained', 'verify:bindings', 'verify:helpers', 'verify:source', 'verify:dependencies', 'verify:authored', 'verify:attribute-source', 'verify:attribute-use', 'verify:condition-helper-evidence', 'verify:cli', 'verify:preparation')) {
     Invoke-Checked npm.cmd @('run', $check)
   }
@@ -45,10 +46,10 @@ try {
     if (-not $compilerDrive) { throw 'No free temporary drive for the installer compiler' }
     Invoke-Checked $compiler @('/Qp', ('/DStageRoot=' + $compilerDrive + '\'), ('/DReleaseDir=' + $releaseRoot), 'packaging/windows.iss')
   } finally { if ($compilerDrive) { & subst.exe $compilerDrive /D } }
-  $zip = Join-Path $releaseRoot 'SC2-Trigger-Recovery-KSP-3.0.0-rc.12-Windows-x64.zip'
+  $zip = Join-Path $releaseRoot 'SC2-Trigger-Recovery-KSP-3.0.0-rc.13-Windows-x64.zip'
   if (Test-Path -LiteralPath $zip) { throw 'Release ZIP already exists; preserve it and use a clean build directory' }
   Invoke-Checked python @('scripts/archive-release.py', $stage, $zip)
-  $artifacts = Get-ChildItem -LiteralPath $releaseRoot -File | Where-Object { $_.Name -like 'SC2-Trigger-Recovery-KSP-3.0.0-rc.12-*' -and $_.Extension -in @('.exe', '.zip') }
+  $artifacts = Get-ChildItem -LiteralPath $releaseRoot -File | Where-Object { $_.Name -like 'SC2-Trigger-Recovery-KSP-3.0.0-rc.13-*' -and $_.Extension -in @('.exe', '.zip') }
   $lines = foreach ($file in $artifacts) { ((Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()) + '  ' + $file.Name }
   [IO.File]::WriteAllLines((Join-Path $releaseRoot 'SHA256SUMS.txt'), [string[]]$lines, (New-Object Text.UTF8Encoding($false)))
   Write-Output "Release artifacts: $releaseRoot"
