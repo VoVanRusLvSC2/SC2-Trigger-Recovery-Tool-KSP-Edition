@@ -101,7 +101,7 @@ Build with `npm run build:gui`; check the bridge with `npm run verify:gui`.
 Release staging builds and hashes the GUI; installed users need no compiler.
 Only the SC2 adapter exists. Other formats require a real backend, not a new label.
 
-## Mod inspection
+## Mod inspection and recovery
 
 OPEN FILE lists only `.SC2Map` and `.SC2Mod` files, plus navigation folders.
 Mods use their actual Galaxy library files rather than a fabricated MapScript.
@@ -110,11 +110,14 @@ files; line counts, highlighting and search follow the selected file. Mods witho
 Galaxy, including resource-only mods, open with an empty source panel.
 Existing mod Triggers can be inspected as a tree and exported unchanged.
 
-This is mod archive inspection. GENERATE TRIGGERS remains limited to maps with
-MapScript.galaxy; library-only mod archive recovery is not connected to this UI.
-The existing component conversion API remains available for explicit libraries.
-The disabled action and status text report this limit instead of starting a map
-worker on a mod or fabricating its startup script.
+GENERATE TRIGGERS is available after a map or mod opens. Mod archive recovery
+uses real library body/header pairs and installed SC2 metadata. No MapScript
+or startup wrapper is manufactured. Incomplete packages may start validation,
+but missing source is reported rather than fabricated. Source snapshots are
+not offered as recovered downloads. Strict verification uses Galaxy regenerated
+from the packed GUI. Mod-specific missing-attribute recovery is not qualified;
+existing attributes are preserved and owned attribute queries retain REVIEW.
+See [qualification details](../MOD_RECOVERY_STATUS.md).
 
 Checkboxes use green KSP frames/checkmarks and orange hover/focus. They remain
 native checkbox inputs with keyboard, disabled-state and persistence behavior.

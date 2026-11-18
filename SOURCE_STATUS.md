@@ -118,8 +118,9 @@ map-specific repair rules.
 
 1. **Broaden application qualification:** repeat clean install/upgrade and
    representative map jobs on other Windows installations. Automatic preparation
-   currently targets packed maps; mod libraries use the component API. External
-   benchmark/header evidence is still required for applicable attribute proofs.
+   supports map/mod archives and component folders. Mod-specific missing-attribute
+   reconstruction is not qualified; verified header evidence is still required
+   for applicable attribute proofs.
 2. **Broaden qualification:** recheck corpus inputs with the assembled revision;
    retain the distinction between 103 recorded strict passes and 222 historical
    acceptances. Current integration fixtures are not new corpus passes.

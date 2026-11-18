@@ -161,7 +161,7 @@ The public build downloads a fingerprint-pinned licensed ModKit revision and loc
 
 Both API directions, six fresh/incremental conversion cases, five attribute cases and a complete real-map archive job were exercised with the public runtime. The real map retained its original Galaxy and unrelated payloads; its conservative REVIEW verdict was preserved. This is release-candidate integration evidence, not a new corpus-wide or Editor acceptance claim. The [103 + 222 registry levels](maps/catalog.json) are unchanged.
 
-The installer supports Windows 10/11 x64. Automatic archive jobs currently target maps (packed or component folders); mod-library work is exposed through the component API. Applicable strict attribute comparisons still require the original external benchmark and verified header evidence. See [remaining work](SOURCE_STATUS.md#remaining-release-work).
+The installer supports Windows 10/11 x64. Archive jobs support maps and explicit mod libraries in packed archives or component folders. Mod-specific missing-attribute recovery remains unqualified; applicable strict attribute comparisons still require verified header evidence. See [remaining work](SOURCE_STATUS.md#remaining-release-work).
 
 ## Reading and formatting the source
 
