@@ -9,10 +9,22 @@ import { once } from 'node:events';
 import { selectAdapter } from '../gui/dist/adapters.js';
 import { findInstallation } from '../gui/dist/defaults.js';
 import { createPreferenceStore, preferenceDefaults } from '../gui/dist/preferences.js';
-import { normalizeLibraryRoots } from '../src/libraries/local-roots.mjs';
+import {
+  normalizeLibraryRoots,
+  assertPreparedLibraryRoots,
+} from '../src/libraries/local-roots.mjs';
 import { BoundedLocalModSources } from '../src/libraries/extensions/bounded-local-mod-sources.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
+assert.doesNotThrow(() => assertPreparedLibraryRoots({}, {}));
+assert.doesNotThrow(() =>
+  assertPreparedLibraryRoots({ libraryRoots: ['one'] }, { libraryRoots: ['one'] }),
+);
+assert.throws(
+  () => assertPreparedLibraryRoots({ libraryRoots: ['other'] }, { libraryRoots: ['one'] }),
+  /hash-bound/,
+);
+assert.throws(() => assertPreparedLibraryRoots({ libraryRoots: ['one'] }, {}), /hash-bound/);
 const request = {
   adapter: 'sc2',
   fields: {

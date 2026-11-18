@@ -56,6 +56,10 @@ try {
       'Application runtime, conversion API and MPQ tool are available. Game/Editor qualification is separate.',
     );
   } else if (['recover', 'prepare', 'run'].includes(command) && input && positionals.length === 2) {
+    if (command === 'run' && values.library?.length)
+      throw Error(
+        'Set library roots during recover/prepare; prepared runs cannot change dependency sources',
+      );
     let jobFile = path.resolve(input);
     if (command !== 'run') {
       if (!values.out) throw Error('--out is required');

@@ -183,6 +183,7 @@ export async function prepareMap({
       originalScriptSha256: sha(scriptBytes),
       cascBuildInfoSha256: beforeBuild,
       sourceKind: publicResources ? 'public-resource-snapshot' : 'installed-casc',
+      libraryRoots,
       ...(publicResources
         ? {
             snapshotRevision: '6dd323aae4209a01f110719a00b4e8f7a88389bc',

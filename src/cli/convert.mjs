@@ -185,6 +185,7 @@ import { openMpqReader } from '../vendor/@modkit/blizzard-mpq/src/mpq/codec.js';
 import { MapSession } from '../conversion/partition-declaration-identity/map-session-fixed.mjs';
 
 import { BoundedLocalModSources } from '../libraries/extensions/bounded-local-mod-sources.mjs';
+import { assertPreparedLibraryRoots } from '../libraries/local-roots.mjs';
 
 import { components } from '../conversion/partition-declaration-identity/components.mjs';
 
@@ -282,6 +283,7 @@ try {
 
   const prepared = await read(row.preparationResult),
     cfg = await read(row.config);
+  assertPreparedLibraryRoots(cfg, prepared);
   const pinnedBenchmark = process.env.SC2_TRIGGER_BENCHMARK_ROOT
     ? await openPinnedUserOracle()
     : undefined;

@@ -2,6 +2,14 @@
  * conversion. They never turn an unrelated Galaxy file into a dependency. */
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import assert from 'node:assert/strict';
+export function assertPreparedLibraryRoots(config, prepared) {
+  assert.deepEqual(
+    config.libraryRoots ?? [],
+    prepared.libraryRoots ?? [],
+    'Local library roots differ from hash-bound preparation; prepare the map again',
+  );
+}
 export async function normalizeLibraryRoots(inputs = []) {
   if (!Array.isArray(inputs) || inputs.length > 100) throw Error('Invalid local library roots');
   const roots = [];
