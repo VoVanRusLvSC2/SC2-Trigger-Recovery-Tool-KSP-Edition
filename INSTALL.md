@@ -46,7 +46,8 @@ maps; explicit mod-library conversion is available through [the component API](A
 
 The Windows application includes the original hash-verified strict benchmark and
 enables it by default. It detects StarCraft II automatically; normally you only
-select a map, choose **GENERATE TRIGGERS**, then **EXPORT FILE**. Settings provides
+select a map, choose **GENERATE TRIGGERS**, then **SAVE TRIGGERS** to download the
+recovered map. **EXPORT FILE** saves standalone Triggers XML. Settings provides
 manual overrides under **Advanced settings**. The in-app chooser selects one
 `.SC2Map` file, never a game folder, and supports Cancel and Escape. Generation is
 available only after a map opens successfully. Settings contains no generation action.
