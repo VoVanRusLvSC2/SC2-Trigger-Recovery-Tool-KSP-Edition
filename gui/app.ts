@@ -14,7 +14,6 @@ let shownResult = '';
 let originalMarkupText = '';
 let opening = false;
 let loadedMap = '';
-let canRecover = false;
 let recoveryNotice = '';
 let sourceFiles: DocumentPreview['sourceFiles'] = [];
 let inspectingMap = false;
@@ -68,7 +67,6 @@ function metrics(target: 'markup' | 'source', text: string) {
 async function inspectMap(file: string) {
   if (!file) return;
   loadedMap = '';
-  canRecover = false;
   inspectingMap = true;
   if (snapshot) render(snapshot);
   notice('Reading original archive...');
@@ -83,7 +81,6 @@ async function inspectMap(file: string) {
     sourceFile.replaceChildren(...sourceFiles.map((file) => new Option(file.path, file.path)));
     sourceFile.hidden = sourceFiles.length < 2;
     sourceFile.title = sourceFiles[0]?.path ?? 'No Galaxy source';
-    canRecover = value.canRecover;
     recoveryNotice = value.recoveryNotice ?? '';
     metrics('markup', value.markup);
     loadedMap = value.name;
@@ -220,9 +217,7 @@ function render(state: JobSnapshot) {
       active ||
       ((opening || inspectingMap) && ['generate', 'openFile'].includes(id)) ||
       (id === 'generate' &&
-        (!canRecover ||
-          !loadedMap ||
-          loadedMap !== element<HTMLInputElement>('field-input').value));
+        (!loadedMap || loadedMap !== element<HTMLInputElement>('field-input').value));
   element('generate').title = recoveryNotice;
   element<HTMLFieldSetElement>('settings').disabled = active;
   element<HTMLButtonElement>('cancel').disabled = !active && !opening;
@@ -351,7 +346,7 @@ function showTree() {
 // Settings never starts work. Only the main toolbar action can run recovery.
 element<HTMLFormElement>('recovery').onsubmit = (event) => event.preventDefault();
 element('generate').onclick = async () => {
-  if (!loadedMap || !canRecover || inspectingMap || opening) return;
+  if (!loadedMap || inspectingMap || opening) return;
   const form = element<HTMLFormElement>('recovery');
   if (!form.checkValidity()) {
     show('settingsDialog');
@@ -560,7 +555,6 @@ async function initialize() {
     element<HTMLInputElement>('recoverAttributes').checked =
       state.request.recoverAttributes !== false;
     loadedMap = state.request.fields.input ?? '';
-    canRecover = /\.sc2(map|mod)$/i.test(loadedMap);
     element('selectedFile').textContent = state.request.fields.input ?? '';
   }
   await settingsView.initialize();

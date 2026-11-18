@@ -38,6 +38,8 @@ const request = {
   fullGui: false,
 };
 const argv = selectAdapter(request).command(request, root);
+const modRequest = { ...request, fields: { ...request.fields, input: 'C:\\maps\\Library.SC2Mod' } };
+assert.equal(selectAdapter(modRequest).command(modRequest, root)[2], modRequest.fields.input);
 assert.equal(argv[2], request.fields.input);
 assert(argv.includes('--attribute-index'));
 assert(argv.includes('--benchmark'));
@@ -217,6 +219,7 @@ try {
   assert.equal(folderPreview.status, 200);
   assert.equal(folderPreview.value.markup, modMarkup);
   assert.equal(folderPreview.value.source, modBody);
+  assert.equal(folderPreview.value.canRecover, true, 'A missing header must not disable Generate');
   const wrapper = path.join(temporary, 'Wrapped.SC2Mod');
   const actualRoot = path.join(wrapper, 'Wrapped.SC2Mod');
   await fs.mkdir(actualRoot, { recursive: true });
@@ -246,6 +249,17 @@ try {
   assert.equal(resourcePreview.status, 200);
   assert.deepEqual(resourcePreview.value.sourceFiles, []);
   assert.equal(resourcePreview.value.markup, '');
+  assert.equal(
+    resourcePreview.value.canRecover,
+    true,
+    'Resource-only packages may start validation',
+  );
+  const resourceMap = path.join(temporary, 'Resource.SC2Map');
+  await fs.copyFile(resourceMod, resourceMap);
+  assert.equal(
+    (await api('inspect', { adapter: 'sc2', path: resourceMap })).value.canRecover,
+    true,
+  );
   const excluded = path.join(temporary, 'NotShown.SC2Campaign');
   await fs.writeFile(excluded, 'fixture');
   const mod = path.join(temporary, 'Dependency.SC2Mod');

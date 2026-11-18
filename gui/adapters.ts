@@ -57,21 +57,17 @@ const sc2: BackendAdapter = {
         if (sourceBytes > 64 * 1024 ** 2) throw Error('Combined Galaxy preview exceeds 64 MiB.');
         sourceFiles.push({ path: file, text: value });
       }
-      const canRecover = /\.sc2map$/i.test(input) && !!mapScript;
-      const { modLibraryUnits } = await import(
-        new URL('../../src/cli/mod-library-units.mjs', import.meta.url).href
-      );
-      const modRecoverable = /\.sc2mod$/i.test(input) && modLibraryUnits(paths).length > 0;
+      // Opening a valid package enables an attempt. Source completeness and
+      // conversion fidelity belong to the worker report, not button availability.
       return {
         name: input,
         source: sourceFiles[0]?.text ?? '',
         sourceFiles,
-        canRecover: canRecover || modRecoverable,
-        ...(!canRecover && !modRecoverable
+        canRecover: true,
+        ...(!sourceFiles.length
           ? {
-              recoveryNotice: sourceFiles.length
-                ? 'No generated library body/header pair was found. Existing Triggers can be inspected and exported.'
-                : 'This archive has no Galaxy source. Existing Triggers and resources are left unchanged.',
+              recoveryNotice:
+                'No Galaxy source was found. Generate Triggers will validate the package and report what can be recovered.',
             }
           : {}),
         markup: await text('Triggers'),

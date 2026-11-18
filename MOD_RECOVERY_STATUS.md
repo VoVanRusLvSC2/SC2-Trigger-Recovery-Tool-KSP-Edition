@@ -1,7 +1,8 @@
 # Experimental mod archive worker: acceptance failed
 
-This local WIP branch is not a published release. The installed application remains
-3.0.0-rc.12. Do not present its mod inspection as completed mod recovery.
+This local branch is not a published release. The local RC12 patch enables recovery
+attempts for every opened map or mod and dispatches mod libraries to the worker.
+Availability of Generate Triggers is not a claim that recovery passes validation.
 
 ## Installed application, tested through the browser
 
@@ -14,7 +15,9 @@ one duplicate-name extraction wrapper.
 - Export File downloads the original XML, byte for byte: 963,518 bytes,
   SHA-256 `9921b334fa44331f074180aca19a8822c4f9f376d47e5123b0466b6e455edd3f`.
 - No browser console errors or warnings occurred.
-- Generate Triggers is disabled for this mod in the installed release, as documented.
+- Published RC12 disabled Generate Triggers for mods. The local patch removes that
+  restriction, including packages without a complete library pair or MapScript.
+  The worker reports missing source and conversion errors after starting validation.
 
 ## Full recovery experiment
 
@@ -35,7 +38,7 @@ one differing structure layout, and five missing `DialogControlHookupStandard` c
 Some structural differences may be code-generation choices; the lost calls cannot
 be dismissed without proof. No recovered mod or equivalence PASS was produced.
 
-## Remaining work before enabling this route in a release
+## Remaining work before qualifying full mod recovery
 
 1. Carry authoritative ownership for template-generated auxiliary storage through
    the forward emission and incremental comparison stages. Do not filter by helper

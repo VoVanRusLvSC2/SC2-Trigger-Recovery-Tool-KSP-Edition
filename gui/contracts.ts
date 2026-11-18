@@ -32,6 +32,7 @@ export interface DocumentPreview {
   hasAttributes: boolean;
   suggestedOutput: string;
   sourceFiles: { path: string; text: string }[];
+  /** A recovery attempt is available; this is not a conversion or benchmark verdict. */
   canRecover: boolean;
   recoveryNotice?: string;
 }
