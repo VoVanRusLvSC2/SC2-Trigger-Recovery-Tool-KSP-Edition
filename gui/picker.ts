@@ -72,7 +72,9 @@ export function createFilePicker(api: Api) {
       type.textContent = entry.directory
         ? 'Folder'
         : current.kind === 'map'
-          ? 'StarCraft II map'
+          ? /\.sc2mod$/i.test(entry.name)
+            ? 'StarCraft II mod'
+            : 'StarCraft II map'
           : current.kind === 'json'
             ? 'JSON file'
             : current.kind === 'audio'
@@ -183,12 +185,12 @@ export function createFilePicker(api: Api) {
         folder
           ? 'Folders'
           : kind === 'map'
-            ? 'StarCraft II maps (*.SC2Map)'
+            ? 'SC2 maps and mods (*.SC2Map, *.SC2Mod)'
             : kind === 'json'
               ? 'JSON files (*.json)'
               : kind === 'audio'
                 ? 'Audio (*.wav, *.mp3, *.ogg, *.m4a)'
-                : 'SC2 packages (*.SC2Mod, *.SC2Map, *.SC2Campaign)',
+                : 'SC2 maps and mods (*.SC2Map, *.SC2Mod)',
         kind,
       ),
     );

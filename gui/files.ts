@@ -27,12 +27,12 @@ export async function listFiles(kind: PickerKind, requested?: string): Promise<F
   directory = stat.isFile() ? path.dirname(actual) : actual;
   if (!stat.isDirectory() && !stat.isFile()) throw Error('Choose a regular file or folder.');
   const extensions: Record<PickerKind, string[]> = {
-    map: ['.sc2map'],
+    map: ['.sc2map', '.sc2mod'],
     json: ['.json'],
     folder: [],
     output: [],
     audio: ['.wav', '.mp3', '.ogg', '.m4a'],
-    library: ['.sc2mod', '.sc2map', '.sc2campaign'],
+    library: ['.sc2mod', '.sc2map'],
   };
   const accepted = (name: string) => extensions[kind].includes(path.extname(name).toLowerCase());
   const entries = (await fs.readdir(directory, { withFileTypes: true }))

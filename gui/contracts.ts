@@ -31,6 +31,9 @@ export interface DocumentPreview {
   markup: string;
   hasAttributes: boolean;
   suggestedOutput: string;
+  sourceFiles: { path: string; text: string }[];
+  canRecover: boolean;
+  recoveryNotice?: string;
 }
 export interface JobSnapshot {
   phase: 'idle' | 'running' | 'finished' | 'failed' | 'cancelled';

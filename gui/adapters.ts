@@ -10,10 +10,12 @@ export interface BackendAdapter {
 }
 const sc2: BackendAdapter = {
   async inspect(input) {
-    if (typeof input !== 'string' || !/\.sc2map$/i.test(input))
-      throw Error('Choose a packed .SC2Map file.');
+    if (typeof input !== 'string' || !/\.sc2(map|mod)$/i.test(input))
+      throw Error('Choose a packed .SC2Map or .SC2Mod file.');
     input = await fs.realpath(input);
-    if ((await fs.stat(input)).size > 1024 ** 3) throw Error('Map exceeds the preview limit.');
+    const info = await fs.stat(input);
+    if (!info.isFile()) throw Error('Choose a packed .SC2Map or .SC2Mod file, not a folder.');
+    if (info.size > 1024 ** 3) throw Error('Archive exceeds the preview limit.');
     const { openMpqReader } = await import(
       new URL('../../src/vendor/@modkit/blizzard-mpq/src/mpq/codec.js', import.meta.url).href
     );
@@ -28,9 +30,46 @@ const sc2: BackendAdapter = {
         const entry = reader.find(name);
         return entry ? Buffer.from(await reader.read(entry.id)).toString('utf8') : '';
       }
+      const mapScript = reader.find('MapScript.galaxy');
+      // Keep ordinary map opening as cheap as before. A mod has no single map
+      // entry point: expose its real library bodies and headers instead.
+      const paths =
+        /\.sc2map$/i.test(input) && mapScript
+          ? [mapScript.path as string]
+          : (reader.entries
+              .filter((entry: { path: string }) => /\.galaxy$/i.test(entry.path))
+              .map((entry: { path: string }) => entry.path) as string[]);
+      const rank = (name: string) =>
+        /^MapScript\.galaxy$/i.test(name)
+          ? 0
+          : /(?:^|[/\\])MapScript\.galaxy$/i.test(name)
+            ? 1
+            : /_h\.galaxy$/i.test(name)
+              ? 3
+              : 2;
+      paths.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+      if (paths.length > 1024) throw Error('Archive contains too many Galaxy files for preview.');
+      const sourceFiles = [];
+      let sourceBytes = 0;
+      for (const file of paths) {
+        const value = await text(file);
+        sourceBytes += Buffer.byteLength(value);
+        if (sourceBytes > 64 * 1024 ** 2) throw Error('Combined Galaxy preview exceeds 64 MiB.');
+        sourceFiles.push({ path: file, text: value });
+      }
+      const canRecover = /\.sc2map$/i.test(input) && !!mapScript;
       return {
         name: input,
-        source: await text('MapScript.galaxy'),
+        source: sourceFiles[0]?.text ?? '',
+        sourceFiles,
+        canRecover,
+        ...(!canRecover
+          ? {
+              recoveryNotice: sourceFiles.length
+                ? 'Mod/library inspection: view Galaxy files and export existing Triggers. Archive recovery currently requires a map with MapScript.galaxy; library conversion is available through the component API.'
+                : 'This archive has no Galaxy source. Existing Triggers and resources are left unchanged.',
+            }
+          : {}),
         markup: await text('Triggers'),
         hasAttributes: !!reader.find('Attributes'),
         suggestedOutput: path.join(
@@ -48,7 +87,7 @@ const sc2: BackendAdapter = {
     description:
       'Recover editable GUI triggers from Galaxy. Preserve existing folders and authored script by default.',
     fields: [
-      { key: 'input', label: 'Source map', required: true, picker: 'map' },
+      { key: 'input', label: 'Source map or mod', required: true, picker: 'map' },
       {
         key: 'installation',
         label: 'StarCraft II folder (automatic; override if needed)',
@@ -79,7 +118,10 @@ const sc2: BackendAdapter = {
     ],
   },
   command({ fields, fullGui, recoverAttributes, libraryRoots }, root) {
-    if (!/\.sc2map$/i.test(fields.input ?? '')) throw Error('Select a packed .SC2Map file.');
+    if (!/\.sc2map$/i.test(fields.input ?? ''))
+      throw Error(
+        'Archive recovery currently requires a packed .SC2Map. Mods can be opened, inspected and their existing Triggers exported; library recovery uses the component API.',
+      );
     const args = [
       path.join(root, 'trigger-recovery.mjs'),
       'recover',

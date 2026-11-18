@@ -37,3 +37,8 @@ This is a behavioral port, not a redistribution of its private source or game as
 Test library scoping, repeated references, cycles, missing roots, search wrapping,
 settings persistence across ports/restarts, picker cancellation, action enablement,
 source immutability and large-document rendering. Preserve strict benchmark rules.
+
+OPEN FILE now accepts packed `.SC2Map` and `.SC2Mod` files. Mod inspection uses
+real Galaxy components and preserves existing Triggers. Archive generation is
+still map-only; explicit library recovery remains in the component API. Checkboxes
+use the shared KSP green/orange styling while retaining native input semantics.

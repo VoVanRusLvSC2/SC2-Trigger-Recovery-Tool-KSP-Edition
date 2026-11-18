@@ -14,6 +14,9 @@ let shownResult = '';
 let originalMarkupText = '';
 let opening = false;
 let loadedMap = '';
+let canRecover = false;
+let recoveryNotice = '';
+let sourceFiles: DocumentPreview['sourceFiles'] = [];
 let inspectingMap = false;
 let automaticDefaults: Record<string, string> = {};
 let suggestedOutput = '';
@@ -44,6 +47,7 @@ const updateCodeView = createCodeViews();
 
 function metrics(target: 'markup' | 'source', text: string) {
   element<HTMLTextAreaElement>(target).value = text;
+  element(target).dispatchEvent(new Event('documentchange'));
   updateCodeView(target, text);
   const lines = text ? text.split(/\r\n|\r|\n/).length - (/(?:\r\n|\r|\n)$/.test(text) ? 1 : 0) : 0;
   // The final empty editor row needs a gutter even though it is not a source line.
@@ -63,6 +67,7 @@ function metrics(target: 'markup' | 'source', text: string) {
 async function inspectMap(file: string) {
   if (!file) return;
   loadedMap = '';
+  canRecover = false;
   inspectingMap = true;
   if (snapshot) render(snapshot);
   notice('Reading original archive...');
@@ -72,6 +77,13 @@ async function inspectMap(file: string) {
       path: file,
     });
     metrics('source', value.source);
+    sourceFiles = value.sourceFiles;
+    const sourceFile = element<HTMLSelectElement>('sourceFile');
+    sourceFile.replaceChildren(...sourceFiles.map((file) => new Option(file.path, file.path)));
+    sourceFile.hidden = sourceFiles.length < 2;
+    sourceFile.title = sourceFiles[0]?.path ?? 'No Galaxy source';
+    canRecover = value.canRecover;
+    recoveryNotice = value.recoveryNotice ?? '';
     metrics('markup', value.markup);
     loadedMap = value.name;
     element('selectedFile').textContent = value.name;
@@ -80,9 +92,10 @@ async function inspectMap(file: string) {
     if (!output.value || output.value === suggestedOutput) output.value = value.suggestedOutput;
     suggestedOutput = value.suggestedOutput;
     notice(
-      value.hasAttributes
-        ? 'Original Attributes found. Recovery preserves them automatically.'
-        : 'No Attributes component. Recovery analyzes Galaxy and localization automatically.',
+      recoveryNotice ||
+        (value.hasAttributes
+          ? 'Original Attributes found. Recovery preserves them automatically.'
+          : 'No Attributes component. Recovery analyzes Galaxy and localization automatically.'),
     );
   } finally {
     inspectingMap = false;
@@ -202,7 +215,10 @@ function render(state: JobSnapshot) {
       active ||
       ((opening || inspectingMap) && ['generate', 'openFile'].includes(id)) ||
       (id === 'generate' &&
-        (!loadedMap || loadedMap !== element<HTMLInputElement>('field-input').value));
+        (!canRecover ||
+          !loadedMap ||
+          loadedMap !== element<HTMLInputElement>('field-input').value));
+  element('generate').title = recoveryNotice;
   element<HTMLFieldSetElement>('settings').disabled = active;
   element<HTMLButtonElement>('cancel').disabled = !active && !opening;
   element<HTMLButtonElement>('saveMarkup').disabled =
@@ -330,7 +346,7 @@ function showTree() {
 // Settings never starts work. Only the main toolbar action can run recovery.
 element<HTMLFormElement>('recovery').onsubmit = (event) => event.preventDefault();
 element('generate').onclick = async () => {
-  if (!loadedMap || inspectingMap || opening) return;
+  if (!loadedMap || !canRecover || inspectingMap || opening) return;
   const form = element<HTMLFormElement>('recovery');
   if (!form.checkValidity()) {
     show('settingsDialog');
@@ -364,7 +380,7 @@ element('openFile').onclick = async () => {
   opening = true;
   element<HTMLButtonElement>('openFile').disabled = true;
   element<HTMLButtonElement>('cancel').disabled = false;
-  notice('Choose one map in the file picker.');
+  notice('Choose one .SC2Map or .SC2Mod file.');
   try {
     const selected = await choosePath('map', element<HTMLInputElement>('field-input').value);
     if (selected) await inspectMap(selected);
@@ -377,6 +393,17 @@ element('openFile').onclick = async () => {
   }
 };
 element('settingsButton').onclick = () => show('settingsDialog');
+element<HTMLSelectElement>('sourceFile').onchange = (event) => {
+  const selected = (event.target as HTMLSelectElement).value;
+  const file = sourceFiles.find((entry) => entry.path === selected);
+  if (file) {
+    metrics('source', file.text);
+    element('sourceFile').title = selected;
+    element<HTMLTextAreaElement>('source').scrollTop = 0;
+    element<HTMLTextAreaElement>('source').scrollLeft = 0;
+    element<HTMLTextAreaElement>('source').dispatchEvent(new Event('scroll'));
+  }
+};
 element('librariesButton').onclick = () => show('librariesDialog');
 element('infoButton').onclick = () => show('infoDialog');
 element('treeButton').onclick = () => {
@@ -529,6 +556,7 @@ async function initialize() {
     element<HTMLInputElement>('recoverAttributes').checked =
       state.request.recoverAttributes !== false;
     loadedMap = state.request.fields.input ?? '';
+    canRecover = /\.sc2map$/i.test(loadedMap);
     element('selectedFile').textContent = state.request.fields.input ?? '';
   }
   await settingsView.initialize();

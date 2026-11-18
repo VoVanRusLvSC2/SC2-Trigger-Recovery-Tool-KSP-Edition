@@ -107,6 +107,9 @@ export function createEditorSearch() {
   };
   for (const id of ['markup', 'source']) {
     const editor = el<HTMLTextAreaElement>(id);
+    editor.addEventListener('documentchange', () => {
+      if (target === editor) search();
+    });
     el('search' + (id === 'markup' ? 'Markup' : 'Source')).onclick = () => open(editor);
     editor.addEventListener('keydown', (event) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'f') {

@@ -14,6 +14,7 @@ import {
   assertPreparedLibraryRoots,
 } from '../src/libraries/local-roots.mjs';
 import { BoundedLocalModSources } from '../src/libraries/extensions/bounded-local-mod-sources.mjs';
+import { encodeFreshMpq } from '../src/vendor/@modkit/blizzard-mpq/src/mpq/fresh-writer.js';
 
 const root = path.resolve(import.meta.dirname, '..');
 assert.doesNotThrow(() => assertPreparedLibraryRoots({}, {}));
@@ -160,6 +161,65 @@ try {
   await fs.writeFile(original, 'deliberately invalid archive');
   const proof = path.join(temporary, 'attributes.json');
   await fs.writeFile(proof, '{}');
+  const packedMod = path.join(temporary, 'Packed.SC2Mod');
+  const modMarkup = '<TriggerData><Root/><Library Id="A1234567"><Root/></Library></TriggerData>';
+  const modBody = 'void libA1234567_InitLib() {}\r\n';
+  const modHeader = 'include "TriggerLibs/NativeLib"\r\n';
+  await fs.writeFile(
+    packedMod,
+    encodeFreshMpq([
+      { path: 'Triggers', bytes: Buffer.from(modMarkup) },
+      { path: 'Base.SC2Data/LibA1234567_h.galaxy', bytes: Buffer.from(modHeader) },
+      { path: 'Base.SC2Data/LibA1234567.galaxy', bytes: Buffer.from(modBody) },
+    ]),
+  );
+  const beforePreview = await fs.readFile(packedMod);
+  const packedMap = path.join(temporary, 'Preview.SC2Map');
+  await fs.writeFile(
+    packedMap,
+    encodeFreshMpq([
+      { path: 'MapScript.galaxy', bytes: Buffer.from('void InitMap() {}\n') },
+      { path: 'Base.SC2Data/LibExtra.galaxy', bytes: Buffer.from('void Extra() {}\n') },
+    ]),
+  );
+  const mapPreview = await api('inspect', { adapter: 'sc2', path: packedMap });
+  assert.equal(mapPreview.status, 200);
+  assert.equal(mapPreview.value.canRecover, true);
+  assert.deepEqual(
+    mapPreview.value.sourceFiles,
+    [{ path: 'MapScript.galaxy', text: 'void InitMap() {}\n' }],
+    'Normal map preview must not eagerly read all included libraries',
+  );
+  const modPreview = await api('inspect', { adapter: 'sc2', path: packedMod });
+  assert.equal(modPreview.status, 200);
+  assert.equal(modPreview.value.markup, modMarkup);
+  assert.equal(
+    modPreview.value.source,
+    modBody,
+    'Preview must select the actual body, not its header',
+  );
+  assert.deepEqual(
+    modPreview.value.sourceFiles.map((f) => f.path),
+    ['Base.SC2Data/LibA1234567.galaxy', 'Base.SC2Data/LibA1234567_h.galaxy'],
+  );
+  assert.equal(modPreview.value.sourceFiles[1].text, modHeader);
+  assert.equal(
+    modPreview.value.canRecover,
+    false,
+    'Inspection must not advertise unsupported archive conversion',
+  );
+  assert.deepEqual(await fs.readFile(packedMod), beforePreview);
+  const resourceMod = path.join(temporary, 'Resource.SC2Mod');
+  await fs.writeFile(
+    resourceMod,
+    encodeFreshMpq([{ path: 'Test.txt', bytes: Buffer.from('resource') }]),
+  );
+  const resourcePreview = await api('inspect', { adapter: 'sc2', path: resourceMod });
+  assert.equal(resourcePreview.status, 200);
+  assert.deepEqual(resourcePreview.value.sourceFiles, []);
+  assert.equal(resourcePreview.value.markup, '');
+  const excluded = path.join(temporary, 'NotShown.SC2Campaign');
+  await fs.writeFile(excluded, 'fixture');
   const mod = path.join(temporary, 'Dependency.SC2Mod');
   await fs.mkdir(mod);
   await fs.mkdir(path.join(mod, 'TriggerLibs'));
@@ -198,11 +258,16 @@ try {
   const mapListing = await api('files', { kind: 'map', path: temporary });
   assert.equal(mapListing.status, 200);
   assert(mapListing.value.entries.some((e) => e.path === original && !e.directory));
+  assert(mapListing.value.entries.some((e) => e.path === packedMod && !e.directory));
+  assert(mapListing.value.entries.every((e) => e.directory || /\.sc2(map|mod)$/i.test(e.name)));
+  assert(!mapListing.value.entries.some((e) => e.path === excluded));
   assert(!mapListing.value.entries.some((e) => e.path === proof));
   assert(mapListing.value.entries.some((e) => e.name === 'CustomSC2' && e.directory));
   const pasted = await api('files', { kind: 'map', path: original });
   assert.equal(pasted.value.selected, await fs.realpath(original));
   assert.equal(pasted.value.directory, await fs.realpath(temporary));
+  const pastedMod = await api('files', { kind: 'map', path: packedMod });
+  assert.equal(pastedMod.value.selected, await fs.realpath(packedMod));
   const jsonListing = await api('files', { kind: 'json', path: temporary });
   assert(jsonListing.value.entries.some((e) => e.path === proof));
   assert(!jsonListing.value.entries.some((e) => e.path === original));

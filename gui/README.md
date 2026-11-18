@@ -20,7 +20,7 @@ server; closing the browser tab alone does not stop an active recovery.
 
 ## Workflow
 
-1. **OPEN FILE** selects one packed `.SC2Map`. Its original Galaxy and existing
+1. **OPEN FILE** selects one packed `.SC2Map` or `.SC2Mod`. Its original Galaxy and existing
    markup appear immediately. Opening a map never starts recovery.
 2. **GENERATE TRIGGERS** runs automatic recovery with a separately named output.
    SC2 and the unchanged strict benchmark are discovered automatically.
@@ -96,3 +96,21 @@ session token. The renderer has no Node or filesystem privileges.
 Build with `npm run build:gui`; check the bridge with `npm run verify:gui`.
 Release staging builds and hashes the GUI; installed users need no compiler.
 Only the SC2 adapter exists. Other formats require a real backend, not a new label.
+
+## Mod inspection
+
+OPEN FILE lists only `.SC2Map` and `.SC2Mod` files, plus navigation folders.
+Mods use their actual Galaxy library files rather than a fabricated MapScript.
+The source selector switches between the original body/header and other Galaxy
+files; line counts, highlighting and search follow the selected file. Mods without
+Galaxy, including resource-only mods, open with an empty source panel.
+Existing mod Triggers can be inspected as a tree and exported unchanged.
+
+This is mod archive inspection. GENERATE TRIGGERS remains limited to maps with
+MapScript.galaxy; library-only mod archive recovery is not connected to this UI.
+The existing component conversion API remains available for explicit libraries.
+The disabled action and status text report this limit instead of starting a map
+worker on a mod or fabricating its startup script.
+
+Checkboxes use green KSP frames/checkmarks and orange hover/focus. They remain
+native checkbox inputs with keyboard, disabled-state and persistence behavior.

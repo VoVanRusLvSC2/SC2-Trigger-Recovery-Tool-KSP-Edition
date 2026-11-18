@@ -15,8 +15,8 @@
           <button
             id="openFile"
             class="file-chooser-btn"
-            title="Select a .SC2Map file"
-            aria-label="Open map file"
+            title="Select a .SC2Map or .SC2Mod file"
+            aria-label="Open map or mod file"
           >
             <span class="folder-icon"></span>
           </button>
@@ -63,6 +63,7 @@
         <section class="editor-panel">
           <div class="panel-header">
             <h2>Galaxy Source</h2>
+            <select id="sourceFile" aria-label="Galaxy source file" hidden></select>
             <span id="sourceMetric" class="metric" aria-live="polite">0 lines</span
             ><button id="searchSource">SEARCH</button>
           </div>
@@ -73,7 +74,7 @@
               readonly
               spellcheck="false"
               aria-label="Galaxy Source"
-              placeholder="Open a map to view its original MapScript.galaxy. No SC2 Editor is needed for this view."
+              placeholder="Open a map or mod to view its original Galaxy files. No SC2 Editor is needed for this view."
             ></textarea>
           </div>
         </section>
@@ -91,7 +92,7 @@
         <button id="fileCancelX" aria-label="Close file picker">X</button>
       </div>
       <p id="fileHelp">
-        Choose one .SC2Map file. Double-click to open, or select it and press OPEN FILE.
+        Choose one .SC2Map or .SC2Mod file. Double-click to open, or select it and press OPEN FILE.
       </p>
       <form id="fileNavigation" class="file-path-bar">
         <button type="button" id="fileUp" title="Parent folder">UP</button>
