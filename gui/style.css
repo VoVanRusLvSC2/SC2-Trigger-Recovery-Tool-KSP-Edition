@@ -13,6 +13,7 @@
   --muted: #8cbba6;
   --edge: #285f4b;
   --orange: #ff9c25;
+  --background-opacity: 0.87;
 }
 * {
   box-sizing: border-box;
@@ -21,7 +22,7 @@ body {
   margin: 0;
   min-width: 720px;
   background:
-    radial-gradient(ellipse at 50% 10%, #10271e55, transparent 65%),
+    radial-gradient(ellipse at 50% 10%, rgb(16 39 30 / var(--background-opacity)), transparent 65%),
     linear-gradient(#173b2926 1px, transparent 1px),
     linear-gradient(90deg, #173b2926 1px, transparent 1px), #000;
   background-size:
@@ -30,6 +31,7 @@ body {
     44px 32px,
     auto;
 }
+
 button,
 input,
 select,
@@ -86,26 +88,6 @@ textarea:focus {
   max-width: 2400px;
   margin: auto;
 }
-.quick-start {
-  padding: 8px 14px;
-  border: 1px solid var(--edge);
-  background: #061b14;
-  color: var(--muted);
-}
-.quick-start p {
-  margin: 2px 0;
-}
-.quick-start strong {
-  color: var(--green);
-  margin-left: 12px;
-}
-.quick-start strong:first-child {
-  margin-left: 0;
-}
-.quick-start span {
-  display: inline-block;
-  margin-right: 24px;
-}
 .trigger-topbar {
   background: #000e;
   border: 1px solid var(--edge);
@@ -161,14 +143,7 @@ h1 {
   margin: 0 0 5px;
   white-space: nowrap;
 }
-h1 small {
-  font:
-    10px 'Segoe UI',
-    sans-serif;
-  color: var(--muted);
-  margin-left: 12px;
-  letter-spacing: 1px;
-}
+
 h2 {
   font-size: 17px;
   margin: 0;
@@ -222,7 +197,7 @@ progress::-webkit-progress-value {
 }
 .trigger-topbar-actions {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   gap: 10px;
   margin-top: 12px;
 }
@@ -357,7 +332,8 @@ dialog .dialog-heading {
   padding: 0;
 }
 #settingsDialog {
-  width: min(680px, 90vw);
+  width: min(720px, 92vw);
+  min-height: min(650px, 90dvh);
 }
 fieldset {
   padding: 0;
@@ -719,9 +695,7 @@ summary {
   min-height: 1.4em;
   margin: 8px 0;
 }
-#fields > details {
-  margin: 18px 0;
-}
+
 .metric {
   flex-shrink: 0;
 }
@@ -739,4 +713,270 @@ summary {
   .panel-header .metric {
     font-size: 11px;
   }
+}
+/* Desktop parity: the reference uses two code areas, compact settings, and
+   separate inspection windows. Do not style the disabled controls as active. */
+.code-editor {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  border: 1px solid #79592f;
+  overflow: hidden;
+}
+.code-editor textarea {
+  border: 0;
+  outline-offset: -2px;
+}
+.line-gutter {
+  margin: 0;
+  padding: 9px 8px;
+  min-width: 40px;
+  max-width: 90px;
+  max-height: none;
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  overflow: hidden;
+  text-align: right;
+  user-select: none;
+  color: #719a80;
+  background: #08160f;
+  border-right: 1px solid #28543c;
+  font:
+    13px/19px Consolas,
+    'Courier New',
+    monospace;
+}
+.setting-slider {
+  display: grid;
+  grid-template-columns: 145px minmax(0, 1fr) 48px;
+  gap: 12px;
+  align-items: center;
+  margin: 16px 0;
+}
+.setting-slider label {
+  margin: 0;
+}
+.setting-slider input {
+  padding: 0;
+  accent-color: #6ae4b4;
+}
+.setting-slider output {
+  text-align: right;
+  color: #92f1c8;
+}
+.settings-close {
+  min-width: 180px;
+  min-height: 54px;
+  display: block;
+  margin: 16px auto 0;
+}
+.advanced-settings {
+  margin-top: 18px;
+}
+.advanced-settings[open] > summary {
+  margin-bottom: 16px;
+}
+#settingsDialog .recovery-section {
+  margin: 0 0 18px;
+}
+.mode-card .check {
+  margin-top: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+#preferenceStatus,
+#libraryStatus {
+  min-height: 18px;
+  color: var(--muted);
+  font-size: 12px;
+}
+#treeDialog {
+  width: min(980px, 94vw);
+  height: min(1040px, 88dvh);
+}
+#hierarchy {
+  height: calc(100% - 100px);
+  min-height: 200px;
+  overflow: auto;
+  border: 1px solid #285f4b;
+  padding: 8px;
+}
+#hierarchy ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 22px;
+}
+#hierarchy > ul {
+  padding-left: 0;
+}
+.tree-row {
+  display: block;
+  background: transparent;
+  box-shadow: none;
+  border: 1px solid transparent;
+  min-height: 26px;
+  height: 26px;
+  padding: 2px 8px;
+  font:
+    12px Consolas,
+    monospace;
+  white-space: pre;
+  text-align: left;
+}
+.tree-row::before {
+  content: '·';
+  display: inline-block;
+  width: 14px;
+  color: #70daa9;
+}
+[aria-expanded='true'] > .tree-row::before {
+  content: '▾';
+}
+[aria-expanded='false'] > .tree-row::before {
+  content: '▸';
+}
+[aria-selected='true'] > .tree-row {
+  border-color: #b58532;
+  background: #193d2b;
+}
+#searchDialog {
+  width: min(760px, 94vw);
+  top: 16vh;
+  max-height: 75dvh;
+  z-index: 10;
+}
+#treeDialog {
+  z-index: 9;
+}
+#searchDialog .dialog-heading,
+#treeDialog .dialog-heading,
+#infoDialog .dialog-heading {
+  cursor: move;
+  touch-action: none;
+  gap: 12px;
+}
+#searchResults {
+  height: min(260px, 30dvh);
+  overflow: auto;
+  border: 1px solid #285f4b;
+  margin: 12px 0;
+}
+#searchResults button {
+  display: block;
+  min-height: 32px;
+  width: 100%;
+  padding: 6px 10px;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: none;
+  border-color: transparent;
+  background: #091e14;
+  font:
+    12px Consolas,
+    monospace;
+}
+.search-actions,
+.library-actions {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0;
+}
+.search-actions button {
+  flex: 1;
+}
+.library-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-bottom: 1px solid #285f4b;
+}
+.library-row label {
+  flex: 1;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+#libraryList {
+  max-height: 300px;
+  overflow: auto;
+  margin: 12px 0;
+}
+#libraryList:empty::before {
+  content: 'No local libraries added.';
+  display: block;
+  padding: 16px;
+  color: #8cbba6;
+}
+#librarySummary,
+#treeCount,
+#issueCount {
+  color: var(--muted);
+}
+#infoDialog > button,
+#librariesDialog > button,
+#accessDialog > button {
+  min-width: 140px;
+  display: block;
+  margin: 16px auto 0;
+}
+@media (max-width: 1100px) {
+  .trigger-topbar-actions {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .progress-box {
+    min-width: 110px;
+  }
+}
+.code-surface {
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  background: #000;
+}
+.code-surface textarea {
+  position: relative;
+  height: 100%;
+  background: transparent;
+}
+.code-highlight {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  max-height: none;
+  overflow: visible;
+  width: max-content;
+  white-space: pre;
+  pointer-events: none;
+  font:
+    13px/19px Consolas,
+    'Courier New',
+    monospace;
+  tab-size: 4;
+  color: #c2dfcd;
+  border: 0;
+  background: transparent;
+  overflow-wrap: normal;
+}
+.highlighted textarea {
+  color: transparent;
+}
+.highlighted textarea::selection {
+  background: #33775299;
+  color: transparent;
+}
+.syntax-comment {
+  color: #55906b;
+}
+.syntax-string {
+  color: #e6b970;
+}
+.syntax-keyword {
+  color: #84dce0;
+}
+.syntax-number {
+  color: #b0a6ed;
 }

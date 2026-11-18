@@ -18,6 +18,7 @@ export interface RecoveryRequest {
   fields: Record<string, string>;
   fullGui: boolean;
   recoverAttributes?: boolean;
+  libraryRoots?: string[];
 }
 export interface Artifact {
   id: string;
@@ -41,7 +42,7 @@ export interface JobSnapshot {
   request?: RecoveryRequest;
 }
 
-export type PickerKind = 'map' | 'folder' | 'json' | 'output';
+export type PickerKind = 'map' | 'folder' | 'json' | 'output' | 'audio' | 'library';
 export interface FileListing {
   directory: string;
   parent: string;

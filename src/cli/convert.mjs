@@ -305,11 +305,11 @@ try {
     editorVerified: false,
   });
 
-  let folders = [];
+  let folders = cfg.libraryRoots ?? [];
 
   if (prepared.localDependencyProof) {
     const connection = await read(prepared.localDependencyProof);
-    folders = connection.localModFolders;
+    folders = [...new Set([...folders, ...connection.localModFolders])];
 
     assert.equal(connection.connectedMapSha256, row.archiveSha256);
 

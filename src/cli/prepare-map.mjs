@@ -13,6 +13,8 @@ import { xmlTree } from '../sdk/array-values/modules/triggers/shared/trigger-doc
 import { parseGalaxySource } from '../conversion/runtime-event-public-alias/galaxy-to-trigger.standard-getter.mjs';
 import { SyntaxKind } from '../sdk/core/modules/galaxy/language-core/types.js';
 import { attributeUseInGalaxy } from '../verification/attribute-use-evidence.mjs';
+import { normalizeLibraryRoots } from '../libraries/local-roots.mjs';
+import { BoundedLocalModSources } from '../libraries/extensions/bounded-local-mod-sources.mjs';
 
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const save = (file, data) => fs.writeFile(file, JSON.stringify(data, null, 2) + '\n');
@@ -40,8 +42,10 @@ export async function prepareMap({
   guiRecoveryMode = 'preserve-source',
   attributeIndex,
   recoverAttributes = true,
+  libraryRoots = [],
 }) {
   assert.equal(typeof recoverAttributes, 'boolean', 'Invalid attribute recovery option');
+  libraryRoots = await normalizeLibraryRoots(libraryRoots);
   original = await fs.realpath(original);
   assert(!(installation && resourceSnapshot), 'Choose either --sc2 or --resources');
   const publicResources = resourceSnapshot !== undefined;
@@ -123,6 +127,14 @@ export async function prepareMap({
 
   const session = new MapSession({
     installation,
+    ...(libraryRoots.length
+      ? {
+          sources: new BoundedLocalModSources({
+            installationDirectory: installation,
+            sources: libraryRoots.map((p) => ({ type: 'mods', path: p, priority: -100 })),
+          }),
+        }
+      : {}),
     sourceIdentityFile,
     maxAstEntries: 0,
     maxAstBytes: 0,
@@ -279,6 +291,7 @@ export async function prepareMap({
     );
     await save(path.join(output, 'config.json'), {
       installation,
+      libraryRoots,
       entries,
       ...(publicResources ? { resourceSnapshot: true } : {}),
     });

@@ -132,3 +132,12 @@ preserved; the optional reconstruction and GUI enrichment are skipped. All
 semantic and attribute evidence checks remain active, so an unproven attribute
 contract still produces REVIEW. When running a prepared job, use its boolean
 `recoverAttributes` field (absent means enabled).
+
+## Additional local dependency packages
+
+Use repeatable `--library <SC2-package-or-folder>` on `recover` or `prepare`.
+Package files and unpacked package directories register their parent as a search
+root; ordinary directories are used directly. Preparation and conversion use the
+same SDK resolver and dependency identity checks. Only referenced packages are
+loaded. Missing dependencies still fail closed; standalone Galaxy files are not
+injected as invented bindings. This is the CLI equivalent of GUI **LIBRARIES**.

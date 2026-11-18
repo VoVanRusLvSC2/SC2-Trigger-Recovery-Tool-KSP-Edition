@@ -78,7 +78,7 @@ const sc2: BackendAdapter = {
       },
     ],
   },
-  command({ fields, fullGui, recoverAttributes }, root) {
+  command({ fields, fullGui, recoverAttributes, libraryRoots }, root) {
     if (!/\.sc2map$/i.test(fields.input ?? '')) throw Error('Select a packed .SC2Map file.');
     const args = [
       path.join(root, 'trigger-recovery.mjs'),
@@ -93,6 +93,7 @@ const sc2: BackendAdapter = {
     if (fields.attributeIndex?.trim()) args.push('--attribute-index', fields.attributeIndex);
     if (fullGui) args.push('--full-gui');
     if (recoverAttributes === false) args.push('--no-attribute-recovery');
+    for (const directory of libraryRoots ?? []) args.push('--library', directory);
     return args;
   },
 };
@@ -104,6 +105,15 @@ export function selectAdapter(request: RecoveryRequest): BackendAdapter {
     throw Error('Invalid recovery request.');
   if (request.recoverAttributes !== undefined && typeof request.recoverAttributes !== 'boolean')
     throw Error('Invalid attribute recovery option.');
+  if (
+    request.libraryRoots !== undefined &&
+    (!Array.isArray(request.libraryRoots) ||
+      request.libraryRoots.length > 100 ||
+      request.libraryRoots.some(
+        (p) => typeof p !== 'string' || !p.trim() || p.length > 32767 || /[\x00-\x1f]/.test(p),
+      ))
+  )
+    throw Error('Invalid local library roots.');
   for (const field of adapter.info.fields) {
     const value = request.fields[field.key];
     if ((value !== undefined && typeof value !== 'string') || (field.required && !value?.trim()))

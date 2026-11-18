@@ -24,7 +24,7 @@ The last strict registry is dated **2026-10-30**. Publication and source reorgan
 ## Core capabilities
 
 The [TypeScript GUI](gui/README.md) provides adapter-based recovery, live logs,
-evidence, an XML hierarchy and source previews without Java. Run `npm run gui`
+evidence, a library-aware trigger hierarchy, persistent settings, search and source previews without Java. Run `npm run gui`
 from a prepared source checkout. Only the SC2 backend is currently implemented.
 The published RC1 installer still contains the earlier native Windows form;
 the TypeScript interface is included in RC2 and newer builds.

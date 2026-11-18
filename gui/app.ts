@@ -1,15 +1,16 @@
 import { createFilePicker } from './picker.js';
+import { buildHierarchy, renderHierarchy } from './hierarchy.js';
+import { createEditorSearch } from './search.js';
+import { createSettingsView } from './settings-view.js';
+import { createCodeViews } from './code-view.js';
 import type { RecoveryAdapter, JobSnapshot, Artifact, DocumentPreview } from './contracts.js';
 
 const element = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const token = document.querySelector<HTMLMetaElement>('meta[name="session-token"]')!.content;
-const settingsDialog = element<HTMLDialogElement>('settingsDialog');
 let adapters: RecoveryAdapter[] = [];
 let snapshot: JobSnapshot;
 let shownArtifacts = '';
 let shownResult = '';
-let searchTarget: 'markup' | 'source' = 'source';
-let selectedMarkup: Artifact | undefined;
 let originalMarkupText = '';
 let opening = false;
 let loadedMap = '';
@@ -38,23 +39,26 @@ function show(id: string) {
   if (!dialog.open) dialog.showModal();
 }
 const { choosePath, cancel: finishPicker } = createFilePicker(api);
+const settingsView = createSettingsView(api, choosePath);
+const updateCodeView = createCodeViews();
 
 function metrics(target: 'markup' | 'source', text: string) {
   element<HTMLTextAreaElement>(target).value = text;
+  updateCodeView(target, text);
   const lines = text ? text.split(/\r\n|\r|\n/).length - (/(?:\r\n|\r|\n)$/.test(text) ? 1 : 0) : 0;
+  // The final empty editor row needs a gutter even though it is not a source line.
+  const count = text.split(/\r\n|\r|\n/).length;
+  element(target + 'Lines').textContent = Array.from({ length: count }, (_, i) =>
+    String(i + 1),
+  ).join('\n');
   element(target + 'Metric').textContent = `${lines.toLocaleString()} lines`;
   element(target + 'Metric').title = `${text.length.toLocaleString()} characters`;
   if (target === 'markup') {
     // Textarea.value normalizes CRLF. Retain source text for exact XML export.
     originalMarkupText = text;
-    element<HTMLButtonElement>('saveMarkup').disabled = !text;
+    element<HTMLButtonElement>('exportFile').disabled = !text;
     element<HTMLButtonElement>('treeButton').disabled = !text;
   }
-}
-function fullMode() {
-  const enabled = element<HTMLInputElement>('fullGui').checked;
-  element('fullMode').textContent = 'FULL GUI: ' + (enabled ? 'ON' : 'OFF');
-  element('fullMode').setAttribute('aria-pressed', String(enabled));
 }
 async function inspectMap(file: string) {
   if (!file) return;
@@ -69,7 +73,6 @@ async function inspectMap(file: string) {
     });
     metrics('source', value.source);
     metrics('markup', value.markup);
-    selectedMarkup = undefined;
     loadedMap = value.name;
     element('selectedFile').textContent = value.name;
     element<HTMLInputElement>('field-input').value = value.name;
@@ -93,10 +96,7 @@ function configure() {
   loadedMap = '';
   element('description').textContent = adapter.description;
   element('fields').replaceChildren();
-  const advanced = document.createElement('details');
-  const summary = document.createElement('summary');
-  summary.textContent = 'Advanced settings';
-  advanced.append(summary);
+
   for (const field of adapter.fields) {
     const container = document.createElement('div');
     container.className = 'field';
@@ -152,10 +152,8 @@ function configure() {
       help.textContent = field.help;
       container.append(help);
     }
-    if (['installation', 'output', 'benchmark'].includes(field.key)) advanced.append(container);
-    else element('fields').append(container);
+    element('fields').append(container);
   }
-  element('fields').append(advanced);
 }
 async function artifactText(artifact: Artifact) {
   return (await api<{ text: string }>('artifact?id=' + encodeURIComponent(artifact.id))).text;
@@ -165,7 +163,6 @@ async function preview(artifact: Artifact) {
   const text = await artifactText(artifact);
   if (artifact.kind === 'markup') {
     metrics('markup', text);
-    selectedMarkup = artifact;
   } else if (artifact.kind === 'script') metrics('source', text);
   else {
     element('result').textContent = text;
@@ -208,14 +205,28 @@ function render(state: JobSnapshot) {
         (!loadedMap || loadedMap !== element<HTMLInputElement>('field-input').value));
   element<HTMLFieldSetElement>('settings').disabled = active;
   element<HTMLButtonElement>('cancel').disabled = !active && !opening;
-  element<HTMLButtonElement>('exportFile').disabled =
+  element<HTMLButtonElement>('saveMarkup').disabled =
     active || !state.artifacts.some((a) => a.kind === 'archive');
+  element<HTMLButtonElement>('exportFile').disabled =
+    active || !element<HTMLTextAreaElement>('markup').value;
+  element<HTMLButtonElement>('treeButton').disabled =
+    active || !element<HTMLTextAreaElement>('markup').value;
+  element<HTMLButtonElement>('infoButton').disabled = !state.request && !state.result;
+  element('issueCount').textContent =
+    'Issues: ' +
+    (state.phase === 'failed'
+      ? '1 or more'
+      : state.phase === 'running'
+        ? 'pending'
+        : state.result
+          ? 'see verdict'
+          : '0');
   const log = element('log'),
     bottom = log.scrollTop + log.clientHeight >= log.scrollHeight - 30;
   if (log.textContent !== state.log)
     log.textContent =
       state.log ||
-      'Ready. Choose OPEN MAP, then GENERATE TRIGGERS. The output folder is created automatically.';
+      'Ready. Choose OPEN FILE, then GENERATE TRIGGERS. SAVE TRIGGERS downloads the recovered map; EXPORT FILE exports XML.';
   if (bottom) log.scrollTop = log.scrollHeight;
   element('output').textContent = state.output ?? '';
   const resultText = JSON.stringify(state.result, null, 2) ?? '';
@@ -283,7 +294,6 @@ function render(state: JobSnapshot) {
     if (markup)
       artifactText(markup)
         .then((text) => {
-          selectedMarkup = markup;
           metrics('markup', text);
         })
         .catch(fail);
@@ -313,32 +323,9 @@ function showTree() {
     element<HTMLTextAreaElement>('markup').value,
     'text/xml',
   );
-  if (xml.querySelector('parsererror')) throw Error('Invalid XML; inspect the markup panel.');
-  element('hierarchy').replaceChildren();
-  function branch(node: Element, depth: number): HTMLElement {
-    const item = document.createElement('details'),
-      summary = document.createElement('summary');
-    summary.textContent =
-      node.tagName +
-      [...node.attributes].map((a) => ` ${a.name}="${a.value}"`).join('') +
-      (node.children.length ? '' : ' ' + (node.textContent ?? '').slice(0, 140));
-    item.append(summary);
-    let loaded = false;
-    item.ontoggle = () => {
-      if (!item.open || loaded || depth >= 60) return;
-      loaded = true;
-      for (const child of [...node.children].slice(0, 2000)) item.append(branch(child, depth + 1));
-      if (node.children.length > 2000) {
-        const warning = document.createElement('p');
-        warning.textContent =
-          'Preview limited to 2,000 child nodes. The markup panel contains the complete text.';
-        item.append(warning);
-      }
-    };
-    return item;
-  }
-  element('hierarchy').append(branch(xml.documentElement, 0));
-  show('treeDialog');
+  renderHierarchy(element('hierarchy'), buildHierarchy(xml), element('treeCount'));
+  const dialog = element<HTMLDialogElement>('treeDialog');
+  if (!dialog.open) dialog.show();
 }
 // Settings never starts work. Only the main toolbar action can run recovery.
 element<HTMLFormElement>('recovery').onsubmit = (event) => event.preventDefault();
@@ -347,8 +334,7 @@ element('generate').onclick = async () => {
   const form = element<HTMLFormElement>('recovery');
   if (!form.checkValidity()) {
     show('settingsDialog');
-    const details = form.querySelector('input:invalid, select:invalid')?.closest('details');
-    if (details) details.open = true;
+    for (const details of form.querySelectorAll('details')) details.open = true;
     form.reportValidity();
     return;
   }
@@ -365,6 +351,7 @@ element('generate').onclick = async () => {
         fields,
         fullGui: element<HTMLInputElement>('fullGui').checked,
         recoverAttributes: element<HTMLInputElement>('recoverAttributes').checked,
+        libraryRoots: settingsView.libraryRoots(),
       }),
     );
     notice('Recovery running. See GEN INFO for live output.');
@@ -400,10 +387,6 @@ element('treeButton').onclick = () => {
   }
 };
 element('saveMarkup').onclick = () => {
-  if (selectedMarkup) downloadArtifact(selectedMarkup).catch(fail);
-  else download(new Blob([originalMarkupText], { type: 'application/xml' }), 'Triggers');
-};
-element('exportFile').onclick = () => {
   const archive = snapshot?.artifacts.find((a) => a.kind === 'archive');
   if (archive) {
     if (snapshot?.phase === 'failed')
@@ -411,12 +394,18 @@ element('exportFile').onclick = () => {
     downloadArtifact(archive).catch(fail);
   }
 };
-element('fullMode').onclick = () => {
-  const input = element<HTMLInputElement>('fullGui');
-  input.checked = !input.checked;
-  fullMode();
+element('exportFile').onclick = () => show('exportDialog');
+element<HTMLFormElement>('exportForm').onsubmit = (event) => {
+  event.preventDefault();
+  const name = element<HTMLInputElement>('exportName').value.trim();
+  if (!name || /[<>:"/\\|?*\x00-\x1f]/.test(name) || name === '.' || name === '..') {
+    notice('Enter a file name without path separators.');
+    return;
+  }
+  download(new Blob([originalMarkupText], { type: 'application/xml' }), name);
+  element<HTMLDialogElement>('exportDialog').close();
 };
-element('fullGui').onchange = fullMode;
+element('fullMode').onclick = () => show('accessDialog');
 element('cancel').onclick = () => {
   if (opening) {
     finishPicker();
@@ -445,27 +434,54 @@ document.addEventListener('fullscreenchange', () => {
 });
 for (const button of document.querySelectorAll<HTMLButtonElement>('[data-close]'))
   button.onclick = () => element<HTMLDialogElement>(button.dataset.close!).close();
-for (const target of ['markup', 'source'] as const)
-  element('search' + (target === 'markup' ? 'Markup' : 'Source')).onclick = () => {
-    searchTarget = target;
-    show('searchDialog');
-    element<HTMLInputElement>('query').focus();
+createEditorSearch();
+for (const target of ['markup', 'source'] as const) {
+  const editor = element<HTMLTextAreaElement>(target),
+    gutter = element(target + 'Lines');
+  editor.addEventListener('scroll', () => {
+    gutter.scrollTop = editor.scrollTop;
+  });
+}
+// Search and hierarchy are nonmodal inspector windows, like the JavaFX tools.
+for (const dialog of document.querySelectorAll<HTMLDialogElement>('dialog')) {
+  dialog.addEventListener('click', (event) => {
+    if (event.target !== dialog || dialog.id === 'fileDialog') return;
+    const r = dialog.getBoundingClientRect();
+    const mouse = event as MouseEvent;
+    if (
+      mouse.clientX < r.left ||
+      mouse.clientX > r.right ||
+      mouse.clientY < r.top ||
+      mouse.clientY > r.bottom
+    )
+      dialog.close();
+  });
+  const heading = dialog.querySelector<HTMLElement>('.dialog-heading');
+  if (!heading || !['searchDialog', 'treeDialog', 'infoDialog'].includes(dialog.id)) continue;
+  let offset: { x: number; y: number } | undefined;
+  heading.onpointerdown = (event) => {
+    if ((event.target as Element).closest('button')) return;
+    const r = dialog.getBoundingClientRect();
+    offset = { x: event.clientX - r.left, y: event.clientY - r.top };
+    heading.setPointerCapture(event.pointerId);
   };
-element('findNext').onclick = () => {
-  const input = element<HTMLTextAreaElement>(searchTarget),
-    query = element<HTMLInputElement>('query').value;
-  if (!query) return;
-  let found = input.value.toLowerCase().indexOf(query.toLowerCase(), input.selectionEnd);
-  if (found < 0) found = input.value.toLowerCase().indexOf(query.toLowerCase());
-  if (found < 0) {
-    element('searchStatus').textContent = 'No match';
-    return;
+  heading.onpointermove = (event) => {
+    if (!offset) return;
+    dialog.style.margin = '0';
+    dialog.style.left =
+      Math.max(0, Math.min(innerWidth - dialog.offsetWidth, event.clientX - offset.x)) + 'px';
+    dialog.style.top = Math.max(0, Math.min(innerHeight - 60, event.clientY - offset.y)) + 'px';
+  };
+  heading.onpointerup = () => {
+    offset = undefined;
+  };
+}
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && !document.querySelector('dialog:modal')) {
+    const open = [...document.querySelectorAll<HTMLDialogElement>('dialog[open]')].at(-1);
+    open?.close();
   }
-  element<HTMLDialogElement>('searchDialog').close();
-  input.focus();
-  input.setSelectionRange(found, found + query.length);
-  input.scrollTop = input.value.slice(0, found).split('\n').length * 19 - input.clientHeight / 2;
-};
+});
 const divider = document.querySelector<HTMLElement>('.divider')!;
 function splitAt(percent: number) {
   document.querySelector<HTMLElement>('main')!.style.gridTemplateColumns =
@@ -515,7 +531,7 @@ async function initialize() {
     loadedMap = state.request.fields.input ?? '';
     element('selectedFile').textContent = state.request.fields.input ?? '';
   }
-  fullMode();
+  await settingsView.initialize();
   render(state);
   async function poll() {
     try {

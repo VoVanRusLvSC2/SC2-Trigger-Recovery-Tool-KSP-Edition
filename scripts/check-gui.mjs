@@ -8,6 +8,9 @@ import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { selectAdapter } from '../gui/dist/adapters.js';
 import { findInstallation } from '../gui/dist/defaults.js';
+import { createPreferenceStore, preferenceDefaults } from '../gui/dist/preferences.js';
+import { normalizeLibraryRoots } from '../src/libraries/local-roots.mjs';
+import { BoundedLocalModSources } from '../src/libraries/extensions/bounded-local-mod-sources.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const request = {
@@ -35,11 +38,31 @@ assert(
 assert.throws(() => selectAdapter({ ...request, recoverAttributes: 'no' }), /Invalid attribute/);
 assert.throws(() => selectAdapter({ ...request, adapter: 'invented' }), /Unsupported/);
 assert.throws(() => selectAdapter({ ...request, fields: {} }), /Choose/);
+assert.throws(() => selectAdapter({ ...request, libraryRoots: ['bad\0path'] }), /Invalid local/);
+const libraryArgv = selectAdapter({
+  ...request,
+  libraryRoots: ['C:\\literal & $(not-executed)'],
+}).command({ ...request, libraryRoots: ['C:\\literal & $(not-executed)'] }, root);
+assert.equal(libraryArgv.at(-1), 'C:\\literal & $(not-executed)');
+assert.equal(libraryArgv.at(-2), '--library');
+const settingsFolder = await fs.mkdtemp(path.join(os.tmpdir(), 'recovery-settings-'));
+const settingsFile = path.join(settingsFolder, 'settings.json');
+const store = createPreferenceStore(settingsFile);
+assert.deepEqual(await store.read(), preferenceDefaults);
+await store.write({ ...preferenceDefaults, fullGui: true, backgroundOpacity: 0.53 });
+assert.equal((await createPreferenceStore(settingsFile).read()).fullGui, true);
+assert.equal((await createPreferenceStore(settingsFile).read()).backgroundOpacity, 0.53);
+await assert.rejects(store.write({ musicVolume: 1.1 }), /Invalid preference/);
+await assert.rejects(
+  store.write({ libraryRoots: [{ path: 'a', enabled: 'yes' }] }),
+  /Invalid preference/,
+);
 
 const child = spawn(process.execPath, ['gui/dist/server.js', '--no-open'], {
   cwd: root,
   windowsHide: true,
   stdio: ['ignore', 'pipe', 'pipe'],
+  env: { ...process.env, SC2_RECOVERY_SETTINGS: settingsFile },
 });
 let output = '',
   stderr = '';
@@ -78,6 +101,9 @@ try {
   assert.equal((await fetch(url + '/../../package.json')).status, 404);
   assert.equal((await fetch(url + '/app.js')).status, 200);
   assert.equal((await fetch(url + '/picker.js')).status, 200);
+  for (const module of ['hierarchy', 'search', 'settings-view'])
+    assert.equal((await fetch(url + '/' + module + '.js')).status, 200);
+  assert.equal((await fetch(url + '/preferences.js')).status, 404);
   async function api(route, data) {
     const response = await fetch(url + '/api/' + route, {
       method: data === undefined ? 'GET' : 'POST',
@@ -87,6 +113,14 @@ try {
     return { status: response.status, value: await response.json() };
   }
   assert.equal((await api('adapters')).value[0].id, 'sc2');
+  assert.equal((await api('preferences')).value.fullGui, true);
+  assert.equal(
+    (await api('preferences', { ...preferenceDefaults, backgroundOpacity: 2 })).status,
+    400,
+  );
+  assert.equal((await api('preferences', preferenceDefaults)).status, 200);
+  assert.equal((await api('preferences')).value.fullGui, false);
+  assert.equal((await api('music', { path: 'anything.exe' })).status, 400);
   const locations = await api('places');
   assert.equal(locations.status, 200);
   assert(locations.value.some((place) => place.name === 'Home' && path.isAbsolute(place.path)));
@@ -114,6 +148,41 @@ try {
   await fs.writeFile(original, 'deliberately invalid archive');
   const proof = path.join(temporary, 'attributes.json');
   await fs.writeFile(proof, '{}');
+  const mod = path.join(temporary, 'Dependency.SC2Mod');
+  await fs.mkdir(mod);
+  await fs.mkdir(path.join(mod, 'TriggerLibs'));
+  const dependencySource = 'void ExtraDependency() {}\n';
+  await fs.writeFile(path.join(mod, 'TriggerLibs/Extra.galaxy'), dependencySource);
+  const extraSources = new BoundedLocalModSources({
+    sources: [{ type: 'mods', path: temporary, priority: -100 }],
+  });
+  try {
+    const local = extraSources.locals.get('local:mods:0');
+    assert(local, 'The configured root must be mounted by the real SDK');
+    assert.equal(
+      Buffer.from(await local.read('Dependency.SC2Mod/TriggerLibs/Extra.galaxy', 1024)).toString(
+        'utf8',
+      ),
+      dependencySource,
+    );
+    const identity = await extraSources.resolveLocalPath(
+      'local:mods:0',
+      'Mods/Dependency.SC2Mod/TriggerLibs/Extra.galaxy',
+    );
+    assert.equal(identity.path, path.join(mod, 'TriggerLibs/Extra.galaxy'));
+  } finally {
+    await extraSources.dispose();
+  }
+  assert.deepEqual(await normalizeLibraryRoots([mod, temporary]), [await fs.realpath(temporary)]);
+  await assert.rejects(normalizeLibraryRoots([proof]), /Choose an SC2 package/);
+  assert.equal((await api('library-root', { path: proof })).status, 400);
+  assert.equal((await api('library-root', { path: mod })).value.path, await fs.realpath(temporary));
+  await fs.writeFile(path.join(temporary, 'track.ogg'), 'fixture');
+  const audioListing = await api('files', { kind: 'audio', path: temporary });
+  assert(audioListing.value.entries.some((e) => e.name === 'track.ogg'));
+  assert(!audioListing.value.entries.some((e) => e.name === 'attributes.json'));
+  const libraryListing = await api('files', { kind: 'library', path: temporary });
+  assert(libraryListing.value.entries.some((e) => e.name === 'Dependency.SC2Mod'));
   const mapListing = await api('files', { kind: 'map', path: temporary });
   assert.equal(mapListing.status, 200);
   assert(mapListing.value.entries.some((e) => e.path === original && !e.directory));

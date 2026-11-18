@@ -73,7 +73,11 @@ export function createFilePicker(api: Api) {
         ? 'Folder'
         : current.kind === 'map'
           ? 'StarCraft II map'
-          : 'JSON file';
+          : current.kind === 'json'
+            ? 'JSON file'
+            : current.kind === 'audio'
+              ? 'Audio file'
+              : 'SC2 package';
       button.append(title, type);
       button.onclick = () => {
         if (!current) return;
@@ -180,7 +184,11 @@ export function createFilePicker(api: Api) {
           ? 'Folders'
           : kind === 'map'
             ? 'StarCraft II maps (*.SC2Map)'
-            : 'JSON files (*.json)',
+            : kind === 'json'
+              ? 'JSON files (*.json)'
+              : kind === 'audio'
+                ? 'Audio (*.wav, *.mp3, *.ogg, *.m4a)'
+                : 'SC2 packages (*.SC2Mod, *.SC2Map, *.SC2Campaign)',
         kind,
       ),
     );

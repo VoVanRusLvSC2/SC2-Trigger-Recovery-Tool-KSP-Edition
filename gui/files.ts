@@ -5,7 +5,8 @@ import os from 'node:os';
 import type { FileListing, PickerKind, FilePlace } from './contracts.js';
 
 export async function listFiles(kind: PickerKind, requested?: string): Promise<FileListing> {
-  if (!['map', 'json', 'folder', 'output'].includes(kind)) throw Error('Unsupported picker.');
+  if (!['map', 'json', 'folder', 'output', 'audio', 'library'].includes(kind))
+    throw Error('Unsupported picker.');
   if (
     requested !== undefined &&
     (typeof requested !== 'string' || requested.length > 32767 || /[\x00-\x1f]/.test(requested))
@@ -25,13 +26,20 @@ export async function listFiles(kind: PickerKind, requested?: string): Promise<F
   const selected = stat.isFile() ? actual : '';
   directory = stat.isFile() ? path.dirname(actual) : actual;
   if (!stat.isDirectory() && !stat.isFile()) throw Error('Choose a regular file or folder.');
-  const extension = kind === 'map' ? '.sc2map' : kind === 'json' ? '.json' : '';
+  const extensions: Record<PickerKind, string[]> = {
+    map: ['.sc2map'],
+    json: ['.json'],
+    folder: [],
+    output: [],
+    audio: ['.wav', '.mp3', '.ogg', '.m4a'],
+    library: ['.sc2mod', '.sc2map', '.sc2campaign'],
+  };
+  const accepted = (name: string) => extensions[kind].includes(path.extname(name).toLowerCase());
   const entries = (await fs.readdir(directory, { withFileTypes: true }))
     .filter(
       (entry) =>
         !entry.isSymbolicLink() &&
-        (entry.isDirectory() ||
-          (entry.isFile() && extension && path.extname(entry.name).toLowerCase() === extension)),
+        (entry.isDirectory() || (entry.isFile() && accepted(entry.name))),
     )
     .map((entry) => ({
       name: entry.name,
@@ -45,8 +53,7 @@ export async function listFiles(kind: PickerKind, requested?: string): Promise<F
     home: os.homedir(),
     entries: entries.slice(0, 5000),
     truncated: entries.length > 5000,
-    selected:
-      selected && extension && path.extname(selected).toLowerCase() === extension ? selected : '',
+    selected: selected && accepted(selected) ? selected : '',
   };
 }
 

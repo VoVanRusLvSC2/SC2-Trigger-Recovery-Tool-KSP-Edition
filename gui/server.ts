@@ -11,11 +11,13 @@ import { adapters, selectAdapter } from './adapters.js';
 import type { JobSnapshot, RecoveryRequest, Artifact } from './contracts.js';
 import { discoverDefaults } from './defaults.js';
 import { listFiles, filePlaces } from './files.js';
+import { createPreferenceStore } from './preferences.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const assets = path.join(root, 'gui');
 const defaults = await discoverDefaults(root);
 const token = randomBytes(32).toString('hex');
+const preferences = createPreferenceStore();
 const limit = 2 * 1024 * 1024;
 let state: JobSnapshot = { phase: 'idle', log: '', artifacts: [] };
 let worker: ChildProcess | undefined;
@@ -162,7 +164,7 @@ const server = http.createServer(async (req, res) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'",
+    "default-src 'self'; script-src 'self'; style-src 'self'; media-src 'self' blob:; object-src 'none'; frame-ancestors 'none'; base-uri 'none'",
   );
   res.setHeader('Referrer-Policy', 'no-referrer');
   try {
@@ -180,6 +182,41 @@ const server = http.createServer(async (req, res) => {
       if (req.method === 'GET' && url.pathname === '/api/places')
         return json(res, await filePlaces());
       if (req.method === 'GET' && url.pathname === '/api/defaults') return json(res, defaults);
+      if (req.method === 'GET' && url.pathname === '/api/preferences')
+        return json(res, await preferences.read());
+      if (req.method === 'POST' && url.pathname === '/api/preferences')
+        return json(res, await preferences.write(await body(req)));
+      if (req.method === 'POST' && url.pathname === '/api/library-root') {
+        const input = await body(req);
+        const { normalizeLibraryRoots } = await import(
+          new URL('../../src/libraries/local-roots.mjs', import.meta.url).href
+        );
+        const roots = await normalizeLibraryRoots([input.path]);
+        return json(res, { path: roots[0] });
+      }
+      if (req.method === 'POST' && url.pathname === '/api/music') {
+        const input = await body(req);
+        if (typeof input.path !== 'string' || !/\.(wav|mp3|ogg|m4a)$/i.test(input.path))
+          throw Error('Choose a supported local audio file.');
+        const file = await fs.realpath(input.path),
+          info = await fs.stat(file);
+        if (!info.isFile() || info.size > 64 * 1024 ** 2)
+          throw Error('Audio exceeds 64 MiB or is not a file.');
+        const types: Record<string, string> = {
+          '.wav': 'audio/wav',
+          '.mp3': 'audio/mpeg',
+          '.ogg': 'audio/ogg',
+          '.m4a': 'audio/mp4',
+        };
+        res.writeHead(200, {
+          'Content-Type': types[path.extname(file).toLowerCase()]!,
+          'Cache-Control': 'no-store',
+        });
+        const stream = createReadStream(file);
+        stream.on('error', () => res.destroy());
+        stream.pipe(res);
+        return;
+      }
       if (req.method === 'GET' && url.pathname === '/api/adapters')
         return json(
           res,
@@ -258,6 +295,10 @@ const server = http.createServer(async (req, res) => {
       '/': ['index.html', 'text/html; charset=utf-8'],
       '/app.js': ['dist/app.js', 'text/javascript'],
       '/picker.js': ['dist/picker.js', 'text/javascript'],
+      '/hierarchy.js': ['dist/hierarchy.js', 'text/javascript'],
+      '/search.js': ['dist/search.js', 'text/javascript'],
+      '/settings-view.js': ['dist/settings-view.js', 'text/javascript'],
+      '/code-view.js': ['dist/code-view.js', 'text/javascript'],
       '/style.css': ['style.css', 'text/css'],
     };
     const asset = files[url.pathname];

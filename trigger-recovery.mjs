@@ -6,7 +6,7 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { spawn } from 'node:child_process';
 
-const usage = `SC2 Trigger Recovery KSP 3.0.0-rc.7
+const usage = `SC2 Trigger Recovery KSP 3.0.0-rc.8
 Usage:
   trigger-recovery recover <map.SC2Map> (--sc2 <installation> | --resources <snapshot>) --out <new-directory>
   trigger-recovery prepare <map.SC2Map> (--sc2 <installation> | --resources <snapshot>) --out <new-directory>
@@ -15,6 +15,7 @@ Usage:
   trigger-recovery download-resources <new-directory>
 
 Optional: --mpq <mpqcli.exe>, --benchmark <pinned-distribution>, --full-gui
+Additional local dependency locations: --library <SC2-package-or-folder> (repeatable).
 Use --download-resources <new-directory> on recover to download the snapshot first.
 For recover/prepare: --attribute-index <verified-header-index.json>, --no-attribute-recovery
 Attribute recovery is enabled by default; disabling it preserves existing Attributes bytes.
@@ -32,6 +33,7 @@ try {
       out: { type: 'string' },
       mpq: { type: 'string' },
       benchmark: { type: 'string' },
+      library: { type: 'string', multiple: true },
       'attribute-index': { type: 'string' },
       'full-gui': { type: 'boolean' },
       'no-attribute-recovery': { type: 'boolean' },
@@ -113,6 +115,7 @@ try {
         guiRecoveryMode: values['full-gui'] ? 'full-gui' : 'preserve-source',
         attributeIndex: values['attribute-index'],
         recoverAttributes: !values['no-attribute-recovery'],
+        libraryRoots: values.library,
       });
       jobFile = result.jobFile;
       console.log(JSON.stringify(result));
