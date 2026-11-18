@@ -24,8 +24,32 @@ let worker: ChildProcess | undefined;
 let starting = false;
 let inspecting = false;
 let artifacts = new Map<string, string>();
+let progressTail = '';
 const log = (chunk: string) => {
   state.log = (state.log + chunk).slice(-limit);
+  const lines = (progressTail + chunk).split(/\r?\n/);
+  progressTail = lines.pop()!.slice(-65536);
+  for (const line of lines) {
+    if (line.startsWith('trigger-recovery: ')) state.error = line.slice(18);
+    try {
+      const event = JSON.parse(line);
+      if (
+        event.type === 'progress' &&
+        Number.isFinite(event.percent) &&
+        typeof event.stage === 'string'
+      ) {
+        state.progress = {
+          percent: Math.max(
+            state.progress?.percent ?? 0,
+            Math.min(99, Math.max(0, Math.floor(event.percent))),
+          ),
+          stage: event.stage.slice(0, 200),
+        };
+      }
+    } catch {
+      /* Worker diagnostics are also plain text. */
+    }
+  }
 };
 
 async function collectArtifacts(output: string) {
@@ -45,7 +69,9 @@ async function collectArtifacts(output: string) {
         (/\.(galaxy|sc2map)$/i.test(item.name) ||
           item.name === 'Triggers' ||
           item.name === 'preparation.json' ||
-          /^(RESULT|PREVIEW_REPORT|ATTRIBUTE.*|MANIFEST|STRICT_BENCHMARK)\.json$/i.test(item.name))
+          /^(RESULT|PREVIEW_REPORT|SOURCE_DIAGNOSTICS|ATTRIBUTE.*|MANIFEST|STRICT_BENCHMARK)\.json$/i.test(
+            item.name,
+          ))
       ) {
         const title = path.relative(output, file).replaceAll('\\', '/');
         const kind = /\.sc2map$/i.test(file)
@@ -98,12 +124,14 @@ async function startJob(request: RecoveryRequest) {
     }
     const args = adapter.command(request, root);
     artifacts = new Map();
+    progressTail = '';
     state = {
       phase: 'running',
       log: 'Preparing a separate candidate...\n',
       output,
       artifacts: [],
       request,
+      progress: { percent: 0, stage: 'Starting recovery' },
     };
     worker = spawn(process.execPath, args, {
       cwd: root,
@@ -122,6 +150,12 @@ async function startJob(request: RecoveryRequest) {
       }
       state.exitCode = code ?? 1;
       state.phase = cancelled ? 'cancelled' : code === 0 ? 'finished' : 'failed';
+      if (code === 0 && !cancelled) state.progress = { percent: 100, stage: 'Complete' };
+      if (state.phase === 'failed') {
+        const report = state.result as { error?: string } | undefined;
+        state.error ??=
+          report?.error?.split('\n')[0] || 'Recovery failed. Open GEN INFO for the diagnostic log.';
+      }
       log(`\nProcess exit code: ${code}. Inspect evidence; completion is not Editor acceptance.\n`);
       worker = undefined;
     });

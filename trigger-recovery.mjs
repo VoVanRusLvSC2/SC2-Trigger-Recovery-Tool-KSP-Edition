@@ -6,7 +6,7 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { spawn } from 'node:child_process';
 
-const usage = `SC2 Trigger Recovery KSP 3.0.0-rc.11
+const usage = `SC2 Trigger Recovery KSP 3.0.0-rc.12
 Usage:
   trigger-recovery recover <map.SC2Map> (--sc2 <installation> | --resources <snapshot>) --out <new-directory>
   trigger-recovery prepare <map.SC2Map> (--sc2 <installation> | --resources <snapshot>) --out <new-directory>
@@ -66,8 +66,9 @@ try {
       if (values['download-resources']) {
         if (values.sc2 || values.resources) throw Error('Choose one SC2 resource source');
         const original = await fs.realpath(input);
-        if (!/\.sc2map$/iu.test(original) || !(await fs.stat(original)).isFile())
-          throw Error('Expected an existing packed .SC2Map');
+        const info = await fs.stat(original);
+        if (!/\.sc2map$/iu.test(original) || (!info.isFile() && !info.isDirectory()))
+          throw Error('Expected a .SC2Map archive or component folder');
         const newPath = async (value) => {
           const resolved = path.resolve(value);
           const parent = await fs.realpath(path.dirname(resolved));
@@ -120,6 +121,7 @@ try {
         attributeIndex: values['attribute-index'],
         recoverAttributes: !values['no-attribute-recovery'],
         libraryRoots: values.library,
+        onProgress: (event) => console.log(JSON.stringify({ type: 'progress', ...event })),
       });
       jobFile = result.jobFile;
       console.log(JSON.stringify(result));

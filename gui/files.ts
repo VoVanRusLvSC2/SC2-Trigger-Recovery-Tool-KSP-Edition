@@ -23,8 +23,11 @@ export async function listFiles(kind: PickerKind, requested?: string): Promise<F
   // Pasting a file path navigates to its parent and selects that file.
   const actual = await fs.realpath(directory);
   const stat = await fs.stat(actual);
-  const selected = stat.isFile() ? actual : '';
-  directory = stat.isFile() ? path.dirname(actual) : actual;
+  const packageMode = kind === 'map' || kind === 'library';
+  const componentPackage = (name: string) => packageMode && /\.sc2(map|mod)$/i.test(name);
+  const selectable = stat.isFile() || (stat.isDirectory() && componentPackage(actual));
+  const selected = selectable ? actual : '';
+  directory = selectable ? path.dirname(actual) : actual;
   if (!stat.isDirectory() && !stat.isFile()) throw Error('Choose a regular file or folder.');
   const extensions: Record<PickerKind, string[]> = {
     map: ['.sc2map', '.sc2mod'],
@@ -45,6 +48,7 @@ export async function listFiles(kind: PickerKind, requested?: string): Promise<F
       name: entry.name,
       path: path.join(directory, entry.name),
       directory: entry.isDirectory(),
+      ...(entry.isDirectory() && componentPackage(entry.name) ? { package: true } : {}),
     }))
     .sort((a, b) => Number(b.directory) - Number(a.directory) || a.name.localeCompare(b.name));
   return {

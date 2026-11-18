@@ -11,16 +11,16 @@ export interface BackendAdapter {
 const sc2: BackendAdapter = {
   async inspect(input) {
     if (typeof input !== 'string' || !/\.sc2(map|mod)$/i.test(input))
-      throw Error('Choose a packed .SC2Map or .SC2Mod file.');
+      throw Error('Choose a .SC2Map or .SC2Mod archive or component folder.');
     input = await fs.realpath(input);
     const info = await fs.stat(input);
-    if (!info.isFile()) throw Error('Choose a packed .SC2Map or .SC2Mod file, not a folder.');
-    if (info.size > 1024 ** 3) throw Error('Archive exceeds the preview limit.');
-    const { openMpqReader } = await import(
-      new URL('../../src/vendor/@modkit/blizzard-mpq/src/mpq/codec.js', import.meta.url).href
+    if (!info.isFile() && !info.isDirectory())
+      throw Error('Choose an SC2 archive or component folder.');
+    const { openSc2Package } = await import(
+      new URL('../../src/cli/sc2-package.mjs', import.meta.url).href
     );
-    // The reader consumes an in-memory buffer and never opens an archive writer.
-    const reader = await openMpqReader(await fs.readFile(input), {
+    // Both package forms are read-only; preview never opens an archive writer.
+    const reader = await openSc2Package(input, {
       maxArchiveBytes: 1024 ** 3,
       maxEntries: 100000,
       maxEntryBytes: 16 * 1024 ** 2,
@@ -120,7 +120,7 @@ const sc2: BackendAdapter = {
   command({ fields, fullGui, recoverAttributes, libraryRoots }, root) {
     if (!/\.sc2map$/i.test(fields.input ?? ''))
       throw Error(
-        'Archive recovery currently requires a packed .SC2Map. Mods can be opened, inspected and their existing Triggers exported; library recovery uses the component API.',
+        'Recovery currently requires a .SC2Map archive or component folder. Mods can be opened, inspected and their existing Triggers exported; library recovery uses the component API.',
       );
     const args = [
       path.join(root, 'trigger-recovery.mjs'),

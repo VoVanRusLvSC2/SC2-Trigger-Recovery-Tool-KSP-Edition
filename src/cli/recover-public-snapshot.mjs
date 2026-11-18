@@ -10,6 +10,7 @@ import {
 } from '../conversion/implicit-gui-localization/trigger-xml.mjs';
 import { createUnverifiedPreviewMap } from './unverified-preview-map.mjs';
 import { xmlTree } from '../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js';
+import { verifyComponentSource } from './sc2-package.mjs';
 
 const sha = (value) => createHash('sha256').update(value).digest('hex');
 const readJson = async (file) => JSON.parse(await readFile(file, 'utf8'));
@@ -34,6 +35,7 @@ export async function recoverPublicSnapshot(jobFile) {
   );
   const prepared = await readJson(row.preparationResult),
     cfg = await readJson(row.config);
+  await verifyComponentSource(prepared.sourcePackage);
   assert.equal(prepared.sourceKind, 'public-resource-snapshot', 'Expected public snapshot job');
   assert.equal(cfg.resourceSnapshot, true, 'Expected public snapshot config');
   const manifest = path.join(cfg.installation, 'RESOURCE_MANIFEST.json');
@@ -184,6 +186,7 @@ export async function recoverPublicSnapshot(jobFile) {
     warning:
       'Public resource version and GUI reconstruction are unverified; GUI may include generated Native or Custom Script. Map uses original Galaxy until Editor recompilation; semantics and attributes are not proven. Do not treat this as an accepted map.',
   };
+  await verifyComponentSource(prepared.sourcePackage);
   await writeJson(path.join(row.job, 'RESULT.json'), report);
   await writeJson(path.join(preview, 'PREVIEW_REPORT.json'), report);
   return report;

@@ -20,7 +20,7 @@ server; closing the browser tab alone does not stop an active recovery.
 
 ## Workflow
 
-1. **OPEN FILE** selects one packed `.SC2Map` or `.SC2Mod`. Its original Galaxy and existing
+1. **OPEN FILE** selects one `.SC2Map` or `.SC2Mod` archive or component folder. Its original Galaxy and existing
    markup appear immediately. Opening a map never starts recovery.
 2. **GENERATE TRIGGERS** runs automatic recovery with a separately named output.
    SC2 and the unchanged strict benchmark are discovered automatically.
@@ -32,6 +32,10 @@ server; closing the browser tab alone does not stop an active recovery.
 **GEN INFO** contains live activity, qualified verdicts, artifacts and optional
 JSON evidence. A generated candidate or diagnostic preview is not automatically
 a strict PASS or Editor acceptance. Failed and unverified outputs retain those labels.
+The percentage estimates completed processing stages, not remaining time. 100%
+means processing finished; the verdict still determines PASS or REVIEW. Failures
+retain their last percentage and show the reason in the footer. Source parser errors
+include a file/line/column and a separate `SOURCE_DIAGNOSTICS.json` artifact.
 
 ## Settings
 

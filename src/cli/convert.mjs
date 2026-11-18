@@ -283,6 +283,8 @@ try {
 
   const prepared = await read(row.preparationResult),
     cfg = await read(row.config);
+  const { verifyComponentSource } = await import('./sc2-package.mjs');
+  await verifyComponentSource(prepared.sourcePackage);
   assertPreparedLibraryRoots(cfg, prepared);
   const pinnedBenchmark = process.env.SC2_TRIGGER_BENCHMARK_ROOT
     ? await openPinnedUserOracle()
@@ -875,14 +877,37 @@ try {
   result.guiRecoveryMode = guiRecoveryMode;
   let previousProgress;
   const reportProgress = (event) => {
-    const key = `${event.phase}:${event.stage ?? ''}`;
+    const fraction = event.total > 0 ? Math.min(1, Math.max(0, event.completed / event.total)) : 0;
+    const phases = [
+      'input',
+      'dependencies',
+      'parse',
+      'index',
+      'declarations',
+      'bodies',
+      'initialization',
+      'events',
+      'finalize',
+    ];
+    const phase = event.phase === 'reconstruct' ? event.stage : event.phase;
+    const index = phases.indexOf(phase);
+    const key = `${event.phase}:${event.stage ?? ''}:${Math.floor(fraction * 100)}`;
     if (key === previousProgress) return;
     previousProgress = key;
+    if (index >= 0)
+      console.log(
+        JSON.stringify({
+          type: 'progress',
+          stage: 'Recovering GUI: ' + phase,
+          percent: 25 + Math.floor((45 * (index + fraction)) / phases.length),
+        }),
+      );
     console.log(
       JSON.stringify({
         id: row.id,
         phase: event.phase,
         ...(event.stage ? { stage: event.stage } : {}),
+        ...(event.total ? { completed: event.completed, total: event.total } : {}),
       }),
     );
   };
@@ -1414,6 +1439,13 @@ try {
       const modeAttributeModel = attributeModel ?? session.attributeRecoverySource?.model;
 
       enter(mode);
+      console.log(
+        JSON.stringify({
+          type: 'progress',
+          stage: 'Building and verifying candidate',
+          percent: 72,
+        }),
+      );
       const directory = path.join(job, mode),
         conversion = path.join(directory, 'conversion');
       await mkdir(conversion, { recursive: true });
@@ -1901,6 +1933,9 @@ try {
 
       await save(path.join(directory, 'GENERATED_LANGUAGE_CHECK.json'), typed);
 
+      console.log(
+        JSON.stringify({ type: 'progress', stage: 'Checking semantic equivalence', percent: 85 }),
+      );
       const comparison = compareGalaxyText(joined(script, ownHeader), galaxy, {
         parseGalaxy: session.parseGalaxy,
         nativeProof,
@@ -1910,6 +1945,9 @@ try {
       });
       let rootBenchmark;
       if (pinnedBenchmark) {
+        console.log(
+          JSON.stringify({ type: 'progress', stage: 'Running strict benchmark', percent: 90 }),
+        );
         const originalProgram = expandLocalScripts(
           joined(script, ownHeader),
           additionalScripts,
@@ -2148,7 +2186,9 @@ try {
     ? 'FAILED'
     : 'GENERATED';
   if (result.status === 'FAILED') process.exitCode = 1;
+  await verifyComponentSource(prepared.sourcePackage);
   result.originalUnchanged = true;
+  console.log(JSON.stringify({ type: 'progress', stage: 'Finalizing evidence', percent: 98 }));
 } catch (e) {
   process.exitCode = 1;
   result.status = 'FAILED';

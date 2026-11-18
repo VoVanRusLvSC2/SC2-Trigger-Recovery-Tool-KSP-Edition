@@ -7,7 +7,9 @@ import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 import { MapSession } from '../conversion/partition-declaration-identity/map-session-fixed.mjs';
-import { openMpqReader } from '../vendor/@modkit/blizzard-mpq/src/mpq/codec.js';
+import { openSc2Package, verifyComponentSource, packComponentSnapshot } from './sc2-package.mjs';
+export { safeComponentPath } from './sc2-package.mjs';
+import { safeComponentPath } from './sc2-package.mjs';
 import { removeEmptyDependencyDocuments } from '../libraries/preparation/empty-dependency-documents.mjs';
 import { xmlTree } from '../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js';
 import { parseGalaxySource } from '../conversion/runtime-event-public-alias/galaxy-to-trigger.standard-getter.mjs';
@@ -20,19 +22,6 @@ const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const save = (file, data) => fs.writeFile(file, JSON.stringify(data, null, 2) + '\n');
 const require = createRequire(import.meta.url);
 
-export function safeComponentPath(name) {
-  const normalized = name.replaceAll('\\', '/');
-  assert(
-    normalized && !normalized.includes(':') && !/[\x00-\x1f]/u.test(normalized),
-    'Unsafe component path',
-  );
-  assert(
-    !normalized.split('/').some((p) => !p || p === '..' || p === '.'),
-    'Unsafe component path',
-  );
-  return normalized;
-}
-
 export async function prepareMap({
   original,
   installation,
@@ -43,6 +32,7 @@ export async function prepareMap({
   attributeIndex,
   recoverAttributes = true,
   libraryRoots = [],
+  onProgress = () => {},
 }) {
   assert.equal(typeof recoverAttributes, 'boolean', 'Invalid attribute recovery option');
   libraryRoots = await normalizeLibraryRoots(libraryRoots);
@@ -71,7 +61,8 @@ export async function prepareMap({
     /\.sc2map$/iu.test(original),
     'The archive worker accepts .SC2Map files; use the API for mod libraries',
   );
-  assert((await fs.stat(original)).isFile(), 'Expected a packed map file');
+  const sourceDirectory = (await fs.stat(original)).isDirectory();
+  const sourcePath = original;
   const parent = await fs.realpath(path.dirname(path.resolve(output)));
   output = path.join(parent, path.basename(path.resolve(output)));
   const inputRelative = path.relative(output, original);
@@ -97,9 +88,8 @@ export async function prepareMap({
   await fs.mkdir(output);
   const pkg = path.join(output, 'package');
   await fs.mkdir(pkg);
-  const bytes = await fs.readFile(original),
-    originalSha256 = sha(bytes);
-  const reader = await openMpqReader(bytes, {
+  onProgress({ stage: 'Reading package', percent: 1 });
+  const reader = await openSc2Package(original, {
     maxArchiveBytes: 1024 ** 3,
     maxEntries: 100000,
     maxEntryBytes: 256 * 1024 ** 2,
@@ -107,6 +97,7 @@ export async function prepareMap({
   const entries = [],
     names = new Set();
   let total = 0;
+  let reportedPercent = -1;
   try {
     for (const entry of reader.entries) {
       const name = safeComponentPath(entry.path),
@@ -120,10 +111,28 @@ export async function prepareMap({
       await fs.mkdir(path.dirname(file), { recursive: true });
       await fs.writeFile(file, payload, { flag: 'wx' });
       entries.push({ path: name, sha256: sha(payload), bytes: payload.length });
+      const percent = 1 + Math.floor((9 * entries.length) / reader.entries.length);
+      if (percent !== reportedPercent) {
+        reportedPercent = percent;
+        onProgress({ stage: 'Reading package', percent });
+      }
     }
   } finally {
     reader.dispose();
   }
+  const sourcePackage = sourceDirectory
+    ? { path: reader.componentRoot, requestedPath: sourcePath, kind: 'components', entries }
+    : undefined;
+  if (sourceDirectory) {
+    // The existing archive worker receives an immutable, byte-for-byte component
+    // snapshot. The user's original folder has its own separately checked proof.
+    const snapshotDirectory = path.join(output, 'source');
+    await fs.mkdir(snapshotDirectory);
+    original = path.join(snapshotDirectory, path.basename(sourcePath));
+    await packComponentSnapshot(path.resolve(mpq), pkg, original, entries);
+  }
+  const originalSha256 = sourceDirectory ? sha(await fs.readFile(original)) : reader.archiveSha256;
+  onProgress({ stage: 'Loading SC2 metadata', percent: 11 });
 
   const session = new MapSession({
     installation,
@@ -166,6 +175,7 @@ export async function prepareMap({
     );
     const script = new TextDecoder('utf-8', { fatal: true }).decode(scriptBytes);
     const declarations = await readTriggerDeclarations(context, { sources: [script] });
+    onProgress({ stage: 'Resolving include closure', percent: 16 });
     const { retained, omitted } = removeEmptyDependencyDocuments(
       await readTriggerDependencies(context),
       xmlTree,
@@ -197,6 +207,7 @@ export async function prepareMap({
       dependencyInputs: [],
       includeEvidence: [],
       editorVerified: false,
+      ...(sourcePackage ? { sourcePackage } : {}),
     };
     for (const d of declarations)
       prepared.declarationInputs.push(await sourceInput(d.text, d.fileName));
@@ -225,11 +236,27 @@ export async function prepareMap({
       if (seen.has(key)) continue;
       seen.add(key);
       const ast = parseGalaxySource(source.text, source.fileName);
-      assert.equal(
-        ast.parseDiagnostics.length,
-        0,
-        'Cannot establish include closure: ' + source.fileName,
-      );
+      if (ast.parseDiagnostics.length) {
+        const diagnostics = ast.parseDiagnostics.slice(0, 8).map((d) => {
+          const start = d.start ?? 0;
+          const prefix = source.text.slice(0, start).split(/\r\n|\r|\n/);
+          return {
+            file: source.fileName,
+            line: prefix.length,
+            column: prefix.at(-1).length + 1,
+            message: d.messageText,
+          };
+        });
+        await save(path.join(output, 'SOURCE_DIAGNOSTICS.json'), {
+          status: 'INVALID_SOURCE_GALAXY',
+          total: ast.parseDiagnostics.length,
+          diagnostics,
+        });
+        const first = diagnostics[0];
+        throw Error(
+          `Invalid source Galaxy: ${first.file}:${first.line}:${first.column}: ${first.message}. ${ast.parseDiagnostics.length} parser diagnostics; see SOURCE_DIAGNOSTICS.json. No triggers were recovered.`,
+        );
+      }
       attributeSources.push(attributeUseInGalaxy(ast, source.fileName));
       for (const node of ast.statements.filter((n) => n.kind === SyntaxKind.IncludeStatement)) {
         const name = safeComponentPath(node.path.value).replace(/\.galaxy$/iu, '');
@@ -284,6 +311,7 @@ export async function prepareMap({
       ],
     };
     await session.verifyDependencyFiles();
+    await verifyComponentSource(sourcePackage);
     assert.equal(await session.installationStamp(), beforeBuild, 'SC2 changed during preparation');
     assert.equal(
       sha(await fs.readFile(original)),
@@ -318,6 +346,7 @@ export async function prepareMap({
     };
     const jobFile = path.join(output, 'job.json');
     await save(jobFile, row);
+    onProgress({ stage: 'Preparation complete', percent: 25 });
     return {
       jobFile,
       originalUnchanged: true,

@@ -38,7 +38,7 @@ the TypeScript interface is included in RC2 and newer builds.
 
 ## How trigger recovery works
 
-This diagram follows the packed-map CLI (`recover`). The component API exposes
+This diagram follows the map CLI (`recover`), which accepts archives or component folders. The component API exposes
 GUI conversion and incremental completion for map or mod-library components;
 its caller supplies the components and metadata instead of invoking the archive
 preparation/packaging stages. See [API.md](API.md) and [CLI.md](CLI.md).
@@ -147,11 +147,11 @@ Built applications and their release evidence are published separately in Releas
 
 ## Integration status
 
-The public build downloads a fingerprint-pinned licensed ModKit revision and locked npm dependencies. The Windows application includes Node.js and mpqcli, and the user-facing CLI automatically prepares packed maps from the actual installed SC2 libraries. Neither a private runtime ZIP nor the author's drive layout is needed.
+The public build downloads a fingerprint-pinned licensed ModKit revision and locked npm dependencies. The Windows application includes Node.js and mpqcli, and the user-facing CLI automatically prepares packed maps and component folders from the actual installed SC2 libraries. Neither a private runtime ZIP nor the author's drive layout is needed.
 
 Both API directions, six fresh/incremental conversion cases, five attribute cases and a complete real-map archive job were exercised with the public runtime. The real map retained its original Galaxy and unrelated payloads; its conservative REVIEW verdict was preserved. This is release-candidate integration evidence, not a new corpus-wide or Editor acceptance claim. The [103 + 222 registry levels](maps/catalog.json) are unchanged.
 
-The installer supports Windows 10/11 x64. Automatic archive jobs currently target packed maps; mod-library work is exposed through the component API. Applicable strict attribute comparisons still require the original external benchmark and verified header evidence. See [remaining work](SOURCE_STATUS.md#remaining-release-work).
+The installer supports Windows 10/11 x64. Automatic archive jobs currently target maps (packed or component folders); mod-library work is exposed through the component API. Applicable strict attribute comparisons still require the original external benchmark and verified header evidence. See [remaining work](SOURCE_STATUS.md#remaining-release-work).
 
 ## Reading and formatting the source
 

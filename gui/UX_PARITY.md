@@ -38,7 +38,12 @@ Test library scoping, repeated references, cycles, missing roots, search wrappin
 settings persistence across ports/restarts, picker cancellation, action enablement,
 source immutability and large-document rendering. Preserve strict benchmark rules.
 
-OPEN FILE now accepts packed `.SC2Map` and `.SC2Mod` files. Mod inspection uses
+OPEN FILE accepts packed `.SC2Map` and `.SC2Mod` files and their component folders. Mod inspection uses
 real Galaxy components and preserves existing Triggers. Archive generation is
 still map-only; explicit library recovery remains in the component API. Checkboxes
 use the shared KSP green/orange styling while retaining native input semantics.
+
+Map component folders are snapshotted into a separate archive, verified against source
+component hashes and sent through the same strict recovery pipeline. Progress uses
+estimated stage percentages, retains the reached percentage on failure and exposes
+the error directly in the footer. Full access is always included.

@@ -43,6 +43,8 @@ export interface JobSnapshot {
   artifacts: Artifact[];
   result?: unknown;
   request?: RecoveryRequest;
+  progress?: { percent: number; stage: string };
+  error?: string;
 }
 
 export type PickerKind = 'map' | 'folder' | 'json' | 'output' | 'audio' | 'library';
@@ -52,7 +54,7 @@ export interface FileListing {
   home: string;
   selected: string;
   truncated: boolean;
-  entries: { name: string; path: string; directory: boolean }[];
+  entries: { name: string; path: string; directory: boolean; package?: boolean }[];
 }
 
 export interface FilePlace {

@@ -28,6 +28,7 @@ export function createFilePicker(api: Api) {
     | undefined;
   let revision = 0;
   const folderMode = () => current?.kind === 'folder' || current?.kind === 'output';
+  const navigable = (entry: Entry) => entry.directory && !entry.package;
   const cancel = (value = '') => {
     const previous = current;
     current = undefined;
@@ -44,7 +45,7 @@ export function createFilePicker(api: Api) {
       : !current.selected;
     el('fileAccept').textContent = folderMode()
       ? 'USE THIS FOLDER'
-      : current.selected?.directory
+      : current.selected && navigable(current.selected)
         ? 'OPEN FOLDER'
         : 'OPEN FILE';
     for (const button of el('fileEntries').querySelectorAll<HTMLButtonElement>('button'))
@@ -66,32 +67,36 @@ export function createFilePicker(api: Api) {
       button.title = entry.path;
       const title = document.createElement('span');
       title.className = 'file-entry-name';
-      title.textContent = (entry.directory ? '▸ ' : '') + entry.name;
+      title.textContent = (navigable(entry) ? '▸ ' : '') + entry.name;
       const type = document.createElement('span');
       type.className = 'file-entry-type';
-      type.textContent = entry.directory
-        ? 'Folder'
-        : current.kind === 'map'
-          ? /\.sc2mod$/i.test(entry.name)
-            ? 'StarCraft II mod'
-            : 'StarCraft II map'
-          : current.kind === 'json'
-            ? 'JSON file'
-            : current.kind === 'audio'
-              ? 'Audio file'
-              : 'SC2 package';
+      type.textContent = entry.package
+        ? /\.sc2mod$/i.test(entry.name)
+          ? 'SC2 mod (components)'
+          : 'SC2 map (components)'
+        : entry.directory
+          ? 'Folder'
+          : current.kind === 'map'
+            ? /\.sc2mod$/i.test(entry.name)
+              ? 'StarCraft II mod'
+              : 'StarCraft II map'
+            : current.kind === 'json'
+              ? 'JSON file'
+              : current.kind === 'audio'
+                ? 'Audio file'
+                : 'SC2 package';
       button.append(title, type);
       button.onclick = () => {
         if (!current) return;
         current.selected = entry;
-        name.value = entry.directory ? '' : entry.name;
+        name.value = navigable(entry) ? '' : entry.name;
         updateSelection();
       };
-      button.ondblclick = () => (entry.directory ? void navigate(entry.path) : cancel(entry.path));
+      button.ondblclick = () => (navigable(entry) ? void navigate(entry.path) : cancel(entry.path));
       button.onkeydown = (event) => {
         if (event.key === 'Enter') {
           event.preventDefault();
-          if (entry.directory) void navigate(entry.path);
+          if (navigable(entry)) void navigate(entry.path);
           else cancel(entry.path);
         }
       };
@@ -130,7 +135,7 @@ export function createFilePicker(api: Api) {
       // Async navigation must not overwrite a path or filename typed meanwhile.
       owner.selected = listing.entries.find((entry) =>
         nameEdits !== nameVersion
-          ? !entry.directory && entry.name.toLocaleLowerCase() === name.value.toLocaleLowerCase()
+          ? !navigable(entry) && entry.name.toLocaleLowerCase() === name.value.toLocaleLowerCase()
           : entry.path === listing.selected,
       );
       if (nameEdits === nameVersion) name.value = owner.selected?.name || '';
@@ -147,7 +152,7 @@ export function createFilePicker(api: Api) {
   function accept() {
     if (!current) return;
     if (folderMode()) cancel(current.selected?.path || current.directory);
-    else if (current.selected?.directory) void navigate(current.selected.path);
+    else if (current.selected && navigable(current.selected)) void navigate(current.selected.path);
     else if (current.selected) cancel(current.selected.path);
   }
   async function places(owner: NonNullable<typeof current>) {
@@ -178,7 +183,7 @@ export function createFilePicker(api: Api) {
         ? 'Choose a parent folder. Recovery creates a new folder inside it.'
         : folder
           ? 'Choose a folder from the list or use the path above.'
-          : 'Select one file. Double-click or press Enter to open files and folders.';
+          : 'Select an SC2 archive or component package. Double-click or press Enter to open it.';
     const filter = el<HTMLSelectElement>('fileFilter');
     filter.replaceChildren(
       new Option(
@@ -217,7 +222,7 @@ export function createFilePicker(api: Api) {
     if (!current) return;
     current.selected = current.entries.find(
       (entry) =>
-        !entry.directory && entry.name.toLocaleLowerCase() === name.value.toLocaleLowerCase(),
+        !navigable(entry) && entry.name.toLocaleLowerCase() === name.value.toLocaleLowerCase(),
     );
     updateSelection();
   };

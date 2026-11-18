@@ -2,7 +2,7 @@
 
 ## Windows x64 application
 
-Download the **3.0.0-rc.11 Setup.exe** or portable ZIP from this repository's
+Download the **3.0.0-rc.12 Setup.exe** or portable ZIP from this repository's
 [Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases).
 Both contain this reworked converter, Node.js 24.14.1, the public ModKit runtime,
 mpqcli and their notices. No Node, npm, Python, Git, private archive or K: drive
@@ -16,7 +16,7 @@ Install StarCraft II separately. Its actual CASC data supplies the correct GUI
 libraries and Galaxy declarations. Custom mod dependencies must also be available.
 Neither game binaries nor game data are included in this application.
 
-Open **SC2 Trigger Recovery KSP** from the Start menu, choose a packed `.SC2Map`,
+Open **SC2 Trigger Recovery KSP** from the Start menu, choose a `.SC2Map` archive or component folder,
 then select **GENERATE TRIGGERS**. The game installation and strict benchmark are
 detected automatically; a new output folder is suggested beside the map.
 The portable edition opens the same local TypeScript interface with `Open Recovery.cmd`.
@@ -40,7 +40,17 @@ Errors return a nonzero process exit code. Unresolved dependencies are refused.
 The default mode preserves existing authored GUI, folders and script. `--full-gui`
 requests the separate expanded recovery mode; it does not permit fabricated
 Native definitions, stubs or raw wrappers. The archive worker supports packed
-maps; explicit mod-library conversion is available through [the component API](API.md).
+maps and `.SC2Map` component folders; explicit mod-library conversion is available through [the component API](API.md).
+
+OPEN FILE also previews `.SC2Mod` archives and component folders. For map component
+folders, recovery creates a separate packed source snapshot and checks each component
+against its original SHA-256. MPQ container tables are regenerated; the original folder
+is never written. The normal strict benchmark then checks the candidate.
+
+Progress percentages are estimates by processing stage, not elapsed-time predictions.
+A failed job retains the last reached percentage and shows its reason in the footer
+and GEN INFO. Invalid input Galaxy produces `SOURCE_DIAGNOSTICS.json` with source
+locations; recovery does not silently rewrite invalid code or call it a PASS.
 
 ## Strict benchmark and attributes
 

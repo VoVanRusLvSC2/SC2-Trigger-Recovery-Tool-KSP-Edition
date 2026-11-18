@@ -209,6 +209,34 @@ try {
     'Inspection must not advertise unsupported archive conversion',
   );
   assert.deepEqual(await fs.readFile(packedMod), beforePreview);
+  const componentMod = path.join(temporary, 'Components.SC2Mod');
+  await fs.mkdir(path.join(componentMod, 'Base.SC2Data'), { recursive: true });
+  await fs.writeFile(path.join(componentMod, 'Triggers'), modMarkup);
+  await fs.writeFile(path.join(componentMod, 'Base.SC2Data', 'LibA1234567.galaxy'), modBody);
+  const folderPreview = await api('inspect', { adapter: 'sc2', path: componentMod });
+  assert.equal(folderPreview.status, 200);
+  assert.equal(folderPreview.value.markup, modMarkup);
+  assert.equal(folderPreview.value.source, modBody);
+  const wrapper = path.join(temporary, 'Wrapped.SC2Mod');
+  const actualRoot = path.join(wrapper, 'Wrapped.SC2Mod');
+  await fs.mkdir(actualRoot, { recursive: true });
+  await fs.writeFile(path.join(actualRoot, 'Triggers'), modMarkup);
+  const wrappedPreview = await api('inspect', { adapter: 'sc2', path: wrapper });
+  assert.equal(wrappedPreview.status, 200);
+  assert.equal(wrappedPreview.value.markup, modMarkup);
+  const componentMap = path.join(temporary, 'Components.SC2Map');
+  await fs.mkdir(componentMap);
+  await fs.writeFile(path.join(componentMap, 'MapScript.galaxy'), 'void InitMap() {}\n');
+  const folderMapPreview = await api('inspect', { adapter: 'sc2', path: componentMap });
+  assert.equal(folderMapPreview.status, 200);
+  assert.equal(folderMapPreview.value.canRecover, true);
+  const componentListing = await api('files', { kind: 'map', path: componentMap });
+  assert.equal(componentListing.value.selected, await fs.realpath(componentMap));
+  assert(
+    componentListing.value.entries.some(
+      (entry) => entry.path === componentMap && entry.package && entry.directory,
+    ),
+  );
   const resourceMod = path.join(temporary, 'Resource.SC2Mod');
   await fs.writeFile(
     resourceMod,
@@ -301,6 +329,8 @@ try {
   }, 'invalid archive refusal');
   assert.notEqual(finished.exitCode, 0);
   assert(finished.log.includes('trigger-recovery:'));
+  assert(finished.error.includes('trigger-recovery:') === false);
+  assert(finished.progress.percent >= 0 && finished.progress.percent < 100);
   assert.equal(await fs.readFile(original, 'utf8'), 'deliberately invalid archive');
   // An immediate cancellation must stop the owned CLI process, leave the bridge
   // responsive and allow explicit shutdown. Never target an Editor/game process.

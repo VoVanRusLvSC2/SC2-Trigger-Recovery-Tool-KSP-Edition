@@ -21,6 +21,7 @@ let inspectingMap = false;
 let automaticDefaults: Record<string, string> = {};
 let suggestedOutput = '';
 let configuredAdapter = '';
+let shownPhase = '';
 const notice = (text: string) => {
   element('notice').textContent = text;
 };
@@ -199,10 +200,21 @@ function render(state: JobSnapshot) {
   snapshot = state;
   const active =
     state.phase === 'running' || (state.phase === 'cancelled' && state.exitCode === undefined);
-  element('status').textContent = state.phase.toUpperCase();
+  const percent = state.progress?.percent ?? (state.phase === 'finished' ? 100 : 0);
+  const estimate = percent > 0 && percent < 100 ? '~' : '';
+  element('status').textContent = `${state.phase.toUpperCase()} · ${estimate}${percent}%`;
   const progress = element<HTMLProgressElement>('progress');
-  if (active) progress.removeAttribute('value');
-  else progress.value = state.phase === 'finished' ? 1 : 0;
+  progress.value = percent / 100;
+  progress.title = `${state.progress?.stage ?? 'Ready'}. Estimated progress by stage, not remaining time.`;
+  progress.setAttribute('aria-label', progress.title);
+  element('progressStage').textContent = state.progress?.stage ?? 'Ready';
+  element('progressStage').title = progress.title;
+  if (shownPhase !== state.phase) {
+    shownPhase = state.phase;
+    if (state.phase === 'failed')
+      notice(state.error || 'Recovery failed. Open GEN INFO for details.');
+    else if (state.phase === 'cancelled') notice('Recovery cancelled. The original is unchanged.');
+  }
   for (const id of ['generate', 'openFile', 'settingsButton', 'librariesButton', 'shutdown'])
     element<HTMLButtonElement>(id).disabled =
       active ||
