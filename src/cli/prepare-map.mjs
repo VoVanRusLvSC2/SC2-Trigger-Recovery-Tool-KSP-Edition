@@ -17,6 +17,7 @@ import { SyntaxKind } from '../sdk/core/modules/galaxy/language-core/types.js';
 import { attributeUseInGalaxy } from '../verification/attribute-use-evidence.mjs';
 import { normalizeLibraryRoots } from '../libraries/local-roots.mjs';
 import { BoundedLocalModSources } from '../libraries/extensions/bounded-local-mod-sources.mjs';
+import { modLibraryUnits } from './mod-library-units.mjs';
 
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const save = (file, data) => fs.writeFile(file, JSON.stringify(data, null, 2) + '\n');
@@ -57,9 +58,11 @@ export async function prepareMap({
     attributeIndex = await fs.realpath(attributeIndex);
     assert((await fs.stat(attributeIndex)).isFile(), 'Expected an attribute index file');
   }
+  assert(/\.sc2(map|mod)$/iu.test(original), 'Expected a .SC2Map or .SC2Mod package');
+  const documentKind = /\.sc2mod$/i.test(original) ? 'mod' : 'map';
   assert(
-    /\.sc2map$/iu.test(original),
-    'The archive worker accepts .SC2Map files; use the API for mod libraries',
+    documentKind === 'map' || !publicResources,
+    'Mod recovery requires installed SC2 metadata',
   );
   const sourceDirectory = (await fs.stat(original)).isDirectory();
   const sourcePath = original;
@@ -170,11 +173,31 @@ export async function prepareMap({
     const beforeBuild = await session.installationStamp();
     const context = await session.open({ schemaVersion: 1, target: original });
     const primary = context.layers.at(-1);
-    const scriptBytes = Buffer.from(
-      await session.readPrimary(context, primary.id, 'MapScript.galaxy', 64 * 1024 ** 2),
+    const libraryUnits =
+      documentKind === 'mod' ? modLibraryUnits(entries.map((entry) => entry.path)) : [];
+    assert(
+      documentKind === 'map' || libraryUnits.length,
+      'No generated Galaxy library body/header pairs found in this mod',
     );
-    const script = new TextDecoder('utf-8', { fatal: true }).decode(scriptBytes);
-    const declarations = await readTriggerDeclarations(context, { sources: [script] });
+    const primaryPaths =
+      documentKind === 'map'
+        ? ['MapScript.galaxy']
+        : libraryUnits.flatMap((unit) => [unit.body, unit.header]);
+    const primarySources = await Promise.all(
+      primaryPaths.map(async (fileName) => {
+        const bytes = Buffer.from(
+          await session.readPrimary(context, primary.id, fileName, 64 * 1024 ** 2),
+        );
+        return { fileName, bytes, text: new TextDecoder('utf-8', { fatal: true }).decode(bytes) };
+      }),
+    );
+    const scriptBytes =
+      documentKind === 'map'
+        ? primarySources[0].bytes
+        : Buffer.from(primarySources.map((source) => source.text).join('\n'));
+    const declarations = await readTriggerDeclarations(context, {
+      sources: primarySources.map((source) => source.text),
+    });
     onProgress({ stage: 'Resolving include closure', percent: 16 });
     const { retained, omitted } = removeEmptyDependencyDocuments(
       await readTriggerDependencies(context),
@@ -182,6 +205,8 @@ export async function prepareMap({
     );
     const prepared = {
       schema: 1,
+      documentKind,
+      libraryUnits,
       id: originalSha256.slice(0, 16),
       name: path.basename(original),
       status: 'READY_STANDARD_SOURCE_INPUT',
@@ -223,7 +248,7 @@ export async function prepareMap({
         if (d[key] !== undefined) row[key] = await sourceInput(d[key], name);
       prepared.dependencyInputs.push(row);
     }
-    const pending = [{ fileName: 'MapScript.galaxy', text: script }, ...declarations];
+    const pending = [...primarySources, ...declarations];
     const seen = new Set(),
       attributeSources = [],
       declarationKeys = new Set(
@@ -328,6 +353,7 @@ export async function prepareMap({
     await save(preparationResult, prepared);
     const row = {
       id: prepared.id,
+      documentKind,
       name: prepared.name,
       original,
       originalSha256,

@@ -66,7 +66,7 @@ async function collectArtifacts(output: string) {
         if (item.name !== 'inputs') await visit(file, depth + 1);
       } else if (
         item.isFile() &&
-        (/\.(galaxy|sc2map)$/i.test(item.name) ||
+        (/\.(galaxy|sc2map|sc2mod)$/i.test(item.name) ||
           item.name === 'Triggers' ||
           item.name === 'preparation.json' ||
           /^(RESULT|PREVIEW_REPORT|SOURCE_DIAGNOSTICS|ATTRIBUTE.*|MANIFEST|STRICT_BENCHMARK)\.json$/i.test(
@@ -74,7 +74,9 @@ async function collectArtifacts(output: string) {
           ))
       ) {
         const title = path.relative(output, file).replaceAll('\\', '/');
-        const kind = /\.sc2map$/i.test(file)
+        // A source snapshot is an input, never the recovered download.
+        if (/\.sc2(map|mod)$/i.test(file) && !title.startsWith('candidates/')) continue;
+        const kind = /\.sc2(map|mod)$/i.test(file)
           ? 'archive'
           : /\.galaxy$/i.test(file)
             ? 'script'

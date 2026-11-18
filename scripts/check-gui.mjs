@@ -205,8 +205,8 @@ try {
   assert.equal(modPreview.value.sourceFiles[1].text, modHeader);
   assert.equal(
     modPreview.value.canRecover,
-    false,
-    'Inspection must not advertise unsupported archive conversion',
+    true,
+    'A generated mod body/header pair must enable library recovery',
   );
   assert.deepEqual(await fs.readFile(packedMod), beforePreview);
   const componentMod = path.join(temporary, 'Components.SC2Mod');

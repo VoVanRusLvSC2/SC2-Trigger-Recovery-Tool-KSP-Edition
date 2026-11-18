@@ -67,8 +67,8 @@ try {
         if (values.sc2 || values.resources) throw Error('Choose one SC2 resource source');
         const original = await fs.realpath(input);
         const info = await fs.stat(original);
-        if (!/\.sc2map$/iu.test(original) || (!info.isFile() && !info.isDirectory()))
-          throw Error('Expected a .SC2Map archive or component folder');
+        if (!/\.sc2(map|mod)$/iu.test(original) || (!info.isFile() && !info.isDirectory()))
+          throw Error('Expected a .SC2Map or .SC2Mod archive or component folder');
         const newPath = async (value) => {
           const resolved = path.resolve(value);
           const parent = await fs.realpath(path.dirname(resolved));
@@ -152,7 +152,13 @@ try {
         if (values.benchmark) env.SC2_TRIGGER_BENCHMARK_ROOT = path.resolve(values.benchmark);
         const child = spawn(
           process.execPath,
-          [path.join(import.meta.dirname, 'src/cli/convert.mjs'), jobFile],
+          [
+            path.join(
+              import.meta.dirname,
+              job.documentKind === 'mod' ? 'src/cli/convert-mod.mjs' : 'src/cli/convert.mjs',
+            ),
+            jobFile,
+          ],
           { env, stdio: 'inherit', windowsHide: true },
         );
         const code = await new Promise((resolve, reject) => {

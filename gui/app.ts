@@ -560,7 +560,7 @@ async function initialize() {
     element<HTMLInputElement>('recoverAttributes').checked =
       state.request.recoverAttributes !== false;
     loadedMap = state.request.fields.input ?? '';
-    canRecover = /\.sc2map$/i.test(loadedMap);
+    canRecover = /\.sc2(map|mod)$/i.test(loadedMap);
     element('selectedFile').textContent = state.request.fields.input ?? '';
   }
   await settingsView.initialize();

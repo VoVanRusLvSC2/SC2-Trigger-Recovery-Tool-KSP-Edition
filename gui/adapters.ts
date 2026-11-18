@@ -58,15 +58,19 @@ const sc2: BackendAdapter = {
         sourceFiles.push({ path: file, text: value });
       }
       const canRecover = /\.sc2map$/i.test(input) && !!mapScript;
+      const { modLibraryUnits } = await import(
+        new URL('../../src/cli/mod-library-units.mjs', import.meta.url).href
+      );
+      const modRecoverable = /\.sc2mod$/i.test(input) && modLibraryUnits(paths).length > 0;
       return {
         name: input,
         source: sourceFiles[0]?.text ?? '',
         sourceFiles,
-        canRecover,
-        ...(!canRecover
+        canRecover: canRecover || modRecoverable,
+        ...(!canRecover && !modRecoverable
           ? {
               recoveryNotice: sourceFiles.length
-                ? 'Mod/library inspection: view Galaxy files and export existing Triggers. Archive recovery currently requires a map with MapScript.galaxy; library conversion is available through the component API.'
+                ? 'No generated library body/header pair was found. Existing Triggers can be inspected and exported.'
                 : 'This archive has no Galaxy source. Existing Triggers and resources are left unchanged.',
             }
           : {}),
@@ -118,10 +122,8 @@ const sc2: BackendAdapter = {
     ],
   },
   command({ fields, fullGui, recoverAttributes, libraryRoots }, root) {
-    if (!/\.sc2map$/i.test(fields.input ?? ''))
-      throw Error(
-        'Recovery currently requires a .SC2Map archive or component folder. Mods can be opened, inspected and their existing Triggers exported; library recovery uses the component API.',
-      );
+    if (!/\.sc2(map|mod)$/i.test(fields.input ?? ''))
+      throw Error('Recovery requires a .SC2Map or .SC2Mod package.');
     const args = [
       path.join(root, 'trigger-recovery.mjs'),
       'recover',
