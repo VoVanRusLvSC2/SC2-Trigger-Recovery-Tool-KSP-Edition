@@ -121,6 +121,14 @@ try {
     403,
   );
   assert.equal((await fetch(url + '/../../package.json')).status, 404);
+  assert(html.includes('rel="icon" href="/favicon.ico"'));
+  const icon = await fetch(url + '/favicon.ico');
+  assert.equal(icon.status, 200);
+  assert.equal(icon.headers.get('content-type'), 'image/x-icon');
+  assert.deepEqual(
+    Buffer.from(await icon.arrayBuffer()),
+    await fs.readFile(path.join(root, 'gui/favicon.ico')),
+  );
   assert.equal((await fetch(url + '/app.js')).status, 200);
   assert.equal((await fetch(url + '/picker.js')).status, 200);
   for (const module of ['hierarchy', 'search', 'settings-view'])

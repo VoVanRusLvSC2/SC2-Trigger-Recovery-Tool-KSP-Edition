@@ -2,7 +2,7 @@
 
 ## Windows x64 application
 
-Choose one Windows x64 installer from the [3.0.1 release](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/tag/v3.0.1).
+Choose one Windows x64 installer from the [3.0.2 release](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/tag/v3.0.2).
 
 | Installer | Metadata used for recovery |
 | --- | --- |

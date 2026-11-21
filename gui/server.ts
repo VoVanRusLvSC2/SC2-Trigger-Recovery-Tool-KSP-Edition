@@ -337,11 +337,6 @@ const server = http.createServer(async (req, res) => {
       return json(res, { error: 'Unknown operation.' }, 404);
     }
     if (req.method !== 'GET') return json(res, { error: 'Method not allowed.' }, 405);
-    if (url.pathname === '/favicon.ico') {
-      res.writeHead(204);
-      res.end();
-      return;
-    }
     const files: Record<string, [string, string]> = {
       '/': ['index.html', 'text/html; charset=utf-8'],
       '/app.js': ['dist/app.js', 'text/javascript'],
@@ -350,12 +345,14 @@ const server = http.createServer(async (req, res) => {
       '/search.js': ['dist/search.js', 'text/javascript'],
       '/settings-view.js': ['dist/settings-view.js', 'text/javascript'],
       '/code-view.js': ['dist/code-view.js', 'text/javascript'],
+      '/favicon.ico': ['favicon.ico', 'image/x-icon'],
       '/style.css': ['style.css', 'text/css'],
     };
     const asset = files[url.pathname];
     if (!asset) return json(res, { error: 'Not found.' }, 404);
-    let content = await fs.readFile(path.join(assets, asset[0]), 'utf8');
-    if (url.pathname === '/') content = content.replace('__SESSION_TOKEN__', token);
+    const bytes = await fs.readFile(path.join(assets, asset[0]));
+    const content =
+      url.pathname === '/' ? bytes.toString('utf8').replace('__SESSION_TOKEN__', token) : bytes;
     res.writeHead(200, { 'Content-Type': asset[1], 'Cache-Control': 'no-store' });
     res.end(content);
   } catch (error) {

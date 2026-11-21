@@ -1,6 +1,6 @@
 # Source integration status
 
-**Windows 3.0.1: public-source installers, API and CLI.**
+**Windows 3.0.2: public-source installers, API and CLI.**
 Public runtime acquisition, automatic map preparation and Windows packaging are
 implemented. See [installation](INSTALL.md) and [build instructions](BUILDING.md).
 The application bundles Node and runtime dependencies; installed SC2 supplies

@@ -35,13 +35,15 @@ OutputBaseFilename=SC2-Trigger-Recovery-KSP-{#AppRelease}-{#Edition}-Setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
+SetupIconFile={#StageRoot}\gui\favicon.ico
+UninstallDisplayIcon={app}\gui\favicon.ico
 UninstallDisplayName={#ProductName}
 CloseApplications=no
 LicenseFile={#StageRoot}\THIRD_PARTY_NOTICES.md
 [Files]
 Source: "{#StageRoot}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 [Icons]
-Name: "{group}\{#ProductName}"; Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -STA -ExecutionPolicy Bypass -WindowStyle Hidden -File ""{app}\packaging\launcher.ps1"""; WorkingDir: "{app}"
+Name: "{group}\{#ProductName}"; Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -STA -ExecutionPolicy Bypass -WindowStyle Hidden -File ""{app}\packaging\launcher.ps1"""; WorkingDir: "{app}"; IconFilename: "{app}\gui\favicon.ico"
 Name: "{group}\Command line help"; Filename: "{cmd}"; Parameters: "/k """"{app}\trigger-recovery.cmd"" --help"""; WorkingDir: "{userdocs}"
 Name: "{group}\Documentation"; Filename: "{app}\INSTALL.md"
 #ifdef Standalone
