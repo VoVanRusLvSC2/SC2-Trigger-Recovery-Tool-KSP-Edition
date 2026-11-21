@@ -157,7 +157,8 @@ try {
   assert.equal((await api('download?id=../../package.json')).status, 400);
   assert.equal((await api('inspect', { adapter: 'other', path: 'anything' })).status, 400);
   assert.equal((await api('recover', { ...request, adapter: 'other' })).status, 400);
-  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'recovery-gui-'));
+  // Windows runners may expose TEMP through an 8.3 alias. The picker returns real paths.
+  const temporary = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'recovery-gui-')));
   const original = path.join(temporary, 'original.SC2Map');
   const customInstallation = path.join(temporary, 'CustomSC2');
   await fs.mkdir(customInstallation);
