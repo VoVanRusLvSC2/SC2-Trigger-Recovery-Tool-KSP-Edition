@@ -2,19 +2,22 @@
 
 ## Windows x64 application
 
-Download the **3.0.0-rc.13 Setup.exe** or portable ZIP from this repository's
-[Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases).
-Both contain this reworked converter, Node.js 24.14.1, the public ModKit runtime,
-mpqcli and their notices. No Node, npm, Python, Git, private archive or K: drive
-is required on the target machine. Windows 10/11 x64 is the supported target.
+Choose one Windows x64 installer from the [3.0.1 release](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/tag/v3.0.1).
+
+| Installer | Metadata used for recovery |
+| --- | --- |
+| **Installed-SC2** | Detects your StarCraft II installation and reads its current CASC data. |
+| **Standalone** | Setup downloads a pinned public SC2GameData snapshot once (1.17 GB expanded). After setup, map and mod recovery work offline. Each snapshot result stays in REVIEW because the target Editor version is unknown. |
+
+Both editions include Node.js, ModKit, the MPQ tool and the strict benchmark.
+Use **Libraries** to add any custom dependencies required by your map or mod.
+The standard portable ZIP uses the installed-game defaults and also accepts an explicit resource snapshot on the command line.
 The installer runs per user and does not need administrator rights.
 The MPQ tool uses a static C++ runtime, so it does not depend on a separately
 installed Visual C++ Redistributable. Its source revision, reproduction script
 and binary fingerprint are included in the repository.
 
-Install StarCraft II separately. Its actual CASC data supplies the correct GUI
-libraries and Galaxy declarations. Custom mod dependencies must also be available.
-Neither game binaries nor game data are included in this application.
+Standalone obtains its metadata directly from SC2Mapster/SC2GameData and verifies the downloaded files against the pinned Git tree. It preserves existing attributes. Missing attribute reconstruction and verification against installed game metadata require Installed-SC2.
 
 Open **SC2 Trigger Recovery KSP** from the Start menu, choose a `.SC2Map` or `.SC2Mod` archive or component folder,
 then select **GENERATE TRIGGERS**. The game installation and strict benchmark are
@@ -41,7 +44,7 @@ The default mode preserves existing authored GUI, folders and script. `--full-gu
 requests the separate expanded recovery mode; it does not permit fabricated
 Native definitions, stubs or raw wrappers. The archive worker supports packed
 maps and mods as packed archives or component folders. Mods use their real library
-body/header pairs and require installed SC2 metadata. No artificial MapScript is
+body/header pairs. No artificial MapScript is
 created. Mod-specific missing-attribute reconstruction is not yet qualified;
 original attributes are preserved, and owned attribute queries retain REVIEW.
 
@@ -108,5 +111,4 @@ Rebuilding the optional MPQ tool itself additionally needs MSVC C++ Build Tools
 and CMake; see `packaging/build-mpq-static.ps1`. Ordinary application builds fetch
 its pinned, licensed static binary.
 
-The application is currently a release candidate. Corpus-wide requalification,
-actual Editor exports and gameplay acceptance are separate remaining work.
+Corpus-wide requalification, actual Editor exports and gameplay acceptance are tracked separately.

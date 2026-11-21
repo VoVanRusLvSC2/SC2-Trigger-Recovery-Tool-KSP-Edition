@@ -6,7 +6,7 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { spawn } from 'node:child_process';
 
-const usage = `SC2 Trigger Recovery KSP 3.0.0-rc.12
+const usage = `SC2 Trigger Recovery KSP 3.0.1
 Usage:
   trigger-recovery recover <map.SC2Map> (--sc2 <installation> | --resources <snapshot>) --out <new-directory>
   trigger-recovery prepare <map.SC2Map> (--sc2 <installation> | --resources <snapshot>) --out <new-directory>
@@ -21,7 +21,7 @@ For recover/prepare: --attribute-index <verified-header-index.json>, --no-attrib
 Attribute recovery is enabled by default; disabling it preserves existing Attributes bytes.
 The default preserves authored script and GUI structure. Originals stay unchanged.
 Outputs are candidates with explicit offline evidence, not Editor/gameplay acceptance.
-The public snapshot mode is experimental: it never reports PASS or Editor verification.
+The Standalone edition uses its public metadata automatically. Its strict comparisons retain REVIEW for the unknown Editor version.
 `;
 try {
   const { values, positionals } = parseArgs({
@@ -105,6 +105,12 @@ try {
         });
         values.resources = values['download-resources'];
       }
+      if (!values.sc2 && !values.resources) {
+        const { bundledSnapshot } = await import('./src/resources/installed-snapshot.mjs');
+        values.resources = await bundledSnapshot(import.meta.dirname);
+        if (values.resources && !values.benchmark)
+          values.benchmark = path.join(import.meta.dirname, '.runtime/pinned-benchmark');
+      }
       if (!values.sc2 && !values.resources)
         throw Error(
           'Select --sc2 <installation> or --resources <snapshot>. If SC2 is unavailable, download the optional snapshot with: trigger-recovery download-resources <new-directory>.',
@@ -137,9 +143,7 @@ try {
     if (command !== 'prepare') {
       const job = JSON.parse(await fs.readFile(jobFile, 'utf8'));
       const config = JSON.parse(await fs.readFile(job.config, 'utf8'));
-      if (config.resourceSnapshot) {
-        if (values.benchmark)
-          throw Error('Public snapshot mode cannot run the strict benchmark yet');
+      if (config.resourceSnapshot && !values.benchmark && job.documentKind !== 'mod') {
         const { recoverPublicSnapshot } = await import('./src/cli/recover-public-snapshot.mjs');
         console.log(
           'Public snapshot mode: diagnostic only, no benchmark PASS or Editor verification.',
@@ -155,7 +159,9 @@ try {
           [
             path.join(
               import.meta.dirname,
-              job.documentKind === 'mod' ? 'src/cli/convert-mod.mjs' : 'src/cli/convert.mjs',
+              job.documentKind === 'mod' || config.resourceSnapshot
+                ? 'src/cli/convert-mod.mjs'
+                : 'src/cli/convert.mjs',
             ),
             jobFile,
           ],

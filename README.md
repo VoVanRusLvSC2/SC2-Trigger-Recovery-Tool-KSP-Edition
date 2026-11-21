@@ -2,7 +2,7 @@
 
 **A reworked Trigger Revizer implementation, developed together with Vise.**
 
-> **Windows release candidate: installer, portable app and reproducible public build.** See [Install and run](INSTALL.md), [build instructions](BUILDING.md), [source status](SOURCE_STATUS.md) and [remaining qualification](ROADMAP.md). Node and runtime dependencies are bundled; game metadata comes from your installed SC2.
+> **Windows 3.0.1: Installed-SC2 and Standalone installers.** See [Install and run](INSTALL.md), [build instructions](BUILDING.md), [source status](SOURCE_STATUS.md) and [remaining qualification](ROADMAP.md). Node and runtime dependencies are bundled; choose installed game metadata or a public snapshot downloaded by Standalone setup.
 
 **Trigger Revizer KSP** is a StarCraft II (SC2) trigger recovery project. It reconstructs editable GUI trigger markup (`Triggers` XML) from Galaxy source such as `MapScript.galaxy`, and completes missing or changed sections of an existing trigger tree.
 
@@ -10,7 +10,9 @@ The conversion core works with SC2 map and mod components (`.SC2Map` and `.SC2Mo
 
 Start with the [converter architecture](ARCHITECTURE.md), [103 recorded strict-pass map records](maps/verified.md) and [222 historical acceptance records](maps/previously-accepted.md). See [integration status](#integration-status) before trying to build this source publication.
 
-## Version 3.0.0-rc.13
+## Version 3.0.1
+
+[Download the Windows installers](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/tag/v3.0.1). Use **Installed-SC2** with the game or **Standalone** without it. Standalone checks the packed GUI with the same strict benchmark and records the public metadata revision. Its results remain in REVIEW pending matching Editor data.
 
 The Windows installer now includes map/mod generation from the main toolbar,
 compiler-locale selection shared by map and mod recovery, runtime defaults for
@@ -36,8 +38,7 @@ The last strict registry is dated **2026-10-30**. Publication and source reorgan
 The [TypeScript GUI](gui/README.md) provides adapter-based recovery, live logs,
 evidence, a library-aware trigger hierarchy, persistent settings, search and source previews without Java. Run `npm run gui`
 from a prepared source checkout. Only the SC2 backend is currently implemented.
-The published RC1 installer still contains the earlier native Windows form;
-the TypeScript interface is included in RC2 and newer builds.
+Both installers open the TypeScript interface.
 
 - A shared Galaxy AST for functions, types, scopes and initialization.
 - GUI binding resolution using library identity, element type, ID and ownership.
@@ -56,7 +57,7 @@ preparation/packaging stages. See [API.md](API.md) and [CLI.md](CLI.md).
 ```mermaid
 flowchart TB
     archive["Original .SC2Map<br/>Read-only reference"] --> inputs["Prepare hash-bound inputs<br/>Verify dependencies and include closure"]
-    game["Installed SC2 CASC<br/>and required mod dependencies"] --> inputs
+    game["Installed SC2 CASC or Standalone metadata<br/>and required mod dependencies"] --> inputs
     inputs --> source["MapScript.galaxy<br/>and owned Galaxy sources"]
     inputs --> markup["Existing Triggers XML<br/>and localized strings"]
     inputs --> metadata["Actual dependency GUI definitions<br/>and Galaxy declarations"]

@@ -49,6 +49,6 @@ It checks standard GUI recovery of global and record-field appends without expre
 npm run release:windows
 ```
 
-The script repeats setup/checks and builds Setup.exe, portable ZIP and SHA256SUMS.txt under ignored release/. It downloads verified Node 24.14.1, mpqcli 0.10.0 and Inno Setup 6.7.4. All package junctions become ordinary files; an installation manifest checks the payload. The installed application needs no build tools or build-machine paths.
+The script repeats setup/checks and builds Installed-SC2 and Standalone setup executables, the portable ZIP and SHA256SUMS.txt under ignored release/. It downloads verified Node 24.14.1, mpqcli 0.10.0 and Inno Setup 6.7.4. All package junctions become ordinary files; an installation manifest checks the payload. The installed application needs no build tools or build-machine paths.
 
 The legacy setup:local script is retained for historical recovery only. It is not the public release path and must not be mixed with the public npm layout.

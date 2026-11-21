@@ -22,6 +22,22 @@ def fetch(url, target, digest):
     target.write_bytes(data)
 
 
+def fetch_benchmark():
+    # The exact published oracle is also fingerprinted per file by bundle-benchmark.
+    destination = ROOT / ".runtime/pinned-benchmark"
+    if destination.exists():
+        return
+    archive = TOOLS / "strict-benchmark-304.zip"
+    fetch("https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/download/runtime-tools-v1/strict-benchmark-304.zip",
+          archive, "243da2d57d2d22a1c2fd27d35c3bb616c2dd3385831f73f58507a284b3f46a8f")
+    import tempfile
+    with tempfile.TemporaryDirectory(dir=destination.parent) as temp:
+        staging = Path(temp) / "oracle"
+        with zipfile.ZipFile(archive) as source:
+            source.extractall(staging)
+        staging.rename(destination)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--installer", action="store_true", help="Also download Node and Inno Setup for a release build")
@@ -34,6 +50,7 @@ def main():
         raise ValueError("MPQ tool requires a separately installed MSVC runtime")
     print("Verified mpqcli 0.10.0 with static CRT")
     if args.installer:
+        fetch_benchmark()
         # The Node binary fingerprint is pinned independently of the download.
         fetch(pins["node"]["url"], TOOLS / "node.zip", pins["node"]["sha256"])
         with zipfile.ZipFile(TOOLS / "node.zip") as archive:

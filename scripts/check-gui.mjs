@@ -38,6 +38,13 @@ const request = {
   fullGui: false,
 };
 const argv = selectAdapter(request).command(request, root);
+const standalone = {
+  ...request,
+  fields: { ...request.fields, installation: path.join(root, '.runtime', 'public-resources') },
+};
+const standaloneArgs = selectAdapter(standalone).command(standalone, root);
+assert(standaloneArgs.includes('--resources') && standaloneArgs.includes('--benchmark'));
+assert(!standaloneArgs.includes('--sc2'));
 const modRequest = { ...request, fields: { ...request.fields, input: 'C:\\maps\\Library.SC2Mod' } };
 assert.equal(selectAdapter(modRequest).command(modRequest, root)[2], modRequest.fields.input);
 assert.equal(argv[2], request.fields.input);

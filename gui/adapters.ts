@@ -124,7 +124,9 @@ const sc2: BackendAdapter = {
       path.join(root, 'trigger-recovery.mjs'),
       'recover',
       fields.input!,
-      '--sc2',
+      path.resolve(fields.installation!) === path.join(root, '.runtime', 'public-resources')
+        ? '--resources'
+        : '--sc2',
       fields.installation!,
       '--out',
       fields.output!,

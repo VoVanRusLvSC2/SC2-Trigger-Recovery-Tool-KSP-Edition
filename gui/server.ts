@@ -256,7 +256,22 @@ const server = http.createServer(async (req, res) => {
       if (req.method === 'GET' && url.pathname === '/api/adapters')
         return json(
           res,
-          adapters.map((a) => a.info),
+          adapters.map(({ info }) =>
+            defaults.installation === path.join(root, '.runtime', 'public-resources')
+              ? {
+                  ...info,
+                  fields: info.fields.map((field) =>
+                    field.key === 'installation'
+                      ? {
+                          ...field,
+                          label: 'Metadata folder',
+                          help: 'The Standalone snapshot is selected automatically. You can also choose an installed StarCraft II folder.',
+                        }
+                      : field,
+                  ),
+                }
+              : info,
+          ),
         );
       if (req.method === 'POST' && url.pathname === '/api/inspect') {
         if (worker || starting || inspecting) throw Error('Finish the active operation first.');

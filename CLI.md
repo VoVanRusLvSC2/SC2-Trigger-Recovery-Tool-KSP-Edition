@@ -122,7 +122,9 @@ trigger-recovery recover 'C:\Maps\Input.SC2Map' --resources 'K:\SC2-Public-Resou
 
 Alternatively replace `--resources` with `--download-resources 'K:\SC2-Public-Resources'` to download before preparing. Both output directories must be new.
 
-**This is an experimental preview, not a finished or validated recovery.** It refuses maps with existing GUI markup, cannot restore attributes, and cannot run the strict benchmark. It may contain generated Native or Custom Script. Its status is `UNVERIFIED_PUBLIC_SNAPSHOT`, the process exits nonzero, and an optional draft map retains original Galaxy. Saving or compiling the draft in Editor may change behavior. Use `--sc2` for the established installed-data workflow; Editor/gameplay verification remains separate.
+For checked Standalone recovery, pass both `--resources <snapshot>` and `--benchmark <distribution>`. Standalone selects both automatically when no source is specified. Recovery preserves existing attributes and compares Galaxy emitted from the packed map or mod. The result stays in REVIEW for the unverified Editor version, even when the comparison matches. Supply custom mods with `--library`.
+
+**The legacy map command with an explicit snapshot and no benchmark is a diagnostic preview.** It refuses maps with existing GUI markup, cannot restore attributes, and cannot run the strict benchmark. It may contain generated Native or Custom Script. Its status is `UNVERIFIED_PUBLIC_SNAPSHOT`, the process exits nonzero, and an optional draft map retains original Galaxy. Saving or compiling the draft in Editor may change behavior. Use `--sc2` for the established installed-data workflow; Editor/gameplay verification remains separate.
 
 ### Preserve attributes without reconstruction
 

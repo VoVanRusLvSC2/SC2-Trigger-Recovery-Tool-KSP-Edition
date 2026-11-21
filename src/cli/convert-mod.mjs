@@ -1,3 +1,4 @@
+import { composeGeneratedHeader } from '../conversion/exact-function-signatures/generated-header-composition.mjs';
 import { primaryLocalizedTable } from '../libraries/gui/primary-localized-table.mjs';
 /** Explicit-library archive worker: no synthetic MapScript or startup wrappers. */
 import assert from 'node:assert/strict';
@@ -32,26 +33,51 @@ const context = createTriggerConversionContext({
 let sourceProof;
 try {
   await fs.mkdir(row.job, { recursive: true });
-  assert.equal(row.documentKind, 'mod');
+
   assert.equal(await hash(row.preparationResult), row.preparationResultSha256);
   const prepared = await json(row.preparationResult),
     config = await json(row.config);
   assertPreparedLibraryRoots(config, prepared);
+  const snapshot = prepared.sourceKind === 'public-resource-snapshot';
+  assert.equal(config.resourceSnapshot === true, snapshot, 'Resource source changed');
+  assert(snapshot || prepared.sourceKind === 'installed-casc');
+  assert.equal(row.documentKind, prepared.documentKind);
+  const map = row.documentKind === 'map';
+  assert(row.documentKind === 'mod' || (map && snapshot), 'Unexpected package worker');
+  const identity = path.join(
+    config.installation,
+    snapshot ? 'RESOURCE_MANIFEST.json' : '.build.info',
+  );
+  const mapHeader =
+    map &&
+    config.entries.find((entry) => /^(?:Base\.SC2Data\/)?LibMap_h\.galaxy$/i.test(entry.path))
+      ?.path;
+  const units = map
+    ? [{ libraryId: 'Map', body: 'MapScript.galaxy', header: mapHeader }]
+    : prepared.libraryUnits;
+  const documentKind = map ? 'map' : 'library';
+  const mode = map ? 'snapshot-map' : 'mod-libraries';
+  result.sourceKind = prepared.sourceKind;
+  if (snapshot) {
+    assert(
+      !row.attributeIndex,
+      'Applying external attribute headers requires the Installed-SC2 edition.',
+    );
+    result.snapshotRevision = prepared.snapshotRevision;
+  }
   sourceProof = prepared.sourcePackage;
   await verifyComponentSource(sourceProof);
   assert.equal(await hash(row.original), row.originalSha256);
   assert.equal(await hash(row.archive), row.archiveSha256);
-  assert.equal(
-    await hash(path.join(config.installation, '.build.info')),
-    prepared.cascBuildInfoSha256,
-  );
-  assert.equal(prepared.sourceKind, 'installed-casc');
+  assert.equal(await hash(identity), prepared.cascBuildInfoSha256);
+
   const checked = async (item) => {
     const bytes = await fs.readFile(item.path);
     assert.equal(sha(bytes), item.sha256, 'Prepared input changed');
     return bytes.toString('utf8');
   };
   const component = async (name) => {
+    if (!name) return '';
     const entry = config.entries.find((entry) => entry.path.toLowerCase() === name.toLowerCase());
     if (!entry) return '';
     const bytes = await fs.readFile(path.join(row.package, ...entry.path.split('/')));
@@ -72,16 +98,18 @@ try {
   for (const input of prepared.declarationInputs)
     declarations.push({ fileName: input.sourceLabel, text: await checked(input) });
   const owned = new Set(
-    prepared.libraryUnits
-      .flatMap((unit) => [unit.body, unit.header])
+    units
+      .flatMap((unit) => [unit.body, unit.header].filter(Boolean))
       .map((name) => name.toLowerCase()),
   );
   const external = declarations.filter((input) => !owned.has(input.fileName.toLowerCase()));
   const headers = await Promise.all(
-    prepared.libraryUnits.map(async (unit) => ({
-      fileName: unit.header,
-      text: await component(unit.header),
-    })),
+    units
+      .filter((unit) => unit.header)
+      .map(async (unit) => ({
+        fileName: unit.header,
+        text: await component(unit.header),
+      })),
   );
   const locales = [
     ...new Set(
@@ -108,14 +136,11 @@ try {
   let markup = originalXml;
   const options = new Map();
   const oracle = process.env.SC2_TRIGGER_BENCHMARK_ROOT ? await openPinnedUserOracle() : undefined;
-  for (const [index, unit] of prepared.libraryUnits.entries()) {
-    progress(
-      'Recovering library ' + unit.libraryId,
-      25 + Math.floor((45 * index) / prepared.libraryUnits.length),
-    );
+  for (const [index, unit] of units.entries()) {
+    progress('Recovering library ' + unit.libraryId, 25 + Math.floor((45 * index) / units.length));
     const input = {
       libraryId: unit.libraryId,
-      documentKind: 'library',
+      documentKind,
       script: await component(unit.body),
       header: await component(unit.header),
       existingTriggerData: markup || undefined,
@@ -125,6 +150,7 @@ try {
         ...headers.filter((header) => header.fileName !== unit.header),
       ],
       strictSymbols: true,
+      allowTransparentConditionFunctions: map,
       guiRecoveryMode: row.guiRecoveryMode,
       conversionContext: context,
       locale: primary.locale,
@@ -153,20 +179,28 @@ try {
           event.total > 0 ? Math.max(0, Math.min(1, event.completed / event.total)) : 0;
         progress(
           'Library ' + unit.libraryId + ': ' + phase,
-          25 +
-            Math.floor(
-              (45 * (index + (at + fraction) / phases.length)) / prepared.libraryUnits.length,
-            ),
+          25 + Math.floor((45 * (index + (at + fraction) / phases.length)) / units.length),
         );
       },
     };
+    // The map archive contains the source checkpoint for incremental edits.
+    // Re-emission from the final packed GUI is checked independently below.
+    if (map && markup)
+      input.sourceCheckpoint = {
+        xmlSha256: sha(markup),
+        stringsSha256: sha(primary.triggerStrings),
+        galaxySha256: sha(input.script),
+        galaxy: input.script,
+      };
     const recovered = await convertGalaxyToTriggers(input);
     const errors = (recovered.diagnostics ?? recovered.fidelity?.diagnostics ?? []).filter(
       (item) => item.severity === 'error',
     );
     assert.equal(errors.length, 0, JSON.stringify(errors.slice(0, 4)));
     assert(recovered.output?.triggerData, 'Library recovery returned no markup');
-    markup = mergeLibrary(markup, recovered.output.triggerData, unit.libraryId);
+    markup = map
+      ? recovered.output.triggerData
+      : mergeLibrary(markup, recovered.output.triggerData, unit.libraryId);
     assertNoNewRawGui(originalXml, markup);
     for (const table of tables) {
       const update = recovered.output.localizedStrings?.find(
@@ -191,7 +225,7 @@ try {
       recovered: true,
     });
   }
-  const directory = path.join(row.job, 'mod-libraries');
+  const directory = path.join(row.job, mode);
   await fs.mkdir(directory);
   const changes = new Map([['Triggers', Buffer.from(markup)]]);
   for (const table of tables)
@@ -202,7 +236,7 @@ try {
       const file = table.folder + '/LocalizedData/' + name;
       if (table[field] !== (await component(file))) changes.set(file, Buffer.from(table[field]));
     }
-  progress('Packing recovered mod', 72);
+  progress('Packing recovered package', 72);
   const packed = await writePackageCandidate(row, directory, changes, config.entries);
   const reader = await openSc2Package(packed.candidate);
   let allMatched = !!oracle;
@@ -222,15 +256,15 @@ try {
       })),
     );
     const actualPrimary = primaryLocalizedTable(actualTables, primary.locale);
-    for (const [index, unit] of prepared.libraryUnits.entries()) {
+    for (const [index, unit] of units.entries()) {
       progress(
         'Verifying packed library ' + unit.libraryId,
-        80 + Math.floor((15 * index) / prepared.libraryUnits.length),
+        80 + Math.floor((15 * index) / units.length),
       );
       const forward = await convertTriggersToGalaxy(actualMarkup, {
         ...options.get(unit.libraryId),
         libraryId: unit.libraryId,
-        documentKind: 'library',
+        documentKind,
         dependencyLibraries: dependencies,
         galaxyDeclarations: external,
         strictSymbols: true,
@@ -240,10 +274,17 @@ try {
         gameStrings: actualPrimary.gameStrings,
         localizedStrings: actualTables,
       });
-      const comparison = oracle?.compare(
-        (await component(unit.header)) + '\n' + (await component(unit.body)),
-        forward.output.header + '\n' + forward.output.script,
-      );
+      const script = await component(unit.body),
+        header = await component(unit.header);
+      const comparison = map
+        ? oracle?.compare(
+            composeGeneratedHeader({ script, header, libraryId: unit.libraryId }).text,
+            composeGeneratedHeader({ ...forward.output, libraryId: unit.libraryId }).text,
+          )
+        : oracle?.compare(
+            header + '\n' + script,
+            forward.output.header + '\n' + forward.output.script,
+          );
       const passed = comparison?.syntaxValid === true && comparison.exact === true;
       allMatched &&= passed;
       const proof = {
@@ -284,10 +325,7 @@ try {
   await save(path.join(directory, 'ATTRIBUTE_SCOPE.json'), attributes);
   await verifyComponentSource(sourceProof);
   assert.equal(await hash(row.original), row.originalSha256);
-  assert.equal(
-    await hash(path.join(config.installation, '.build.info')),
-    prepared.cascBuildInfoSha256,
-  );
+  assert.equal(await hash(identity), prepared.cascBuildInfoSha256);
   const benchmark = {
     enabled: !!oracle,
     passed: allMatched,
@@ -301,23 +339,27 @@ try {
   result.status = 'GENERATED';
   result.originalUnchanged = true;
   result.variants.push({
-    mode: 'mod-libraries',
+    mode,
     status:
-      allMatched && layoutQualified && !attributeQueries
+      !snapshot && allMatched && layoutQualified && !attributeQueries
         ? 'PASS_OFFLINE_EDITOR_PENDING'
         : 'REVIEW_REQUIRED_EDITOR_PENDING',
     reviewReasons: [
+      snapshot && 'PUBLIC_SNAPSHOT_EDITOR_VERSION_UNKNOWN',
       !oracle && 'STRICT_BENCHMARK_NOT_ENABLED',
       oracle && !allMatched && 'STRICT_BENCHMARK_MISMATCH',
       !layoutQualified && 'GUI_TEXT_LAYOUT_REQUIRES_EDITOR',
-      attributeQueries && 'MOD_ATTRIBUTE_RECOVERY_NOT_QUALIFIED',
+      attributeQueries &&
+        (map
+          ? 'SNAPSHOT_ATTRIBUTE_RECOVERY_NOT_QUALIFIED'
+          : 'MOD_ATTRIBUTE_RECOVERY_NOT_QUALIFIED'),
     ].filter(Boolean),
     candidate: packed.candidate,
     benchmark,
     attributes,
     ...packed,
   });
-  progress('Finalizing mod evidence', 98);
+  progress('Finalizing recovery evidence', 98);
 } catch (error) {
   if (error.declarationDelta)
     await save(path.join(row.job, 'DECLARATION_DIFF.json'), error.declarationDelta);

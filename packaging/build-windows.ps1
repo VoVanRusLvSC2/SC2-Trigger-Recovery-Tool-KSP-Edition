@@ -12,16 +12,18 @@ try {
   Invoke-Checked python @('scripts/fetch-public-runtime.py')
   Invoke-Checked npm.cmd @('ci', '--ignore-scripts')
   Invoke-Checked node @('scripts/build-public-runtime.mjs')
+  Invoke-Checked python @('scripts/fetch-release-tools.py', '--installer')
   Invoke-Checked node @('scripts/bundle-benchmark.mjs')
   Invoke-Checked npm.cmd @('run', 'verify:gui')
-  Invoke-Checked python @('scripts/fetch-release-tools.py', '--installer')
   Invoke-Checked npm.cmd @('run', 'verify:preview')
   Invoke-Checked node @('scripts/check-mod-recovery.mjs')
+  Invoke-Checked node @('scripts/check-public-pack.mjs')
   foreach ($check in @('verify:recovered', 'verify:retained', 'verify:bindings', 'verify:helpers', 'verify:source', 'verify:dependencies', 'verify:authored', 'verify:attribute-source', 'verify:attribute-use', 'verify:condition-helper-evidence', 'verify:cli', 'verify:preparation')) {
     Invoke-Checked npm.cmd @('run', $check)
   }
   Invoke-Checked npm.cmd @('run', 'verify:language', '--', '--with-runtime')
   Invoke-Checked npm.cmd @('run', 'format:check')
+  $version = (Get-Content -LiteralPath package.json -Raw | ConvertFrom-Json).version
   $compiler = Join-Path $projectRoot '.runtime/tools/inno/ISCC.exe'
   if (-not (Test-Path -LiteralPath $compiler)) {
     $compilerRoot = Join-Path $projectRoot '.runtime/tools/inno'
@@ -44,12 +46,14 @@ try {
       if ($LASTEXITCODE -eq 0) { $compilerDrive = $candidate; break }
     }
     if (-not $compilerDrive) { throw 'No free temporary drive for the installer compiler' }
-    Invoke-Checked $compiler @('/Qp', ('/DStageRoot=' + $compilerDrive + '\'), ('/DReleaseDir=' + $releaseRoot), 'packaging/windows.iss')
+    $options = @('/Qp', ('/DStageRoot=' + $compilerDrive + '\'), ('/DReleaseDir=' + $releaseRoot), ('/DAppRelease=' + $version))
+    Invoke-Checked $compiler ($options + 'packaging/windows.iss')
+    Invoke-Checked $compiler ($options + @('/DStandalone', 'packaging/windows.iss'))
   } finally { if ($compilerDrive) { & subst.exe $compilerDrive /D } }
-  $zip = Join-Path $releaseRoot 'SC2-Trigger-Recovery-KSP-3.0.0-rc.13-Windows-x64.zip'
+  $zip = Join-Path $releaseRoot "SC2-Trigger-Recovery-KSP-$version-Windows-x64.zip"
   if (Test-Path -LiteralPath $zip) { throw 'Release ZIP already exists; preserve it and use a clean build directory' }
   Invoke-Checked python @('scripts/archive-release.py', $stage, $zip)
-  $artifacts = Get-ChildItem -LiteralPath $releaseRoot -File | Where-Object { $_.Name -like 'SC2-Trigger-Recovery-KSP-3.0.0-rc.13-*' -and $_.Extension -in @('.exe', '.zip') }
+  $artifacts = Get-ChildItem -LiteralPath $releaseRoot -File | Where-Object { $_.Name -like "SC2-Trigger-Recovery-KSP-$version-*" -and $_.Extension -in @('.exe', '.zip') }
   $lines = foreach ($file in $artifacts) { ((Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()) + '  ' + $file.Name }
   [IO.File]::WriteAllLines((Join-Path $releaseRoot 'SHA256SUMS.txt'), [string[]]$lines, (New-Object Text.UTF8Encoding($false)))
   Write-Output "Release artifacts: $releaseRoot"

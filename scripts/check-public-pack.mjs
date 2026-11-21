@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdtemp, readFile, readdir, rmdir, unlink } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, rm, rmdir, unlink } from 'node:fs/promises';
 import path from 'node:path';
+import os from 'node:os';
 import { fetchPublicPack, resourcePath, REVISION } from '../src/resources/fetch-public-pack.mjs';
-const parent = process.env.SC2_TEST_OUTPUT_ROOT;
-assert(parent, 'SC2_TEST_OUTPUT_ROOT required');
+const parent = process.env.SC2_TEST_OUTPUT_ROOT || os.tmpdir();
 for (const bad of ['../x', 'a/../b', 'a\\b', 'a:evil', 'CON.txt', 'a/<x>'])
   assert.throws(() => resourcePath(bad));
 const bytes = Buffer.from('hello test\n'),
@@ -51,5 +51,5 @@ try {
     'Full snapshot downloader: pinned tree, verified ZIP, safety and no-overwrite passed.',
   );
 } finally {
-  if ((await readdir(t)).length === 0) await rmdir(t);
+  await rm(t, { recursive: true, force: true });
 }

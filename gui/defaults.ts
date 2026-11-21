@@ -41,13 +41,19 @@ async function registryInstallations(): Promise<string[]> {
 }
 
 export async function discoverDefaults(root: string): Promise<RecoveryDefaults> {
-  const installation = await findInstallation([
-    process.env.SC2_INSTALL_PATH ?? '',
-    process.env.SC2_INSTALLATION ?? '',
-    ...(await registryInstallations()),
-    path.join(process.env['ProgramFiles(x86)'] ?? 'C:\\Program Files (x86)', 'StarCraft II'),
-    path.join(process.env.ProgramFiles ?? 'C:\\Program Files', 'StarCraft II'),
-  ]);
+  const { bundledSnapshot } = await import(
+    new URL('../../src/resources/installed-snapshot.mjs', import.meta.url).href
+  );
+  const snapshot: string = (await bundledSnapshot(root)) ?? '';
+  const installation =
+    snapshot ||
+    (await findInstallation([
+      process.env.SC2_INSTALL_PATH ?? '',
+      process.env.SC2_INSTALLATION ?? '',
+      ...(await registryInstallations()),
+      path.join(process.env['ProgramFiles(x86)'] ?? 'C:\\Program Files (x86)', 'StarCraft II'),
+      path.join(process.env.ProgramFiles ?? 'C:\\Program Files', 'StarCraft II'),
+    ]));
   let benchmark = '',
     benchmarkError = '';
   const candidates = process.env.SC2_TRIGGER_BENCHMARK_ROOT
@@ -74,9 +80,11 @@ export async function discoverDefaults(root: string): Promise<RecoveryDefaults> 
   return {
     installation,
     benchmark,
-    installationStatus: installation
-      ? 'StarCraft II found automatically'
-      : 'StarCraft II not found. Set its folder in Settings.',
+    installationStatus: snapshot
+      ? 'Standalone · verified public metadata snapshot'
+      : installation
+        ? 'StarCraft II found automatically'
+        : 'StarCraft II not found. Set its folder in Settings.',
     benchmarkStatus: benchmark
       ? 'Strict benchmark enabled'
       : benchmarkError ||

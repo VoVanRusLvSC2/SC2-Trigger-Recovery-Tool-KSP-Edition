@@ -60,10 +60,6 @@ export async function prepareMap({
   }
   assert(/\.sc2(map|mod)$/iu.test(original), 'Expected a .SC2Map or .SC2Mod package');
   const documentKind = /\.sc2mod$/i.test(original) ? 'mod' : 'map';
-  assert(
-    documentKind === 'map' || !publicResources,
-    'Mod recovery requires installed SC2 metadata',
-  );
   const sourceDirectory = (await fs.stat(original)).isDirectory();
   const sourcePath = original;
   const parent = await fs.realpath(path.dirname(path.resolve(output)));
@@ -139,10 +135,17 @@ export async function prepareMap({
 
   const session = new MapSession({
     installation,
-    ...(libraryRoots.length
+    ...(libraryRoots.length || publicResources
       ? {
           sources: new BoundedLocalModSources({
             installationDirectory: installation,
+            ...(publicResources
+              ? {
+                  documentsDirectory: path.join(installation, '.unused-user-data'),
+                  battleNetCacheDirectory: path.join(installation, '.unused-bnet-cache'),
+                  sc2MapsCacheDirectory: path.join(installation, '.unused-map-cache'),
+                }
+              : {}),
             sources: libraryRoots.map((p) => ({ type: 'mods', path: p, priority: -100 })),
           }),
         }
