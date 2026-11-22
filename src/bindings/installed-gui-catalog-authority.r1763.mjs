@@ -205,7 +205,9 @@ export async function authenticateInstalledGuiCatalogs({
     );
     if (installed.layer.sourceId !== 'local:casc' || installed.layer.role !== 'dependency')
       continue;
-    for (const libraryId of readOwnedGuiLibraries(installed.triggerData).keys()) {
+    for (const libraryId of readOwnedGuiLibraries(installed.triggerData, 'Map', {
+      retainSource: false,
+    }).keys()) {
       if (libraryId === 'Map') continue;
       files.push({ libraryId, path: prepared.sourcePath, sha256: sha(installed.triggerData) });
     }

@@ -141,6 +141,7 @@ import {
   tryBuildForEachIntegerFromStmtSequence,
   tryBuildSwitchFromStmtSequence,
   tryMatchForEachIntegerCondition,
+  functionSyntaxIndex,
 } from './g2t-actions.mjs';
 
 import {
@@ -564,11 +565,7 @@ function privateAutoVariables(template, nodes, bindings, ctx) {
     if (!id || variable?.type !== 'Variable' || variable.isArray || names.has(identifier.name))
       return undefined;
 
-    const declaration = statements.find(
-      (node) =>
-        node.kind === 141 /* SyntaxKind.VariableDeclaration */ &&
-        node.name.name === identifier.name,
-    );
+    const declaration = functionSyntaxIndex(statements).declarations.get(identifier.name);
 
     if (!declaration || declaration.initializer) return undefined;
 
@@ -618,7 +615,8 @@ function privateAutoVariables(template, nodes, bindings, ctx) {
   )
     return undefined;
 
-  if (mentionsIdentifier(statements, names, new Set([...nodes, ...declarations]))) return undefined;
+  if (functionSyntaxIndex(statements).mentionsOutside(names, new Set([...nodes, ...declarations])))
+    return undefined;
 
   return ids;
 }
@@ -682,6 +680,28 @@ function compatibleBindings(template, nodes, bindings, ctx) {
   );
 }
 
+const templatesByUse = new WeakMap();
+function templatesForUse(ctx) {
+  const all = candidates(ctx);
+  let groups = templatesByUse.get(all);
+  if (!groups) {
+    groups = { expressions: [], statements: [], sequences: [] };
+    for (const template of all) {
+      if (template.nodes.length === 1 && supportedTemplate(template)) {
+        (template.expression ? groups.expressions : groups.statements).push(template);
+      } else if (
+        !template.expression &&
+        template.nodes.length >= 2 &&
+        supportedTemplate(template, true)
+      ) {
+        groups.sequences.push(template);
+      }
+    }
+    templatesByUse.set(all, groups);
+  }
+  return groups;
+}
+
 function tryTemplate(node, expression, ctx, role, expectedType) {
   let actualType;
 
@@ -705,14 +725,8 @@ function tryTemplate(node, expression, ctx, role, expectedType) {
 
   const parameterContext = expression && role === undefined && expectedType !== undefined;
 
-  for (const template of candidates(ctx)) {
-    if (
-      template.expression !== expression ||
-      template.nodes.length !== 1 ||
-      !supportedTemplate(template)
-    )
-      continue;
-
+  const groups = templatesForUse(ctx);
+  for (const template of expression ? groups.expressions : groups.statements) {
     if (expression) {
       // Candidate matching does not mutate bindings; infer the input type once,
 
@@ -752,17 +766,15 @@ function tryTemplate(node, expression, ctx, role, expectedType) {
     : undefined;
 }
 
-function tryTemplateSequence(nodes, ctx, role) {
-  for (const template of candidates(ctx)) {
-    if (template.expression || template.nodes.length < 2 || !supportedTemplate(template, true))
-      continue;
-
-    let bindingNodes = nodes;
+function tryTemplateSequence(nodes, start, ctx, role) {
+  for (const template of templatesForUse(ctx).sequences) {
+    let legacyBinding = false;
 
     let matched = matchTemplatePrefix(
       template,
       nodes,
       ctx.returnType === 'bool' ? { kind: 67 } : undefined,
+      start,
     );
 
     if (!matched) {
@@ -773,36 +785,23 @@ function tryTemplateSequence(nodes, ctx, role) {
           legacy,
           nodes,
           ctx.returnType === 'bool' ? { kind: 67 } : undefined,
+          start,
         );
 
-        if (alternative && !hasContinueTargetingBody(nodes[1]?.statement)) {
+        if (alternative && !hasContinueTargetingBody(nodes[start + 1]?.statement)) {
           matched = alternative;
 
-          bindingNodes = legacyMatchedForNodes(nodes);
+          legacyBinding = true;
         }
       }
     }
 
-    if (
-      !matched ||
-      !matched.consumed ||
-      !compatibleBindings(template, bindingNodes.slice(0, matched.consumed), matched.bindings, ctx)
-    )
-      continue;
-
-    if (
-      nodes
-        .slice(0, matched.consumed)
-        .some((node) => node.kind === 141 /* SyntaxKind.VariableDeclaration */)
-    )
-      continue;
-
-    const privateLocals = privateAutoVariables(
-      template,
-      nodes.slice(0, matched.consumed),
-      matched.bindings,
-      ctx,
-    );
+    if (!matched?.consumed) continue;
+    const captured = nodes.slice(start, start + matched.consumed);
+    const bindingNodes = legacyBinding ? legacyMatchedForNodes(captured) : captured;
+    if (!compatibleBindings(template, bindingNodes, matched.bindings, ctx)) continue;
+    if (captured.some((node) => node.kind === 141 /* SyntaxKind.VariableDeclaration */)) continue;
+    const privateLocals = privateAutoVariables(template, captured, matched.bindings, ctx);
 
     if (!privateLocals) continue;
 
@@ -2035,51 +2034,51 @@ function structuredNodeBody(node, expression, ctx, role, expectedType) {
   );
 }
 
-function inferredLocalHandleType(galaxyName, ctx) {
-  const roots = ctx.structuredFunctionStatements;
-
-  if (!roots) return undefined;
-
-  const inferred = new Map();
-
+const assignedCallsByFunction = new WeakMap();
+function indexAssignedCalls(roots) {
+  const calls = new Map();
   const pending = [...roots];
-
   const seen = new Set();
-
   while (pending.length) {
     const current = pending.pop();
-
     if (!current || typeof current !== 'object' || seen.has(current)) continue;
-
     seen.add(current);
-
     if (
       current.kind === 124 /* SyntaxKind.BinaryExpression */ &&
-      current.operatorToken?.kind === 39 /* SyntaxKind.EqualsToken */ &&
-      getIdentifierName(current.left) === galaxyName
+      current.operatorToken?.kind === 39 /* SyntaxKind.EqualsToken */
     ) {
+      const name = getIdentifierName(current.left);
       const right = unwrapParens(current.right);
-
-      if (right?.kind === 121 /* SyntaxKind.CallExpression */) {
-        const definition = ctx.funcNameToFuncDef.get(getIdentifierName(right.expression) ?? '');
-
-        const type = definition?.returnType;
-
-        if (type?.type && !['int', 'fixed', 'bool', 'string', 'void'].includes(type.type)) {
-          inferred.set(
-            `${type.type}:${type.typeElement?.library ?? ''}:${type.typeElement?.id ?? ''}:${type.gameType ?? ''}`,
-            type,
-          );
-        }
+      if (name && right?.kind === 121 /* SyntaxKind.CallExpression */) {
+        let targets = calls.get(name);
+        if (!targets) calls.set(name, (targets = []));
+        targets.push(getIdentifierName(right.expression) ?? '');
       }
     }
-
     for (const child of syntaxChildren(current)) {
       if (Array.isArray(child)) pending.push(...child);
       else pending.push(child);
     }
   }
+  assignedCallsByFunction.set(roots, calls);
+  return calls;
+}
 
+function inferredLocalHandleType(galaxyName, ctx) {
+  const roots = ctx.structuredFunctionStatements;
+  if (!roots) return undefined;
+  // Lowering can change the resolved GUI definition. Index only the
+  // function's source assignments and consult the current definitions.
+  const calls = assignedCallsByFunction.get(roots) ?? indexAssignedCalls(roots);
+  const inferred = new Map();
+  for (const callee of calls.get(galaxyName) ?? []) {
+    const type = ctx.funcNameToFuncDef.get(callee)?.returnType;
+    if (type?.type && !['int', 'fixed', 'bool', 'string', 'void'].includes(type.type))
+      inferred.set(
+        `${type.type}:${type.typeElement?.library ?? ''}:${type.typeElement?.id ?? ''}:${type.gameType ?? ''}`,
+        type,
+      );
+  }
   return inferred.size === 1 ? [...inferred.values()][0] : undefined;
 }
 
@@ -2091,10 +2090,16 @@ export function declareStructuredLocal(node, ctx) {
 
   const { baseType, sizes } = unwrapArrayType(node.type);
 
-  const sizeVariables = new Map(ctx.globalVarByGalaxyName);
-
-  for (const [name, id] of ctx.localVarByGalaxyName)
-    sizeVariables.set(name, { id, library: ctx.libId });
+  let arraySizes;
+  if (sizes.length) {
+    const sizeVariables = new Map(ctx.globalVarByGalaxyName);
+    for (const [name, id] of ctx.localVarByGalaxyName)
+      sizeVariables.set(name, { id, library: ctx.libId });
+    arraySizes = sizes.map((size, dim) => ({
+      dim,
+      ...parseArraySizeExpr(size, sizeVariables, ctx.constants),
+    }));
+  }
 
   // The element id is already the stable identity.  Appending it to the
 
@@ -2134,15 +2139,7 @@ export function declareStructuredLocal(node, ctx) {
       node.modifiers?.some((modifier) => modifier.kind === 53 /* SyntaxKind.ConstKeyword */) ||
       undefined,
 
-    ...(sizes.length
-      ? {
-          isArray: true,
-          arraySizes: sizes.map((s, dim) => ({
-            dim,
-            ...parseArraySizeExpr(s, sizeVariables, ctx.constants),
-          })),
-        }
-      : {}),
+    ...(arraySizes ? { isArray: true, arraySizes } : {}),
   };
 
   ctx.elements[id] = variable;
@@ -2668,7 +2665,7 @@ export function structuredStatements(nodes, ctx, role) {
           continue;
         }
 
-        const sequence = tryTemplateSequence(nodes.slice(index), scoped, role);
+        const sequence = tryTemplateSequence(nodes, index, scoped, role);
 
         if (sequence) {
           result.push(sequence.ref);

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { createRequire } from 'node:module';
-import { createGalaxyDocument } from './galaxy-document.mjs';
+import { parseImmutableGalaxySyntax } from './immutable-galaxy-syntax.collections.mjs';
 import { logicalSourcePath, partitionDeclarationViews } from '../../model/source-ownership.mjs';
 import { removeAlreadyLoadedOwnedIncludes } from './owned-include-closure.mjs';
 
@@ -17,16 +17,17 @@ const require = createRequire(
 );
 const sax = require('sax');
 const sourceKey = (value) => logicalSourcePath(value.replace(/\.galaxy$/iu, '') + '.galaxy');
-function includes(text, only = false) {
-  const document = createGalaxyDocument({ fileName: 'source-include-proof.galaxy', text });
-  try {
-    if (only && document.ast.statements.some((n) => n.kind !== 136)) return undefined;
-    return document.ast.statements
-      .filter((n) => n.kind === 136)
-      .map((n) => n.path.value ?? n.path.text.replace(/^"|"$/gu, ''));
-  } finally {
-    document.dispose();
-  }
+function includes(text, only = false, fileName = 'source-include-proof.galaxy') {
+  const ast = parseImmutableGalaxySyntax(text, fileName);
+  assert.equal(
+    ast.parseDiagnostics.length,
+    0,
+    'INVALID_GALAXY_REVISION: source-include-proof.galaxy',
+  );
+  if (only && ast.statements.some((n) => n.kind !== 136)) return undefined;
+  return ast.statements
+    .filter((n) => n.kind === 136)
+    .map((n) => n.path.value ?? n.path.text.replace(/^"|"$/gu, ''));
 }
 
 function buildPlan(input, files) {
@@ -68,7 +69,9 @@ function buildPlan(input, files) {
       targets.set(key, target.sha256);
     }
   }
-  return [...includes(input.header ?? ''), ...includes(input.script ?? '')]
+  // With no header the root and the script are the same verified source view.
+  const scriptFile = root.text === input.script ? root.fileName : undefined;
+  return [...includes(input.header ?? ''), ...includes(input.script ?? '', false, scriptFile)]
     .filter((path) => targets.has(sourceKey(path)))
     .map((path) => ({ path, key: sourceKey(path), sha256: targets.get(sourceKey(path)) }));
 }

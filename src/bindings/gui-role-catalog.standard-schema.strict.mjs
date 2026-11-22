@@ -15,31 +15,51 @@ const stable = (value) =>
             .filter((k) => value[k] !== undefined)
             .map((k) => [k, stable(value[k])]),
         );
-const key = (type) => JSON.stringify(stable(type));
+const key = (type) =>
+  typeof type?.type === 'string' &&
+  !Array.isArray(type) &&
+  Object.hasOwn(type, 'type') &&
+  Object.keys(type).length === 1
+    ? `{"type":${JSON.stringify(type.type)}}`
+    : JSON.stringify(stable(type));
 
 /** Existing GUI definitions, indexed once per conversion. A type observed in
  * one role never authorizes another role. This is a representation catalog,
  * not an ABI certificate or permission to synthesize native definitions. */
-export function createGuiRoleCatalog(entries, { trustedOwners = [] } = {}) {
+export function createGuiRoleCatalog(entries, { trustedOwners = [], observedRoles = roles } = {}) {
   const libraries = new Map(entries),
     base = createGuiCapabilityCatalog(libraries),
     trusted = new Set(trustedOwners);
-  const uses = new Map([...roles].map((r) => [r, new Map()]));
+  const uses = new Map([...observedRoles].map((r) => [r, new Map()]));
+  const indexReturns = uses.has('return'),
+    indexParameters = uses.has('parameter'),
+    indexStorage = uses.has('member') || uses.has('variable');
   const add = (role, type, owner, e) => {
     if (!type?.type) return;
+    const index = uses.get(role);
+    if (!index) return;
     const k = key(type),
-      list = uses.get(role).get(k) ?? [];
+      list = index.get(k) ?? [];
     list.push({ owner, element: identity(e, owner) });
-    uses.get(role).set(k, list);
+    index.set(k, list);
   };
   for (const [owner, lib] of libraries) {
     if (!trusted.has(owner)) continue;
-    const members = new Set(
-      Object.values(lib.elements ?? {})
-        .filter((e) => e.type === 'Structure')
-        .flatMap((e) => (e.variables ?? []).map((r) => JSON.stringify(identity(r, owner)))),
-    );
-    for (const e of Object.values(lib.elements ?? {})) {
+    const elements = Object.values(lib.elements ?? {});
+    const members = indexStorage
+      ? new Set(
+          elements
+            .filter((e) => e.type === 'Structure')
+            .flatMap((e) => (e.variables ?? []).map((r) => JSON.stringify(identity(r, owner)))),
+        )
+      : undefined;
+    for (const e of elements) {
+      if (
+        !(indexReturns && e.type === 'FunctionDef') &&
+        !(indexParameters && e.type === 'ParamDef') &&
+        !(indexStorage && e.type === 'Variable')
+      )
+        continue;
       if (base.resolve(identity(e, owner), owner) !== e) continue;
       if (e.type === 'FunctionDef')
         add(
@@ -59,7 +79,7 @@ export function createGuiRoleCatalog(entries, { trustedOwners = [] } = {}) {
     }
   }
   function typeUse(type, role, owner) {
-    if (!roles.has(role)) throw Error('UNKNOWN_GUI_TYPE_ROLE');
+    if (!roles.has(role) || !uses.has(role)) throw Error('UNKNOWN_GUI_TYPE_ROLE');
     if (!type?.type) return { status: 'UNPROVEN', reason: 'GUI_TYPE_REQUIRED', role };
     if (type.typeElement) {
       // A fixed domain is self-contained even if legacy XML retains a selector ref.
@@ -139,17 +159,15 @@ export function createGuiRoleCatalog(entries, { trustedOwners = [] } = {}) {
     const formal = base.resolve(ref, owner, 'ParamDef');
     if (!formal) return { status: 'UNPROVEN', reason: 'FORMAL_IDENTITY_UNRESOLVED' };
     const actualOwner = formal.library ?? ref.library ?? owner;
+    const presets = formalPresetRefs(formal, actualOwner);
     return {
       status: 'RESOLVED',
       formal: identity(formal, actualOwner),
       type: formal.paramType,
       role: 'parameter',
       storageReference: formal.isReference === true,
-      presets: formalPresetRefs(formal, actualOwner),
-      preset:
-        formalPresetRefs(formal, actualOwner).length === 1
-          ? formalPresetRefs(formal, actualOwner)[0]
-          : undefined,
+      presets,
+      preset: presets.length === 1 ? { ...presets[0] } : undefined,
       default: formal.default ? identity(formal.default, actualOwner) : undefined,
       representation: typeUse(formal.paramType, 'parameter', actualOwner),
       abiProved: false,

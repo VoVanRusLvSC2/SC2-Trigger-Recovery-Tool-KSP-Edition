@@ -4,6 +4,11 @@ import sax from '../../vendor/sax/lib/sax.js';
 import { serializeTriggerLibraryCanonical } from './trigger-xml.mjs';
 import { xmlTree } from '../../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js';
 import {
+  leadingStandardId,
+  mixedTriggerLibraries,
+  readStandardTriggerXml,
+} from './read-standard-trigger-xml.mjs';
+import {
   parseTriggerStrings,
   applyTriggerStringsByType,
 } from '../../sdk/array-values/modules/triggers/shared/trigger-document/trigger-strings.js';
@@ -14,24 +19,26 @@ function mkRef(a) {
     type: a.Type ?? a.type ?? void 0,
   };
 }
+const SCRIPT_CATALOG_PATTERNS = [
+  {
+    re: /(?:CreateUnit|UnitCreate|UnitTypeFromName|UnitTypeFromString)\s*\([^)]*"([^"]+)"/g,
+    catalog: 'Unit',
+  },
+  {
+    re: /(?:TechTreeAbilityAdd|TechTreeAbilityRemove|AbilityCommand|AbilCreate)\s*\([^)]*"([^"]+)"/g,
+    catalog: 'Abil',
+  },
+  { re: /(?:ActorCreate|ActorFromName|ActorTypeFromName)\s*\([^)]*"([^"]+)"/g, catalog: 'Actor' },
+  { re: /(?:TechTreeUpgradeAdd|UpgradeCreate)\s*\([^)]*"([^"]+)"/g, catalog: 'Upgrade' },
+  { re: /(?:BehaviorAdd|BehaviorRemove)\s*\([^)]*"([^"]+)"/g, catalog: 'Behavior' },
+  { re: /(?:EffectCreate|EffectTypeFromName)\s*\([^)]*"([^"]+)"/g, catalog: 'Effect' },
+  { re: /(?:WeaponCreate|WeaponTypeFromName)\s*\([^)]*"([^"]+)"/g, catalog: 'Weapon' },
+];
 function extractScriptCodeCatalogRefs(code, path) {
   const refs = [];
-  const patterns = [
-    {
-      re: /(?:CreateUnit|UnitCreate|UnitTypeFromName|UnitTypeFromString)\s*\([^)]*"([^"]+)"/g,
-      catalog: 'Unit',
-    },
-    {
-      re: /(?:TechTreeAbilityAdd|TechTreeAbilityRemove|AbilityCommand|AbilCreate)\s*\([^)]*"([^"]+)"/g,
-      catalog: 'Abil',
-    },
-    { re: /(?:ActorCreate|ActorFromName|ActorTypeFromName)\s*\([^)]*"([^"]+)"/g, catalog: 'Actor' },
-    { re: /(?:TechTreeUpgradeAdd|UpgradeCreate)\s*\([^)]*"([^"]+)"/g, catalog: 'Upgrade' },
-    { re: /(?:BehaviorAdd|BehaviorRemove)\s*\([^)]*"([^"]+)"/g, catalog: 'Behavior' },
-    { re: /(?:EffectCreate|EffectTypeFromName)\s*\([^)]*"([^"]+)"/g, catalog: 'Effect' },
-    { re: /(?:WeaponCreate|WeaponTypeFromName)\s*\([^)]*"([^"]+)"/g, catalog: 'Weapon' },
-  ];
-  for (const { re, catalog } of patterns) {
+  if (!code.includes('"')) return refs;
+  for (const { re, catalog } of SCRIPT_CATALOG_PATTERNS) {
+    re.lastIndex = 0;
     let m;
     while ((m = re.exec(code)) !== null) refs.push({ catalog, entry: m[1], path });
   }
@@ -88,22 +95,22 @@ function freshEl(type, id, lib) {
     type,
     id,
     library: lib,
-    unknownXml: [],
-    flags: [],
-    parameters: [],
-    subFunctions: [],
-    subFunctionTypes: [],
-    actions: [],
-    localVariables: [],
-    events: [],
-    conditions: [],
-    structVars: [],
-    values: [],
-    valuePresets: [],
-    expressionParams: [],
-    valueParams: [],
-    items: [],
-    arrayRefs: [],
+    unknownXml: undefined,
+    flags: undefined,
+    parameters: undefined,
+    subFunctions: undefined,
+    subFunctionTypes: undefined,
+    actions: undefined,
+    localVariables: undefined,
+    events: undefined,
+    conditions: undefined,
+    structVars: undefined,
+    values: undefined,
+    valuePresets: undefined,
+    expressionParams: undefined,
+    valueParams: undefined,
+    items: undefined,
+    arrayRefs: undefined,
     isArray: false,
     isConstant: false,
     isReference: false,
@@ -113,14 +120,84 @@ function freshEl(type, id, lib) {
     isMatchConst: false,
     isAltDisplay: false,
     disabled: false,
-    arraySizes: [],
+    arraySizes: undefined,
   };
 }
+const ELEMENT_FLAGS = {
+  FlagNative: 'Native',
+  FlagAction: 'Action',
+  FlagCall: 'Call',
+  FlagEvent: 'Event',
+  Template: 'Template',
+  FlagCustomScript: 'CustomScript',
+  FlagOperator: 'Operator',
+  FlagInline: 'Inline',
+  FlagCustomAI: 'CustomAI',
+  FlagSubFunctions: 'SubFunctions',
+  FlagAllowBreak: 'AllowBreak',
+  FlagHidden: 'Hidden',
+  FlagNoScriptPrefix: 'NoScriptPrefix',
+  Deprecated: 'Deprecated',
+  Internal: 'Internal',
+  FlagRestricted: 'Restricted',
+  FlagCreateThread: 'CreateThread',
+  FlagCondition: 'Condition',
+  NotYetImplemented: 'NotYetImplemented',
+};
+
+const KNOWN_ELEMENT_FIELDS = /* @__PURE__ */ new Set([
+  'Identifier',
+  'Disabled',
+  'InitOff',
+  'Grammar',
+  'ScriptCode',
+  'ExpressionText',
+  'Comment',
+  'InitFunc',
+  'Value',
+  'ReturnType',
+  'VariableType',
+  'ParameterType',
+  'FunctionDef',
+  'ParameterDef',
+  'Preset',
+  'PresetExtends',
+  'ValueElement',
+  'ValuePreset',
+  'ExpressionParam',
+  'ValueParam',
+  'StructMember',
+  'Default',
+  'Event',
+  'Condition',
+  'Variable',
+  'FunctionCall',
+  'Action',
+  'Parameter',
+  'SubFunctionType',
+  'Item',
+  'InitialValue',
+  'Array',
+  'BaseType',
+  'ValueType',
+  'ExpressionType',
+  'ExpressionCode',
+  'ValueId',
+  'ValueTypeInfo',
+  'CustomType',
+  'ValueGameType',
+  'TypeElement',
+  'Constant',
+  'ArraySize',
+]);
+
+const EMPTY_FLAGS = Object.freeze([]);
 function finalize(b) {
+  const flags = b.flags ?? EMPTY_FLAGS;
   const retainedFlags =
     b.type === 'SubFuncType'
-      ? b.flags.filter((flag) => flag !== 'Action' && flag !== 'Event')
-      : b.flags;
+      ? flags.filter((flag) => flag !== 'Action' && flag !== 'Event')
+      : flags;
   const base = {
     id: b.id,
     type: b.type,
@@ -131,32 +208,31 @@ function finalize(b) {
     grammarSource: b.grammar === void 0 ? void 0 : 'xml',
     disabled: b.disabled || void 0,
     flags: retainedFlags.length ? retainedFlags : void 0,
-    unknownXml: b.unknownXml.length ? b.unknownXml : void 0,
+    unknownXml: b.unknownXml?.length ? b.unknownXml : void 0,
   };
   const finPT = retainedGuiType;
   switch (b.type) {
     case 'FunctionDef': {
-      const flags = b.flags.length ? b.flags : void 0;
       const json = {
         ...base,
         type: 'FunctionDef',
         scriptCode: b.scriptCode,
-        parameters: b.parameters,
+        parameters: b.parameters ?? [],
         returnType: finPT(b.returnType),
-        flags,
-        isSubFunction: b.flags.includes('SubFunctions'),
-        isFuncAction: b.flags.includes('Action'),
-        isFuncCall: b.flags.includes('Call'),
-        subFunctionTypes: b.subFunctionTypes.length ? b.subFunctionTypes : void 0,
+        flags: flags.length ? flags : void 0,
+        isSubFunction: flags.includes('SubFunctions'),
+        isFuncAction: flags.includes('Action'),
+        isFuncCall: flags.includes('Call'),
+        subFunctionTypes: b.subFunctionTypes?.length ? b.subFunctionTypes : void 0,
         actions:
-          b.actions.length ||
+          b.actions?.length ||
           (!b.scriptCode &&
-            (b.flags.includes('Action') || b.flags.includes('Call')) &&
-            !b.flags.includes('Native') &&
-            !b.flags.includes('CustomScript'))
-            ? b.actions
+            (flags.includes('Action') || flags.includes('Call')) &&
+            !flags.includes('Native') &&
+            !flags.includes('CustomScript'))
+            ? (b.actions ?? [])
             : void 0,
-        localVariables: b.localVariables.length ? b.localVariables : void 0,
+        localVariables: b.localVariables?.length ? b.localVariables : void 0,
         section: b.section,
       };
       if (b.scriptCode) {
@@ -169,8 +245,8 @@ function finalize(b) {
       return {
         ...base,
         type: 'SubFuncType',
-        isAction: b.flags.includes('Action') || void 0,
-        isEvent: b.flags.includes('Event') || void 0,
+        isAction: flags.includes('Action') || void 0,
+        isEvent: flags.includes('Event') || void 0,
         functionDef: b.functionDef,
       };
     case 'FunctionCall':
@@ -178,8 +254,8 @@ function finalize(b) {
         ...base,
         type: 'FunctionCall',
         functionDef: b.functionDef,
-        parameters: b.parameters.length ? b.parameters : void 0,
-        subFunctions: b.subFunctions.length ? b.subFunctions : void 0,
+        parameters: b.parameters?.length ? b.parameters : void 0,
+        subFunctions: b.subFunctions?.length ? b.subFunctions : void 0,
         subFunctionType: b.subFunctionType,
         scriptCode: b.scriptCode,
       };
@@ -195,9 +271,9 @@ function finalize(b) {
         valueTypeInfo: b.paramValueTypeInfo,
         expressionType: b.expressionType,
         expressionText: b.expressionText,
-        expressionParams: b.expressionParams.length ? b.expressionParams : void 0,
+        expressionParams: b.expressionParams?.length ? b.expressionParams : void 0,
         expressionCode: b.expressionCode,
-        valueParams: b.valueParams.length ? b.valueParams : void 0,
+        valueParams: b.valueParams?.length ? b.valueParams : void 0,
         valueType: b.paramValueType
           ? {
               type: b.paramValueType,
@@ -207,16 +283,15 @@ function finalize(b) {
         functionCall: b.functionCall,
         preset: b.preset,
         valueElement: b.valueElement,
-        valuePresets: b.valuePresets.length ? b.valuePresets : void 0,
+        valuePresets: b.valuePresets?.length ? b.valuePresets : void 0,
         variable: b.variable,
         structMember: b.structMember,
         paramRef: b.paramRef,
-        array:
-          b.arrayRefs.length === 0
-            ? void 0
-            : b.arrayRefs.length === 1
-              ? b.arrayRefs[0]
-              : b.arrayRefs,
+        array: !b.arrayRefs?.length
+          ? void 0
+          : b.arrayRefs.length === 1
+            ? b.arrayRefs[0]
+            : b.arrayRefs,
       };
       if (b.paramValueType && b.paramValue) {
         const vt = b.paramValueType.toLowerCase();
@@ -248,7 +323,7 @@ function finalize(b) {
         ...base,
         type: 'Preset',
         baseType: b.baseType,
-        values: b.values,
+        values: b.values ?? [],
         generateConstants: b.generateConstants,
         generateIdentifier: b.generateIdentifier,
         integer: b.integer,
@@ -270,22 +345,22 @@ function finalize(b) {
         initialValue: b.initialValue,
         isArray: b.isArray || void 0,
         isConstant: b.isConstant || void 0,
-        arraySizes: b.arraySizes.length ? b.arraySizes : void 0,
+        arraySizes: b.arraySizes?.length ? b.arraySizes : void 0,
       };
     case 'Trigger':
       return {
         ...base,
         type: 'Trigger',
         initOff: b.initOff || void 0,
-        events: b.events,
-        conditions: b.conditions,
-        actions: b.actions,
-        localVariables: b.localVariables,
+        events: b.events ?? [],
+        conditions: b.conditions ?? [],
+        actions: b.actions ?? [],
+        localVariables: b.localVariables ?? [],
       };
     case 'Structure':
-      return { ...base, type: 'Structure', variables: b.structVars };
+      return { ...base, type: 'Structure', variables: b.structVars ?? [] };
     case 'Category':
-      return { ...base, type: 'Category', items: b.items };
+      return { ...base, type: 'Category', items: b.items ?? [] };
     case 'Label':
       return { ...base, type: 'Label' };
     case 'Comment':
@@ -296,9 +371,55 @@ function finalize(b) {
       return void 0;
   }
 }
-function parseTriggerXmlSync(xmlContent) {
-  const originalRoot = xmlTree(xmlContent);
-  const xml = normalizeXml(xmlContent, originalRoot);
+export const preparedDependencyXml = Symbol('prepared dependency XML');
+const dependencyHandoffs = new WeakMap();
+
+export function createDependencyXmlHandoff() {
+  const token = Object.freeze({});
+  const parsedDocuments = new Map();
+  let retainedChars = 0;
+  dependencyHandoffs.set(token, parsedDocuments);
+  return {
+    token,
+    libraryIds(xml) {
+      const cached = parsedDocuments.get(xml);
+      if (cached) return cached.keys();
+      const parsed = parseTriggerXmlSync(xml, { retainSource: false });
+      if (retainedChars + xml.length <= 16 * 1024 ** 2) {
+        parsedDocuments.set(xml, parsed);
+        retainedChars += xml.length;
+      }
+      return parsed.keys();
+    },
+  };
+}
+
+/** A parser result is moved once because the dependency loader localizes it in place. */
+export function takePreparedDependencyXml(token, xml) {
+  const documents = dependencyHandoffs.get(token);
+  const parsed = documents?.get(xml);
+  if (parsed) documents.delete(xml);
+  return parsed;
+}
+
+function parseTriggerXmlSync(xmlContent, { retainSource = true } = {}) {
+  return readTriggerModel(
+    xmlContent,
+    retainSource,
+    retainSource ? undefined : leadingStandardId(xmlContent),
+  );
+}
+
+function readTriggerModel(xmlContent, retainSource, inlineStandard, allowInline = true) {
+  // An explicit-only document can validate and build the dependency model
+  // in the same SAX pass. Mixed/legacy forms still need normalization.
+  const inlineLibraries =
+    allowInline &&
+    !retainSource &&
+    !inlineStandard &&
+    /^\uFEFF?(?:<\?xml[^>]*\?>\s*)?<TriggerData>\s*<Library\s/u.test(xmlContent.slice(0, 512));
+  const originalRoot = inlineStandard || inlineLibraries ? undefined : xmlTree(xmlContent);
+  const xml = originalRoot ? normalizeXml(xmlContent, originalRoot) : xmlContent;
   const parser = sax.parser(true, { trim: false, normalize: false });
   const libraryMap = /* @__PURE__ */ new Map();
   let libId = null;
@@ -349,7 +470,8 @@ function parseTriggerXmlSync(xmlContent) {
   }
   function registerEl(json) {
     const key = `${json.type}:${json.id}`;
-    if (!libElements[key]) libElements[key] = json;
+    if (libElements[key]) return;
+    libElements[key] = json;
     const tmap = libElementsByType[json.type];
     if (tmap && !tmap[json.id]) tmap[json.id] = json;
   }
@@ -387,29 +509,8 @@ function parseTriggerXmlSync(xmlContent) {
       childTag = name;
       childIsRef = !!(attrs.Id ?? attrs.id);
       inPTContainer = name === 'ReturnType' || name === 'VariableType' || name === 'ParameterType';
-      const FLAG = {
-        FlagNative: 'Native',
-        FlagAction: 'Action',
-        FlagCall: 'Call',
-        FlagEvent: 'Event',
-        Template: 'Template',
-        FlagCustomScript: 'CustomScript',
-        FlagOperator: 'Operator',
-        FlagInline: 'Inline',
-        FlagCustomAI: 'CustomAI',
-        FlagSubFunctions: 'SubFunctions',
-        FlagAllowBreak: 'AllowBreak',
-        FlagHidden: 'Hidden',
-        FlagNoScriptPrefix: 'NoScriptPrefix',
-        Deprecated: 'Deprecated',
-        Internal: 'Internal',
-        FlagRestricted: 'Restricted',
-        FlagCreateThread: 'CreateThread',
-        FlagCondition: 'Condition',
-        NotYetImplemented: 'NotYetImplemented',
-      };
-      if (FLAG[name]) {
-        el.flags.push(FLAG[name]);
+      if (ELEMENT_FLAGS[name]) {
+        (el.flags ??= []).push(ELEMENT_FLAGS[name]);
         return;
       }
       if (name === 'Disabled') {
@@ -421,11 +522,11 @@ function parseTriggerXmlSync(xmlContent) {
         return;
       }
       if (el.type === 'SubFuncType' && name === 'Action') {
-        el.flags.push('Action');
+        (el.flags ??= []).push('Action');
         return;
       }
       if (el.type === 'SubFuncType' && name === 'Event') {
-        el.flags.push('Event');
+        (el.flags ??= []).push('Event');
         return;
       }
       if (el.type === 'Preset' && name === 'PresetGenConstVar') {
@@ -480,57 +581,12 @@ function parseTriggerXmlSync(xmlContent) {
         el.section = attrs.Value ?? attrs.value ?? '';
         return;
       }
-      const knownDirect = /* @__PURE__ */ new Set([
-        'Identifier',
-        'Disabled',
-        'InitOff',
-        'Grammar',
-        'ScriptCode',
-        'ExpressionText',
-        'Comment',
-        'InitFunc',
-        'Value',
-        'ReturnType',
-        'VariableType',
-        'ParameterType',
-        'FunctionDef',
-        'ParameterDef',
-        'Preset',
-        'PresetExtends',
-        'ValueElement',
-        'ValuePreset',
-        'ExpressionParam',
-        'ValueParam',
-        'StructMember',
-        'Default',
-        'Event',
-        'Condition',
-        'Variable',
-        'FunctionCall',
-        'Action',
-        'Parameter',
-        'SubFunctionType',
-        'Item',
-        'InitialValue',
-        'Array',
-        'BaseType',
-        'ValueType',
-        'ExpressionType',
-        'ExpressionCode',
-        'ValueId',
-        'ValueTypeInfo',
-        'CustomType',
-        'ValueGameType',
-        'TypeElement',
-        'Constant',
-        'ArraySize',
-      ]);
-      if (!knownDirect.has(name)) {
+      if (!KNOWN_ELEMENT_FIELDS.has(name)) {
         const rawAttributes = {};
         for (const [key, value] of Object.entries(attrs)) {
           if (typeof value === 'string') rawAttributes[key] = value;
         }
-        el.unknownXml.push({
+        (el.unknownXml ??= []).push({
           tag: name,
           ...(Object.keys(rawAttributes).length === 0 ? {} : { attributes: rawAttributes }),
           position: el.unknownXml.length,
@@ -538,7 +594,7 @@ function parseTriggerXmlSync(xmlContent) {
         return;
       }
       if (name === 'Array') {
-        if (childIsRef) el.arrayRefs.push(mkRef(attrs));
+        if (childIsRef) (el.arrayRefs ??= []).push(mkRef(attrs));
         else el.isArray = true;
         return;
       }
@@ -593,13 +649,13 @@ function parseTriggerXmlSync(xmlContent) {
           el.valueElement = mkRef(attrs);
           break;
         case 'ValuePreset':
-          el.valuePresets.push(mkRef(attrs));
+          (el.valuePresets ??= []).push(mkRef(attrs));
           break;
         case 'ExpressionParam':
-          el.expressionParams.push(mkRef(attrs));
+          (el.expressionParams ??= []).push(mkRef(attrs));
           break;
         case 'ValueParam':
-          el.valueParams.push(mkRef(attrs));
+          (el.valueParams ??= []).push(mkRef(attrs));
           break;
         case 'StructMember':
           el.structMember = mkRef(attrs);
@@ -608,32 +664,34 @@ function parseTriggerXmlSync(xmlContent) {
           el.defaultRef = mkRef(attrs);
           break;
         case 'Event':
-          el.events.push(mkRef(attrs));
+          (el.events ??= []).push(mkRef(attrs));
           break;
         case 'Condition':
-          el.conditions.push(mkRef(attrs));
+          (el.conditions ??= []).push(mkRef(attrs));
           break;
         case 'Variable': {
           const vt = attrs.Type ?? attrs.type;
-          if (el.type === 'Trigger' && vt === 'Variable') el.localVariables.push(mkRef(attrs));
-          else if (el.type === 'Structure' && vt === 'Variable') el.structVars.push(mkRef(attrs));
-          else if (el.type === 'FunctionDef') el.localVariables.push(mkRef(attrs));
+          if (el.type === 'Trigger' && vt === 'Variable')
+            (el.localVariables ??= []).push(mkRef(attrs));
+          else if (el.type === 'Structure' && vt === 'Variable')
+            (el.structVars ??= []).push(mkRef(attrs));
+          else if (el.type === 'FunctionDef') (el.localVariables ??= []).push(mkRef(attrs));
           else el.variable = mkRef(attrs);
           break;
         }
         case 'FunctionCall':
-          if (el.type === 'FunctionDef') el.actions.push(mkRef(attrs));
-          else if (el.type === 'FunctionCall') el.subFunctions.push(mkRef(attrs));
+          if (el.type === 'FunctionDef') (el.actions ??= []).push(mkRef(attrs));
+          else if (el.type === 'FunctionCall') (el.subFunctions ??= []).push(mkRef(attrs));
           else el.functionCall = mkRef(attrs);
           break;
         case 'Action':
-          el.actions.push(mkRef(attrs));
+          (el.actions ??= []).push(mkRef(attrs));
           break;
         case 'Parameter': {
           const t = attrs.Type ?? attrs.type;
           if (t === 'Comment') break;
           if (t === 'ParamDef' && el.type === 'Param') el.paramRef = mkRef(attrs);
-          else el.parameters.push(mkRef(attrs));
+          else (el.parameters ??= []).push(mkRef(attrs));
           break;
         }
         case 'SubFunctionType': {
@@ -642,14 +700,14 @@ function parseTriggerXmlSync(xmlContent) {
             id: attrs.Id ?? attrs.id ?? '',
             type: attrs.Type ?? attrs.type ?? 'SubFuncType',
           };
-          if (el.type === 'FunctionDef') el.subFunctionTypes.push(sfRef);
+          if (el.type === 'FunctionDef') (el.subFunctionTypes ??= []).push(sfRef);
           else el.subFunctionType = sfRef;
           break;
         }
         case 'Item': {
           const t = attrs.Type ?? attrs.type;
-          if (t === 'PresetValue') el.values.push(mkRef(attrs));
-          else el.items.push(mkRef(attrs));
+          if (t === 'PresetValue') (el.values ??= []).push(mkRef(attrs));
+          else (el.items ??= []).push(mkRef(attrs));
           break;
         }
         case 'Value':
@@ -692,7 +750,7 @@ function parseTriggerXmlSync(xmlContent) {
             (attrs.Type === 'Variable' || attrs.type === 'Variable') && (attrs.Id ?? attrs.id)
               ? mkRef(attrs)
               : void 0;
-          el.arraySizes.push({ dim, value: val, variable: varRef });
+          (el.arraySizes ??= []).push({ dim, value: val, variable: varRef });
           break;
         }
       }
@@ -729,9 +787,9 @@ function parseTriggerXmlSync(xmlContent) {
           }
           break;
         default: {
-          const extra = [...el.unknownXml]
-            .reverse()
-            .find((item) => item.tag === tagName && item.text === void 0);
+          const extra = el.unknownXml?.findLast(
+            (item) => item.tag === tagName && item.text === void 0,
+          );
           if (extra !== void 0 && text.length > 0) extra.text = text;
           break;
         }
@@ -760,20 +818,51 @@ function parseTriggerXmlSync(xmlContent) {
   parser.oncdata = (text) => {
     if (el) textBuf += text;
   };
-  parser.write(xml).close();
+  if (inlineStandard) {
+    try {
+      readStandardTriggerXml(parser, xml, inlineStandard);
+    } catch (error) {
+      if (error === mixedTriggerLibraries) return readTriggerModel(xmlContent, retainSource);
+      throw error;
+    }
+  } else if (inlineLibraries) {
+    const open = parser.onopentag;
+    let rootCount = 0;
+    parser.onopentag = (node) => {
+      if (depth === 0 && (++rootCount !== 1 || node.name !== 'TriggerData'))
+        throw mixedTriggerLibraries;
+      if (
+        depth === 1 &&
+        (node.name !== 'Library' || !/^[A-Za-z0-9_]+$/u.test(node.attributes.Id ?? ''))
+      )
+        throw mixedTriggerLibraries;
+      open(node);
+    };
+    try {
+      parser.write(xml).close();
+    } catch {
+      return readTriggerModel(xmlContent, retainSource, undefined, false);
+    }
+    if (rootCount !== 1 || depth !== 0)
+      return readTriggerModel(xmlContent, retainSource, undefined, false);
+  } else parser.write(xml).close();
   if (libId) emitLibrary();
-  const standard = originalRoot.children.find((node) => node.tag === 'Standard');
+  const standardId =
+    inlineStandard ?? originalRoot?.children.find((node) => node.tag === 'Standard')?.attributes.Id;
   for (const library of libraryMap.values()) {
-    if (standard?.attributes.Id === library.id) library.implicit = true;
+    if (standardId === library.id) library.implicit = true;
     let raw = xmlContent;
-    if (libraryMap.size > 1 && !library.implicit) {
+    if (originalRoot && libraryMap.size > 1 && !library.implicit) {
       const node = originalRoot.children.find(
         (node2) => node2.tag === 'Library' && node2.attributes.Id === library.id,
       );
       if (!node) continue;
       raw = '<TriggerData>' + xmlContent.slice(node.start, node.end) + '</TriggerData>';
     }
-    library.xmlSource = { raw, canonical: serializeTriggerLibraryCanonical(library) };
+    if (retainSource)
+      library.xmlSource = { raw, canonical: serializeTriggerLibraryCanonical(library) };
+    else if (!/^[A-Za-z0-9_]+$/u.test(String(library.id ?? '')))
+      throw new TypeError('Trigger library id must be an ASCII identifier');
   }
   return libraryMap;
 }
@@ -813,11 +902,15 @@ async function readTriggerLibraryFast(xmlContent, triggerStringsContent) {
   if (triggerStringsContent !== void 0) applyStrings(result, triggerStringsContent);
   return result;
 }
-async function readTriggerLibrariesFast(xmlContents, triggerStringsMap) {
+async function readTriggerLibrariesFast(
+  xmlContents,
+  triggerStringsMap,
+  { collectCatalogRefs = true } = {},
+) {
   const results = /* @__PURE__ */ new Map();
   for (const xml of xmlContents) {
     for (const [libId, library] of typeof xml === 'string' ? parseTriggerXmlSync(xml) : xml) {
-      const result = buildResult(library);
+      const result = collectCatalogRefs ? buildResult(library) : { library };
       if (triggerStringsMap?.has(libId)) applyStrings(result, triggerStringsMap.get(libId));
       results.set(libId, result);
     }

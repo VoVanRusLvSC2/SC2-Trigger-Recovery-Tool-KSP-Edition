@@ -1,3 +1,4 @@
+import { recoveryTextSha256 as sha } from '../../utilities/recovery-parse-scope.mjs';
 import { normalizeOwnedSourceFiles as sourceFiles } from '../../model/owned-source-files.mjs';
 import {
   withRetainedNominalInterfaces,
@@ -22,7 +23,6 @@ import {
   replayPartitionAuthoredStorage,
 } from '../partition-declaration-identity/authored-section-functions.mixed-atomic.mjs';
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
 import { logicalSourcePath } from '../../model/source-ownership.mjs';
 import { resolveGuiRecoveryPolicy } from '../../model/gui-recovery-policy.source-includes.mjs';
 import { verifyAuthoredCodePolicy } from '../partition-declaration-identity/authored-code-preservation.missing-descriptions.mjs';
@@ -35,8 +35,6 @@ import {
   createAuthoredInitializerOrigins,
   withAuthoredInitializerOrigins,
 } from '../exact-function-signatures/initializer-origins.local-array-entry.qualified.mjs';
-
-const sha = (text) => createHash('sha256').update(text).digest('hex');
 
 function declarationsWithSources(declarations, files) {
   const output = [...(declarations ?? [])];

@@ -3,7 +3,15 @@ import { printNode } from './script-template.mjs';
 /** Integer constant expressions only: never execute user Galaxy or guess symbol names. */
 export class GalaxyConstantIndex {
   folds;
-  declarations = new Map();
+  #declarations = new Map();
+  #globalDeclarations;
+  get declarations() {
+    if (this.#globalDeclarations) {
+      this.#declarations = new Map([...this.#globalDeclarations, ...this.#declarations]);
+      this.#globalDeclarations = undefined;
+    }
+    return this.#declarations;
+  }
   constructor(sources, folds = []) {
     this.folds = folds;
     for (const source of sources) this.add(source.statements, source.fileName ?? '', false);
@@ -23,7 +31,8 @@ export class GalaxyConstantIndex {
         [74 /* IntKeyword */, 76 /* StringKeyword */].includes(node.type?.kind)
           ? node.initializer
           : undefined;
-      const old = this.declarations.get(name);
+      const declarations = shadow ? this.#declarations : this.declarations;
+      const old = declarations.get(name);
       if (!shadow && old) {
         if (
           old.ambiguous ||
@@ -31,12 +40,12 @@ export class GalaxyConstantIndex {
           !old.initializer ||
           printNode(old.initializer) !== printNode(initializer)
         )
-          this.declarations.set(name, { file, ambiguous: true });
-      } else this.declarations.set(name, { file, initializer });
+          declarations.set(name, { file, ambiguous: true });
+      } else declarations.set(name, { file, initializer });
     }
   }
   stringValue(name) {
-    const declaration = this.declarations.get(name);
+    const declaration = this.#declaration(name);
     const node = declaration?.initializer;
     return !declaration?.ambiguous && node?.kind === 3 && typeof node.value === 'string'
       ? node.value
@@ -44,9 +53,20 @@ export class GalaxyConstantIndex {
   }
   scope(statements) {
     const index = new GalaxyConstantIndex([], this.folds);
-    index.declarations = new Map(this.declarations);
+    index.#declarations = new Map(this.declarations);
     index.add(statements, '<local>', true);
     return index;
+  }
+  // The reconstruction pass finishes collecting globals before converting
+  // function bodies. Keep their lookups shared until a caller needs the map.
+  scopeWithSharedGlobals(statements) {
+    const index = new GalaxyConstantIndex([], this.folds);
+    index.#globalDeclarations = this.declarations;
+    index.add(statements, '<local>', true);
+    return index;
+  }
+  #declaration(name) {
+    return this.#declarations.get(name) ?? this.#globalDeclarations?.get(name);
   }
   evaluate(expression) {
     const visiting = new Set(),
@@ -60,7 +80,7 @@ export class GalaxyConstantIndex {
       if (node.kind === 2 /* SyntaxKind.NumericLiteral */)
         return checked(Number(node.value ?? node.text));
       if (node.kind === 113 /* SyntaxKind.Identifier */) {
-        const declaration = this.declarations.get(node.name);
+        const declaration = this.#declaration(node.name);
         if (!declaration?.initializer || declaration.ambiguous) return undefined;
         if (visiting.has(node.name))
           conversionError('CONSTANT_CYCLE', 'Cyclic Galaxy constant expression', {

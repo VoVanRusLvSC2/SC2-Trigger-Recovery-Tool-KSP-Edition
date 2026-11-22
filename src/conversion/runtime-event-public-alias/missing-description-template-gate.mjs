@@ -125,6 +125,28 @@ export function bindLocalizedTextParameters(
   localizedTables = [],
   implicit = false,
 ) {
+  const externalKeys = [];
+  for (const p of Object.values(elements)) {
+    if (
+      p.type !== 'Param' ||
+      p.valueType?.type !== 'text' ||
+      !p.scriptCode ||
+      p.functionCall ||
+      p.variable ||
+      p.preset ||
+      p.valueElement ||
+      p.expressionCode
+    )
+      continue;
+    const m = /^StringExternal\(\s*("(?:[^"\\]|\\.)*")\s*\)$/u.exec(p.scriptCode.trim());
+    if (!m) continue;
+    try {
+      externalKeys.push({ p, key: JSON.parse(m[1]) });
+    } catch {
+      // A malformed key still belongs to the ordinary unresolved-code audit.
+    }
+  }
+  if (!externalKeys.length) return;
   const libraries = new Map(dependencies ?? []);
   if (nativeLibrary) libraries.set(nativeLibrary.id, nativeLibrary);
 
@@ -166,79 +188,59 @@ export function bindLocalizedTextParameters(
       return { values, conflicts };
     });
 
-  for (const p of Object.values(elements))
-    if (
-      p.type === 'Param' &&
-      p.valueType?.type === 'text' &&
-      p.scriptCode &&
-      !p.functionCall &&
-      !p.variable &&
-      !p.preset &&
-      !p.valueElement &&
-      !p.expressionCode
-    ) {
-      const m = /^StringExternal\(\s*("(?:[^"\\]|\\.)*")\s*\)$/u.exec(p.scriptCode.trim());
-      if (!m) continue;
+  for (const { p, key } of externalKeys) {
+    const own = implicit ? `Param/Value/${p.id}` : `Param/Value/lib_${libId}_${p.id}`;
 
-      let key;
-      try {
-        key = JSON.parse(m[1]);
-      } catch {
-        continue;
-      }
-
-      const own = implicit ? `Param/Value/${p.id}` : `Param/Value/lib_${libId}_${p.id}`;
-
-      if (key === own && knownKeys.has(key)) {
-        // Reserve the two identities the former native-call path consumed. They
-        // create no elements; unrelated recovered categories and references retain
-        // their deterministic IDs when this parameter becomes a genuine GUI value.
-        if (
-          candidates.length === 1 &&
-          !(
-            tables.length &&
-            tables.every(
-              (t) => !t.conflicts.has(key) && t.values.has(key) && t.values.get(key) !== '',
-            )
+    if (key === own && knownKeys.has(key)) {
+      // Reserve the two identities the former native-call path consumed. They
+      // create no elements; unrelated recovered categories and references retain
+      // their deterministic IDs when this parameter becomes a genuine GUI value.
+      if (
+        candidates.length === 1 &&
+        !(
+          tables.length &&
+          tables.every(
+            (t) => !t.conflicts.has(key) && t.values.has(key) && t.values.get(key) !== '',
           )
-        ) {
-          generateId();
-          generateId();
-        }
-        delete p.scriptCode;
-        continue;
+        )
+      ) {
+        generateId();
+        generateId();
       }
-
-      // Exact external/missing/empty key semantics: use the actual shipped GUI
-
-      // function. No new Native definition, new resource key or empty text fallback.
-
-      if (candidates.length !== 1) continue;
-
-      const { f, l } = candidates[0],
-        argument = generateId(),
-        call = generateId();
-
-      elements[argument] = {
-        type: 'Param',
-        library: libId,
-        id: argument,
-        parameterDef: f.parameters[0],
-        valueType: { type: 'string' },
-        value: key,
-      };
-
-      elements[call] = {
-        type: 'FunctionCall',
-        library: libId,
-        id: call,
-        functionDef: { type: 'FunctionDef', library: l.id, id: f.id },
-        parameters: [{ type: 'Param', library: libId, id: argument }],
-      };
-
-      p.functionCall = { type: 'FunctionCall', library: libId, id: call };
       delete p.scriptCode;
+      continue;
     }
+
+    // Exact external/missing/empty key semantics: use the actual shipped GUI
+
+    // function. No new Native definition, new resource key or empty text fallback.
+
+    if (candidates.length !== 1) continue;
+
+    const { f, l } = candidates[0],
+      argument = generateId(),
+      call = generateId();
+
+    elements[argument] = {
+      type: 'Param',
+      library: libId,
+      id: argument,
+      parameterDef: f.parameters[0],
+      valueType: { type: 'string' },
+      value: key,
+    };
+
+    elements[call] = {
+      type: 'FunctionCall',
+      library: libId,
+      id: call,
+      functionDef: { type: 'FunctionDef', library: l.id, id: f.id },
+      parameters: [{ type: 'Param', library: libId, id: argument }],
+    };
+
+    p.functionCall = { type: 'FunctionCall', library: libId, id: call };
+    delete p.scriptCode;
+  }
 }
 
 export function bindLoadedStatementTemplates(elements, libId, nativeLibrary, dependencies) {
@@ -551,6 +553,11 @@ export function pruneUnboundDeclarations(elements, libId) {
 
   // Their symbol record is useful to the parser, not a standalone GUI function.
 
+  const candidates = Object.entries(elements).filter(
+    ([, e]) => e.type === 'FunctionDef' && e.unresolvedGuiBinding,
+  );
+  if (!candidates.length) return false;
+  let changed = false;
   const referenced = new Set();
 
   function walk(v) {
@@ -567,10 +574,12 @@ export function pruneUnboundDeclarations(elements, libId) {
 
   for (const e of Object.values(elements)) Object.values(e).forEach(walk);
 
-  for (const [id, e] of Object.entries(elements))
-    if (e.type === 'FunctionDef' && e.unresolvedGuiBinding && !referenced.has(e.id)) {
+  for (const [id, e] of candidates)
+    if (!referenced.has(e.id)) {
+      changed = true;
       delete elements[id];
 
       // Parameter definitions may be shared. Leave them to the ownership pruner.
     }
+  return changed;
 }

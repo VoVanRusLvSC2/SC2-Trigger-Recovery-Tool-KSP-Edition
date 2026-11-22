@@ -53,8 +53,59 @@ const log = (chunk: string) => {
 };
 
 async function collectArtifacts(output: string) {
+  output = await fs.realpath(output);
   const found: Artifact[] = [];
   artifacts = new Map();
+  try {
+    state.result = JSON.parse(
+      await fs.readFile(path.join(output, 'candidates/recovered/RESULT.json'), 'utf8'),
+    );
+  } catch {
+    /* A preparation refusal may precede the worker report. */
+  }
+  const report = state.result as
+    | {
+        originalUnchanged?: boolean;
+        status?: string;
+        variants?: {
+          status?: string;
+          candidate?: string;
+          packedCandidate?: string;
+          mode?: string;
+        }[];
+        packedCandidate?: string;
+        unverifiedPreview?: { draftMap?: { path?: string } };
+      }
+    | undefined;
+  const variants = Array.isArray(report?.variants) ? report.variants : [];
+  const reportedCandidates = variants
+    .filter(
+      (variant) =>
+        (variant?.status === 'STATIC_MATCH_EDITOR_PENDING' ||
+          variant?.status === 'REVIEW_REQUIRED_EDITOR_PENDING') &&
+        typeof variant.candidate === 'string' &&
+        path.isAbsolute(variant.candidate),
+    )
+    .map((variant) => ({
+      file: path.resolve(variant.candidate!),
+      withAttributes: variant.mode === 'with-attribute-recovery',
+      draft: report?.status === 'FAILED' || report?.originalUnchanged !== true,
+    }));
+  if (report?.status === 'FAILED') {
+    for (const candidate of [
+      ...variants.map((variant) => variant?.packedCandidate),
+      report.packedCandidate,
+      report.unverifiedPreview?.draftMap?.path,
+    ]) {
+      if (typeof candidate === 'string' && path.isAbsolute(candidate)) {
+        const file = path.resolve(candidate);
+        if (!reportedCandidates.some((record) => record.file === file))
+          reportedCandidates.push({ file, withAttributes: false, draft: true });
+      }
+    }
+  }
+  const permittedArchives = new Map(reportedCandidates.map(({ file, draft }) => [file, draft]));
+  const candidates = new Map<string, Artifact>();
   async function visit(directory: string, depth: number) {
     if (depth > 5) return;
     for (const item of await fs.readdir(directory, { withFileTypes: true })) {
@@ -74,9 +125,11 @@ async function collectArtifacts(output: string) {
           ))
       ) {
         const title = path.relative(output, file).replaceAll('\\', '/');
-        // A source snapshot is an input, never the recovered download.
-        if (/\.sc2(map|mod)$/i.test(file) && !title.startsWith('candidates/')) continue;
-        const kind = /\.sc2(map|mod)$/i.test(file)
+        const isArchive = /\.sc2(map|mod)$/i.test(file);
+        // The worker reports a candidate only after reading its packed Triggers.
+        if (isArchive && (!title.startsWith('candidates/') || !permittedArchives.has(file)))
+          continue;
+        const kind = isArchive
           ? 'archive'
           : /\.galaxy$/i.test(file)
             ? 'script'
@@ -85,19 +138,31 @@ async function collectArtifacts(output: string) {
               : 'report';
         const id = String(found.length);
         artifacts.set(id, file);
-        found.push({ id, title, kind });
+        const artifact = {
+          id,
+          title,
+          kind,
+          ...(permittedArchives.get(file) ? { draft: true } : {}),
+        } satisfies Artifact;
+        found.push(artifact);
+        if (isArchive) candidates.set(file, artifact);
       }
     }
   }
   await visit(output, 0);
   state.artifacts = found;
-  try {
-    state.result = JSON.parse(
-      await fs.readFile(path.join(output, 'candidates/recovered/RESULT.json'), 'utf8'),
-    );
-  } catch {
-    /* A preparation refusal may precede the worker report. */
-  }
+  const preferred = reportedCandidates.find(
+    ({ file, withAttributes, draft }) => !draft && withAttributes && candidates.has(file),
+  );
+  state.recoveredArchive = preferred
+    ? candidates.get(preferred.file)
+    : reportedCandidates.map(({ file }) => candidates.get(file)).find(Boolean);
+  state.recoveredMarkup =
+    found.find((artifact) =>
+      /^candidates\/recovered\/[^/]+\/components\/Triggers$/u.test(artifact.title),
+    ) ??
+    found.find((artifact) => artifact.title === 'candidates/recovered/Triggers') ??
+    found.find((artifact) => artifact.title === 'candidates/recovered/UNVERIFIED_PREVIEW/Triggers');
 }
 
 async function startJob(request: RecoveryRequest) {
@@ -154,9 +219,13 @@ async function startJob(request: RecoveryRequest) {
       state.phase = cancelled ? 'cancelled' : code === 0 ? 'finished' : 'failed';
       if (code === 0 && !cancelled) state.progress = { percent: 100, stage: 'Complete' };
       if (state.phase === 'failed') {
-        const report = state.result as { error?: string } | undefined;
+        const report = state.result as
+          | { error?: string; variants?: { error?: string }[] }
+          | undefined;
         state.error ??=
-          report?.error?.split('\n')[0] || 'Recovery failed. Open GEN INFO for the diagnostic log.';
+          (report?.error || report?.variants?.find((variant) => variant.error)?.error)?.split(
+            '\n',
+          )[0] || 'Recovery failed. Open GEN INFO for the diagnostic log.';
       }
       log(`\nProcess exit code: ${code}. Inspect evidence; completion is not Editor acceptance.\n`);
       worker = undefined;

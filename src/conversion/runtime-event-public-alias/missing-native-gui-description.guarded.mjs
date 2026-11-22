@@ -7,6 +7,7 @@ import { declaredCarrier } from '../exact-function-signatures/galaxy-program-con
 import { generateId } from '../native-expression-identity/g2t-core.generated-call-provenance.mjs';
 import { formalGalaxyCarrier } from '../../types/formal-galaxy-carrier.native-formals.mjs';
 import { createGuiRoleCatalog } from '../../bindings/gui-role-catalog.standard-schema.strict.mjs';
+import { attachProgramDocuments } from '../exact-function-signatures/verified-conversion-program.mjs';
 
 const sha = (value) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const reference = (e) => ({ type: e.type, library: e.library, id: e.id });
@@ -21,8 +22,8 @@ export function createMissingNativeGuiDescriptions(session) {
   const index = session.candidates,
     program = session.program,
     libraries = index.libraries;
-  for (const source of program.documents.values()) program.attachOriginal(source);
-  const roles = createGuiRoleCatalog(libraries, { trustedOwners: [...libraries.keys()] });
+  attachProgramDocuments(program);
+  let roles;
   const definitions = new Map(),
     records = [],
     fingerprints = new Map();
@@ -47,6 +48,10 @@ export function createMissingNativeGuiDescriptions(session) {
       return witnessed ? { paramType: { type: 'unit' }, isReference: true } : undefined;
     }
     const type = { type: carrier };
+    roles ??= createGuiRoleCatalog(libraries, {
+      trustedOwners: libraries.keys(),
+      observedRoles: ['parameter', 'return'],
+    });
     return roles.typeUse(type, role, 'Map').status === 'RESOLVED' ? { paramType: type } : undefined;
   };
   function describe(call, ctx, use, resolution) {

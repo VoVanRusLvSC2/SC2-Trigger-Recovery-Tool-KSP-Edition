@@ -12,8 +12,11 @@ import {
   getKeywordType,
   getBinaryResultType,
   LiteralType,
+  SyntaxKind,
 } from '../exact-function-signatures/index-alternate-3.js';
 import { resolveGalaxyTypeAliases } from './galaxy-type-resolution.mjs';
+import { parseConversionGalaxySyntax } from '../exact-function-signatures/conversion-syntax-program.collections.mjs';
+import { hasImmutableGalaxyOrigin } from '../exact-function-signatures/immutable-galaxy-syntax.collections.mjs';
 function typeName(node) {
   if (!node) return 'unknown';
   if (node.returnType && node.typeArguments)
@@ -24,15 +27,42 @@ function typeName(node) {
   if (node.kind === 115 /* K.TypeReference */) return node.typeName?.name ?? 'unknown';
   return isKeywordTypeKind(node.kind) ? tokenToString(node.kind) : 'unknown';
 }
-export function validateGalaxyPair(primary, declarations = [], strictSymbols = false) {
+export function validateGalaxyPair(
+  primary,
+  declarations = [],
+  strictSymbols = false,
+  shareSyntax = false,
+) {
   const parser = new Parser();
-  const sources = [
+  const files = [
     ...declarations.map((file) => ({ ...file, external: true })),
     ...primary.map((file) => ({ ...file, external: false })),
-  ].map((file) => ({ ...file, ast: parser.parseFile(file.fileName, file.text) }));
+  ];
+  let sources = files.map((file) => {
+    const parse = () => parser.parseFile(file.fileName, file.text);
+    const ast = shareSyntax
+      ? parseConversionGalaxySyntax(file.text, file.fileName, parse)
+      : parse();
+    return {
+      ...file,
+      ast,
+      shared: shareSyntax && hasImmutableGalaxyOrigin(ast, file.text, file.fileName),
+    };
+  });
   const globals = new Map(),
     structures = new Map();
-  resolveGalaxyTypeAliases(sources.flatMap((source) => [...source.ast.statements]));
+  // With no typedefs the resolver only makes structurally identical wrapper
+  // copies. When aliases exist, keep the normalization on private syntax.
+  if (
+    sources.some(({ ast }) =>
+      ast.statements.some((node) => node.kind === SyntaxKind.TypedefDeclaration),
+    )
+  ) {
+    sources = sources.map((source) =>
+      source.shared ? { ...source, ast: parser.parseFile(source.fileName, source.text) } : source,
+    );
+    resolveGalaxyTypeAliases(sources.flatMap((source) => [...source.ast.statements]));
+  }
   const diagnostics = [];
   const reported = new Set(),
     unresolved = new Set();

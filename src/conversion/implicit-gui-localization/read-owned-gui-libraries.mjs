@@ -4,7 +4,7 @@ import { parseTriggerXmlSync } from './sax-reader-alternate-5.js';
 /** A parser view only. Explicit libraries stay siblings, never children of a
  * synthetic library. Verify ownership and cardinality before the SAX reader's
  * first-definition-wins tables can hide duplicate or unsupported elements. */
-export function readOwnedGuiLibraries(xml, implicitLibraryId = 'Map') {
+export function readOwnedGuiLibraries(xml, implicitLibraryId = 'Map', options) {
   const root = xmlTree(xml);
   if (root.tag !== 'TriggerData') throw Error('GUI_TRIGGER_DATA_ROOT_REQUIRED');
   const standards = root.children.filter((n) => n.tag === 'Standard'),
@@ -38,7 +38,7 @@ export function readOwnedGuiLibraries(xml, implicitLibraryId = 'Map') {
   const view = needsImplicit
     ? xml.slice(0, root.openEnd) + `<Standard Id="${implicitOwner}"/>` + xml.slice(root.openEnd)
     : xml;
-  const parsed = parseTriggerXmlSync(view);
+  const parsed = parseTriggerXmlSync(view, options);
   if (parsed.size !== expected.size) throw Error('GUI_LIBRARY_PARSE_COVERAGE_LOST');
   for (const [owner, elements] of expected) {
     const lib = parsed.get(owner);

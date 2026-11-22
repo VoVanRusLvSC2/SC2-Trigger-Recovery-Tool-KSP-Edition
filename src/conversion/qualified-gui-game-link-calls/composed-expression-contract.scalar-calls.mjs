@@ -5,9 +5,17 @@ import {
 } from './numeric-expression-contract.scalar-calls.mjs';
 import { localizedTokenCodeBindings } from '../local-structure-bound-body/localized-token-code.mjs';
 export { key as guiExpressionElementKey };
+const hasTextSlots = (p) =>
+  p.type === 'Param' &&
+  p.expressionType === 'text' &&
+  p.valueType?.type === 'text' &&
+  p.expressionParams?.length;
 export function validateComposedGuiExpressionMarkers(ownedLibraries, external = new Map()) {
   const owned =
     ownedLibraries instanceof Map ? ownedLibraries : new Map(ownedLibraries.map((l) => [l.id, l]));
+  if (![...owned.values()].some((l) => Object.values(l.elements ?? {}).some(hasTextSlots))) {
+    return { ...validateGuiExpressionMarkers(owned, external), localizedTextExpressions: [] };
+  }
   const usage = new Map();
   function scan(value, owner) {
     if (!value || typeof value !== 'object') return;
@@ -39,13 +47,7 @@ export function validateComposedGuiExpressionMarkers(ownedLibraries, external = 
       children = new Set();
     for (const p of Object.values(elements)) {
       const refs = p.expressionParams ?? [];
-      if (
-        p.type === 'Param' &&
-        p.expressionType === 'text' &&
-        p.valueType?.type === 'text' &&
-        refs.length &&
-        refs.every((r) => codes.has(r.id) && usage.get(key(r, id)) === 1)
-      ) {
+      if (hasTextSlots(p) && refs.every((r) => codes.has(r.id) && usage.get(key(r, id)) === 1)) {
         parents.add(p.id);
         for (const ref of refs) children.add(ref.id);
         textParents.push({

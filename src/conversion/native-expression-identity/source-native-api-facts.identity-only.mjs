@@ -2,6 +2,7 @@
 // Native/CustomScript element, move an operation, or assume its effect is pure.
 import { SyntaxKind as K, Printer } from '../exact-function-signatures/index-alternate-3.js';
 import { stockGuiNativeContracts } from './stock-gui-native-contracts.bound-owner.mjs';
+import { attachProgramDocument } from '../exact-function-signatures/verified-conversion-program.mjs';
 const printer = new Printer();
 const abi = (node) => ({
   returnType: printer.printNode(node.type),
@@ -22,7 +23,7 @@ export function createSourceNativeApiFacts(program, libraries) {
   for (const [fileName, ast] of program.documents) {
     const input = program.verifiedInputIdentity(fileName);
     if (!input?.contentSha256) throw Error('NATIVE_API_VERIFIED_SOURCE_REQUIRED');
-    program.attachOriginal(ast);
+    attachProgramDocument(program, ast);
     for (const node of ast.statements)
       if (node.name?.name) {
         const list = declarations.get(node.name.name) ?? [];

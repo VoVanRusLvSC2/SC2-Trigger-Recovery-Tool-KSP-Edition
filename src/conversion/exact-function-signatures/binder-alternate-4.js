@@ -135,12 +135,11 @@ export function declareSymbol(node, store, parentSymbol) {
   }
   return nodeSymbol;
 }
-export function bindSourceFile(sourceFile, store) {
-  let currentScope;
+export function bindSourceFile(sourceFile, store, onNode) {
   let currentContainer;
   bind(sourceFile);
   function bind(node) {
-    const parentScope = currentScope;
+    onNode?.(node);
     const parentContainer = currentContainer;
     if (isDeclarationKind(node.kind)) {
       switch (node.kind) {
@@ -158,11 +157,7 @@ export function bindSourceFile(sourceFile, store) {
     if (isContainerKind(node.kind)) {
       currentContainer = node;
     }
-    if (isDeclarationKind(node.kind)) {
-      currentScope = node;
-    }
-    forEachChild(node, (child) => bind(child));
-    currentScope = parentScope;
+    forEachChild(node, bind);
     currentContainer = parentContainer;
   }
 }

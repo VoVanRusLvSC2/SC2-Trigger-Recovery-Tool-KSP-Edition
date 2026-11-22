@@ -5,8 +5,12 @@ import {
 import { createSourceStartupRegionVerifier } from '../../verification/source-startup-region.typed-dependencies.mjs';
 import { sourceInitializerEventLayout } from '../../verification/source-initializer-event-layout.typed.mjs';
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
+import { recoveryTextSha256 as sha } from '../../utilities/recovery-parse-scope.mjs';
 import { readOwnedGuiLibraries } from '../../verification/read-owned-gui-libraries.mjs';
+import {
+  hasInitializerAdapterCandidate,
+  isInitializerAdapterCandidate,
+} from '../implicit-gui-localization/read-owned-gui-libraries-alternate.mjs';
 import { GalaxyProgramContext } from '../../model/galaxy-program-context.lexical-parameters.mjs';
 import {
   indexSourceFunctionDeclarations,
@@ -28,7 +32,6 @@ import {
   forEachChild,
 } from '../../sdk/array-values/modules/galaxy/language-core/index.js';
 
-const sha = (text) => createHash('sha256').update(text).digest('hex');
 const printer = new Printer();
 const ref = (library, type, id) => ({ library, type, id });
 const key = (r) => JSON.stringify([r.library, r.type, r.id]);
@@ -149,8 +152,6 @@ export function verifySourceInitializerGuiOwnership({
 }) {
   assert(input && typeof after === 'string', 'INITIALIZER_GUI_INPUT_REQUIRED');
   const implicitOwner = input.libraryId ?? 'Map';
-  const output = readOwnedGuiLibraries(after, implicitOwner);
-  const previous = before ? readOwnedGuiLibraries(before, implicitOwner) : new Map();
   const base = {
     kind: 'SOURCE_INITIALIZER_GUI_OWNERSHIP',
     passed: true,
@@ -164,6 +165,19 @@ export function verifySourceInitializerGuiOwnership({
     wholeMapAccepted: false,
   };
   const fresh = [];
+  // Both readers decode FunctionDef scriptCode and flags identically. Only an
+  // adapter needs the SDK-specific parameter, comment and reference fields.
+  if (!before) {
+    try {
+      if (!hasInitializerAdapterCandidate(after, implicitOwner)) return base;
+    } catch {
+      // Let the original SDK verifier produce its own diagnosis.
+    }
+  }
+  const output = readOwnedGuiLibraries(after, implicitOwner, { retainSource: false });
+  const previous = before
+    ? readOwnedGuiLibraries(before, implicitOwner, { retainSource: false })
+    : new Map();
   for (const [library, lib] of output)
     for (const e of Object.values(lib.elements)) {
       if (e.type !== 'FunctionDef' || !e.scriptCode) continue;
@@ -171,12 +185,7 @@ export function verifySourceInitializerGuiOwnership({
       if (old?.scriptCode === e.scriptCode) continue;
       // Non-adapter authored FunctionDefs are not authorized by this proof.
       // Their existing authored-code policy remains responsible for them.
-      if (
-        !e.scriptCode.includes('#SUBFUNCS') &&
-        !e.flags?.includes('Event') &&
-        !e.flags?.includes('SubFunctions')
-      )
-        continue;
+      if (!isInitializerAdapterCandidate(e)) continue;
       assert(!old, 'INITIALIZER_GUI_STALE_DEFINITION_ID');
       fresh.push({ library, definition: e });
     }

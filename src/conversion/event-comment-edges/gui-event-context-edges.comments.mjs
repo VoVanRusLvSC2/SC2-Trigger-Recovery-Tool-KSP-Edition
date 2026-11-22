@@ -40,13 +40,13 @@ export function collectGuiEventContexts(libraries, catalog) {
         for (const r of e.actions ?? []) add(r, owner, false, true);
       } else if (e.type === 'Param' && e.functionCall) {
         add(e.functionCall, owner, false);
-      } else if (e.type === 'FunctionCall') {
+      } else if (e.type === 'FunctionCall' && e.subFunctions?.length) {
         const definition = catalog.resolve(e.functionDef, owner, 'FunctionDef');
         const definitionOwner = definition?.library ?? e.functionDef?.library ?? owner;
         const declared = new Set(
           (definition?.subFunctionTypes ?? []).map((r) => key(r, definitionOwner)),
         );
-        for (const r of e.subFunctions ?? []) {
+        for (const r of e.subFunctions) {
           const child = catalog.resolve(
               r,
               owner,

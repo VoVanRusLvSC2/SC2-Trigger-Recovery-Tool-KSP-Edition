@@ -1,9 +1,11 @@
 import { createVerifiedConversionProgram } from '../exact-function-signatures/verified-conversion-program.mjs';
 import { capturePartitionStartupOwnership } from '../../model/partition-startup-ownership.mjs';
 import { withSourcePartitionAuthoredScope } from '../partition-declaration-identity/source-partition-authored-scope.mjs';
+import { rememberRoleDependency } from '../implicit-gui-localization/role-dependency-scope.mjs';
+import { recoveryTextSha256 } from '../../utilities/recovery-parse-scope.mjs';
 import { isRetainedNominalInterfaceElement } from '../source-nominal-return-roles/retained-nominal-gui-interfaces.replay.mjs';
 import { finalizeLocalRetirements } from '../../model/deferred-local-retirement.linear.mjs';
-import { pruneUnreachableElements as finalPruneLocals } from '../../sdk/lossless-colors/modules/triggers/services/galaxy-conversion/internal/g2t-prune.js';
+import { pruneUnreachableElements as finalPruneLocals } from '../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/g2t-prune.js';
 import { describeReferenceFailure } from '../../verification/reference-failure-owners.mjs';
 import { releaseConversionGalaxySyntax } from '../exact-function-signatures/conversion-syntax-program.collections.mjs';
 import { createSourceMapStartupDependencies } from '../root-startup-function-roles/source-map-startup-plan.owned-modes.mjs';
@@ -32,6 +34,8 @@ import {
 
 import {
   parseTriggerXmlSync,
+  preparedDependencyXml,
+  takePreparedDependencyXml,
   readTriggerLibrariesFast,
 } from '../implicit-gui-localization/sax-reader.mjs';
 
@@ -136,6 +140,8 @@ const MAX_LIBRARY_ELEMENTS = 1_000_000;
 const MAX_DIAGNOSTICS = 1_000;
 
 const encoder = new TextEncoder();
+const utf8ByteLength = (text) =>
+  globalThis.Buffer?.byteLength(text, 'utf8') ?? encoder.encode(text).byteLength;
 
 const printer = new Printer();
 
@@ -400,7 +406,7 @@ function throwIfAborted(signal) {
 async function checkpoint(signal) {
   throwIfAborted(signal);
 
-  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setImmediate(resolve));
 
   throwIfAborted(signal);
 }
@@ -462,7 +468,7 @@ function boundedString(value, label, maximum, required = false) {
 
   if (typeof value !== 'string') throw new TypeError(`${label} must be a string`);
 
-  if (encoder.encode(value).byteLength > maximum) {
+  if (utf8ByteLength(value) > maximum) {
     throw new RangeError(`${label} exceeds ${maximum} UTF-8 bytes`);
   }
 
@@ -655,7 +661,7 @@ function galaxyDeclarations(input) {
 
     const text = boundedString(item.text, 'declaration text', MAX_DEPENDENCY_BYTES, true);
 
-    bytes += encoder.encode(text).byteLength;
+    bytes += utf8ByteLength(text);
 
     if (bytes > MAX_DEPENDENCY_BYTES)
       throw new RangeError('Galaxy declarations exceed the dependency byte bound');
@@ -664,7 +670,14 @@ function galaxyDeclarations(input) {
   });
 }
 
-function validateGalaxyOutput(output, libraryId, declarations, strictSymbols, prefix = 'Lib') {
+function validateGalaxyOutput(
+  output,
+  libraryId,
+  declarations,
+  strictSymbols,
+  prefix = 'Lib',
+  shareSyntax,
+) {
   try {
     return validateGalaxyPair(
       [
@@ -674,6 +687,7 @@ function validateGalaxyOutput(output, libraryId, declarations, strictSymbols, pr
       ],
       declarations,
       strictSymbols,
+      shareSyntax,
     );
   } catch (error) {
     return {
@@ -700,15 +714,13 @@ function validateGalaxyOutput(output, libraryId, declarations, strictSymbols, pr
 }
 
 function modelDeclarations(libraries, primaryId, supplied = []) {
-  const signatures = new Map();
-
-  const explicit = new Set(
-    supplied.flatMap((file) =>
-      [...parseGalaxySource(file.text).statements]
-        .filter((node) => node.kind === SyntaxKind.FunctionDeclaration)
-        .map((node) => node.name.name),
-    ),
-  );
+  const signatures = new Map(),
+    explicit = new Set();
+  for (const file of supplied) {
+    const source = parseSharedGalaxySource(file.text, file.fileName ?? 'Lib.galaxy');
+    for (const declaration of source.statements)
+      if (declaration.kind === SyntaxKind.FunctionDeclaration) explicit.add(declaration.name.name);
+  }
 
   const primitives = new Set(
     Object.values(SyntaxKind)
@@ -736,6 +748,9 @@ function modelDeclarations(libraries, primaryId, supplied = []) {
       )
         continue;
 
+      const name = toGalaxyFunctionName(definition, context);
+      if (explicit.has(name)) continue;
+
       const formals = (definition.parameters ?? []).map((ref) => {
         const owner = libraries.get(ref.library ?? library.id);
 
@@ -758,25 +773,19 @@ function modelDeclarations(libraries, primaryId, supplied = []) {
       )
         continue;
 
-      const name = toGalaxyFunctionName(definition, context);
-
-      if (explicit.has(name)) continue;
-
       const type = (item) => mapParameterTypeToGalaxy(item, library, undefined, libraries);
 
-      if (
-        ![result, ...formals.map((formal) => formal.paramType)].every((item) =>
-          primitives.has(type(item)),
-        )
-      )
-        continue;
+      const resultType = type(result);
+      if (!primitives.has(resultType)) continue;
+      const parameterTypes = formals.map((formal) => type(formal.paramType));
+      if (!parameterTypes.every((parameterType) => primitives.has(parameterType))) continue;
 
       const parameters = [
         ...(definition.flags?.includes('Event') ? ['trigger eventTarget'] : []),
-        ...formals.map((formal, index) => `${type(formal.paramType)} arg${index}`),
+        ...parameterTypes.map((parameterType, index) => `${parameterType} arg${index}`),
       ];
 
-      signatures.set(name, `${type(result)} ${name}(${parameters.join(', ')});`);
+      signatures.set(name, `${resultType} ${name}(${parameters.join(', ')});`);
     }
   }
 
@@ -806,6 +815,10 @@ function canonicalJson(value) {
 const CANONICAL_STRING_CHUNK_UNITS = 64 * 1024;
 
 function* canonicalJsonStringChunks(value) {
+  if (value.length <= CANONICAL_STRING_CHUNK_UNITS) {
+    yield JSON.stringify(value);
+    return;
+  }
   yield '"';
 
   for (let offset = 0; offset < value.length; ) {
@@ -899,15 +912,24 @@ async function digest(value, maximum) {
     const hash = createHash('sha256');
 
     let bytes = 0;
+    const pending = [];
+    let units = 0;
 
-    for (const chunk of canonicalJsonChunks(value)) {
+    const flush = () => {
+      const chunk = pending.join('');
       bytes += Buffer.byteLength(chunk, 'utf8');
-
       if (maximum !== undefined && bytes > maximum)
         throw new RangeError(`conversion output exceeds ${maximum} UTF-8 bytes`);
-
       hash.update(chunk, 'utf8');
+      pending.length = 0;
+      units = 0;
+    };
+    for (const chunk of canonicalJsonChunks(value)) {
+      pending.push(chunk);
+      units += chunk.length;
+      if (units >= CANONICAL_STRING_CHUNK_UNITS || pending.length >= 4096) flush();
     }
+    if (pending.length) flush();
 
     return { algorithm: 'sha-256', value: hash.digest('hex') };
   }
@@ -997,11 +1019,11 @@ function authoredElementTypeCounts(xml) {
 
 // `implicit`, because the serializer has to reproduce the document it read.
 
-function parsePrimaryDocument(xml, libraryId = 'Map', documentKind) {
+function parsePrimaryDocument(xml, libraryId = 'Map', documentKind, options) {
   if (typeof libraryId !== 'string' || !/^[A-Za-z0-9_]+$/u.test(libraryId))
     throw new TypeError('libraryId must be an ASCII identifier');
 
-  const parsed = parseTriggerXmlSync(xml);
+  const parsed = parseTriggerXmlSync(xml, options);
 
   if (parsed.size > 0 && (documentKind !== 'map' || parsed.has(libraryId))) return parsed;
 
@@ -1019,6 +1041,7 @@ function parsePrimaryDocument(xml, libraryId = 'Map', documentKind) {
 
   const synthesized = parseTriggerXmlSync(
     `${own.slice(0, offset)}<Standard Id="${libraryId}"/>${own.slice(offset)}`,
+    options,
   );
 
   for (const library of synthesized.values()) library.implicit = true;
@@ -1047,11 +1070,7 @@ function documentIsImplicit(input) {
   return kind === 'map';
 }
 
-function validateLibraries(libraries, limits = DEFAULT_LIMITS) {
-  if (libraries.size === 0) throw new TypeError('TriggerData contains no semantic libraries');
-
-  let elements = 0;
-
+function validateAddedLibraries(libraries, limits, elements) {
   for (const [libraryId, result] of libraries) {
     const count = Object.keys(result.library.elements ?? {}).length;
 
@@ -1069,6 +1088,7 @@ function validateLibraries(libraries, limits = DEFAULT_LIMITS) {
 
     if (libraryId !== result.library.id) throw new TypeError('Trigger library identity mismatch');
   }
+  return elements;
 }
 
 function dependencyDocuments(input) {
@@ -1112,9 +1132,9 @@ function dependencyDocuments(input) {
     );
 
     const sourceBytes =
-      encoder.encode(xml).byteLength +
-      encoder.encode(triggerStrings ?? '').byteLength +
-      encoder.encode(gameStrings ?? '').byteLength;
+      utf8ByteLength(xml) +
+      utf8ByteLength(triggerStrings ?? '') +
+      utf8ByteLength(gameStrings ?? '');
 
     bytes += sourceBytes;
 
@@ -1130,9 +1150,11 @@ function dependencyDocuments(input) {
     // defines itself) is not included by a path of its own.
 
     const external = dependency.sameDocument !== true;
+    const preparsed = takePreparedDependencyXml(input[preparedDependencyXml], xml);
 
     return {
       xml,
+      preparsed,
       triggerStrings:
         [triggerStrings, gameStrings].filter((value) => value !== undefined).join('\n') ||
         undefined,
@@ -1635,8 +1657,13 @@ function layerDifference(previous, next) {
  */
 
 async function dependencyDocumentCacheKey(document) {
-  return (await digest(['sc2-trigger-dependency-v1', document.xml, document.triggerStrings ?? '']))
-    .value;
+  const strings = document.triggerStrings ?? '';
+  if (document.xml.isWellFormed() && strings.isWellFormed())
+    return `utf8:${recoveryTextSha256(document.xml)}:${recoveryTextSha256(strings)}`;
+
+  // Canonical JSON preserves unpaired UTF-16 surrogates. Keep that distinction
+  // for these strings since direct UTF-8 encoding replaces them with U+FFFD.
+  return 'escaped:' + (await digest(['sc2-trigger-dependency-v1', document.xml, strings])).value;
 }
 
 // Presentation is bounded, verification is not.  An error after the display
@@ -1682,27 +1709,22 @@ function retainDependencyDocument(state, key, loaded, sourceBytes) {
   state.stores++;
 }
 
-async function loadSemanticDocument(document, signal, contextState) {
-  if (document.parsed !== undefined) {
-    const strings = new Map(
-      document.triggerStrings === undefined
-        ? []
-        : [...document.parsed.keys()].map((id) => [id, document.triggerStrings]),
-    );
+function loadSemanticLibraries(parsed, triggerStrings) {
+  const strings = new Map(
+    triggerStrings === undefined ? [] : [...parsed.keys()].map((id) => [id, triggerStrings]),
+  );
+  return readTriggerLibrariesFast([parsed], strings, { collectCatalogRefs: false });
+}
 
-    return readTriggerLibrariesFast([document.parsed], strings);
-  }
+async function loadSemanticDocument(document, signal, contextState) {
+  if (document.parsed !== undefined)
+    return loadSemanticLibraries(document.parsed, document.triggerStrings);
 
   if (!contextState || contextState.maxEntries === 0 || contextState.maxSourceBytes === 0) {
-    const parsed = parseTriggerXmlSync(document.xml);
+    const parsed = document.preparsed ?? parseTriggerXmlSync(document.xml, { retainSource: false });
+    rememberRoleDependency(document.xml, parsed);
 
-    const strings = new Map(
-      document.triggerStrings === undefined
-        ? []
-        : [...parsed.keys()].map((id) => [id, document.triggerStrings]),
-    );
-
-    return readTriggerLibrariesFast([parsed], strings);
+    return loadSemanticLibraries(parsed, document.triggerStrings);
   }
 
   await checkpoint(signal);
@@ -1723,20 +1745,14 @@ async function loadSemanticDocument(document, signal, contextState) {
 
   contextState.misses++;
 
-  const parsed = parseTriggerXmlSync(document.xml);
+  const parsed = document.preparsed ?? parseTriggerXmlSync(document.xml, { retainSource: false });
+  rememberRoleDependency(document.xml, parsed);
 
-  const strings = new Map(
-    document.triggerStrings === undefined
-      ? []
-      : [...parsed.keys()].map((id) => [id, document.triggerStrings]),
-  );
-
-  const loaded = await readTriggerLibrariesFast([parsed], strings);
+  const loaded = await loadSemanticLibraries(parsed, document.triggerStrings);
 
   const sourceBytes =
     document.sourceBytes ??
-    encoder.encode(document.xml).byteLength +
-      encoder.encode(document.triggerStrings ?? '').byteLength;
+    utf8ByteLength(document.xml) + utf8ByteLength(document.triggerStrings ?? '');
 
   retainDependencyDocument(contextState, key, loaded, sourceBytes);
 
@@ -1856,6 +1872,7 @@ async function loadSemanticDocuments(
   const includes = new Map();
 
   const layers = [];
+  let elements = 0;
 
   for (const [index, document] of documents.entries()) {
     await checkpoint(signal);
@@ -1864,6 +1881,7 @@ async function loadSemanticDocuments(
 
     if (loaded.size === 0) throw new TypeError(`Trigger document ${index} has no library`);
 
+    const added = [];
     for (const [id, result] of loaded) {
       if (document.sameDocument && excluded.has(id)) continue;
 
@@ -1904,13 +1922,15 @@ async function loadSemanticDocuments(
       }
 
       results.set(id, result);
+      added.push([id, result]);
 
       origins.set(id, index);
 
       if (document.external) includes.set(id, dependencyIncludePath(document.sourcePath, id));
     }
 
-    validateLibraries(results, limits);
+    if (results.size === 0) throw new TypeError('TriggerData contains no semantic libraries');
+    elements = validateAddedLibraries(added, limits, elements);
   }
 
   return { libraries: results, layers, includes };
@@ -2147,7 +2167,7 @@ function ensureOutputBound(output, maximum) {
   let bytes = 0;
 
   for (const chunk of canonicalJsonChunks(output)) {
-    bytes += encoder.encode(chunk).byteLength;
+    bytes += utf8ByteLength(chunk);
 
     if (bytes > maximum) throw new RangeError(`conversion output exceeds ${maximum} UTF-8 bytes`);
   }
@@ -2859,13 +2879,12 @@ function cleanSemanticValue(value, implicitLibrary) {
     delete copy.isSubFunction;
   }
 
-  return Object.fromEntries(
-    Object.entries(copy)
-
-      .map(([key, child]) => [key, cleanSemanticValue(child, implicitLibrary)])
-
-      .filter(([, child]) => child !== undefined),
-  );
+  const normalized = Object.create(null);
+  for (const key of Object.keys(copy)) {
+    const child = cleanSemanticValue(copy[key], implicitLibrary);
+    if (child !== undefined) normalized[key] = child;
+  }
+  return normalized;
 }
 
 function semanticModelsEqual(left, right) {
@@ -2915,6 +2934,82 @@ function semanticModelsEqual(left, right) {
   return true;
 }
 
+// Apply the common normalization rules without materializing a copy. The
+// canonical comparison handles synthesized fields and non-JSON values.
+function sameSemanticFields(left, right, leftOwner, rightOwner) {
+  if (left === null || right === null || typeof left !== 'object' || typeof right !== 'object')
+    return left === right && typeof left !== 'bigint';
+  if (Array.isArray(left) || Array.isArray(right)) {
+    if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) return false;
+    for (let i = 0; i < left.length; i++) {
+      if (!sameSemanticFields(left[i], right[i], leftOwner, rightOwner)) return false;
+    }
+    return true;
+  }
+  if (hasSpecialSemanticFields(left) || hasSpecialSemanticFields(right)) {
+    return (
+      canonicalJson(cleanSemanticValue(left, leftOwner)) ===
+      canonicalJson(cleanSemanticValue(right, rightOwner))
+    );
+  }
+  let count = 0;
+  for (const key of Object.keys(left)) {
+    const value = left[key];
+    if (omittedSemanticField(key, value, leftOwner)) continue;
+    if (
+      !Object.prototype.propertyIsEnumerable.call(right, key) ||
+      omittedSemanticField(key, right[key], rightOwner) ||
+      !sameSemanticFields(value, right[key], leftOwner, rightOwner)
+    )
+      return false;
+    count++;
+  }
+  for (const key of Object.keys(right)) {
+    if (!omittedSemanticField(key, right[key], rightOwner)) count--;
+  }
+  return count === 0;
+}
+
+function omittedSemanticField(key, value, owner) {
+  return (
+    value === undefined ||
+    value === false ||
+    key === 'catalogRefs' ||
+    (key === 'library' && owner !== undefined && (value === owner || value === '')) ||
+    (Array.isArray(value) && value.length === 0)
+  );
+}
+
+function hasSpecialSemanticFields(value) {
+  return (
+    value.type === 'FunctionDef' ||
+    (value.type === 'Param' && value.array && !Array.isArray(value.array)) ||
+    (value.name && value.identifier === undefined && value.displayName === undefined) ||
+    (value.grammar !== undefined && value.grammarSource === undefined)
+  );
+}
+
+function sameGeneratedElements(parsedElements, count, generated, parsedOwner, generatedOwner) {
+  if (count !== generated.length) return false;
+  const checked = new Set();
+  for (const element of generated) {
+    // The SAX reader already indexes by Type:Id. Verify each ordinary editor
+    // identity exactly once before using that index for the comparison.
+    const key = element.type + ':' + element.id;
+    if (!/^[A-Za-z]+:[0-9A-F]{8}$/u.test(key) || checked.has(key)) return false;
+    if (!Object.hasOwn(parsedElements, key)) return false;
+    const peer = parsedElements[key];
+    if (
+      peer.type !== element.type ||
+      peer.id !== element.id ||
+      !sameSemanticFields(peer, element, parsedOwner, generatedOwner)
+    )
+      return false;
+    checked.add(key);
+  }
+  return true;
+}
+
 function semanticModelDifference(left, right) {
   const implicit = (library) => (library.implicit === true ? String(library.id ?? '') : undefined);
 
@@ -2935,13 +3030,21 @@ function semanticModelDifference(left, right) {
   if (leftRefs !== rightRefs)
     return { kind: 'root-items', left: leftRefs.slice(0, 2048), right: rightRefs.slice(0, 2048) };
 
-  const order = (library) =>
-    Object.values(library.elements).sort((a, b) =>
-      `${a.type}:${a.id}`.localeCompare(`${b.type}:${b.id}`),
-    );
-
-  const leftElements = order(left),
-    rightElements = order(right);
+  const leftElements = Object.values(left.elements),
+    rightElements = Object.values(right.elements);
+  if (
+    sameGeneratedElements(
+      left.elements,
+      leftElements.length,
+      rightElements,
+      leftImplicit,
+      rightImplicit,
+    )
+  )
+    return undefined;
+  const order = (a, b) => `${a.type}:${a.id}`.localeCompare(`${b.type}:${b.id}`);
+  leftElements.sort(order);
+  rightElements.sort(order);
 
   if (leftElements.length !== rightElements.length) {
     return { kind: 'element-count', left: leftElements.length, right: rightElements.length };
@@ -3174,9 +3277,10 @@ function recoverElementNames(
 ) {
   // Reference-only type and member names are executable source ABI. Display
   // aliases cannot replace them. Build once, rather than scanning per variable.
+  const elements = Object.values(library.elements ?? {});
   const retainedMetadataIds = new Set();
   const metadataId = (owner, type, id) => JSON.stringify([owner ?? library.id, type, id]);
-  for (const structure of Object.values(library.elements ?? {})) {
+  for (const structure of elements) {
     if (structure.type !== 'Structure' || structure.disabled !== true) continue;
     retainedMetadataIds.add(metadataId(structure.library, structure.type, structure.id));
     for (const member of structure.variables ?? [])
@@ -3187,7 +3291,7 @@ function recoverElementNames(
 
   // A verified source macro's formal names are executable ABI as well.
   // Localized captions must not erase the explicit #PARAM identifier.
-  for (const definition of Object.values(library.elements ?? {})) {
+  for (const definition of elements) {
     if (definition.type !== 'FunctionDef' || !isRetainedNominalInterfaceElement(definition))
       continue;
     for (const parameter of definition.parameters ?? [])
@@ -3196,11 +3300,12 @@ function recoverElementNames(
       );
   }
   const retainedMetadataIdentifiers = new Map();
-  for (const element of Object.values(library.elements ?? {})) {
-    const key = metadataId(element.library, element.type, element.id);
-    if (retainedMetadataIds.has(key) && element.identifier !== undefined)
-      retainedMetadataIdentifiers.set(key, element.identifier);
-  }
+  if (retainedMetadataIds.size)
+    for (const element of elements) {
+      if (element.identifier === undefined) continue;
+      const key = metadataId(element.library, element.type, element.id);
+      if (retainedMetadataIds.has(key)) retainedMetadataIdentifiers.set(key, element.identifier);
+    }
   const recovered = [];
 
   // A shape two different entries share identifies neither, so it is dropped
@@ -3236,7 +3341,7 @@ function recoverElementNames(
 
   const primary = localeStrings[0];
 
-  for (const element of Object.values(library.elements ?? {})) {
+  for (const element of elements) {
     // The reconstructed model carries the Galaxy spelling as `name`, which the
 
     // serializer prints as an <Identifier> the editor never wrote.
@@ -3364,7 +3469,7 @@ function recoverElementNames(
 
   // are not editor-facing elements.
 
-  for (const element of Object.values(library.elements ?? {})) {
+  for (const element of elements) {
     if (!['FunctionDef', 'Trigger', 'Variable', 'ParamDef', 'Structure'].includes(element.type))
       continue;
 
@@ -3752,10 +3857,19 @@ async function convertMapWithEmbeddedLibraries(input, split, signal) {
     ...(input.additionalScripts ?? []),
   ];
   const files = [...new Map(offered.map((f) => [f.fileName, f])).values()];
-  const parentProgram = createVerifiedConversionProgram(files, input.inputSnapshot, input.hashText);
+  const parentProgram = createVerifiedConversionProgram(
+    files,
+    input.inputSnapshot,
+    input.hashText,
+    {
+      partitionStartup: true,
+    },
+  );
   let partitionStartupOwnership;
   try {
-    partitionStartupOwnership = capturePartitionStartupOwnership(parentProgram);
+    partitionStartupOwnership = capturePartitionStartupOwnership(parentProgram, {
+      constructorsOnly: true,
+    });
   } finally {
     parentProgram.dispose();
   }
@@ -3886,7 +4000,7 @@ async function mergeEmbeddedLibraryResults(map, libraries, maximum) {
 
   const close = map.output.triggerData.lastIndexOf('</TriggerData>');
 
-  const triggerData = `${map.output.triggerData.slice(0, close).replace(/\s*$/u, '\n')}${blocks.join('\n')}\n${map.output.triggerData.slice(close)}`;
+  const triggerData = `${map.output.triggerData.slice(0, close).trimEnd()}\n${blocks.join('\n')}\n${map.output.triggerData.slice(close)}`;
 
   const triggerStrings = mergedStrings(outputs.map((output) => output.triggerStrings));
 
@@ -4220,6 +4334,8 @@ async function convertGalaxyDocumentToTriggers(input, signal) {
     libraryId,
     [...declarations, ...customAiDeclarations],
     input.strictSymbols,
+    'Lib',
+    true,
   );
 
   const diagnostics = [...layerDiagnostics(layers), ...sourceValidation.diagnostics];
@@ -4372,7 +4488,10 @@ async function convertGalaxyDocumentToTriggers(input, signal) {
           }
         : {}),
 
-      onProgress: (event) => reportProgress({ ...event, phase: 'reconstruct', stage: event.phase }),
+      includeProgressElementCount: input.includeProgressElementCount,
+      onProgress: input.onProgress
+        ? (event) => reportProgress({ ...event, phase: 'reconstruct', stage: event.phase })
+        : undefined,
 
       completeEmptyTextInitializerLocale:
         sourceTriggerStrings !== undefined && sourceGameStrings !== undefined,
@@ -4454,9 +4573,14 @@ async function convertGalaxyDocumentToTriggers(input, signal) {
   releaseConversionGalaxySyntax(headerSource);
   headerSource = undefined;
 
-  finalPruneLocals(reconstructed.elements, reconstructed.id);
+  const initialPrune = finalPruneLocals(reconstructed.elements, reconstructed.id);
   const retirementOutcome = finalizeLocalRetirements(reconstructed.elements, reconstructed.id);
-  finalPruneLocals(reconstructed.elements, reconstructed.id);
+  if (
+    initialPrune.removedIds.length ||
+    retirementOutcome.removed.length ||
+    retirementOutcome.retained.length
+  )
+    finalPruneLocals(reconstructed.elements, reconstructed.id);
   const reconstructedElementCount = Object.keys(reconstructed.elements).length;
 
   const reconstructedTypeCounts = triggerLibraryTypeCounts(reconstructed);
@@ -4700,7 +4824,19 @@ async function convertGalaxyDocumentToTriggers(input, signal) {
     elements: reconstructedElementCount,
   });
 
-  const reparsedMap = parsePrimaryDocument(triggerData, libraryId);
+  const canonicalMapRoot =
+    implicitDocument && !reconstructed.xmlSource
+      ? /^<\?xml version="1\.0" encoding="utf-8"\?>\s*<TriggerData>/u.exec(triggerData)
+      : undefined;
+  const parserOptions = { retainSource: false };
+  // The canonical map writer emits one implicit owner. Feed that owner to the
+  // strict reader directly, then perform the same model and reference checks.
+  const reparsedMap = canonicalMapRoot
+    ? parseTriggerXmlSync(
+        `${canonicalMapRoot[0]}<Standard Id="${libraryId}"/>${triggerData.slice(canonicalMapRoot[0].length)}`,
+        parserOptions,
+      )
+    : parsePrimaryDocument(triggerData, libraryId, undefined, parserOptions);
 
   const reparsed = reparsedMap.get(libraryId);
 

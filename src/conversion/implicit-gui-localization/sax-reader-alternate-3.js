@@ -2,7 +2,15 @@ import { readEditorTextBlock } from '../comment-owner-scope/editor-text-blocks.m
 import { guiTypeQualifiers, retainedGuiType } from '../../model/gui-type-qualifiers.mjs';
 import sax from '../../vendor/sax/lib/sax.js';
 import { serializeTriggerLibraryCanonical } from './trigger-xml-alternate-2.js';
-import { xmlTree } from '../../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js';
+import {
+  xmlTree,
+  xmlTreeWithReader,
+} from '../../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js';
+import {
+  leadingStandardId,
+  mixedTriggerLibraries,
+  readStandardTriggerXml,
+} from './read-standard-trigger-xml.mjs';
 import {
   parseTriggerStrings,
   applyTriggerStringsByType,
@@ -68,10 +76,10 @@ function scriptCodeFromBlock(raw) {
     return raw;
   return body.map((line) => (line.startsWith(indent) ? line.slice(indent.length) : '')).join('\n');
 }
-function normalizeXml(xml, root) {
+function normalizeXml(xml, root, implicitOwner) {
   const standard = root.children.find((node) => node.tag === 'Standard');
-  if (!standard) return xml;
-  const id = standard.attributes.Id;
+  if (!standard && implicitOwner === undefined) return xml;
+  const id = standard ? standard.attributes.Id : implicitOwner;
   if (!/^[A-Za-z0-9_]+$/u.test(id)) throw new TypeError('Invalid Standard library id');
   const direct = root.children.filter((node) => node.tag !== 'Standard' && node.tag !== 'Library');
   const embedded = root.children.filter((node) => node.tag === 'Library');
@@ -83,6 +91,74 @@ function normalizeXml(xml, root) {
     '</TriggerData>'
   );
 }
+const ELEMENT_FLAGS = {
+  FlagNative: 'Native',
+  FlagAction: 'Action',
+  FlagCall: 'Call',
+  FlagEvent: 'Event',
+  Template: 'Template',
+  FlagCustomScript: 'CustomScript',
+  FlagOperator: 'Operator',
+  FlagInline: 'Inline',
+  FlagCustomAI: 'CustomAI',
+  FlagSubFunctions: 'SubFunctions',
+  FlagAllowBreak: 'AllowBreak',
+  FlagHidden: 'Hidden',
+  FlagNoScriptPrefix: 'NoScriptPrefix',
+  Deprecated: 'Deprecated',
+  Internal: 'Internal',
+  FlagRestricted: 'Restricted',
+  FlagCreateThread: 'CreateThread',
+  FlagCondition: 'Condition',
+  NotYetImplemented: 'NotYetImplemented',
+};
+
+const KNOWN_ELEMENT_FIELDS = /* @__PURE__ */ new Set([
+  'Identifier',
+  'Disabled',
+  'InitOff',
+  'Grammar',
+  'ScriptCode',
+  'ExpressionText',
+  'Comment',
+  'InitFunc',
+  'Value',
+  'ReturnType',
+  'VariableType',
+  'ParameterType',
+  'FunctionDef',
+  'ParameterDef',
+  'Preset',
+  'PresetExtends',
+  'ValueElement',
+  'ValuePreset',
+  'ExpressionParam',
+  'ValueParam',
+  'StructMember',
+  'Default',
+  'Event',
+  'Condition',
+  'Variable',
+  'FunctionCall',
+  'Action',
+  'Parameter',
+  'SubFunctionType',
+  'Item',
+  'InitialValue',
+  'Array',
+  'BaseType',
+  'ValueType',
+  'ExpressionType',
+  'ExpressionCode',
+  'ValueId',
+  'ValueTypeInfo',
+  'CustomType',
+  'ValueGameType',
+  'TypeElement',
+  'Constant',
+  'ArraySize',
+]);
+
 function freshEl(type, id, lib) {
   return {
     type,
@@ -296,10 +372,21 @@ function finalize(b) {
       return void 0;
   }
 }
-function parseTriggerXmlSync(xmlContent) {
-  const originalRoot = xmlTree(xmlContent);
-  const xml = normalizeXml(xmlContent, originalRoot);
-  const parser = sax.parser(true, { trim: false, normalize: false });
+function parseTriggerXmlSync(xmlContent, { retainSource = true } = {}) {
+  return readTriggerModel(
+    xmlContent,
+    retainSource,
+    retainSource ? undefined : leadingStandardId(xmlContent),
+  );
+}
+
+// The ownership reader has validated the implicit scope. Build the same Library
+// view from the original element spans without reparsing an inserted Standard tag.
+export function readImplicitTriggerModel(xml, owner) {
+  return readTriggerModel(xml, false, undefined, owner);
+}
+
+function attachTriggerReader(parser) {
   const libraryMap = /* @__PURE__ */ new Map();
   let libId = null;
   let libElements = {};
@@ -387,29 +474,8 @@ function parseTriggerXmlSync(xmlContent) {
       childTag = name;
       childIsRef = !!(attrs.Id ?? attrs.id);
       inPTContainer = name === 'ReturnType' || name === 'VariableType' || name === 'ParameterType';
-      const FLAG = {
-        FlagNative: 'Native',
-        FlagAction: 'Action',
-        FlagCall: 'Call',
-        FlagEvent: 'Event',
-        Template: 'Template',
-        FlagCustomScript: 'CustomScript',
-        FlagOperator: 'Operator',
-        FlagInline: 'Inline',
-        FlagCustomAI: 'CustomAI',
-        FlagSubFunctions: 'SubFunctions',
-        FlagAllowBreak: 'AllowBreak',
-        FlagHidden: 'Hidden',
-        FlagNoScriptPrefix: 'NoScriptPrefix',
-        Deprecated: 'Deprecated',
-        Internal: 'Internal',
-        FlagRestricted: 'Restricted',
-        FlagCreateThread: 'CreateThread',
-        FlagCondition: 'Condition',
-        NotYetImplemented: 'NotYetImplemented',
-      };
-      if (FLAG[name]) {
-        el.flags.push(FLAG[name]);
+      if (ELEMENT_FLAGS[name]) {
+        el.flags.push(ELEMENT_FLAGS[name]);
         return;
       }
       if (name === 'Disabled') {
@@ -480,52 +546,7 @@ function parseTriggerXmlSync(xmlContent) {
         el.section = attrs.Value ?? attrs.value ?? '';
         return;
       }
-      const knownDirect = /* @__PURE__ */ new Set([
-        'Identifier',
-        'Disabled',
-        'InitOff',
-        'Grammar',
-        'ScriptCode',
-        'ExpressionText',
-        'Comment',
-        'InitFunc',
-        'Value',
-        'ReturnType',
-        'VariableType',
-        'ParameterType',
-        'FunctionDef',
-        'ParameterDef',
-        'Preset',
-        'PresetExtends',
-        'ValueElement',
-        'ValuePreset',
-        'ExpressionParam',
-        'ValueParam',
-        'StructMember',
-        'Default',
-        'Event',
-        'Condition',
-        'Variable',
-        'FunctionCall',
-        'Action',
-        'Parameter',
-        'SubFunctionType',
-        'Item',
-        'InitialValue',
-        'Array',
-        'BaseType',
-        'ValueType',
-        'ExpressionType',
-        'ExpressionCode',
-        'ValueId',
-        'ValueTypeInfo',
-        'CustomType',
-        'ValueGameType',
-        'TypeElement',
-        'Constant',
-        'ArraySize',
-      ]);
-      if (!knownDirect.has(name)) {
+      if (!KNOWN_ELEMENT_FIELDS.has(name)) {
         const rawAttributes = {};
         for (const [key, value] of Object.entries(attrs)) {
           if (typeof value === 'string') rawAttributes[key] = value;
@@ -760,11 +781,32 @@ function parseTriggerXmlSync(xmlContent) {
   parser.oncdata = (text) => {
     if (el) textBuf += text;
   };
-  parser.write(xml).close();
-  if (libId) emitLibrary();
-  const standard = originalRoot.children.find((node) => node.tag === 'Standard');
+  return () => {
+    if (libId) emitLibrary();
+    return libraryMap;
+  };
+}
+
+function readTriggerModel(xmlContent, retainSource, inlineStandard, implicitOwner) {
+  const originalRoot = inlineStandard ? undefined : xmlTree(xmlContent);
+  const xml = inlineStandard ? xmlContent : normalizeXml(xmlContent, originalRoot, implicitOwner);
+  const parser = sax.parser(true, { trim: false, normalize: false });
+  const complete = attachTriggerReader(parser);
+  if (inlineStandard) {
+    try {
+      readStandardTriggerXml(parser, xml, inlineStandard);
+    } catch (error) {
+      if (error === mixedTriggerLibraries) return readTriggerModel(xmlContent, retainSource);
+      throw error;
+    }
+  } else parser.write(xml).close();
+  const libraryMap = complete();
+  const standardId =
+    inlineStandard ??
+    originalRoot.children.find((node) => node.tag === 'Standard')?.attributes.Id ??
+    implicitOwner;
   for (const library of libraryMap.values()) {
-    if (standard?.attributes.Id === library.id) library.implicit = true;
+    if (standardId === library.id) library.implicit = true;
     let raw = xmlContent;
     if (libraryMap.size > 1 && !library.implicit) {
       const node = originalRoot.children.find(
@@ -773,9 +815,85 @@ function parseTriggerXmlSync(xmlContent) {
       if (!node) continue;
       raw = '<TriggerData>' + xmlContent.slice(node.start, node.end) + '</TriggerData>';
     }
-    library.xmlSource = { raw, canonical: serializeTriggerLibraryCanonical(library) };
+    if (retainSource)
+      library.xmlSource = { raw, canonical: serializeTriggerLibraryCanonical(library) };
+    else if (!/^[A-Za-z0-9_]+$/u.test(String(library.id ?? '')))
+      throw new TypeError('Trigger library id must be an ASCII identifier');
   }
   return libraryMap;
+}
+/** Collect both views from the same strict SAX stream. Root-level libraries
+ * are read separately so the implicit owner stays first in the result. */
+export function readTriggerTreeAndModel(xml, owner) {
+  let complete;
+  const root = xmlTreeWithReader(xml, (parser) => {
+    const implicit = {},
+      embedded = {};
+    const finishImplicit = attachTriggerReader(implicit);
+    const finishEmbedded = attachTriggerReader(embedded);
+    const open = parser.onopentag,
+      close = parser.onclosetag;
+    let depth = 0,
+      scope,
+      unsupported = false,
+      hasDirect = false;
+    parser.onopentag = (node) => {
+      open(node);
+      depth++;
+      if (unsupported) return;
+      if (depth === 1) {
+        if (node.name !== 'TriggerData') {
+          unsupported = true;
+          return;
+        }
+        implicit.onopentag(node);
+        implicit.onopentag({ name: 'Library', attributes: { Id: owner } });
+        embedded.onopentag(node);
+      } else {
+        if (depth === 2) {
+          if (node.name === 'Standard') {
+            unsupported = true;
+            return;
+          }
+          scope = node.name === 'Library' ? embedded : implicit;
+          if (node.name === 'Root' || node.name === 'Element') hasDirect = true;
+        }
+        scope.onopentag(node);
+      }
+    };
+    parser.onclosetag = (tag) => {
+      close(tag);
+      if (!unsupported) {
+        if (depth === 1) {
+          implicit.onclosetag('Library');
+          implicit.onclosetag(tag);
+          embedded.onclosetag(tag);
+        } else {
+          scope.onclosetag(tag);
+          if (depth === 2) scope = undefined;
+        }
+      }
+      depth--;
+    };
+    parser.ontext = (text) => {
+      if (!unsupported && scope) scope.ontext(text);
+    };
+    parser.oncdata = (text) => {
+      if (!unsupported && scope) scope.oncdata(text);
+    };
+    complete = () => {
+      if (unsupported) return undefined;
+      const libraries = hasDirect ? finishImplicit() : new Map();
+      const main = libraries.get(owner);
+      if (main) main.implicit = true;
+      for (const [id, library] of finishEmbedded()) libraries.set(id, library);
+      for (const { id } of libraries.values()) {
+        if (!/^[A-Za-z0-9_]+$/u.test(id)) return undefined;
+      }
+      return libraries;
+    };
+  });
+  return { root, libraries: complete?.() };
 }
 function buildResult(library) {
   const refsByElement = /* @__PURE__ */ new Map();

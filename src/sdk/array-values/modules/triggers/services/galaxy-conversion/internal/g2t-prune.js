@@ -19,35 +19,6 @@ const PRUNABLE_TYPES = new Set(['Param', 'FunctionCall']);
 function isElementRefLike(v) {
     return v && typeof v === 'object' && typeof v.type === 'string' && typeof v.id === 'string';
 }
-function referencedLocalElements(node, elements, libId) {
-    const references = [];
-    const pending = [node];
-    const seen = new Set();
-    while (pending.length) {
-        const value = pending.pop();
-        if (!value || typeof value !== 'object' || seen.has(value))
-            continue;
-        seen.add(value);
-        if (Array.isArray(value)) {
-            pending.push(...value);
-            continue;
-        }
-        if (isElementRefLike(value)) {
-            const sameLib = value.library === undefined || value.library === libId;
-            const target = sameLib ? elements[value.id] : undefined;
-            if (target?.type === value.type)
-                references.push(target);
-            // Element references have no inline owned payload. Following their target
-            // is the outer graph walk's responsibility and avoids conflating a full
-            // element object with a reference to itself.
-            continue;
-        }
-        pending.push(...Object.entries(value)
-            .filter(([key]) => key !== 'type' && key !== 'id' && key !== 'library')
-            .map(([, child]) => child));
-    }
-    return references;
-}
 /**
  * Mutates `elements`, deleting unreachable Param/FunctionCall elements.
  * Returns the removed ids (useful for diagnostics/tests).
@@ -64,6 +35,36 @@ export function pruneUnreachableElements(elements, libId) {
         reachable.add(el.id);
         pending.push(el);
     }
+    const enqueue = (ref) => {
+        if (ref.library !== undefined && ref.library !== libId) return;
+        const target = elements[ref.id];
+        if (target?.type === ref.type) {
+            reachable.add(target.id);
+            pending.push(target);
+        }
+    };
+    const visitField = (value) => {
+        if (!value || typeof value !== 'object') return;
+        if (!Array.isArray(value) && isElementRefLike(value)) {
+            enqueue(value);
+            return;
+        }
+        const work = [value], seen = new Set();
+        while (work.length) {
+            const child = work.pop();
+            if (!child || typeof child !== 'object' || seen.has(child)) continue;
+            seen.add(child);
+            if (Array.isArray(child)) {
+                for (const item of child) work.push(item);
+            } else if (isElementRefLike(child)) {
+                enqueue(child);
+            } else {
+                for (const key of Object.keys(child)) {
+                    if (key !== 'type' && key !== 'id' && key !== 'library') work.push(child[key]);
+                }
+            }
+        }
+    };
     const scanned = new Set();
     while (pending.length) {
         const owner = pending.pop();
@@ -71,13 +72,8 @@ export function pruneUnreachableElements(elements, libId) {
         if (scanned.has(ownerKey))
             continue;
         scanned.add(ownerKey);
-        for (const [key, value] of Object.entries(owner)) {
-            if (key === 'type' || key === 'id' || key === 'library')
-                continue;
-            for (const target of referencedLocalElements(value, elements, libId)) {
-                reachable.add(target.id);
-                pending.push(target);
-            }
+        for (const key of Object.keys(owner)) {
+            if (key !== 'type' && key !== 'id' && key !== 'library') visitField(owner[key]);
         }
     }
     const removedIds = [];

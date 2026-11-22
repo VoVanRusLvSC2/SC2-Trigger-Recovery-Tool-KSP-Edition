@@ -12,7 +12,7 @@ export class GalaxyProgramContext extends BindingProgram {
   carrierAt(node) {
     this.assertOpen();
     const input = this.originals.get(node),
-      semantic = input && this.nodes.get(this.key(input.fileName, node));
+      semantic = input && this.semanticNode(input.fileName, node);
     if (!semantic || !this.verifiedInputIdentity(input.fileName) || !isPartOfExpression(semantic))
       return undefined;
     try {

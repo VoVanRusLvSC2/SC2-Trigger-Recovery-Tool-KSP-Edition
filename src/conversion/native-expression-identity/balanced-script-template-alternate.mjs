@@ -1,3 +1,4 @@
+import { readTemplateReplay } from '../../utilities/recovery-parse-scope.mjs';
 import { exactNumericLiteralShape } from '../../types/exact-numeric-literal-shape.mjs';
 import { templateReplayShape } from '../../sdk/array-values/modules/triggers/services/galaxy-conversion/template-replay-shape.js';
 /** The ScriptCode macro grammar, shared by both directions; no game function IDs or names. */
@@ -589,7 +590,12 @@ const semanticKeys = [
 export function syntaxChildren(node) {
   if (!node || typeof node !== 'object') return [];
   if (Array.isArray(node)) return node;
-  return semanticKeys.map((key) => node[key]).filter((child) => child && typeof child === 'object');
+  const children = [];
+  for (const key of semanticKeys) {
+    const child = node[key];
+    if (child && typeof child === 'object') children.push(child);
+  }
+  return children;
 }
 /** Return the required template ancestor only for a pure contextual accessor.
  * A ScriptCode body containing anything besides the AUTOVAR macro is an
@@ -683,8 +689,47 @@ export function syntaxShape(node) {
 export function shapeText(node) {
   return JSON.stringify(syntaxShape(node));
 }
+function matchesLiteralCallee(pattern, value, holes) {
+  if (pattern?.kind !== SyntaxKind.CallExpression) return true;
+  const callee = unwrap(pattern.expression);
+  if (callee?.kind !== SyntaxKind.Identifier || holes.has(callee.name)) return true;
+  const actual = value?.kind === SyntaxKind.CallExpression ? unwrap(value.expression) : undefined;
+  return actual?.kind === SyntaxKind.Identifier && actual.name === callee.name;
+}
+
 /** Matches syntax, not whitespace, source positions or human-facing function names. */
-function matchTemplateNodes(template, nodes, defaultReturn, prefix) {
+function matchTemplateNodes(template, nodes, defaultReturn, prefix, start = 0) {
+  const first = unwrap(template.nodes[0]);
+  // Identifiers, block captures and statement markers can match other kinds
+  // (including an empty sequence). Concrete syntax has to match its root.
+  if (
+    first &&
+    first.kind !== SyntaxKind.Identifier &&
+    first.kind !== SyntaxKind.Block &&
+    first.kind !== SyntaxKind.ExpressionStatement
+  ) {
+    const actual = unwrap(nodes[start]);
+    if (actual?.kind !== first.kind) return undefined;
+    if (
+      first.kind === SyntaxKind.BinaryExpression &&
+      first.operatorToken?.kind !== actual?.operatorToken?.kind
+    )
+      return undefined;
+  }
+  // Literal call names cannot be consumed by a capture. Reject these before
+  // building the matcher's maps and its backtracking state.
+  const actual = unwrap(nodes[start]);
+  if (first?.kind === SyntaxKind.ExpressionStatement) {
+    const expression = unwrap(first.expression);
+    if (
+      !matchesLiteralCallee(
+        expression,
+        actual?.kind === SyntaxKind.ExpressionStatement ? unwrap(actual.expression) : undefined,
+        template.holes,
+      )
+    )
+      return undefined;
+  } else if (!matchesLiteralCallee(first, actual, template.holes)) return undefined;
   const bindings = { parameters: new Map(), blocks: new Map(), autos: new Map() };
   // Ambiguous captures must remain bounded. Exhaustion only declines this
   // high-level match; syntax-directed conversion still preserves the input.
@@ -790,10 +835,11 @@ function matchTemplateNodes(template, nodes, defaultReturn, prefix) {
             left.operatorToken.kind === hole.join.operator
           ) {
             if (--budget < 0) return false;
-            children.unshift(left.right);
+            children.push(left.right);
             left = unwrap(left.left);
           }
-          children.unshift(left);
+          children.push(left);
+          children.reverse();
         } else children.push(value);
         return bind(bindings.blocks, hole.name, children);
       }
@@ -817,27 +863,46 @@ function matchTemplateNodes(template, nodes, defaultReturn, prefix) {
     if (!value || pattern.kind !== value.kind) return false;
     if (pattern.kind === SyntaxKind.NumericLiteral || pattern.kind === SyntaxKind.StringLiteral)
       return shapeText(pattern) === shapeText(value);
-    return semanticKeys
-      .filter((key) => pattern[key] !== undefined || value[key] !== undefined)
-      .every((key) => match(pattern[key], value[key]));
+    for (const key of semanticKeys) {
+      const expected = pattern[key],
+        actual = value[key];
+      if (expected === undefined && actual === undefined) continue;
+      // These fields are leaves. Keep the successful recursive match's
+      // budget charge and fall through for object-valued syntax.
+      if (
+        (expected == null || typeof expected !== 'object') &&
+        (actual == null || typeof actual !== 'object')
+      ) {
+        if (--budget < 0 || expected !== actual) return false;
+      } else if (!match(expected, actual)) return false;
+    }
+    return true;
   };
-  const consumed = matchSequence(template.nodes, nodes, prefix);
-  return consumed !== undefined ? { bindings, consumed } : undefined;
+  const end = matchSequence(template.nodes, nodes, prefix, 0, start);
+  return end !== undefined ? { bindings, consumed: end - start } : undefined;
 }
 export function matchTemplate(template, nodes, defaultReturn) {
   return matchTemplateNodes(template, nodes, defaultReturn, false)?.bindings;
 }
-export function matchTemplatePrefix(template, nodes, defaultReturn) {
-  return matchTemplateNodes(template, nodes, defaultReturn, true);
+export function matchTemplatePrefix(template, nodes, defaultReturn, start = 0) {
+  return matchTemplateNodes(template, nodes, defaultReturn, true, start);
 }
 /** A capture of the entire input would re-enter the same conversion forever. */
 export function templateMakesProgress(nodes, bindings) {
-  const whole = shapeText(nodes);
-  return (
-    ![...bindings.parameters.values()].some((value) => shapeText([value]) === whole) &&
-    ![...bindings.blocks.values()].some((values) => shapeText(values) === whole)
-  );
+  let whole;
+  const sameCapture = (items) =>
+    items.length === nodes.length && shapeText(items) === (whole ??= shapeText(nodes));
+  if (nodes.length === 1) {
+    for (const value of bindings.parameters.values()) if (sameCapture([value])) return false;
+  }
+  for (const values of bindings.blocks.values()) if (sameCapture(values)) return false;
+  return true;
 }
+function parseReplayShape(source, expression) {
+  const expanded = parseTemplateFragment(source, expression);
+  return expanded && JSON.stringify(templateReplayShape(expanded, syntaxShape));
+}
+
 /** Prove the loaded macro text recreates the matched tree before building refs. */
 export function templateBindingMatches(template, nodes, bindings, libraries, defaultReturn) {
   let supported = true;
@@ -872,10 +937,8 @@ export function templateBindingMatches(template, nodes, bindings, libraries, def
     return '';
   });
   if (!supported) return false;
-  const expanded = parseTemplateFragment(source, template.expression);
+  const expanded = readTemplateReplay(source, template.expression, parseReplayShape);
   return (
-    !!expanded &&
-    JSON.stringify(templateReplayShape(expanded, syntaxShape)) ===
-      JSON.stringify(templateReplayShape(nodes, syntaxShape))
+    expanded !== undefined && expanded === JSON.stringify(templateReplayShape(nodes, syntaxShape))
   );
 }

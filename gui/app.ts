@@ -191,7 +191,8 @@ function download(blob: Blob, name: string) {
 async function downloadArtifact(artifact: Artifact) {
   const result = await response('download?id=' + encodeURIComponent(artifact.id));
   const name = artifact.title.split('/').at(-1)!;
-  download(await result.blob(), artifact.kind === 'archive' ? 'Recovered-' + name : name);
+  const prefix = artifact.draft ? 'Draft-' : artifact.kind === 'archive' ? 'Recovered-' : '';
+  download(await result.blob(), prefix + name);
 }
 function render(state: JobSnapshot) {
   snapshot = state;
@@ -221,8 +222,21 @@ function render(state: JobSnapshot) {
   element('generate').title = recoveryNotice;
   element<HTMLFieldSetElement>('settings').disabled = active;
   element<HTMLButtonElement>('cancel').disabled = !active && !opening;
-  element<HTMLButtonElement>('saveMarkup').disabled =
-    active || !state.artifacts.some((a) => a.kind === 'archive');
+  const insert = element<HTMLButtonElement>('insertTriggers');
+  insert.disabled =
+    active || state.phase === 'cancelled' || !(state.recoveredArchive || state.recoveredMarkup);
+  insert.textContent = state.recoveredArchive?.draft
+    ? 'DOWNLOAD DRAFT'
+    : !state.recoveredArchive && state.recoveredMarkup
+      ? 'DOWNLOAD TRIGGERS XML'
+      : /\.sc2mod$/i.test(state.recoveredArchive?.title ?? loadedMap ?? '')
+        ? 'INSERT TRIGGERS INTO MOD'
+        : 'INSERT TRIGGERS INTO MAP';
+  insert.title = state.recoveredArchive?.draft
+    ? 'Download the packed draft. Validation did not finish.'
+    : !state.recoveredArchive && state.recoveredMarkup
+      ? 'Download the XML recovered before the failure'
+      : 'Save a copy with embedded triggers';
   element<HTMLButtonElement>('exportFile').disabled =
     active || !element<HTMLTextAreaElement>('markup').value;
   element<HTMLButtonElement>('treeButton').disabled =
@@ -242,7 +256,7 @@ function render(state: JobSnapshot) {
   if (log.textContent !== state.log)
     log.textContent =
       state.log ||
-      'Ready. Choose OPEN FILE, then GENERATE TRIGGERS. SAVE TRIGGERS downloads the recovered map; EXPORT FILE exports XML.';
+      'Ready. Open a map and generate triggers. INSERT TRIGGERS INTO MAP saves a copy with the triggers embedded.';
   if (bottom) log.scrollTop = log.scrollHeight;
   element('output').textContent = state.output ?? '';
   const resultText = JSON.stringify(state.result, null, 2) ?? '';
@@ -303,7 +317,9 @@ function render(state: JobSnapshot) {
       };
       element('artifacts').append(button);
     }
+    const archiveFolder = state.recoveredArchive?.title.split('/').slice(0, -1).join('/');
     const markup =
+      state.artifacts.find((a) => a.title === archiveFolder + '/components/Triggers') ??
       state.artifacts.find((a) => a.kind === 'markup' && a.title.includes('/components/')) ??
       state.artifacts.find((a) => a.kind === 'markup');
     const source = state.artifacts.find((a) => a.title === 'package/MapScript.galaxy');
@@ -413,13 +429,20 @@ element('treeButton').onclick = () => {
     fail(error);
   }
 };
-element('saveMarkup').onclick = () => {
-  const archive = snapshot?.artifacts.find((a) => a.kind === 'archive');
-  if (archive) {
-    if (snapshot?.phase === 'failed')
-      notice('This is an unverified diagnostic map; inspect GEN INFO before using it.');
-    downloadArtifact(archive).catch(fail);
-  }
+element('insertTriggers').onclick = () => {
+  const artifact = snapshot?.recoveredArchive ?? snapshot?.recoveredMarkup;
+  if (!artifact || snapshot?.phase === 'cancelled') return;
+  downloadArtifact(artifact)
+    .then(() =>
+      notice(
+        artifact.draft
+          ? 'Draft downloaded with embedded triggers. Review the failure in GEN INFO.'
+          : artifact.kind === 'markup'
+            ? 'Recovered Triggers XML downloaded.'
+            : 'Download started. The recovered copy contains the embedded triggers.',
+      ),
+    )
+    .catch(fail);
 };
 element('exportFile').onclick = () => show('exportDialog');
 element<HTMLFormElement>('exportForm').onsubmit = (event) => {

@@ -1,22 +1,21 @@
 import { isPreservedSourceCallInterfaceXml } from '../qualified-macro-binding/preserved-source-aggregate-interfaces.dependency-functions.mjs';
 import { isAuthoredSectionXml } from './authored-section-functions.mixed-atomic.mjs';
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
+import { recoveryTextSha256 as sha } from '../../utilities/recovery-parse-scope.mjs';
 import { isPreservedSourceIncludeXml } from '../exact-function-signatures/preserved-source-includes.exact-inputs.mjs';
 
-const sha = (text) => createHash('sha256').update(text).digest('hex');
 const identity = (library, type, id) => JSON.stringify([library, type, id]);
-const descendants = function* (node) {
-  yield node;
-  for (const child of node.children ?? []) yield* descendants(child);
-};
-
 // Read the lossless XML, including typed identities and incoming ownership edges.
 // Finding the same raw text elsewhere is deliberately insufficient provenance.
 export function observeAuthoredCode(xml, xmlTree, implicitLibrary = 'Map') {
+  return observeDocument(xml, xmlTree, implicitLibrary);
+}
+
+function observeDocument(xml, xmlTree, implicitLibrary, edgeTargets) {
   assert.equal(typeof xml, 'string', 'TRIGGER_XML_REQUIRED');
   const elements = new Map(),
     edges = new Map();
+  const identities = edgeTargets === undefined ? elements : new Set();
   if (!xml.trim())
     return {
       elements,
@@ -24,18 +23,27 @@ export function observeAuthoredCode(xml, xmlTree, implicitLibrary = 'Map') {
       counts: { customScriptElements: 0, scriptCodeFields: 0, nativeElements: 0 },
     };
   const tree = xmlTree(xml);
-  const addEdges = (node, library, owner) => {
+  const counts = { customScriptElements: 0, scriptCodeFields: 0, nativeElements: 0 };
+  const inspect = (node, library, owner, fields) => {
     for (const child of node.children ?? []) {
-      if (child.tag === 'Element' || child.tag === 'Library') continue;
-      const a = child.attributes ?? {};
-      if (a.Type && a.Id) {
-        const target = identity(a.Library ?? library, a.Type, a.Id);
-        const edge = JSON.stringify([owner, child.tag, target]);
-        if (!edges.has(target)) edges.set(target, new Map());
-        const incoming = edges.get(target);
-        incoming.set(edge, (incoming.get(edge) ?? 0) + 1);
+      const nested = child.tag === 'Element' || child.tag === 'Library';
+      const edgeOwner = nested ? undefined : owner;
+      if (!fields && edgeOwner === undefined) continue;
+      if (fields) {
+        if (child.tag === 'ScriptCode') fields.scriptCodeFields++;
+        if (child.tag === 'FlagNative') fields.native = true;
       }
-      addEdges(child, library, owner);
+      const a = child.attributes ?? {};
+      if (edgeOwner !== undefined && a.Type && a.Id) {
+        const target = identity(a.Library ?? library, a.Type, a.Id);
+        if (!edgeTargets || edgeTargets.has(target)) {
+          const edge = JSON.stringify([owner, child.tag, target]);
+          if (!edges.has(target)) edges.set(target, new Map());
+          const incoming = edges.get(target);
+          incoming.set(edge, (incoming.get(edge) ?? 0) + 1);
+        }
+      }
+      inspect(child, library, edgeOwner, fields);
     }
   };
   function visit(node, library) {
@@ -43,11 +51,18 @@ export function observeAuthoredCode(xml, xmlTree, implicitLibrary = 'Map') {
     if (node.tag === 'Element') {
       const a = node.attributes,
         key = identity(library, a.Type, a.Id);
-      assert(!elements.has(key), 'DUPLICATE_TYPED_TRIGGER_IDENTITY: ' + key);
-      const fields = [...descendants(node)];
-      const scriptCodeFields = fields.filter((n) => n.tag === 'ScriptCode').length;
-      const native = fields.some((n) => n.tag === 'FlagNative');
+      if (identities.has(key)) assert(false, 'DUPLICATE_TYPED_TRIGGER_IDENTITY: ' + key);
+      if (edgeTargets) identities.add(key);
+      const fields = { scriptCodeFields: 0, native: false };
+      inspect(node, library, edgeTargets?.size === 0 ? undefined : key, fields);
+      const { scriptCodeFields, native } = fields;
       const custom = a.Type === 'CustomScript';
+      if (custom) counts.customScriptElements++;
+      if (native) counts.nativeElements++;
+      counts.scriptCodeFields += scriptCodeFields;
+      if (edgeTargets && !edgeTargets.has(key) && !custom && !native && !scriptCodeFields) return;
+      const fragment = xml.slice(node.start, node.end);
+      let digest;
       elements.set(key, {
         key,
         library,
@@ -57,35 +72,24 @@ export function observeAuthoredCode(xml, xmlTree, implicitLibrary = 'Map') {
         native,
         custom,
         protected: custom || native || scriptCodeFields > 0,
-        sha256: sha(xml.slice(node.start, node.end)),
-        sourceSection: isAuthoredSectionXml(xml.slice(node.start, node.end), library),
-        sourceCallInterface: isPreservedSourceCallInterfaceXml(
-          xml.slice(node.start, node.end),
-          library,
-        ),
+        get sha256() {
+          return (digest ??= sha(fragment));
+        },
+        sourceSection:
+          (scriptCodeFields > 0 || fragment.includes('<InitFunc')) &&
+          isAuthoredSectionXml(fragment, library),
+        sourceCallInterface: isPreservedSourceCallInterfaceXml(fragment, library),
         sourceInclude:
-          custom &&
-          scriptCodeFields === 1 &&
-          !native &&
-          isPreservedSourceIncludeXml(xml.slice(node.start, node.end)),
+          custom && scriptCodeFields === 1 && !native && isPreservedSourceIncludeXml(fragment),
       });
-      addEdges(node, library, key);
       return;
     }
-    if (node.tag === 'Root') addEdges(node, library, identity(library, 'Root', ''));
+    if (node.tag === 'Root' && edgeTargets?.size !== 0)
+      inspect(node, library, identity(library, 'Root', ''));
     for (const child of node.children ?? []) visit(child, library);
   }
   visit(tree, implicitLibrary);
-  const values = [...elements.values()];
-  return {
-    elements,
-    edges,
-    counts: {
-      customScriptElements: values.filter((e) => e.custom).length,
-      scriptCodeFields: values.reduce((n, e) => n + e.scriptCodeFields, 0),
-      nativeElements: values.filter((e) => e.native).length,
-    },
-  };
+  return { elements, edges, counts };
 }
 
 export function verifyAuthoredCodePolicy({
@@ -98,8 +102,13 @@ export function verifyAuthoredCodePolicy({
   sourceInitializerWeave,
 }) {
   const original = observeAuthoredCode(before, xmlTree, libraryId);
-  const output = observeAuthoredCode(after, xmlTree, libraryId);
   const protectedOriginal = [...original.elements.values()].filter((e) => e.protected);
+  // The output policy only reads protected definitions and incoming edges to
+  // original protected definitions. The observer still validates every ID.
+  const edgeTargets = new Set(
+    policy.preserveAuthoredCode ? protectedOriginal.map((e) => e.key) : [],
+  );
+  const output = observeDocument(after, xmlTree, libraryId, edgeTargets);
   const protectedOutput = [...output.elements.values()].filter((e) => e.protected);
   const sourceIncludes = [],
     sourceSections = [],

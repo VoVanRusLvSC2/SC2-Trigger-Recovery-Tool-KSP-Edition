@@ -5,6 +5,7 @@ import {
 } from '../sdk/array-values/modules/galaxy/language-core/index.js';
 import { declaredTriggerConstructorFrame } from './declared-trigger-constructor-frame.mjs';
 import { createSourceNativeApiFacts } from '../conversion/native-expression-identity/source-native-api-facts.identity-only-alternate.mjs';
+import { attachProgramDocument } from '../conversion/exact-function-signatures/verified-conversion-program.mjs';
 
 const un = (node) => {
   while (node?.kind === K.ParenthesizedExpression) node = node.expression;
@@ -54,7 +55,7 @@ export function planSourceTriggerConstructors({
     references = new Map();
   for (const [fileName, ast] of program.documents) {
     if (!program.verifiedInputIdentity(fileName)) return empty();
-    program.attachOriginal(ast);
+    attachProgramDocument(program, ast);
     for (const node of ast.statements) {
       if (node.kind === K.FunctionDeclaration) {
         const list = declarations.get(node.name.name) ?? [];

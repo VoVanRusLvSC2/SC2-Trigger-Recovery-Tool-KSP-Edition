@@ -22,6 +22,16 @@ export function resolveGalaxyTypeAliases(statements) {
   const resolvedTypes = new WeakMap();
   const resolve = (type) => {
     if (!type || typeof type !== 'object') return type;
+    if (resolvedTypes.has(type)) return resolvedTypes.get(type);
+    if (
+      type.kind !== SyntaxKind.ArrayType &&
+      !type.typeArguments &&
+      !(type.kind === SyntaxKind.Identifier && aliases.has(type.name))
+    ) {
+      stats.typeResolutions++;
+      resolvedTypes.set(type, type);
+      return type;
+    }
     const stack = [{ type }];
     while (stack.length) {
       const frame = stack.pop(),

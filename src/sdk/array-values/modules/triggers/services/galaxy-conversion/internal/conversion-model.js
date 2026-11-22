@@ -131,13 +131,16 @@ export function globalVariableNames(libraryId, variables) {
 }
 export function globalVariables(library) {
     const local = new Set();
+    const globals = [];
     for (const element of Object.values(library.elements)) {
+        if (element.type === 'Variable')
+            globals.push(element);
         const variables = element.localVariables ?? (element.type === 'Structure' ? element.variables : []);
         for (const ref of variables)
             if ((ref.library ?? library.id) === library.id)
                 local.add(ref.id);
     }
-    return Object.values(library.elements).filter((element) => element.type === 'Variable' && !local.has(element.id));
+    return globals.filter((element) => !local.has(element.id));
 }
 /** Find a reference inside one library it is known to belong to. */
 export function lookupElementIn(library, ref) {
@@ -182,41 +185,64 @@ export function decodePayload(text) {
 export function assertConversionReferences(library, dependencies) {
     const libraries = new Map(dependencies);
     libraries.set(library.id, library);
+    const byId = new Map();
+    for (const candidate of libraries.values()) {
+        if (!byId.has(candidate.id))
+            byId.set(candidate.id, candidate);
+    }
+    const resolve = (ref, owner) => {
+        const targetLibrary = byId.get(ref.library || (owner.library ?? library.id));
+        return targetLibrary && lookupElementIn(targetLibrary, ref);
+    };
+    const elements = Object.values(library.elements);
     const edges = new Map();
+    const fields = [];
+    const values = [];
+    const pushField = (field, value) => {
+        if (value && typeof value === 'object') {
+            fields.push(field);
+            values.push(value);
+        }
+    };
+    const pushFields = (owner) => {
+        for (const field of Object.keys(owner)) {
+            if (field !== 'id' && field !== 'library' && field !== 'type' && field !== 'catalogRefs')
+                pushField(field, owner[field]);
+        }
+    };
     // Flat TriggerData keeps a disabled definition's implementation nodes as
     // ordinary sibling Elements. Find that inactive closure up front, so stale
     // references retained only by disabled editor content do not become roots
     // merely because the XML is flat. If an active element shares/reaches one
     // of these nodes, the normal walk below still validates it.
     const inactive = new Set();
-    const inactivePending = Object.values(library.elements).filter(element => element.disabled);
+    const inactivePending = elements.filter(element => element.disabled);
     while (inactivePending.length) {
         const owner = inactivePending.pop();
         if (inactive.has(owner))
             continue;
         inactive.add(owner);
-        const values = Object.entries(owner)
-            .filter(([field]) => !['id', 'library', 'type', 'catalogRefs'].includes(field));
+        pushFields(owner);
         while (values.length) {
-            const [field, value] = values.pop();
-            if (!value || typeof value !== 'object')
-                continue;
+            const value = values.pop();
+            const field = fields.pop();
             if (Array.isArray(value)) {
                 for (const item of value)
-                    values.push([field, item]);
+                    pushField(field, item);
                 continue;
             }
             if (typeof value.id !== 'string') {
-                values.push(...Object.entries(value));
+                for (const key of Object.keys(value))
+                    pushField(key, value[key]);
                 continue;
             }
             const ref = field === 'subFunctionType' || field === 'subFunctionTypes' ? { ...value, type: 'SubFuncType' } : value;
-            const target = lookupElement(libraries.values(), ref, owner.library ?? library.id);
+            const target = resolve(ref, owner);
             if (target && (target.library ?? ref.library ?? library.id) === library.id && !inactive.has(target))
                 inactivePending.push(target);
         }
     }
-    const pending = Object.values(library.elements).filter(element => !element.disabled && !inactive.has(element));
+    const pending = elements.filter(element => !element.disabled && !inactive.has(element));
     const seen = new Set();
     while (pending.length) {
         const owner = pending.pop();
@@ -230,18 +256,17 @@ export function assertConversionReferences(library, dependencies) {
         // preset removed from a later TriggerLib revision). Active parents are
         // still validated before they can reach any such element.
         if (owner.disabled) {
-            edges.set(key, []);
+            edges.set(key, undefined);
             continue;
         }
-        const children = [];
-        const values = Object.entries(owner).filter(([key]) => !['id', 'library', 'type', 'catalogRefs'].includes(key));
+        let children;
+        pushFields(owner);
         while (values.length) {
-            const [field, value] = values.pop();
-            if (!value || typeof value !== 'object')
-                continue;
+            const value = values.pop();
+            const field = fields.pop();
             if (Array.isArray(value)) {
                 for (const item of value)
-                    values.push([field, item]);
+                    pushField(field, item);
                 continue;
             }
             if (typeof value.id !== 'string') {
@@ -250,7 +275,10 @@ export function assertConversionReferences(library, dependencies) {
                 // target can be long deleted — so it is not a conversion dependency.
                 const declared = typeof value.type === 'string' ? value.type.toLowerCase() : undefined;
                 const inert = declared !== undefined && declared !== 'struct' && declared !== 'preset';
-                values.push(...Object.entries(value).filter(([name]) => !(inert && name === 'typeElement')));
+                for (const key of Object.keys(value)) {
+                    if (!inert || key !== 'typeElement')
+                        pushField(key, value[key]);
+                }
                 continue;
             }
             const ref = field === 'subFunctionType' || field === 'subFunctionTypes' ? { ...value, type: 'SubFuncType' } : value;
@@ -258,7 +286,7 @@ export function assertConversionReferences(library, dependencies) {
             // rendered. An obsolete editor role is not an executable dependency.
             if (owner.type === 'Comment' && field === 'subFunctionType')
                 continue;
-            const target = lookupElement(libraries.values(), ref, owner.library ?? library.id);
+            const target = resolve(ref, owner);
             if (!target)
                 conversionError('UNRESOLVED_REFERENCE', 'Trigger reference cannot be resolved in the loaded libraries', { owner: key, reference: ref });
             const targetLibrary = target.library ?? ref.library ?? owner.library ?? library.id;
@@ -273,15 +301,22 @@ export function assertConversionReferences(library, dependencies) {
             pending.push(target);
             // Calls between definitions may recurse legitimately; expansion trees may not.
             if (target.type === 'Param' || target.type === 'FunctionCall') {
-                children.push(refKey(target, owner.library));
+                (children ??= []).push(refKey(target, owner.library));
             }
         }
         edges.set(key, children);
     }
     const done = new Set();
-    for (const key of edges.keys()) {
-        const active = new Set();
-        const stack = [{ key, leave: false }];
+    const active = new Set();
+    const stack = [];
+    for (const [key, children] of edges) {
+        if (done.has(key))
+            continue;
+        if (!children) {
+            done.add(key);
+            continue;
+        }
+        stack.push({ key, leave: false });
         while (stack.length) {
             const current = stack.pop();
             if (current.leave) {

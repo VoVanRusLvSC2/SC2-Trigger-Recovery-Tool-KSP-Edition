@@ -22,6 +22,7 @@ import {
 import { MPQ_RECOVERED_WRITE_UNSUPPORTED, recoverArchive } from "./recovery.js"
 import { decompressStormHuffman } from "../../dist/mpq/storm/huffman.js"
 import { expandStormAdpcm } from "../../dist/mpq/storm/adpcm.js"
+import { decodeRecoveryBzip2 } from "../../../../../utilities/recovery-parse-scope.mjs"
 
 const ID = 'blizzard/mpq'
 const FILE_IMPLODE = 0x00000100
@@ -480,7 +481,7 @@ async function decompressSector(data, label, maxOutputBytes, signal) {
   }
   let payload = data.subarray(1)
   if ((mask & STORM_BZIP2) !== 0) {
-    payload = bzip2Decompress(payload, { maxOutputBytes, ...(signal === undefined ? {} : { signal }) })
+    payload = decodeRecoveryBzip2(payload, maxOutputBytes, signal, bzip2Decompress)
   }
   if ((mask & STORM_IMPLODE) !== 0) payload = await explode(payload, maxOutputBytes)
   if ((mask & STORM_ZLIB) !== 0) payload = await decompressDeflate(payload, maxOutputBytes, signal)

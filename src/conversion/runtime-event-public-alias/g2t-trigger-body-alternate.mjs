@@ -149,6 +149,14 @@ export { isTestCondsGuard, isRunActionsGuard };
 
  *  or undefined when `statement` is anything else. */
 
+function scopeBodyConstants(constants, declaration) {
+  if (!constants) return undefined;
+  const statements = [...(declaration.parameters ?? []), ...(declaration.body?.statements ?? [])];
+  return typeof constants.scopeWithSharedGlobals === 'function'
+    ? constants.scopeWithSharedGlobals(statements)
+    : constants.scope(statements);
+}
+
 export function triggerConditionGuards(statement, phaseGuards) {
   const matchesConditions = phaseGuards?.isTestCondsGuard ?? isTestCondsGuard;
   if (
@@ -258,10 +266,7 @@ export function convertUserFunctionBody(
 
     dependencyLibraries,
 
-    constants: constants?.scope([
-      ...(funcDecl.parameters ?? []),
-      ...(funcDecl.body?.statements ?? []),
-    ]),
+    constants: scopeBodyConstants(constants, funcDecl),
 
     funcNameToFuncDef,
 
@@ -1579,10 +1584,7 @@ export function convertInitVariablesBody(
 
     dependencyLibraries,
 
-    constants: constants?.scope([
-      ...(funcDecl.parameters ?? []),
-      ...(funcDecl.body?.statements ?? []),
-    ]),
+    constants: scopeBodyConstants(constants, funcDecl),
 
     funcNameToFuncDef,
 
@@ -2545,10 +2547,7 @@ export function convertTriggerBody(
 
     dependencyLibraries,
 
-    constants: constants?.scope([
-      ...(funcDecl.parameters ?? []),
-      ...(funcDecl.body?.statements ?? []),
-    ]),
+    constants: scopeBodyConstants(constants, funcDecl),
 
     funcNameToFuncDef,
 

@@ -4,16 +4,25 @@
  */
 import { xmlTree } from '../../sdk/parameter-stem/modules/triggers/shared/trigger-document/lossless-xml.js';
 import { parseTriggerXmlSync } from './sax-reader.js';
+import { readRecoveryModel } from '../../utilities/recovery-parse-scope.mjs';
+
+/** Used by read-only XML repair audits; patches are applied to the source text. */
 export function parseOwnedTriggerDocument(xml) {
+  return readRecoveryModel(xml, readScopedTriggerDocument);
+}
+
+function readScopedTriggerDocument(xml) {
   const tree = xmlTree(xml),
     standard = tree.children.filter((c) => c.tag === 'Standard');
   if (standard.length > 1) throw Error('Ambiguous implicit Standard scope');
+  const options = { retainSource: false };
   if (standard.length || !tree.children.some((c) => c.tag === 'Root'))
-    return parseTriggerXmlSync(xml);
+    return parseTriggerXmlSync(xml, options);
   const ids = new Set(tree.children.filter((c) => c.tag === 'Library').map((c) => c.attributes.Id));
   let id = '__GuiMapRoot';
   for (let n = 0; ids.has(id); n++) id = '__GuiMapRoot' + n;
   return parseTriggerXmlSync(
     xml.slice(0, tree.openEnd) + `<Standard Id="${id}"/>` + xml.slice(tree.openEnd),
+    options,
   );
 }

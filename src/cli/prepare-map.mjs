@@ -251,16 +251,18 @@ export async function prepareMap({
         if (d[key] !== undefined) row[key] = await sourceInput(d[key], name);
       prepared.dependencyInputs.push(row);
     }
-    const pending = [...primarySources, ...declarations];
+    const sourceKey = (source) => source.fileName.toLowerCase() + '\0' + sha(source.text);
+    const pending = [...primarySources, ...declarations].map((source) => ({
+      source,
+      key: sourceKey(source),
+    }));
+    const pendingKeys = new Set(pending.map(({ key }) => key));
     const seen = new Set(),
       attributeSources = [],
-      declarationKeys = new Set(
-        declarations.map((d) => d.fileName.toLowerCase() + '\0' + sha(d.text)),
-      );
+      declarationKeys = new Set(declarations.map(sourceKey));
     for (let i = 0; i < pending.length; i++) {
       assert(pending.length <= 4096, 'Include closure exceeds source limit');
-      const source = pending[i],
-        key = source.fileName.toLowerCase() + '\0' + sha(source.text);
+      const { source, key } = pending[i];
       if (seen.has(key)) continue;
       seen.add(key);
       const ast = parseGalaxySource(source.text, source.fileName);
@@ -309,12 +311,11 @@ export async function prepareMap({
           await context.read(found.layerId, found.path, 64 * 1024 ** 2),
         );
         const next = { fileName: found.path, text },
-          nextKey = next.fileName.toLowerCase() + '\0' + sha(text);
-        if (
-          !seen.has(nextKey) &&
-          !pending.some((d) => d.fileName.toLowerCase() + '\0' + sha(d.text) === nextKey)
-        )
-          pending.push(next);
+          nextKey = sourceKey(next);
+        if (!pendingKeys.has(nextKey)) {
+          pendingKeys.add(nextKey);
+          pending.push({ source: next, key: nextKey });
+        }
         if (!declarationKeys.has(nextKey)) {
           declarationKeys.add(nextKey);
           prepared.declarationInputs.push(await sourceInput(text, found.path));

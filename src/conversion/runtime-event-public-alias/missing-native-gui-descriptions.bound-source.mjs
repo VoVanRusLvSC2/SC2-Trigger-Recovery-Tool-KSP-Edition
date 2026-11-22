@@ -8,7 +8,10 @@ import { SyntaxKind as K, forEachChild } from '../exact-function-signatures/inde
 import { parseTriggerXmlSync } from '../implicit-gui-localization/sax-reader-alternate-3.js';
 import { FunctionCandidateIndex } from '../native-expression-identity/function-candidates-alternate-4.mjs';
 import { createMissingNativeGuiDescriptions } from './missing-native-gui-description.guarded.mjs';
-import { readOwnedGuiLibraries } from '../implicit-gui-localization/read-owned-gui-libraries-alternate.mjs';
+import {
+  hasGuiFunctionDefinition,
+  readOnlyOwnedGuiLibraries,
+} from '../implicit-gui-localization/read-owned-gui-libraries-alternate.mjs';
 import { declaredCarrier } from '../exact-function-signatures/galaxy-program-context.js';
 
 const sha = (s) => createHash('sha256').update(s).digest('hex');
@@ -46,16 +49,20 @@ export const verifyMissingNativeGuiDescriptions = (options) =>
   withIsolatedGalaxyToTriggerIds(() => verifyDescriptions(options));
 function verifyDescriptions({ input, after, before = input.existingTriggerData ?? '' }) {
   const owner = input.libraryId ?? 'Map',
-    parsed = readOwnedGuiLibraries(after, owner),
-    old = before ? readOwnedGuiLibraries(before, owner) : new Map();
+    parsed = readOnlyOwnedGuiLibraries(after, owner),
+    old = before ? readOnlyOwnedGuiLibraries(before, owner) : new Map();
   const fresh = [];
-  for (const [id, lib] of parsed)
+  for (const [id, lib] of parsed) {
+    const newlyNative = (element) =>
+      element.flags?.includes('Native') &&
+      !old.get(id)?.elementsByType?.FunctionDef?.[element.id]?.flags?.includes('Native');
+    if (!hasGuiFunctionDefinition(lib, newlyNative)) continue;
+    // Preserve the flat table's original order in the proof.
     for (const e of Object.values(lib.elements ?? {}))
-      if (e.type === 'FunctionDef' && e.flags?.includes('Native')) {
-        const previous = old.get(id)?.elementsByType?.FunctionDef?.[e.id];
-        if (previous?.flags?.includes('Native')) continue;
+      if (e.type === 'FunctionDef' && newlyNative(e)) {
         fresh.push({ owner: id, definition: e });
       }
+  }
   if (!fresh.length)
     return {
       kind: 'SOURCE_BOUND_MISSING_NATIVE_GUI_DESCRIPTIONS',

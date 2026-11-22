@@ -416,12 +416,39 @@
     return c === '>' || isWhitespace(c)
   }
 
-  function isMatch(regex, c) {
-    return regex.test(c)
+  // Precompute the ASCII subset from the existing XML name rules. Non-ASCII
+  // input uses the same patterns, including unsupported surrogate code units.
+  function asciiMatches(pattern) {
+    var table = new Uint8Array(128)
+    for (var i = 0; i < table.length; i++) {
+      table[i] = pattern.test(String.fromCharCode(i)) ? 1 : 0
+    }
+    return table
   }
 
-  function notMatch(regex, c) {
-    return !isMatch(regex, c)
+  var asciiNameStart = asciiMatches(nameStart)
+  var asciiNameBody = asciiMatches(nameBody)
+  var singleQuotedBoundary = /['&\n]/g
+  var doubleQuotedBoundary = /["&\n]/g
+
+  function isNameStart(c) {
+    var code = c.charCodeAt(0)
+    return code < 128 ? asciiNameStart[code] === 1 : nameStart.test(c)
+  }
+
+  function isNameBody(c) {
+    var code = c.charCodeAt(0)
+    return code < 128 ? asciiNameBody[code] === 1 : nameBody.test(c)
+  }
+
+  function asciiNameSpanEnd(parser, chunk, start) {
+    var end = start
+    while (asciiNameBody[chunk.charCodeAt(end)] === 1) end++
+    if (parser.trackPosition) {
+      parser.position += end - start
+      parser.column += end - start
+    }
+    return end
   }
 
   var S = 0
@@ -945,10 +972,13 @@
     } else {
       // in non-xmlns mode, we can emit the event right away
       parser.tag.attributes[parser.attribName] = parser.attribValue
-      emitNode(parser, 'onattribute', {
-        name: parser.attribName,
-        value: parser.attribValue,
-      })
+      closeText(parser)
+      if (parser.onattribute) {
+        parser.onattribute({
+          name: parser.attribName,
+          value: parser.attribValue,
+        })
+      }
     }
 
     parser.attribName = parser.attribValue = ''
@@ -1298,7 +1328,7 @@
             parser.sgmlDecl = ''
           } else if (isWhitespace(c)) {
             // wait for it...
-          } else if (isMatch(nameStart, c)) {
+          } else if (isNameStart(c)) {
             parser.state = S.OPEN_TAG
             parser.tagName = c
           } else if (c === '/') {
@@ -1536,8 +1566,10 @@
           continue
 
         case S.OPEN_TAG:
-          if (isMatch(nameBody, c)) {
-            parser.tagName += c
+          if (isNameBody(c)) {
+            var openNameEnd = asciiNameSpanEnd(parser, chunk, i)
+            parser.tagName += chunk.slice(i - 1, openNameEnd)
+            i = openNameEnd
           } else {
             newTag(parser)
             if (c === '>') {
@@ -1574,7 +1606,7 @@
             openTag(parser)
           } else if (c === '/') {
             parser.state = S.OPEN_TAG_SLASH
-          } else if (isMatch(nameStart, c)) {
+          } else if (isNameStart(c)) {
             parser.attribName = c
             parser.attribValue = ''
             parser.state = S.ATTRIB_NAME
@@ -1593,8 +1625,10 @@
             openTag(parser)
           } else if (isWhitespace(c)) {
             parser.state = S.ATTRIB_NAME_SAW_WHITE
-          } else if (isMatch(nameBody, c)) {
-            parser.attribName += c
+          } else if (isNameBody(c)) {
+            var attributeNameEnd = asciiNameSpanEnd(parser, chunk, i)
+            parser.attribName += chunk.slice(i - 1, attributeNameEnd)
+            i = attributeNameEnd
           } else {
             strictFail(parser, 'Invalid attribute name')
           }
@@ -1616,7 +1650,7 @@
             parser.attribName = ''
             if (c === '>') {
               openTag(parser)
-            } else if (isMatch(nameStart, c)) {
+            } else if (isNameStart(c)) {
               parser.attribName = c
               parser.state = S.ATTRIB_NAME
             } else {
@@ -1645,8 +1679,21 @@
           if (c !== parser.q) {
             if (c === '&') {
               parser.state = S.ATTRIB_VALUE_ENTITY_Q
-            } else {
+            } else if (c === '\n') {
               parser.attribValue += c
+            } else {
+              // Ordinary chunks cannot change state or advance the line.
+              // Leave delimiters for the regular character-by-character path.
+              var boundary = parser.q === '"' ? doubleQuotedBoundary : singleQuotedBoundary
+              boundary.lastIndex = i
+              var special = boundary.exec(chunk)
+              var endAt = special ? special.index : chunk.length
+              parser.attribValue += chunk.slice(i - 1, endAt)
+              if (parser.trackPosition) {
+                parser.position += endAt - i
+                parser.column += endAt - i
+              }
+              i = endAt
             }
             continue
           }
@@ -1662,7 +1709,7 @@
             openTag(parser)
           } else if (c === '/') {
             parser.state = S.OPEN_TAG_SLASH
-          } else if (isMatch(nameStart, c)) {
+          } else if (isNameStart(c)) {
             strictFail(parser, 'No whitespace between attributes')
             parser.attribName = c
             parser.attribValue = ''
@@ -1693,7 +1740,7 @@
           if (!parser.tagName) {
             if (isWhitespace(c)) {
               continue
-            } else if (notMatch(nameStart, c)) {
+            } else if (!isNameStart(c)) {
               if (parser.script) {
                 parser.script += '</' + c
                 parser.state = S.SCRIPT
@@ -1705,8 +1752,10 @@
             }
           } else if (c === '>') {
             closeTag(parser)
-          } else if (isMatch(nameBody, c)) {
-            parser.tagName += c
+          } else if (isNameBody(c)) {
+            var closeNameEnd = asciiNameSpanEnd(parser, chunk, i)
+            parser.tagName += chunk.slice(i - 1, closeNameEnd)
+            i = closeNameEnd
           } else if (parser.script) {
             parser.script += '</' + parser.tagName + c
             parser.tagName = ''
@@ -1782,7 +1831,7 @@
               parser.state = returnState
             }
           } else if (
-            isMatch(parser.entity.length ? entityBody : entityStart, c)
+            (parser.entity.length ? entityBody : entityStart).test(c)
           ) {
             parser.entity += c
           } else {

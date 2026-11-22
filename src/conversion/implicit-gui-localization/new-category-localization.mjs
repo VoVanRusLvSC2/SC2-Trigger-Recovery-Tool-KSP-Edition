@@ -1,7 +1,7 @@
 // Late structural passes can add named folders after string serialization.
 // Supply only missing labels of NEW categories from their explicit Identifier;
 // preserve existing category IDs/translations, XML and executable source bytes.
-import { readOwnedGuiLibraries } from './read-owned-gui-libraries-alternate.mjs';
+import { readOnlyOwnedGuiLibraries } from './read-owned-gui-libraries-alternate.mjs';
 import { xmlTree } from '../../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js';
 const identity = (owner, id) => JSON.stringify([owner, id]);
 export function completeNewCategoryLocalization({
@@ -10,8 +10,8 @@ export function completeNewCategoryLocalization({
   existingXml = '',
   libraryId = 'Map',
 }) {
-  const current = readOwnedGuiLibraries(xml, libraryId),
-    old = existingXml.trim() ? readOwnedGuiLibraries(existingXml, libraryId) : new Map();
+  const current = readOnlyOwnedGuiLibraries(xml, libraryId),
+    old = existingXml.trim() ? readOnlyOwnedGuiLibraries(existingXml, libraryId) : new Map();
   const existing = new Set(
     [...old].flatMap(([owner, lib]) =>
       Object.values(lib.elements)

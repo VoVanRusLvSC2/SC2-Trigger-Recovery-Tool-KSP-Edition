@@ -9,12 +9,37 @@ function walk(n, fn) {
     return;
   }
   fn(n);
-  for (const [k, v] of Object.entries(n)) if (k !== 'parent') walk(v, fn);
+  for (const k of Object.keys(n))
+    if (k !== 'parent' && n[k] && typeof n[k] === 'object') walk(n[k], fn);
 }
 
 const unparen = (n) => (n?.kind === K.ParenthesizedExpression ? unparen(n.expression) : n);
 
-function guardedRoot(source, id) {
+// All startup proofs inspect the same source. Literal substring matches
+// and references outside the explicitly allowed nodes still count as escapes.
+function sourceEscapes(source) {
+  let identifiers;
+  const literals = new Set();
+  return (name, allowed) => {
+    if (!identifiers) {
+      identifiers = new Map();
+      walk(source, (node) => {
+        if (node.kind === K.Identifier) {
+          let uses = identifiers.get(node.name);
+          if (!uses) identifiers.set(node.name, (uses = []));
+          uses.push(node);
+        } else if (node.kind === K.StringLiteral && node.value != null) {
+          literals.add(node.value);
+        }
+      });
+    }
+    if (identifiers.get(name)?.some((node) => !allowed.has(node))) return true;
+    for (const literal of literals) if (literal.includes(name)) return true;
+    return false;
+  };
+}
+
+function guardedRoot(source, id, escapes) {
   const name = `lib${id}_InitLib`,
     defs = source.statements.filter(
       (n) => n.kind === K.FunctionDeclaration && n.name.name === name && n.body,
@@ -63,19 +88,12 @@ function guardedRoot(source, id) {
     return;
 
   const allowed = new Set([vars[0].name, flag, set.left]);
-  let escaped = false;
-
-  walk(source, (n) => {
-    if (n.kind === K.Identifier && n.name === flag.name && !allowed.has(n)) escaped = true;
-    if (n.kind === K.StringLiteral && n.value?.includes(flag.name)) escaped = true;
-  });
-
-  if (escaped) return;
+  if (escapes(flag.name, allowed)) return;
 
   return { function: f, flag: flag.name };
 }
 
-function uniqueDirectCaller(source, id) {
+function uniqueDirectCaller(source, id, escapes) {
   const name = `lib${id}_InitLib`,
     allowed = new Set(),
     matches = [];
@@ -97,13 +115,7 @@ function uniqueDirectCaller(source, id) {
     }
   }
 
-  let escaped = false;
-  walk(source, (n) => {
-    if (n.kind === K.Identifier && n.name === name && !allowed.has(n)) escaped = true;
-    if (n.kind === K.StringLiteral && n.value?.includes(name)) escaped = true;
-  });
-
-  if (escaped || matches.length !== 1) return;
+  if (matches.length !== 1 || escapes(name, allowed)) return;
 
   return matches[0];
 }
@@ -112,10 +124,21 @@ export function proveCompletedLibraryReferences(source, startedBefore) {
   const proven = new Map(),
     records = [];
 
+  const escapes = sourceEscapes(source);
+  const guards = new Map(),
+    callers = new Map();
+  const guardFor = (id) => {
+    if (!guards.has(id)) guards.set(id, guardedRoot(source, id, escapes));
+    return guards.get(id);
+  };
+  const callerFor = (id) => {
+    if (!callers.has(id)) callers.set(id, uniqueDirectCaller(source, id, escapes));
+    return callers.get(id);
+  };
   for (const [target, earlier] of startedBefore) {
-    if (!guardedRoot(source, target)) continue;
+    if (!guardFor(target)) continue;
 
-    const targetCall = uniqueDirectCaller(source, target);
+    const targetCall = callerFor(target);
     if (!targetCall) continue;
 
     const statements = targetCall.caller.body.statements,
@@ -123,8 +146,8 @@ export function proveCompletedLibraryReferences(source, startedBefore) {
       safe = [];
 
     for (const id of earlier) {
-      const guard = guardedRoot(source, id),
-        call = uniqueDirectCaller(source, id);
+      const guard = guardFor(id),
+        call = callerFor(id);
 
       if (
         !guard ||

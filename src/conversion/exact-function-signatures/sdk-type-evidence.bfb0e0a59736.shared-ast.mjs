@@ -51,7 +51,7 @@ export function createSdkTypeEvidence(dependencies) {
    * a declared Galaxy type. Only a type whose observations all agree is used — a
    * polymorphic one disagrees with itself and is left to its own handling.
    */
-  function deriveNativeTypeMapping(nativeLibrary, declarations) {
+  function deriveNativeTypeMapping(nativeLibrary, declarations, verifiedDocument) {
     if (!nativeLibrary || !declarations?.length || nativeTypeEvidence.has(nativeLibrary)) return;
     const signatures = new Map();
     // The service prepends declarations synthesized from TriggerData and keeps
@@ -59,11 +59,10 @@ export function createSdkTypeEvidence(dependencies) {
     // authoritative native/header signature wins over the editor-type spelling
     // inferred for the same symbol by modelDeclarations().
     for (const declaration of [...declarations].reverse()) {
-      const parsed = readSdkDeclaration(
-        declaration.text,
-        declaration.fileName ?? 'declarations.galaxy',
-      );
-      for (const statement of [...parsed.statements]) {
+      const parsed =
+        verifiedDocument?.(declaration) ??
+        readSdkDeclaration(declaration.text, declaration.fileName ?? 'declarations.galaxy');
+      for (const statement of parsed.statements) {
         const name = statement?.name?.name;
         if (
           statement?.kind !== 142 /* SyntaxKind.FunctionDeclaration */ ||
@@ -73,7 +72,7 @@ export function createSdkTypeEvidence(dependencies) {
           continue;
         signatures.set(name, {
           result: declaredTypeName(statement.type),
-          parameters: [...(statement.parameters ?? [])].map((parameter) =>
+          parameters: (statement.parameters ?? []).map((parameter) =>
             declaredTypeName(parameter.type),
           ),
         });

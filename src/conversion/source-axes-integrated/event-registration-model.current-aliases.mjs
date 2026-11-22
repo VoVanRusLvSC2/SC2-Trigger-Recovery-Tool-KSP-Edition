@@ -2,6 +2,7 @@ import { immediateCurrentTriggerAlias } from '../exact-function-signatures/immed
 import { SyntaxKind as K } from '../exact-function-signatures/index-alternate-3.js';
 import { declaredCarrier } from '../exact-function-signatures/galaxy-program-context.js';
 import { createGuiCapabilityCatalog } from '../../bindings/gui-capability-catalog.mjs';
+import { attachProgramDocuments } from '../exact-function-signatures/verified-conversion-program.mjs';
 import { resolveBoundStorage } from './bound-storage-path.type-aliases.mjs';
 const un = (node) => {
   while (node?.kind === K.ParenthesizedExpression) node = node.expression;
@@ -12,11 +13,12 @@ const ref = (e) => ({ type: e.type, library: e.library, id: e.id });
 /** Facts and representation are separate. A correctly bound target path does
  * not prove that the stock GUI has an Action for that target. */
 export function createEventRegistrationModel(session) {
-  const program = session.program,
-    catalog = createGuiCapabilityCatalog(session.candidates.libraries);
+  const program = session.program;
+  let catalog;
+  const capabilities = () => (catalog ??= createGuiCapabilityCatalog(session.candidates.libraries));
   // Semantic declarations use private AST copies. Register their exact source
   // identities once, so nominal type queries do not fall back to type names.
-  for (const source of program.documents.values()) program.attachOriginal(source);
+  attachProgramDocuments(program);
   function native(call, ctx) {
     const callee = un(call?.expression);
     if (call?.kind !== K.CallExpression || callee?.kind !== K.Identifier) return;
@@ -37,7 +39,9 @@ export function createEventRegistrationModel(session) {
     return input?.owned === false && input.contentSha256 ? declaration : undefined;
   }
   return Object.freeze({
-    catalog,
+    get catalog() {
+      return capabilities();
+    },
     registration(call, ctx) {
       const declaration = native(call, ctx);
       if (!declaration || declaredCarrier(declaration.parameters[0]?.type) !== 'trigger') return;
@@ -62,11 +66,11 @@ export function createEventRegistrationModel(session) {
             ...(alias ? { aliasProof: alias } : {}),
           }
         : resolveBoundStorage(program, expression);
-      const container = catalog.implicitEventContainer(ctx.nativeLibrary?.id);
-      const supported =
-        !!current &&
-        container.status === 'RESOLVED' &&
-        session.candidates.libraries.get(ctx.nativeLibrary?.id) === ctx.nativeLibrary;
+      const container =
+        current && session.candidates.libraries.get(ctx.nativeLibrary?.id) === ctx.nativeLibrary
+          ? capabilities().implicitEventContainer(ctx.nativeLibrary?.id)
+          : undefined;
+      const supported = container?.status === 'RESOLVED';
       return {
         kind: 'BOUND_EVENT_REGISTRATION',
         event: event.definition,

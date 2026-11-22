@@ -8,6 +8,7 @@ const printer = new Printer(),
 export function indexOriginalFunctionPrototypes(root) {
   const result = new Map(),
     doc = createGalaxyDocument(root);
+  let sourceSha256;
   try {
     for (const node of doc.ast.statements) {
       if (
@@ -25,7 +26,7 @@ export function indexOriginalFunctionPrototypes(root) {
             isReference: !!p.isReference,
           })),
           sourceFile: root.fileName,
-          sourceSha256: sha(root.text),
+          sourceSha256: (sourceSha256 ??= sha(root.text)),
           prototypeSha256: sha(root.text.slice(node.pos, node.end)),
         };
       const rows = result.get(name) ?? [];

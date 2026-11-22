@@ -2,7 +2,7 @@
 
 **A reworked Trigger Revizer implementation, developed together with Vise.**
 
-> **Windows 3.0.2: Installed-SC2 and Standalone installers.** See [Install and run](INSTALL.md), [build instructions](BUILDING.md), [source status](SOURCE_STATUS.md) and [remaining qualification](ROADMAP.md). Node and runtime dependencies are bundled; choose installed game metadata or a public snapshot downloaded by Standalone setup.
+> **Windows 3.1.0: Installed-SC2 and Standalone installers.** See [Install and run](INSTALL.md), [build instructions](BUILDING.md), [source status](SOURCE_STATUS.md) and [remaining qualification](ROADMAP.md). Node and runtime dependencies are bundled; choose installed game metadata or a public snapshot downloaded by Standalone setup.
 
 **Trigger Revizer KSP** is a StarCraft II (SC2) trigger recovery project. It reconstructs editable GUI trigger markup (`Triggers` XML) from Galaxy source such as `MapScript.galaxy`, and completes missing or changed sections of an existing trigger tree.
 
@@ -10,11 +10,18 @@ The conversion core works with SC2 map and mod components (`.SC2Map` and `.SC2Mo
 
 Start with the [converter architecture](ARCHITECTURE.md), [103 recorded strict-pass map records](maps/verified.md) and [222 historical acceptance records](maps/previously-accepted.md). See [integration status](#integration-status) before trying to build this source publication.
 
-## Version 3.0.2
+## Version 3.1.0
+
+Recovery reuses parsed Galaxy and trigger XML across compatible checks, reducing repeated work while preserving strict verification. The GUI offers **INSERT TRIGGERS INTO MAP** for an archive with embedded Triggers and exposes draft output when validation fails.
 
 Both Windows installers, the Start menu shortcut and the browser tab use the original blue Trigger Revize KSP icon.
 
-[Download the Windows installers](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/tag/v3.0.2). Use **Installed-SC2** with the game or **Standalone** without it. Standalone checks the packed GUI with the same strict benchmark and records the public metadata revision. Its results remain in REVIEW pending matching Editor data.
+[Download the Windows installers](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/tag/v3.1.0). Use **Installed-SC2** with the game or **Standalone** without it. Standalone checks the packed GUI with the same strict benchmark and records the public metadata revision. Its results remain in REVIEW pending matching Editor data.
+
+To launch the Windows app, double-click **`Open Recovery.cmd`** in the folder
+where you installed the app or extracted the portable ZIP. It opens the local
+interface in your default browser. If you installed the app, you can also use its
+Start menu shortcut. [Installation and launch details](INSTALL.md)
 
 The Windows installer now includes map/mod generation from the main toolbar,
 compiler-locale selection shared by map and mod recovery, runtime defaults for

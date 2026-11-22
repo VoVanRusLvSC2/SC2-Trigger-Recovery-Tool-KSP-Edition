@@ -64,15 +64,15 @@ export async function createUnverifiedPreviewMap({ row, preview, triggerData, na
         row.mpq,
         [
           'add',
-          building,
-          item.file,
+          path.basename(building),
+          path.relative(preview, item.file),
           '--path',
           item.archivePath.replaceAll('/', '\\'),
           '--overwrite',
           '--game',
           'starcraft2',
         ],
-        { windowsHide: true, maxBuffer: 8 * 1024 ** 2 },
+        { cwd: preview, windowsHide: true, maxBuffer: 8 * 1024 ** 2 },
       );
     const packed = await openMpqReader(await readFile(building), options);
     try {

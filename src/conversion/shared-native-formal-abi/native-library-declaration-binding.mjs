@@ -14,12 +14,11 @@ export function bindNativeLibraryDeclaration(index, query, resolution, nativeLib
   if (!library) return resolution;
   const abi = query.declaration,
     keys = new Set(resolution.candidateKeys);
-  const matches = (index.bySymbol.get(query.name) ?? []).filter((c) => {
+  const compatible = (index.bySymbol.get(query.name) ?? []).flatMap((c) => {
     const d = c.definition,
       flags = d.flags ?? [];
     if (
       !keys.has(c.key) ||
-      c.library !== library ||
       c.origin !== 'emitted' ||
       c.symbol !== query.name ||
       d.name !== query.name ||
@@ -30,37 +29,62 @@ export function bindNativeLibraryDeclaration(index, query, resolution, nativeLib
       !flags.includes('Native') ||
       flags.some((f) => hidden.has(f) || !allowed.has(f))
     )
-      return false;
-    if (flags.includes('Event') && flags.includes('Action')) return false;
+      return [];
+    if (flags.includes('Event') && flags.includes('Action')) return [];
     const role = flags.includes('Event')
       ? 'event'
       : flags.includes('Action') || d.isFuncAction
         ? 'action'
         : 'value';
-    if (query.guiUse && query.guiUse !== role) return false;
     const count = role === 'event' ? 1 : 0;
     if (
       (count && abi.parameters[0] !== 'trigger') ||
       d.parameters.length + count !== abi.parameters.length ||
-      index.carrier(d.returnType, library) !== abi.returnType
+      index.carrier(d.returnType, c.library) !== abi.returnType
     )
-      return false;
-    return d.parameters.every((ref, i) => {
-      const formal = index.formal(ref, library);
+      return [];
+    const exactFormals = d.parameters.every((ref, i) => {
+      const formal = index.formal(ref, c.library);
       if (!formal) return false;
-      const carrier = formalGalaxyCarrier(index, formal, library, d);
+      const carrier = formalGalaxyCarrier(index, formal, c.library, d);
       return !!carrier && carrier === abi.parameters[i + count];
     });
+    return exactFormals ? [{ candidate: c, role }] : [];
   });
-  if (matches.length !== 1) return resolution;
-  const selected = matches[0];
+  const matches = compatible.filter(
+    ({ candidate, role }) =>
+      candidate.library === library && (!query.guiUse || query.guiUse === role),
+  );
+  let selected = matches.length === 1 ? matches[0].candidate : undefined;
+  const stockAction = compatible.some(
+    ({ candidate, role }) => candidate.library === library && role === 'action',
+  );
+  if (
+    !matches.length &&
+    query.guiUse === 'value' &&
+    abi.returnType !== 'void' &&
+    stockAction &&
+    compatible.length === keys.size
+  ) {
+    // A loaded dependency can supply an explicit value descriptor for the
+    // identical native API that the installed catalog exposes as an Action.
+    // All ambiguous candidates must agree with the bound runtime ABI.
+    const valueDescriptions = compatible.filter(
+      ({ candidate, role }) => role === 'value' && candidate.definition.flags.includes('Call'),
+    );
+    if (valueDescriptions.length === 1) selected = valueDescriptions[0].candidate;
+  }
+  if (!selected) return resolution;
   return {
     ...resolution,
     status: 'RESOLVED',
     definition: selected.definition,
     candidateKeys: [selected.key],
     nativeLibraryBinding: {
-      kind: 'DECLARED_NATIVE_API_BOUND_TO_ACTUAL_SDK_NATIVE_LIBRARY',
+      kind:
+        selected.library === library
+          ? 'DECLARED_NATIVE_API_BOUND_TO_ACTUAL_SDK_NATIVE_LIBRARY'
+          : 'DECLARED_NATIVE_API_BOUND_TO_LOADED_VALUE_DESCRIPTION',
       symbol: query.name,
       nativeLibraryId,
       selected: selected.key,

@@ -36,10 +36,9 @@ function orderedCallableDefinitions(library) {
   return result;
 }
 function orderedGlobalVariables(library) {
+  const declarations = globalVariables(library);
   const globals = new Set(
-    globalVariables(library)
-      .filter((variable) => !variable.disabled)
-      .map((variable) => variable.id),
+    declarations.filter((variable) => !variable.disabled).map((variable) => variable.id),
   );
   const result = [];
   const seen = new Set();
@@ -53,7 +52,7 @@ function orderedGlobalVariables(library) {
     else if (element.type === 'Category') for (const child of element.items ?? []) visit(child);
   };
   for (const item of library.items) visit(item);
-  for (const variable of globalVariables(library)) visit(variable);
+  for (const variable of declarations) visit(variable);
   return result;
 }
 const galaxySemanticKeys = [
@@ -76,7 +75,7 @@ const galaxySemanticKeys = [
   'size',
 ];
 function galaxyVariableUses(node, prefix) {
-  const uses = new Map();
+  const uses = new Set();
   const visit = (value) => {
     if (!value || typeof value !== 'object') return;
     if (Array.isArray(value)) {
@@ -88,15 +87,18 @@ function galaxyVariableUses(node, prefix) {
       typeof value.name === 'string' &&
       value.name.startsWith(prefix)
     ) {
-      uses.set(value.name, (uses.get(value.name) ?? 0) + 1);
+      uses.add(value.name);
     }
-    for (const key of galaxySemanticKeys) visit(value[key]);
+    for (const key of galaxySemanticKeys) {
+      const child = value[key];
+      if (child && typeof child === 'object') visit(child);
+    }
   };
   visit(node);
   return uses;
 }
 function triggerVariableUses(library, definition, globals) {
-  const uses = new Map();
+  const uses = new Set();
   const active = new Set();
   const visit = (value, property, expanded = false) => {
     if (!value || typeof value !== 'object') return;
@@ -107,7 +109,7 @@ function triggerVariableUses(library, definition, globals) {
     if (typeof value.type === 'string' && typeof value.id === 'string') {
       if ((value.library ?? library.id) !== library.id) return;
       if (value.type === 'Variable') {
-        if (globals.has(value.id)) uses.set(value.id, (uses.get(value.id) ?? 0) + 1);
+        if (globals.has(value.id)) uses.add(value.id);
         return;
       }
       // Declaration/type links describe the call signature, not runtime use.
@@ -135,7 +137,7 @@ function triggerVariableUses(library, definition, globals) {
         }
       }
     }
-    for (const [key, child] of Object.entries(value)) {
+    for (const key of Object.keys(value)) {
       if (
         key === 'id' ||
         key === 'type' ||
@@ -145,7 +147,8 @@ function triggerVariableUses(library, definition, globals) {
         key === 'flags'
       )
         continue;
-      visit(child, key);
+      const child = value[key];
+      if (child && typeof child === 'object') visit(child, key);
     }
   };
   visit(definition.actions ?? []);
@@ -181,13 +184,16 @@ export function matchDependencyFunctionDeclarations(sources, libraries) {
     const definitions = orderedCallableDefinitions(library);
     if (!definitions.length) continue;
     const prefix = `${libraryPrefix(library.id)}gf_`;
-    const candidates = sources.flatMap((source) => {
-      if (source.parseDiagnostics?.length) return [];
-      const declarations = [...source.statements].filter(
-        (statement) =>
-          statement.kind === SyntaxKind.FunctionDeclaration &&
-          statement.name?.name?.startsWith(prefix),
+    const declarationsBySource = sources
+      .filter((source) => !source.parseDiagnostics?.length)
+      .map((source) =>
+        source.statements.filter(
+          (statement) =>
+            statement.kind === SyntaxKind.FunctionDeclaration &&
+            statement.name?.name?.startsWith(prefix),
+        ),
       );
+    const candidates = declarationsBySource.flatMap((declarations) => {
       if (declarations.length !== definitions.length) return [];
       let anchors = 0;
       for (let position = 0; position < definitions.length; position++) {
@@ -223,13 +229,7 @@ export function matchDependencyFunctionDeclarations(sources, libraries) {
     // of an older TriggerLib. Match an unnamed interval only when exact named
     // anchors bound it and every declaration in that whole interval has the
     // expected arity. This is local sequence evidence, not a name guess.
-    for (const source of sources) {
-      if (source.parseDiagnostics?.length) continue;
-      const declarations = [...source.statements].filter(
-        (statement) =>
-          statement.kind === SyntaxKind.FunctionDeclaration &&
-          statement.name?.name?.startsWith(prefix),
-      );
+    for (const declarations of declarationsBySource) {
       if (!declarations.length) continue;
       const declarationPositions = new Map();
       declarations.forEach((declaration, index) => {
@@ -285,6 +285,7 @@ export function matchDependencyFunctionDeclarations(sources, libraries) {
 export function matchDependencyVariableDeclarations(sources, libraries) {
   const result = new Map();
   const conflicts = new Set();
+  let sourceFunctions;
   const offer = (name, variable) => {
     // A declared XML name/Identifier is authoritative. Fingerprint and local-
     // sequence recovery exist only for stripped, unnamed dependency elements;
@@ -306,13 +307,16 @@ export function matchDependencyVariableDeclarations(sources, libraries) {
     const variables = orderedGlobalVariables(library);
     if (!variables.length) continue;
     const prefix = `${libraryPrefix(library.id)}gv_`;
-    const candidates = sources.flatMap((source) => {
-      if (source.parseDiagnostics?.length) return [];
-      const declarations = [...source.statements].filter(
-        (statement) =>
-          statement.kind === SyntaxKind.VariableDeclaration &&
-          statement.name?.name?.startsWith(prefix),
+    const declarationsBySource = sources
+      .filter((source) => !source.parseDiagnostics?.length)
+      .map((source) =>
+        source.statements.filter(
+          (statement) =>
+            statement.kind === SyntaxKind.VariableDeclaration &&
+            statement.name?.name?.startsWith(prefix),
+        ),
       );
+    const candidates = declarationsBySource.flatMap((declarations) => {
       if (declarations.length !== variables.length) return [];
       let anchors = 0;
       for (let position = 0; position < variables.length; position++) {
@@ -343,17 +347,19 @@ export function matchDependencyVariableDeclarations(sources, libraries) {
     const globals = new Set(variables.map((variable) => variable.id));
     const xmlUses = new Map();
     const galaxyUses = new Map();
-    const sourceFunctions = new Map();
-    for (const source of sources)
-      for (const statement of source.statements) {
-        if (
-          statement.kind === SyntaxKind.FunctionDeclaration &&
-          statement.body &&
-          typeof statement.name?.name === 'string'
-        ) {
-          sourceFunctions.set(statement.name.name, statement);
+    if (!sourceFunctions) {
+      sourceFunctions = new Map();
+      for (const source of sources)
+        for (const statement of source.statements) {
+          if (
+            statement.kind === SyntaxKind.FunctionDeclaration &&
+            statement.body &&
+            typeof statement.name?.name === 'string'
+          ) {
+            sourceFunctions.set(statement.name.name, statement);
+          }
         }
-      }
+    }
     const functions = matchDependencyFunctionDeclarations(sources, [library]);
     // A newer generated header can contain additional declarations, making a
     // complete positional match impossible. Named XML definitions remain safe
@@ -366,17 +372,17 @@ export function matchDependencyVariableDeclarations(sources, libraries) {
     for (const [functionName, definition] of functions) {
       const sourceFunction = sourceFunctions.get(functionName);
       if (!sourceFunction) continue;
-      for (const [id, count] of triggerVariableUses(library, definition, globals)) {
+      for (const id of triggerVariableUses(library, definition, globals)) {
         let uses = xmlUses.get(id);
         if (!uses) xmlUses.set(id, (uses = new Map()));
         // ScriptCode templates may repeat one XML operand, so occurrence
         // counts are not invariant. Function membership is.
-        if (count > 0) uses.set(functionName, 1);
+        uses.set(functionName, 1);
       }
-      for (const [name, count] of galaxyVariableUses(sourceFunction.body, prefix)) {
+      for (const name of galaxyVariableUses(sourceFunction.body, prefix)) {
         let uses = galaxyUses.get(name);
         if (!uses) galaxyUses.set(name, (uses = new Map()));
-        if (count > 0) uses.set(functionName, 1);
+        uses.set(functionName, 1);
       }
     }
     const xmlByFingerprint = new Map();
@@ -406,20 +412,39 @@ export function matchDependencyVariableDeclarations(sources, libraries) {
     // every directly matched XML use must be present, and the XML variable
     // must have exactly one possible ABI partner. `offer` rejects the name if
     // another equally unique XML variable later claims that same partner.
-    const subsetCandidates = new Map();
+    const galaxyVariablesByFunction = new Map();
+    for (const [name, uses] of galaxyUses) {
+      for (const functionName of uses.keys()) {
+        let names = galaxyVariablesByFunction.get(functionName);
+        if (!names) galaxyVariablesByFunction.set(functionName, (names = []));
+        names.push(name);
+      }
+    }
     for (const variable of variables) {
       const uses = xmlUses.get(variable.id);
       if (!uses?.size) continue;
-      const candidates = [...galaxyUses]
-        .filter(([, generatedUses]) =>
-          [...uses.keys()].every((functionName) => generatedUses.has(functionName)),
-        )
-        .map(([name]) => name);
-      subsetCandidates.set(variable, candidates);
-    }
-    for (const [variable, candidates] of subsetCandidates) {
-      if (candidates.length !== 1) continue;
-      offer(candidates[0], variable);
+      const functions = [...uses.keys()];
+      let shortest;
+      for (const functionName of functions) {
+        const names = galaxyVariablesByFunction.get(functionName);
+        if (!names) {
+          shortest = undefined;
+          break;
+        }
+        if (!shortest || names.length < shortest.length) shortest = names;
+      }
+      if (!shortest) continue;
+      let match;
+      for (const name of shortest) {
+        const generatedUses = galaxyUses.get(name);
+        if (!functions.every((functionName) => generatedUses.has(functionName))) continue;
+        if (match !== undefined) {
+          match = undefined;
+          break;
+        }
+        match = name;
+      }
+      if (match !== undefined) offer(match, variable);
     }
     // Older XML and newer headers may differ globally while preserving a
     // local variable sequence. For an unnamed variable, accept that position
@@ -442,13 +467,7 @@ export function matchDependencyVariableDeclarations(sources, libraries) {
           actual[index] === Number(size.value) + 1,
       );
     };
-    for (const source of sources) {
-      if (source.parseDiagnostics?.length) continue;
-      const declarations = [...source.statements].filter(
-        (statement) =>
-          statement.kind === SyntaxKind.VariableDeclaration &&
-          statement.name?.name?.startsWith(prefix),
-      );
+    for (const declarations of declarationsBySource) {
       if (!declarations.length) continue;
       const declarationPositions = new Map();
       declarations.forEach((declaration, index) => {

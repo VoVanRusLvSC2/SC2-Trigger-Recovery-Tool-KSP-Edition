@@ -14,7 +14,7 @@ import {
 import { withSourceCustomAiProfiles } from '../../libraries/gui/source-custom-ai-profile.mjs';
 import { withVerifiedGetterScope } from '../runtime-event-public-alias/verified-forward-getter.mjs';
 
-import { createHash } from 'node:crypto';
+import { recoveryTextSha256 as sha } from '../../utilities/recovery-parse-scope.mjs';
 
 import {
   convertGalaxyToTriggers as convertReverseService,
@@ -23,9 +23,10 @@ import {
   triggerConversionBounds,
 } from '../runtime-event-public-alias/service.standard-getter.mjs';
 
-import { parseTriggerXmlSync } from '../implicit-gui-localization/sax-reader.mjs';
-
-const sha = (text) => createHash('sha256').update(text).digest('hex');
+import {
+  createDependencyXmlHandoff,
+  preparedDependencyXml,
+} from '../implicit-gui-localization/sax-reader.mjs';
 
 export { createTriggerConversionContext, triggerConversionBounds };
 
@@ -184,15 +185,19 @@ function sourceInputSnapshot(input) {
     })),
   ];
 
-  const dependencies = [];
-
-  for (const document of input.dependencyLibraries ?? [])
-    for (const [libraryId] of parseTriggerXmlSync(document.triggerData))
+  const dependencies = [],
+    handoff = createDependencyXmlHandoff();
+  for (const document of input.dependencyLibraries ?? []) {
+    const xml = document.triggerData;
+    const libraryIds = handoff.libraryIds(xml);
+    const contentSha256 = sha(xml);
+    for (const libraryId of libraryIds)
       dependencies.push({
         libraryId,
         locator: document.sourcePath ?? 'explicit-verified-worker-input',
-        contentSha256: sha(document.triggerData),
+        contentSha256,
       });
+  }
 
   const semanticMaterials = [];
 
@@ -228,7 +233,12 @@ function sourceInputSnapshot(input) {
       contentSha256: sha(text),
     });
 
-  return { ...input, inputSnapshot: { files, dependencies, semanticMaterials }, hashText: sha };
+  return {
+    ...input,
+    inputSnapshot: { files, dependencies, semanticMaterials },
+    hashText: sha,
+    [preparedDependencyXml]: handoff.token,
+  };
 }
 
 function convertProposed(input, signal) {

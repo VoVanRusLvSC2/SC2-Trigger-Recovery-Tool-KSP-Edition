@@ -1,7 +1,8 @@
+import { indexGuiXmlElements } from '../../utilities/index-gui-xml-elements.mjs';
+import { recoveryTextSha256 as sha } from '../../utilities/recovery-parse-scope.mjs';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { xmlTree } from '../../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js';
-const sha = (text) => createHash('sha256').update(text).digest('hex');
 const child = (n, t) => n?.children.find((c) => c.tag === t);
 const body = (xml, n) => n && xml.slice(n.openEnd, n.closeStart);
 const groups = (root) => [root, ...root.children.filter((n) => n.tag === 'Library')];
@@ -18,7 +19,7 @@ export function preserveGeneratedFixedLiterals({
   existingXml = '',
   implicitLibraryId = 'Map',
 }) {
-  const root = xmlTree(xml),
+  const xmlGroups = groups(xmlTree(xml)),
     prior = new Map(),
     used = new Set(),
     edits = [],
@@ -26,21 +27,19 @@ export function preserveGeneratedFixedLiterals({
     presets = [];
   if (existingXml)
     for (const g of groups(xmlTree(existingXml)))
-      for (const e of g.children.filter((n) => n.tag === 'Element'))
+      for (const e of indexGuiXmlElements(g).entries)
         prior.set(
           JSON.stringify([owner(g, implicitLibraryId), e.attributes.Type, e.attributes.Id]),
           e,
         );
-  for (const g of groups(root)) {
-    const keys = new Set();
-    for (const e of g.children.filter((n) => n.tag === 'Element')) {
-      const key = JSON.stringify([e.attributes.Type, e.attributes.Id]);
-      assert(!keys.has(key), 'EXACT_FIXED_DUPLICATE_TYPED_ID');
-      keys.add(key);
-      used.add(e.attributes.Id);
+  for (const g of xmlGroups) {
+    const index = indexGuiXmlElements(g);
+    assert(!index.duplicate, 'EXACT_FIXED_DUPLICATE_TYPED_ID');
+    for (const entriesById of index.byType.values()) {
+      for (const id of entriesById.keys()) used.add(id);
     }
   }
-  for (const g of groups(root)) {
+  for (const g of xmlGroups) {
     const library = owner(g, implicitLibraryId),
       eligible = [],
       values = new Map();
@@ -50,9 +49,7 @@ export function preserveGeneratedFixedLiterals({
     );
     const libraryScoped = g.tag === 'Library' || child(g, 'Standard') !== undefined;
     const namespace = libraryScoped ? ' Library="' + library + '"' : '';
-    for (const e of g.children.filter(
-      (n) => n.tag === 'Element' && n.attributes.Type === 'Param',
-    )) {
+    for (const e of indexGuiXmlElements(g).byType.get('Param')?.values() ?? []) {
       const token = literal(xml, e);
       if (typeof token !== 'string' || !token.includes('.') || token.split('.')[1].length <= 4)
         continue;
@@ -69,9 +66,15 @@ export function preserveGeneratedFixedLiterals({
       eligible.push({ element: e, token });
     }
     if (!eligible.length) continue;
+    const identity = createHash('sha256')
+      .update(xml)
+      .update('\0' + library + '\0');
     const allocate = (role) => {
       for (let salt = 0; ; salt++) {
-        const id = sha(xml + '\0' + library + '\0' + role + '\0' + salt)
+        const id = identity
+          .copy()
+          .update(role + '\0' + salt)
+          .digest('hex')
           .slice(0, 8)
           .toUpperCase();
         if (!used.has(id)) {

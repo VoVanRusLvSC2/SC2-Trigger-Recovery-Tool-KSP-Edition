@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { readAuthoredTriggerDocument } from '../../utilities/read-authored-trigger-document.mjs';
+import { readAuthoredNativeCatalog } from '../../utilities/read-authored-trigger-document.mjs';
 import { deriveNativeLoopTemplatePreserver } from '../exact-function-signatures/native-loop-template-shapes.mjs';
 import { templateMacros } from './balanced-script-template-alternate.mjs';
 export async function readNativeTemplateLoopPreserver(prepared, sdk) {
@@ -11,7 +11,7 @@ export async function readNativeTemplateLoopPreserver(prepared, sdk) {
     b = await readFile(input.path),
     sha256 = createHash('sha256').update(b).digest('hex');
   assert.equal(sha256, input.sha256, 'NATIVE_TEMPLATE_INPUT_CHANGED');
-  const { document } = await readAuthoredTriggerDocument(b.toString('utf8'), sdk);
+  const { document } = await readAuthoredNativeCatalog(b.toString('utf8'), sdk);
   assert.equal(document.libraries.size, 1);
   const library = document.libraries.get('Ntve');
   assert(library);

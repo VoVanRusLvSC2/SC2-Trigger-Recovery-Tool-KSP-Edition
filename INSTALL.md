@@ -2,7 +2,7 @@
 
 ## Windows x64 application
 
-Choose one Windows x64 installer from the [3.0.2 release](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/tag/v3.0.2).
+Choose one Windows x64 installer from the [3.1.0 release](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/tag/v3.1.0).
 
 | Installer | Metadata used for recovery |
 | --- | --- |
@@ -19,11 +19,15 @@ and binary fingerprint are included in the repository.
 
 Standalone obtains its metadata directly from SC2Mapster/SC2GameData and verifies the downloaded files against the pinned Git tree. It preserves existing attributes. Missing attribute reconstruction and verification against installed game metadata require Installed-SC2.
 
-Open **SC2 Trigger Recovery KSP** from the Start menu, choose a `.SC2Map` or `.SC2Mod` archive or component folder,
-then select **GENERATE TRIGGERS**. The game installation and strict benchmark are
-detected automatically; a new output folder is suggested beside the map.
-The portable edition opens the same local TypeScript interface with `Open Recovery.cmd`.
-It runs in your browser on a loopback address; Java is not required. Use the **X** button to stop the local server. See the [GUI guide](gui/README.md).
+Double-click **`Open Recovery.cmd`** in the folder where you installed the app or
+extracted the portable ZIP. The installers also provide a Start menu shortcut.
+If you have multiple copies, run the CMD file from the folder for the version
+you want to open. The local interface opens in your default browser. Use the
+**X** button in the interface to stop the local server. [GUI guide](gui/README.md)
+
+Choose a `.SC2Map` or `.SC2Mod` archive or component folder, then select
+**GENERATE TRIGGERS**. The app detects the game installation and strict benchmark
+automatically and suggests a new output folder beside the map.
 Original maps are read-only. Recovery runs once in the background and writes
 progress, a candidate map and evidence under the chosen output directory.
 
@@ -58,14 +62,16 @@ Progress percentages are estimates by processing stage, not elapsed-time predict
 A failed job retains the last reached percentage and shows its reason in the footer
 and GEN INFO. Invalid input Galaxy produces `SOURCE_DIAGNOSTICS.json` with source
 locations; recovery does not silently rewrite invalid code or call it a PASS.
+Use **DOWNLOAD DRAFT** for a packed archive whose validation did not finish, or
+**DOWNLOAD TRIGGERS XML** when the job recovered markup before packing failed.
 
 ## Strict benchmark and attributes
 
 The Windows application includes the original hash-verified strict benchmark and
 enables it by default. It detects StarCraft II automatically; normally you only
-select a map, choose **GENERATE TRIGGERS**, then **SAVE TRIGGERS** to download the
-recovered map. **EXPORT FILE** saves standalone Triggers XML. Settings provides
-manual overrides under **Advanced settings**. The in-app chooser selects one
+select a map, choose **GENERATE TRIGGERS**, then **INSERT TRIGGERS INTO MAP** to
+download a copy with Triggers embedded. **EXPORT FILE** saves standalone Triggers
+XML. Settings provides manual overrides under **Advanced settings**. The in-app chooser selects one
 `.SC2Map` or `.SC2Mod` package, never a game folder, and supports Cancel and Escape. Generation is
 available after a map or mod opens successfully. Settings contains no generation action.
 **Recover attributes when available** defaults on; disabling it preserves existing

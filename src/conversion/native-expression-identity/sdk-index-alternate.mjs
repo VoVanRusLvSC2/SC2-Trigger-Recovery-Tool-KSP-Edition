@@ -55,16 +55,17 @@ export function indexDeclaredGalaxySymbols(declarations, libraryInput = []) {
   target.clear();
   indexes.presetValueNames.clear();
   indexes.unitFilterFlags.clear();
-  const statements = [];
+  const initialized = [];
   const structureSources = [];
   for (const file of declarations ?? []) {
     const source = readSdkDeclaration(file.text, file.fileName ?? 'declarations.galaxy');
     structureSources.push(source);
     if (source.parseDiagnostics.length) continue;
     for (const declaration of source.statements) {
-      statements.push(declaration);
       const name = declaration.name?.name;
-      if (typeof name === 'string' && name) target.add(name);
+      if (typeof name !== 'string' || !name) continue;
+      target.add(name);
+      if (declaration.initializer) initialized.push(declaration);
     }
   }
   indexes.dependencyStructures = buildDependencyStructureBindings(
@@ -78,17 +79,16 @@ export function indexDeclaredGalaxySymbols(declarations, libraryInput = []) {
   // the constant and its position. The position comes from the loaded headers,
   // never from a table of our own.
   const constantValues = new Map();
-  for (const declaration of statements) {
-    const node = declaration;
+  for (const node of initialized) {
     const name = node.name?.name;
+    if (!name.startsWith('c_targetFilter')) continue;
     const text = String(node.initializer?.text ?? node.initializer?.value ?? '');
-    if (typeof name === 'string' && /^c_targetFilter/u.test(name) && /^\d+$/u.test(text))
-      constantValues.set(name, Number(text));
+    if (/^\d+$/u.test(text)) constantValues.set(name, Number(text));
   }
   // Both current canonical engine names and legacy preset display aliases
   // resolve to the same proven constant/bit; no guessed numerical table.
   const engineNames = new Map();
-  for (const node of statements) {
+  for (const node of initialized) {
     const name = node.name?.name;
     const value = node.initializer?.kind === 3 ? node.initializer.value : undefined;
     if (
@@ -141,19 +141,15 @@ export function indexDeclaredGalaxySymbols(declarations, libraryInput = []) {
   // Align those complete groups only when the ordered match is unambiguous.
   for (const library of libraries) {
     const prefix = `${libraryPrefix(library.id)}ge_`;
-    const constants = statements.flatMap((statement) => {
-      const node = statement;
+    const constants = [];
+    for (const node of initialized) {
       const name = node.name?.name;
+      if (!name.startsWith(prefix)) continue;
       const raw = node.initializer?.text ?? node.initializer?.value;
       const text = String(raw ?? '');
-      if (
-        typeof name !== 'string' ||
-        !name.startsWith(prefix) ||
-        !/^(?:\d+|0x[\da-f]+)$/iu.test(text)
-      )
-        return [];
-      return [{ name, value: Number(text), hex: /^0x/iu.test(text) }];
-    });
+      if (/^(?:\d+|0x[\da-f]+)$/iu.test(text))
+        constants.push({ name, value: Number(text), hex: /^0x/iu.test(text) });
+    }
     const sequentialGroups = (hex, first, next) => {
       const groups = [];
       let current;
@@ -170,53 +166,49 @@ export function indexDeclaredGalaxySymbols(declarations, libraryInput = []) {
       return groups;
     };
     const matchGroups = (presets, completeGroups) => {
-      // Order-preserving maximum matching by group length. A value is indexed
-      // only if its preset/group pair can occur in exactly one optimal alignment.
+      // Match equal lengths in order. Index a pair only when every optimal
+      // alignment uses that same preset and group together.
       const n = presets.length,
         m = completeGroups.length;
-      const forward = Array.from({ length: n + 1 }, () => Array(m + 1).fill(0));
+      if (!n || !m) return;
+      const presetLengths = presets.map(({ values }) => values.length);
+      const groupLengths = completeGroups.map(({ length }) => length);
+      const forward = Array.from({ length: n + 1 }, () => new Uint32Array(m + 1));
       for (let i = 0; i < n; i++)
         for (let j = 0; j < m; j++) {
           forward[i + 1][j + 1] = Math.max(
             forward[i][j + 1],
             forward[i + 1][j],
-            forward[i][j] + (presets[i].values.length === completeGroups[j].length ? 1 : -n - m),
+            presetLengths[i] === groupLengths[j] ? forward[i][j] + 1 : 0,
           );
         }
-      const backward = Array.from({ length: n + 1 }, () => Array(m + 1).fill(0));
+      const backward = Array.from({ length: n + 1 }, () => new Uint32Array(m + 1));
       for (let i = n - 1; i >= 0; i--)
         for (let j = m - 1; j >= 0; j--) {
           backward[i][j] = Math.max(
             backward[i + 1][j],
             backward[i][j + 1],
-            backward[i + 1][j + 1] +
-              (presets[i].values.length === completeGroups[j].length ? 1 : -n - m),
+            presetLengths[i] === groupLengths[j] ? backward[i + 1][j + 1] + 1 : 0,
           );
         }
       const optimum = forward[n][m];
-      const optimumWithoutPreset = (excluded) => {
-        const score = Array.from({ length: n + 1 }, () => Array(m + 1).fill(0));
-        for (let pi = 0; pi < n; pi++)
-          for (let gj = 0; gj < m; gj++) {
-            const matched =
-              pi === excluded || presets[pi].values.length !== completeGroups[gj].length
-                ? -n - m
-                : score[pi][gj] + 1;
-            score[pi + 1][gj + 1] = Math.max(score[pi][gj + 1], score[pi + 1][gj], matched);
-          }
-        return score[n][m];
-      };
-      for (let i = 0; i < n; i++) {
-        const candidates = [];
+      if (!optimum) return;
+      presets: for (let i = 0; i < n; i++) {
+        let candidate = -1;
         for (let j = 0; j < m; j++) {
+          // An alignment that skips this preset splits the groups at some j.
+          // The best scores on either side are already in the two tables.
+          if (forward[i][j] + backward[i + 1][j] === optimum) continue presets;
           if (
-            presets[i].values.length === completeGroups[j].length &&
+            presetLengths[i] === groupLengths[j] &&
             forward[i][j] + 1 + backward[i + 1][j + 1] === optimum
-          )
-            candidates.push(j);
+          ) {
+            if (candidate !== -1) continue presets;
+            candidate = j;
+          }
         }
-        if (candidates.length !== 1 || optimumWithoutPreset(i) === optimum) continue;
-        const group = completeGroups[candidates[0]];
+        if (candidate === -1 || forward[i][m] === optimum) continue;
+        const group = completeGroups[candidate];
         for (let valueIndex = 0; valueIndex < presets[i].values.length; valueIndex++) {
           const value = lookupElementIn(library, presets[i].values[valueIndex]);
           if (value)

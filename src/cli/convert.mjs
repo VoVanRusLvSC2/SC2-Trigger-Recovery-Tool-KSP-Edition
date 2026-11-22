@@ -40,6 +40,7 @@ import { prepareDocumentAttributes } from '../conversion/document-attribute-prep
 import { authoredGuiInventory } from '../incremental/authored-gui-inventory.mjs';
 import { openPinnedUserOracle } from '../verification/pinned-user-oracle.mjs';
 import { createUnverifiedPreviewMap } from './unverified-preview-map.mjs';
+import { addVerifiedMapComponents } from './package-candidate.mjs';
 import {
   normalizeTriggerLibrary,
   serializeTriggerLibrary,
@@ -156,10 +157,6 @@ import path from 'node:path';
 
 import { createHash } from 'node:crypto';
 
-import { execFile } from 'node:child_process';
-
-import { promisify } from 'node:util';
-
 import assert from 'node:assert/strict';
 
 import {
@@ -198,9 +195,9 @@ import { expandLocalScripts } from '../libraries/common/shard1/local-scripts.mjs
 import { arrayValuesSdkRoot } from '../sdk/runtime.mjs';
 import { conversionUsage, readConversionJob } from './job-input.mjs';
 import { componentVersionForBuild } from './build-version.mjs';
+import { beginRecoveryParseScope } from '../utilities/recovery-parse-scope.mjs';
 
-const execute = promisify(execFile),
-  sha = (b) => createHash('sha256').update(b).digest('hex');
+const sha = (b) => createHash('sha256').update(b).digest('hex');
 
 const read = (p) => readFile(p, 'utf8').then(JSON.parse),
   hash = async (p) => sha(await readFile(p));
@@ -252,8 +249,10 @@ const galaxyProgram = createGalaxyProgram();
 let session,
   conversionContext,
   sourceSyntax,
+  recoveredMarkup,
   stage = 'VERIFY_INPUTS';
 const syntaxProgramProofs = [];
+const endParseScope = beginRecoveryParseScope();
 
 const enter = (s) => {
   stage = s;
@@ -340,13 +339,11 @@ try {
     installation: cfg.installation,
     ...(sources ? { sources } : {}),
     parser: parseGalaxySource,
-    maxAstBytes: 0,
-    maxAstEntries: 0,
   });
 
   conversionContext = createTriggerConversionContext({
-    maxDependencyCacheEntries: 0,
-    maxDependencyCacheSourceBytes: 0,
+    maxDependencyCacheEntries: 12,
+    maxDependencyCacheSourceBytes: 24 * 1024 ** 2,
   });
 
   const declarations = [];
@@ -376,14 +373,22 @@ try {
     sourcePath,
     triggerData,
   }));
-  const abi = await bindLocalizedDependencyAbi(prepared, libraries, declarations);
+  // The catalog mount and the localized ABI check do not depend on one another.
+  // Drain both before cleanup, including when either fails.
+  const [mounted, bound] = await Promise.allSettled([
+    session.open({ schemaVersion: 1, target: row.archive }),
+    bindLocalizedDependencyAbi(prepared, libraries, declarations),
+  ]);
+  if (bound.status === 'rejected') throw bound.reason;
+  const abi = bound.value;
 
   libraries.splice(0, libraries.length, ...abi.documents);
 
   await save(path.join(job, 'DEPENDENCY_ABI_LOCALE_PROOF.json'), abi.proof);
   await save(path.join(job, 'DEPENDENCY_ABI_WORK_METRICS.json'), abi.work);
 
-  const context = await session.open({ schemaVersion: 1, target: row.archive });
+  if (mounted.status === 'rejected') throw mounted.reason;
+  const context = mounted.value;
 
   assert(
     context.layers.every((l) => l.sourceId === 'host' || l.sourceId.startsWith('local:')),
@@ -751,6 +756,7 @@ try {
         }
       : undefined;
   const common = {
+    includeProgressElementCount: false,
     onEmbeddedPartitionResult: async (proof) => {
       assert(/^[A-Za-z0-9_]+$/u.test(proof.libraryId), 'EMBEDDED_DIAGNOSTIC_LIBRARY_ID');
       await save(
@@ -1277,6 +1283,7 @@ try {
       });
     }
   }
+  recoveredMarkup = forward.output?.triggerData;
   await writeLosslessJsonEvidence(path.join(job, 'GUI_RECOVERY_POLICY_PROOF.json'), {
     guiRecovery: forward.guiRecovery,
     incremental: forward.incremental,
@@ -1371,7 +1378,7 @@ try {
     (!!forward.output.customAi &&
       originalCustomAi.trim() === forward.output.customAi.document.trim());
 
-  const baseline = await convertTriggersToGalaxy(forward.output.triggerData, {
+  const baseline = await convertTriggersToGalaxy(recoveredMarkup, {
     ...common,
     ...forward.output.generationOptions,
     triggerStrings: forward.output.triggerStrings,
@@ -1426,6 +1433,7 @@ try {
   result.usesAttributes = usesAttributes;
   result.originalAttributeDefinitions = attributeModel?.attributes.length ?? 0;
 
+  const packedCandidates = new Map();
   const variantRecords = await runVariantBatch(
     variants,
     async (mode) => {
@@ -1714,26 +1722,7 @@ try {
       let candidate = path.join(directory, 'candidate.SC2Map');
       await copyFile(row.archive, candidate);
 
-      for (const c of manifest.components) {
-        const p = path.resolve(directory, 'components', c.path);
-        assert(p.startsWith(path.resolve(directory, 'components') + path.sep));
-        assert.equal(await hash(p), c.sha256);
-
-        await execute(
-          row.mpq,
-          [
-            'add',
-            candidate,
-            p,
-            '--path',
-            c.path.replaceAll('/', '\\'),
-            '--overwrite',
-            '--game',
-            'starcraft2',
-          ],
-          { windowsHide: true, timeout: 180000, maxBuffer: 8 * 1024 ** 2 },
-        );
-      }
+      await addVerifiedMapComponents(row.mpq, candidate, directory, manifest.components);
 
       await components('verify', candidate, directory, session, storageSourceCapability);
 
@@ -1750,6 +1739,7 @@ try {
 
       try {
         packedXml = Buffer.from(await reader.read(reader.find('Triggers').id)).toString('utf8');
+        packedCandidates.set(mode, candidate);
         const packedAttributeEntry = reader.find('Attributes');
         if (packedAttributeEntry)
           packedAttributes = Buffer.from(await reader.read(packedAttributeEntry.id)).toString(
@@ -2054,6 +2044,7 @@ try {
       const publicCandidate = path.join(directory, row.name);
       await rename(candidate, publicCandidate);
       candidate = publicCandidate;
+      packedCandidates.set(mode, candidate);
 
       const record = {
         mode,
@@ -2135,6 +2126,7 @@ try {
       const failed = {
         mode,
         status: 'VARIANT_FAILED',
+        packedCandidate: packedCandidates.get(mode),
         error: String(error.stack ?? error),
         failedStage: stage,
         editorVerified: false,
@@ -2186,7 +2178,8 @@ try {
   if (result.status === 'FAILED') process.exitCode = 1;
   await verifyComponentSource(prepared.sourcePackage);
   result.originalUnchanged = true;
-  console.log(JSON.stringify({ type: 'progress', stage: 'Finalizing evidence', percent: 98 }));
+  if (result.status === 'GENERATED')
+    console.log(JSON.stringify({ type: 'progress', stage: 'Finalizing evidence', percent: 98 }));
 } catch (e) {
   process.exitCode = 1;
   result.status = 'FAILED';
@@ -2277,14 +2270,29 @@ try {
   }
   console.error(result.error);
 } finally {
+  endParseScope();
   // Release job-owned syntax, contexts and mounted archive handles on every exit.
   discardGalaxySyntax(sourceSyntax);
   galaxyProgram.dispose();
   variantAnalysisCache.clear();
   conversionContext?.clear();
   if (session) {
-    await session.dispose();
-    result.sessionDisposed = true;
+    try {
+      await session.dispose();
+      result.sessionDisposed = true;
+    } catch (error) {
+      result.cleanupError = String(error.stack ?? error);
+      result.error ??= result.cleanupError;
+      result.status = 'FAILED';
+      process.exitCode = 1;
+    }
+  }
+  if (result.status === 'FAILED' && recoveredMarkup) {
+    try {
+      await writeFile(path.join(job, 'Triggers'), recoveredMarkup, { flag: 'wx' });
+    } catch (error) {
+      console.error('Could not save recovered Triggers XML: ' + error.message);
+    }
   }
 
   result.finished = new Date().toISOString();

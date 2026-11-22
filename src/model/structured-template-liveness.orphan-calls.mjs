@@ -42,42 +42,71 @@ export function pruneUnusedGeneratedStructuredTemplates(elements, library, rootR
       notApplied: 'NO_ACTIVE_GENERATION_SCOPE',
     };
   const generated = frame.generated;
+  const definitions = [];
+  const calls = [];
   const aliases = new Map();
-  for (const [name, e] of Object.entries(elements)) {
-    const keys = aliases.get(e) ?? [];
-    keys.push(name);
-    aliases.set(e, keys);
+  let values = Object.values(elements);
+  // Most elements are arguments and actions unrelated to speculative templates.
+  // Only generated candidates can cause the retirement pass to alter the graph.
+  const isCandidate = (element) =>
+    element.library === library &&
+    (element.type === 'FunctionDef'
+      ? generated.has(element) &&
+        element.flags?.includes('Operator') &&
+        !element.flags.includes('Native') &&
+        !element.actions?.length &&
+        !element.localVariables?.length
+      : element.type === 'FunctionCall' &&
+        frame.calls.has(element) &&
+        !element.parameters?.length &&
+        !element.subFunctions?.length);
+  if (values.some(isCandidate)) {
+    values = [...new Set(values)];
+    for (const e of values) {
+      if (!isCandidate(e)) continue;
+      (e.type === 'FunctionDef' ? definitions : calls).push(e);
+    }
   }
-  const values = [...aliases.keys()],
-    uses = new Set(),
-    roots = new Set(rootRefs.map((r) => identity(r.library ?? library, r.type, r.id)));
-  function refs(value, output) {
+  const uses = new Set();
+  const referencedIds = new Set([...definitions, ...calls].map((candidate) => candidate.id));
+  const roots = new Set(rootRefs.map((r) => identity(r.library ?? library, r.type, r.id)));
+  const trackAliases = () => {
+    if (aliases.size) return;
+    for (const [name, element] of Object.entries(elements)) {
+      const keys = aliases.get(element) ?? [];
+      keys.push(name);
+      aliases.set(element, keys);
+    }
+  };
+  function refs(value, output, ids) {
     if (Array.isArray(value)) {
-      for (const child of value) refs(child, output);
+      for (const child of value) refs(child, output, ids);
       return;
     }
     if (!value || typeof value !== 'object') return;
     if (value.type && value.id) {
-      output.add(identity(value.library ?? library, value.type, value.id));
+      if (ids.has(value.id)) output.add(identity(value.library ?? library, value.type, value.id));
       return;
     }
-    for (const child of Object.values(value)) refs(child, output);
+    for (const child of Object.values(value)) refs(child, output, ids);
   }
-  for (const e of values)
-    for (const [field, value] of Object.entries(e)) {
-      if (e.type === 'Category' && field === 'items') continue;
-      refs(value, uses);
-    }
+  if (definitions.length || calls.length)
+    for (const e of values)
+      for (const [field, value] of Object.entries(e)) {
+        if (e.type === 'Category' && field === 'items') continue;
+        refs(value, uses, referencedIds);
+      }
   // Retire only calls whose creation was observed in this generation scope.
   // An authored/original call, explicit root, category item or any incoming
   // reference is a barrier. Argument-bearing calls are conservatively retained.
   const retiredOrphanCalls = [];
   const categoryRoots = new Set();
-  for (const e of values)
-    if (e.type === 'Category')
-      for (const r of e.items ?? [])
-        categoryRoots.add(identity(r.library ?? library, r.type, r.id));
-  for (const e of values) {
+  if (calls.length)
+    for (const e of values)
+      if (e.type === 'Category')
+        for (const r of e.items ?? [])
+          categoryRoots.add(identity(r.library ?? library, r.type, r.id));
+  for (const e of calls) {
     const key = identity(e.library ?? library, e.type, e.id),
       ref = e.functionDef;
     const definition =
@@ -85,14 +114,9 @@ export function pruneUnusedGeneratedStructuredTemplates(elements, library, rootR
       (ref.library ?? library) === library &&
       (elements['FunctionDef:' + ref.id] ?? elements[ref.id]);
     if (
-      e.type !== 'FunctionCall' ||
-      e.library !== library ||
-      !frame.calls.has(e) ||
       uses.has(key) ||
       roots.has(key) ||
       categoryRoots.has(key) ||
-      e.parameters?.length ||
-      e.subFunctions?.length ||
       !definition ||
       !generated.has(definition) ||
       !definition.flags?.includes('Operator') ||
@@ -111,6 +135,7 @@ export function pruneUnusedGeneratedStructuredTemplates(elements, library, rootR
       explicitRoot: false,
       arguments: 0,
     });
+    trackAliases();
     for (const alias of aliases.get(e)) delete elements[alias];
   }
   if (retiredOrphanCalls.length) {
@@ -118,42 +143,36 @@ export function pruneUnusedGeneratedStructuredTemplates(elements, library, rootR
     for (const e of new Set(Object.values(elements)))
       for (const [field, value] of Object.entries(e)) {
         if (e.type === 'Category' && field === 'items') continue;
-        refs(value, uses);
+        refs(value, uses, referencedIds);
       }
   }
   const removed = [],
     formals = [];
-  for (const e of values) {
+  for (const e of definitions) {
     const key = identity(e.library ?? library, e.type, e.id);
-    if (
-      e.type !== 'FunctionDef' ||
-      e.library !== library ||
-      !generated.has(e) ||
-      !e.flags?.includes('Operator') ||
-      e.flags.includes('Native') ||
-      e.actions?.length ||
-      e.localVariables?.length ||
-      uses.has(key) ||
-      roots.has(key)
-    )
-      continue;
+    if (uses.has(key) || roots.has(key)) continue;
     removed.push({ library, type: e.type, id: e.id });
     formals.push(...(e.parameters ?? []), ...(e.subFunctionTypes ?? []));
+    trackAliases();
     for (const alias of aliases.get(e)) delete elements[alias];
   }
   const deleted = new Set(removed.map((r) => identity(r.library, r.type, r.id)));
   let categoryEdgesRemoved = 0;
-  for (const e of new Set(Object.values(elements)))
-    if (e.type === 'Category' && e.items) {
-      const prior = e.items;
-      e.items = prior.filter((r) => !deleted.has(identity(r.library ?? library, r.type, r.id)));
-      categoryEdgesRemoved += prior.length - e.items.length;
-    }
+  if (deleted.size)
+    for (const e of new Set(Object.values(elements)))
+      if (e.type === 'Category' && e.items) {
+        const prior = e.items;
+        e.items = prior.filter((r) => !deleted.has(identity(r.library ?? library, r.type, r.id)));
+        categoryEdgesRemoved += prior.length - e.items.length;
+      }
   // A formal may be shared or explicitly rooted. Retire it only after checking
   // the remaining graph, using typed references rather than ID text matches.
   const remaining = new Set(roots);
-  for (const e of new Set(Object.values(elements)))
-    for (const value of Object.values(e)) refs(value, remaining);
+  if (formals.length) {
+    const formalIds = new Set(formals.map((ref) => ref.id));
+    for (const e of new Set(Object.values(elements)))
+      for (const value of Object.values(e)) refs(value, remaining, formalIds);
+  }
   const retiredFormals = [];
   for (const ref of formals) {
     const key = identity(ref.library ?? library, ref.type, ref.id);

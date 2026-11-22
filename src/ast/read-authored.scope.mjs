@@ -3,7 +3,12 @@ import { arrayValuesSdkRoot, isLocalTriggerSdk, loadAuthoredSdk } from '../sdk/r
 const { TriggerDocument, parseTriggerXmlSync, readTriggerLibrariesFast, xmlTree } =
   await loadAuthoredSdk();
 export { validateAuthoredReferences } from '../utilities/read-authored-trigger-document.mjs';
-export async function readAuthoredTriggerDocument(raw, sdk = arrayValuesSdkRoot, strings = '') {
+export async function readAuthoredTriggerDocument(
+  raw,
+  sdk = arrayValuesSdkRoot,
+  strings = '',
+  parserOptions,
+) {
   assert(isLocalTriggerSdk(sdk), 'Authored scope reader requires the bundled array-values SDK');
   const cst = xmlTree(raw),
     standards = cst.children.filter((n) => n.tag === 'Standard');
@@ -13,7 +18,7 @@ export async function readAuthoredTriggerDocument(raw, sdk = arrayValuesSdkRoot,
     assert(!cst.children.some((n) => n.tag === 'Library' && n.attributes.Id === 'Map'));
     input = raw.slice(0, cst.openEnd) + '<Standard Id="Map"/>' + raw.slice(cst.openEnd);
   }
-  const parsed = parseTriggerXmlSync(input),
+  const parsed = parseTriggerXmlSync(input, parserOptions),
     loaded = await readTriggerLibrariesFast(
       [parsed],
       new Map([...parsed.keys()].map((id) => [id, strings])),

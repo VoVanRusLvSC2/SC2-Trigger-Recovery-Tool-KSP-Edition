@@ -16,7 +16,9 @@ export function loadedPresetExpressionRoots(ast, inputs) {
   const libraries = new Map();
   for (const input of inputs ?? []) {
     if (input.triggerData)
-      for (const [owner, library] of parseTriggerXmlSync(input.triggerData))
+      for (const [owner, library] of parseTriggerXmlSync(input.triggerData, {
+        retainSource: false,
+      }))
         libraries.set(owner, library);
     else if (input.elements) libraries.set(input.id, input);
   }

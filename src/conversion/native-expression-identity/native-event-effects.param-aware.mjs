@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 import { Parser, SyntaxKind as K } from '../exact-function-signatures/index-alternate-3.js';
 import { getTypeName } from './g2t-core.generated-call-provenance.mjs';
 import { resolveNativeRoleCandidate } from '../../ast/native-role-candidate.mjs';
-import { readAuthoredTriggerDocument } from '../../utilities/read-authored-trigger-document.mjs';
+import { readAuthoredNativeCatalog } from '../../utilities/read-authored-trigger-document.mjs';
 import { formalGalaxyCarrier } from '../../types/formal-galaxy-carrier.native-formals.mjs';
 
 // Each facade owns one producer/verifier context. Inject the frozen ABI index
@@ -134,11 +134,12 @@ export function createNativeEventEffectTools(FunctionCandidateIndex, deriveNativ
     assert.equal(input.sha256, anchor.nativeGui.sha256, 'TRUSTED_NATIVE_GUI_VERSION_CHANGED');
     const bytes = await readFile(input.path);
     assert.equal(sha(bytes), anchor.nativeGui.sha256, 'TRUSTED_NATIVE_GUI_BYTES_CHANGED');
-    const { document, scopeProof } = await readAuthoredTriggerDocument(bytes.toString('utf8'), sdk);
+    const { document, scopeProof } = await readAuthoredNativeCatalog(bytes.toString('utf8'), sdk);
     assert.equal(document.libraries.size, 1, 'TRUSTED_NATIVE_GUI_MIXED_OWNERS');
     const library = document.libraries.get('Ntve');
     assert(library, 'TRUSTED_NATIVE_GUI_SCOPE');
-    const classified = classifyNativeEventContracts(library, externalSources),
+    // Type-mapping evidence is scoped to this invocation's source declarations.
+    const classified = classifyNativeEventContracts({ ...library }, externalSources),
       evidence = {
         anchorSha256: sha(anchorBytes),
         nativeGui: { path: input.path, sha256: sha(bytes) },

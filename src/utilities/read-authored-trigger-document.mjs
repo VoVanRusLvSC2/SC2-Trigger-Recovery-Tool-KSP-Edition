@@ -4,8 +4,22 @@
  * Nonempty XML may never produce a vacuously successful empty inventory.
  */
 import assert from 'node:assert/strict';
-import { loadAuthoredSdk } from '../sdk/runtime.mjs';
-export async function readAuthoredTriggerDocument(raw, sdk, triggerStrings = '') {
+import { isLocalTriggerSdk, loadAuthoredSdk } from '../sdk/runtime.mjs';
+import { readRecoveryModel } from './recovery-parse-scope.mjs';
+
+const parseNativeCatalog = (raw) =>
+  readAuthoredTriggerDocument(raw, undefined, '', {
+    retainSource: false,
+  });
+
+/** The event and loop validators only observe this catalog. Each still checks
+ * its own pinned input bytes before asking for the parsed data. */
+export function readAuthoredNativeCatalog(raw, sdk) {
+  return isLocalTriggerSdk(sdk)
+    ? readRecoveryModel(raw, parseNativeCatalog)
+    : readAuthoredTriggerDocument(raw, sdk);
+}
+export async function readAuthoredTriggerDocument(raw, sdk, triggerStrings = '', parserOptions) {
   const { TriggerDocument, parseTriggerXmlSync, readTriggerLibrariesFast, xmlTree } =
     await loadAuthoredSdk(sdk);
   const cst = xmlTree(raw),
@@ -20,7 +34,7 @@ export async function readAuthoredTriggerDocument(raw, sdk, triggerStrings = '')
     assert(!ids.has('Map'), 'Implicit root conflicts with an explicit Map library');
     input = raw.slice(0, cst.openEnd) + '<Standard Id="Map"/>' + raw.slice(cst.openEnd);
   }
-  const parsed = parseTriggerXmlSync(input),
+  const parsed = parseTriggerXmlSync(input, parserOptions),
     strings = new Map([...parsed.keys()].map((id) => [id, triggerStrings]));
   const loaded = await readTriggerLibrariesFast([parsed], strings);
   const doc = new TriggerDocument(raw, new Map([...loaded].map(([id, r]) => [id, r.library])));

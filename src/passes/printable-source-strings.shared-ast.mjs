@@ -25,8 +25,8 @@ export function normalizePrintableSourceStrings(text, parse, document) {
     if (n.kind === 3) {
       const raw = text.slice(n.pos, n.end).trim();
       if (raw !== n.text) throw Error('String token source ownership differs');
-      const value = decodeBoundAsciiString(n, text);
-      if (value !== undefined && !/[\x00-\x1f\x7f]/u.test(value) && raw.includes('\\')) {
+      const value = raw.includes('\\') ? decodeBoundAsciiString(n, text) : undefined;
+      if (value !== undefined && !/[\x00-\x1f\x7f]/u.test(value)) {
         const quoted = JSON.stringify(value);
         if (raw !== quoted) {
           const start = n.pos + text.slice(n.pos, n.end).indexOf(raw);
@@ -34,20 +34,23 @@ export function normalizePrintableSourceStrings(text, parse, document) {
         }
       }
     }
-    for (const [k, v] of Object.entries(n)) {
-      if (ignored.has(k)) continue;
-      if (Array.isArray(v)) pending.push(...v);
-      else if (v && typeof v === 'object') pending.push(v);
+    for (const key of Object.keys(n)) {
+      const child = n[key];
+      if (!child || typeof child !== 'object' || ignored.has(key)) continue;
+      if (Array.isArray(child)) pending.push(...child);
+      else pending.push(child);
     }
   }
   edits.sort((a, b) => b.start - a.start);
-  let out = text,
-    boundary = text.length;
-  for (const e of edits) {
-    if (e.end > boundary) throw Error('String token edits overlap');
-    out = out.slice(0, e.start) + e.quoted + out.slice(e.end);
-    boundary = e.start;
+  const chunks = [];
+  let boundary = text.length;
+  for (const edit of edits) {
+    if (edit.end > boundary) throw Error('String token edits overlap');
+    chunks.push(text.slice(edit.end, boundary), edit.quoted);
+    boundary = edit.start;
   }
+  if (edits.length) chunks.push(text.slice(0, boundary));
+  const out = edits.length ? chunks.reverse().join('') : text;
   const after = document ? document.output(out) : parse(out);
   if (after.parseDiagnostics?.length) throw Error('Normalized string source syntax errors');
   return {

@@ -69,28 +69,52 @@ export async function bindLocalizedDependencyAbi(prepared, documents, declaratio
     fellBackToOriginal: false,
     persistentCache: false,
   };
-  const parse = async (xml, strings, kind) => {
+  const parse = async (xml, strings, kind, options) => {
     work[kind]++;
-    return (await readAuthoredTriggerDocument(xml, sdk, strings)).document;
+    return (await readAuthoredTriggerDocument(xml, sdk, strings, options)).document;
   };
+  const mods = prepared.actualMods ?? [];
+  const retainSource = mods.length > 0;
   const mountedLibraries = new Map();
+  const mountedDocuments = new Map();
   for (const d of documents) {
-    const parsed = await parse(d.triggerData, d.triggerStrings ?? '', 'mountedDocumentParses');
+    const parsed = await parse(d.triggerData, d.triggerStrings ?? '', 'mountedDocumentParses', {
+      retainSource,
+    });
     for (const lib of parsed.libraries.values())
       if (lib.id !== 'Map') {
         const prior = mountedLibraries.get(lib.id);
-        assert(
-          !prior || JSON.stringify(prior) === JSON.stringify(lib),
-          'Ambiguous mounted library ID ' + lib.id,
-        );
+        if (prior) {
+          let left = prior,
+            right = lib;
+          if (!retainSource) {
+            // Duplicate owners need the original lossless comparison, including
+            // the raw XML. Most jobs have one document per dependency owner.
+            const full = async (source) =>
+              (
+                await parse(
+                  source.triggerData,
+                  source.triggerStrings ?? '',
+                  'mountedDocumentParses',
+                )
+              ).libraries.get(lib.id);
+            left = await full(mountedDocuments.get(lib.id));
+            right = await full(d);
+          }
+          assert(
+            JSON.stringify(left) === JSON.stringify(right),
+            'Ambiguous mounted library ID ' + lib.id,
+          );
+        }
         mountedLibraries.set(lib.id, lib);
+        mountedDocuments.set(lib.id, d);
       }
   }
   const nativeTypes = mountedLibraries.get('Ntve');
-  if (nativeTypes) deriveNativeTypeMapping(nativeTypes, declarations);
+  if (nativeTypes && retainSource) deriveNativeTypeMapping(nativeTypes, declarations);
   const documentHashes = documents.map((d) => sha(d.triggerData));
   const facts = [];
-  for (const mod of prepared.actualMods ?? []) {
+  for (const mod of mods) {
     const bytes = await readFile(mod.destination);
     assert.equal(sha(bytes), mod.destinationSha256);
     work.archiveReads++;

@@ -453,7 +453,7 @@ function declaredTypeName(node) {
  * a declared Galaxy type. Only a type whose observations all agree is used — a
  * polymorphic one disagrees with itself and is left to its own handling.
  */
-export function deriveNativeTypeMapping(nativeLibrary, declarations) {
+export function deriveNativeTypeMapping(nativeLibrary, declarations, verifiedDocument) {
   if (!nativeLibrary || !declarations?.length || nativeTypeEvidence.has(nativeLibrary)) return;
   const signatures = new Map();
   // The service prepends declarations synthesized from TriggerData and keeps
@@ -461,7 +461,10 @@ export function deriveNativeTypeMapping(nativeLibrary, declarations) {
   // authoritative native/header signature wins over the editor-type spelling
   // inferred for the same symbol by modelDeclarations().
   for (const declaration of [...declarations].reverse()) {
-    const parsed = new Parser().parseFile('declarations.galaxy', declaration.text);
+    // Signature votes use only the syntax from the exact input text.
+    const parsed =
+      verifiedDocument?.(declaration) ??
+      new Parser().parseFile('declarations.galaxy', declaration.text);
     for (const statement of [...parsed.statements]) {
       const name = statement?.name?.name;
       if (

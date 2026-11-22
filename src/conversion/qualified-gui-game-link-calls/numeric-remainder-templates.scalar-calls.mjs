@@ -9,6 +9,33 @@ export function reifyTypedRemainderTemplates(elements, libId, roots, external = 
   const entries = Object.entries(elements),
     values = entries.map(([, e]) => e);
   const byId = new Map(values.map((e) => [identity(e, libId), e]));
+  if (byId.size !== values.length)
+    return { changed: false, roots, changes: [], refusal: 'AMBIGUOUS_ELEMENT_IDENTITIES' };
+  const candidates = [];
+  for (const definition of values) {
+    if (
+      definition.type !== 'FunctionDef' ||
+      (definition.library ?? libId) !== libId ||
+      !['int', 'fixed'].includes(definition.returnType?.type) ||
+      definition.flags?.includes('Native') ||
+      !definition.flags?.includes('Call') ||
+      !definition.flags?.includes('Operator')
+    )
+      continue;
+    const grammar = /^\s*#PARAM\(([A-Za-z_]\w*)\)\s*%\s*#PARAM\(([A-Za-z_]\w*)\)\s*$/u.exec(
+      definition.scriptCode ?? '',
+    );
+    if (
+      grammar &&
+      grammar[1] !== grammar[2] &&
+      definition.parameters?.length === 2 &&
+      !definition.actions?.length &&
+      !definition.localVariables?.length
+    )
+      candidates.push({ definition, grammar });
+  }
+  if (!candidates.length) return { changed: false, roots, changes: [], trace: [] };
+
   const keysByElement = new Map(entries.map(([k, e]) => [e, k])),
     callsByDefinition = new Map();
   for (const e of values)
@@ -18,8 +45,6 @@ export function reifyTypedRemainderTemplates(elements, libId, roots, external = 
       calls.push(e);
       callsByDefinition.set(k, calls);
     }
-  if (byId.size !== values.length)
-    return { changed: false, roots, changes: [], refusal: 'AMBIGUOUS_ELEMENT_IDENTITIES' };
   const resolve = (r) => r && byId.get(identity(r, libId));
   const projected = { ...elements },
     removed = new Set(),
@@ -59,27 +84,7 @@ export function reifyTypedRemainderTemplates(elements, libId, roots, external = 
     removed.add(identity(e, libId));
     delete projected[keysByElement.get(e)];
   };
-  for (const definition of values) {
-    if (
-      definition.type !== 'FunctionDef' ||
-      (definition.library ?? libId) !== libId ||
-      !['int', 'fixed'].includes(definition.returnType?.type) ||
-      definition.flags?.includes('Native') ||
-      !definition.flags?.includes('Call') ||
-      !definition.flags?.includes('Operator')
-    )
-      continue;
-    const grammar = /^\s*#PARAM\(([A-Za-z_]\w*)\)\s*%\s*#PARAM\(([A-Za-z_]\w*)\)\s*$/u.exec(
-      definition.scriptCode ?? '',
-    );
-    if (
-      !grammar ||
-      grammar[1] === grammar[2] ||
-      definition.parameters?.length !== 2 ||
-      definition.actions?.length ||
-      definition.localVariables?.length
-    )
-      continue;
+  for (const { definition, grammar } of candidates) {
     trace.push({ definition: definition.id, stage: 'grammar' });
     const formals = definition.parameters.map(resolve);
     if (

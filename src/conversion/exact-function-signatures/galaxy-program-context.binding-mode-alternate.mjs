@@ -63,6 +63,23 @@ const signature = (d) =>
   ]);
 const idOf = (input, n) =>
   `${input.sourceId}|${input.contentSha256 ?? 'UNVERIFIED'}|${input.fileName}|${n.pos}:${n.end}:${n.kind}`;
+
+function recordNodePosition(nodes, node) {
+  const previous = nodes.get(node.pos);
+  if (Array.isArray(previous)) previous.push(node);
+  else nodes.set(node.pos, previous ? [previous, node] : node);
+}
+
+function indexNodePositions(source) {
+  const nodes = new Map();
+  const walk = (node) => {
+    recordNodePosition(nodes, node);
+    forEachChild(node, walk);
+  };
+  walk(source);
+  return nodes;
+}
+
 export class GalaxyProgramContext {
   documents = new Map();
   qualifiedDocuments = new Map();
@@ -72,6 +89,7 @@ export class GalaxyProgramContext {
   inputs = new Map();
   verifiedIdentityFiles = new Set();
   nodes = new Map();
+  #pendingPositionSources = new Map();
   globals = new Map();
   conflicts = new Set();
   diagnosticKeys = new Set();
@@ -82,7 +100,12 @@ export class GalaxyProgramContext {
   checker;
   closed = false;
   bindingOnly = false;
-  constructor(inputs, snapshot, hashText, { checks = 'semantic' } = {}) {
+  constructor(
+    inputs,
+    snapshot,
+    hashText,
+    { checks = 'semantic', attachDocuments = false, partitionStartup = false } = {},
+  ) {
     if (!['semantic', 'binding'].includes(checks)) throw new Error('UNKNOWN_PROGRAM_CHECK_ROLE');
     this.bindingOnly = checks === 'binding';
     this.snapshot = snapshot ? structuredClone(snapshot) : undefined;
@@ -158,6 +181,7 @@ export class GalaxyProgramContext {
       }
     }
     for (const [name, group] of declarations) {
+      if (group.length === 1) continue;
       const keys = new Set(group.map((x) => signature(x.node)));
       const bodies = group.filter((x) => x.node.kind === K.FunctionDeclaration && x.node.body);
       const other = group.filter((x) => x.node.kind !== K.FunctionDeclaration);
@@ -208,23 +232,52 @@ export class GalaxyProgramContext {
       },
       getDocument: (name) => this.documents.get(name),
     };
+    const attachedCallSites = attachDocuments && !this.bindingOnly ? new Map() : undefined;
     for (const [file, source] of this.documents) {
-      bindSourceFile(source, host);
+      const input = attachDocuments ? this.inputs.get(file) : undefined;
+      const calls = attachedCallSites ? [] : undefined;
+      if (input) this.#assertOriginalSource(source, file, input);
+      let attachNode;
+      if (input && partitionStartup) {
+        // The parent startup proof queries identifiers in function bodies and
+        // locations of calls. Capture their positions in the binder's preorder.
+        const hasBody = source.statements.some((n) => n.kind === K.FunctionDeclaration && n.body);
+        const identifiers = new Map();
+        this.nodes.set(file, identifiers);
+        attachNode = (node) => {
+          if (node.kind === K.CallExpression) {
+            if (calls) calls.push(node);
+            if (hasBody) this.originals.set(node, input);
+          } else if (hasBody && node.kind === K.Identifier) {
+            recordNodePosition(identifiers, node);
+            this.originals.set(node, input);
+          }
+        };
+      } else if (input) {
+        attachNode = (node) => {
+          this.originals.set(node, input);
+          if (calls && node.kind === K.CallExpression) calls.push(node);
+        };
+      }
+      bindSourceFile(source, host, attachNode);
       for (const [name, symbol] of source.symbol.members) {
         if (symbol.declarations[0]?.modifiers?.some((m) => m.kind === K.StaticKeyword)) continue;
         if (!this.conflicts.has(name)) this.globals.set(name, symbol);
       }
-      const walk = (n) => {
-        this.nodes.set(this.key(file, n), n);
-        forEachChild(n, walk);
-      };
-      walk(source);
+      if (input) {
+        if (calls) attachedCallSites.set(source, calls);
+        // Declaration-only dependencies participate in binding and checking
+        // even if no consumer needs an exact position lookup in their AST.
+        if (!partitionStartup) this.#pendingPositionSources.set(file, source);
+      } else {
+        this.nodes.set(file, indexNodePositions(source));
+      }
       for (const fn of source.statements) {
         if (fn.kind !== K.FunctionDeclaration) continue;
         const names = new Map();
         this.functionLocals.set(fn, names);
         const add = (n) => {
-          if (![K.ParameterDeclaration, K.VariableDeclaration].includes(n.kind)) return;
+          if (n.kind !== K.ParameterDeclaration && n.kind !== K.VariableDeclaration) return;
           if (names.has(n.name.name))
             this.record({
               code: 'LOCAL_SCOPE_COLLISION',
@@ -312,10 +365,20 @@ export class GalaxyProgramContext {
               }
             }
           }
-          forEachChild(node, checkReferences);
         };
         try {
-          checkReferences(source);
+          const calls = attachedCallSites?.get(source);
+          if (calls) {
+            // The checker annotates syntax without inserting call nodes.
+            // Reuse the same preorder captured during binding.
+            for (const call of calls) checkReferences(call);
+          } else {
+            const visit = (node) => {
+              checkReferences(node);
+              forEachChild(node, visit);
+            };
+            visit(source);
+          }
         } catch (error) {
           this.record({
             code: 'REFERENCE_CHECK_INCOMPLETE',
@@ -337,19 +400,39 @@ export class GalaxyProgramContext {
     }
     this.diagnostics.push(d);
   }
-  key(file, n) {
-    return `${file}|${n.pos}:${n.end}:${n.kind}`;
+  semanticNode(file, node) {
+    let nodes = this.nodes.get(file);
+    if (!nodes) {
+      const source = this.#pendingPositionSources.get(file);
+      if (!source) return undefined;
+      nodes = indexNodePositions(source);
+      this.nodes.set(file, nodes);
+      this.#pendingPositionSources.delete(file);
+    }
+    const entry = nodes.get(node.pos);
+    // Equal spans and kinds keep the last node in traversal order.
+    if (Array.isArray(entry)) {
+      for (let index = entry.length - 1; index >= 0; index--) {
+        const candidate = entry[index];
+        if (candidate.end === node.end && candidate.kind === node.kind) return candidate;
+      }
+      return undefined;
+    }
+    if (entry?.end === node.end && entry?.kind === node.kind) return entry;
   }
   attachOriginal(source, logicalName = source.fileName) {
     this.assertOpen();
     const input = this.inputs.get(logicalName);
-    if (!input) throw new Error('Source is outside semantic snapshot: ' + logicalName);
-    if (source.text !== input.text) throw new Error('Source text differs from semantic snapshot');
+    this.#assertOriginalSource(source, logicalName, input);
     const walk = (n) => {
       this.originals.set(n, input);
       forEachChild(n, walk);
     };
     walk(source);
+  }
+  #assertOriginalSource(source, logicalName, input) {
+    if (!input) throw new Error('Source is outside semantic snapshot: ' + logicalName);
+    if (source.text !== input.text) throw new Error('Source text differs from semantic snapshot');
   }
   location(node) {
     const input = this.originals.get(node);
@@ -371,7 +454,7 @@ export class GalaxyProgramContext {
     if (prior) return prior;
     const input = this.originals.get(node),
       file = input?.fileName ?? '';
-    const semantic = input && this.nodes.get(this.key(file, node));
+    const semantic = input && this.semanticNode(file, node);
     const result = { status: 'UNKNOWN', file, start: node.pos, end: node.end };
     if (!semantic) return result;
     const name = semantic.name;
@@ -456,7 +539,7 @@ export class GalaxyProgramContext {
   declarationAt(node) {
     const input = this.originals.get(node);
     if (!input) return undefined;
-    const semantic = this.nodes.get(this.key(input.fileName, node));
+    const semantic = this.semanticNode(input.fileName, node);
     if (!semantic) return undefined;
     const symbol = this.checker.getSymbolAtLocation(semantic);
     return symbol?.valueDeclaration ?? symbol?.declarations[0];
@@ -516,6 +599,7 @@ export class GalaxyProgramContext {
     this.documents.clear();
     this.qualifiedDocuments.clear();
     this.nodes.clear();
+    this.#pendingPositionSources.clear();
     this.globals.clear();
     this.inputs.clear();
     this.verifiedIdentityFiles.clear();

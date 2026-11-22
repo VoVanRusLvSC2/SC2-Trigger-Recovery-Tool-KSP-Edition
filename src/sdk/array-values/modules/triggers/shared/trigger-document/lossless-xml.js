@@ -1,7 +1,17 @@
-import sax from 'sax'
+import sax from '../../../../../../vendor/sax/lib/sax.js'
+import { parseLosslessXml } from '../../../../../../utilities/recovery-parse-scope.mjs'
 
 /** Strict XML parse with original UTF-16 spans. SAX validates entities and nesting. */
 export function xmlTree(text) {
+  return parseLosslessXml(text, readXmlTree)
+}
+
+// A companion reader can observe a fresh scan. Cached trees need no SAX pass.
+export function xmlTreeWithReader(text, attachReader) {
+  return parseLosslessXml(text, source => readXmlTree(source, attachReader))
+}
+
+function readXmlTree(text, attachReader) {
   const parser = sax.parser(true, { trim: false, normalize: false })
   const roots = []
   const stack = []
@@ -20,6 +30,7 @@ export function xmlTree(text) {
     node.end = parser.position
     node.closeStart = node.selfClosing ? node.openEnd : text.lastIndexOf('</', node.end - 1)
   }
+  attachReader?.(parser)
   parser.write(text).close()
   if (roots.length !== 1 || stack.length) throw new TypeError('Expected one complete XML root')
   return roots[0]

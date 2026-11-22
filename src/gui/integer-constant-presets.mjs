@@ -1,7 +1,7 @@
+import { indexGuiXmlElements } from '../utilities/index-gui-xml-elements.mjs';
+import { recoveryTextSha256 as sha } from '../utilities/recovery-parse-scope.mjs';
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
 import { xmlTree } from '../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js';
-const sha = (s) => createHash('sha256').update(s).digest('hex');
 const child = (node, tag) => node.children.find((n) => n.tag === tag);
 const groups = (root) => [root, ...root.children.filter((n) => n.tag === 'Library')];
 const owner = (node, fallback) =>
@@ -25,16 +25,11 @@ export function normalizeGeneratedIntegerConstantPresets({
         if (node.tag === 'Element' && node.attributes.Type === 'Preset')
           prior.add(JSON.stringify([owner(group, implicitLibraryId), node.attributes.Id]));
   for (const group of groups(root)) {
-    const library = owner(group, implicitLibraryId),
-      definitions = new Map();
-    for (const node of group.children.filter((n) => n.tag === 'Element')) {
-      const key = JSON.stringify([node.attributes.Type, node.attributes.Id]);
-      assert(!definitions.has(key), 'INTEGER_PRESET_DUPLICATE_TYPED_ID');
-      definitions.set(key, node);
-    }
-    for (const preset of group.children.filter(
-      (n) => n.tag === 'Element' && n.attributes.Type === 'Preset',
-    )) {
+    const library = owner(group, implicitLibraryId);
+    const { byType, duplicate } = indexGuiXmlElements(group);
+    assert(!duplicate, 'INTEGER_PRESET_DUPLICATE_TYPED_ID');
+    const definitions = byType.get('PresetValue');
+    for (const preset of byType.get('Preset')?.values() ?? []) {
       if (prior.has(JSON.stringify([library, preset.attributes.Id]))) continue;
       const custom = child(preset, 'PresetCustom');
       if (
@@ -55,7 +50,7 @@ export function normalizeGeneratedIntegerConstantPresets({
           (item.attributes.Library ?? library) !== library
         )
           return null;
-        const node = definitions.get(JSON.stringify(['PresetValue', item.attributes.Id])),
+        const node = definitions?.get(item.attributes.Id),
           value = node && child(node, 'Value');
         if (!value || value.children.length || child(node, 'ScriptCode')) return null;
         return { id: item.attributes.Id, token: xml.slice(value.openEnd, value.closeStart) };

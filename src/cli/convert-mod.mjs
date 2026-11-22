@@ -238,6 +238,7 @@ try {
     }
   progress('Packing recovered package', 72);
   const packed = await writePackageCandidate(row, directory, changes, config.entries);
+  result.packedCandidate = packed.candidate;
   const reader = await openSc2Package(packed.candidate);
   let allMatched = !!oracle;
   let layoutQualified = false;

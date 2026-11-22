@@ -1,13 +1,32 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
+import { recoveryTextSha256 as sha } from '../../utilities/recovery-parse-scope.mjs';
 import { GalaxyProgramContext } from './galaxy-program-context.lazy-carriers.mjs';
-const sha = (text) => createHash('sha256').update(text).digest('hex');
+const verifiedDocuments = new WeakMap();
+
+/** Verified programs register their private semantic documents at construction. */
+export function attachProgramDocuments(program) {
+  for (const document of program.documents.values()) attachProgramDocument(program, document);
+}
+
+export function attachProgramDocument(program, document) {
+  if (!verifiedDocuments.get(program)?.has(document)) program.attachOriginal(document);
+}
+
+export function findVerifiedProgramDocument(program, { fileName, text }) {
+  const document = program.documents.get(fileName);
+  if (document?.text === text && verifiedDocuments.get(program)?.has(document)) return document;
+}
 
 // Type facts belong to the exact current conversion view. Self-hashing these
 // inputs establishes AST identity; it never certifies an original archive,
 // unchanged payload, Editor compilation, or permission to preserve raw code.
 // Those independent origin/ownership/packing gates remain mandatory.
-export function createVerifiedConversionProgram(files, snapshot, hashText) {
+export function createVerifiedConversionProgram(
+  files,
+  snapshot,
+  hashText,
+  { partitionStartup = false } = {},
+) {
   const identities = files.map((file) => {
     const digest = sha(file.text),
       claimed = snapshot?.files?.find((f) => f.fileName === file.fileName);
@@ -32,9 +51,12 @@ export function createVerifiedConversionProgram(files, snapshot, hashText) {
     sourceViewKind: 'SELF_HASHED_CURRENT_CONVERSION_INPUT',
     originalArchiveAuthorized: false,
   };
-  const program = new GalaxyProgramContext(identities, current, sha);
-  // Bound declarations belong to the private semantic AST. Give that exact
-  // verified copy provenance as well as any separately parsed frontend AST.
-  for (const document of program.documents.values()) program.attachOriginal(document);
+  // Register the private semantic nodes and index their positions on demand.
+  // Separately parsed frontend nodes still use attachOriginal.
+  const program = new GalaxyProgramContext(identities, current, sha, {
+    attachDocuments: true,
+    partitionStartup,
+  });
+  verifiedDocuments.set(program, new WeakSet(program.documents.values()));
   return program;
 }

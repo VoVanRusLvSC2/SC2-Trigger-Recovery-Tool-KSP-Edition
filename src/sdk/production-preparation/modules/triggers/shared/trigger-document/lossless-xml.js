@@ -1,7 +1,12 @@
 import sax from 'sax'
+import { parseLosslessXml } from '../../../../../../utilities/recovery-parse-scope.mjs'
 
 /** Strict XML parse with original UTF-16 spans. SAX validates entities and nesting. */
 export function xmlTree(text) {
+  return parseLosslessXml(text, readXmlTree)
+}
+
+function readXmlTree(text) {
   const parser = sax.parser(true, { trim: false, normalize: false })
   const roots = []
   const stack = []

@@ -20,7 +20,10 @@ import {
 import { planSourceTriggerConstructors as planDeferredTriggerConstructors } from '../../model/source-trigger-constructor-ownership.partitions.mjs';
 import { bindTriggerPhaseParameters } from '../exact-function-signatures/bound-trigger-phase-parameters.mjs';
 import { createLocalStructureInitializationPlan } from '../exact-function-signatures/local-structure-initialization-plan.mjs';
-import { createVerifiedConversionProgram } from '../exact-function-signatures/verified-conversion-program.mjs';
+import {
+  createVerifiedConversionProgram,
+  findVerifiedProgramDocument,
+} from '../exact-function-signatures/verified-conversion-program.mjs';
 import { createBoundedEventInitializerModel } from '../native-expression-identity/bounded-event-initializer.mjs';
 import { withGeneratedStructuredTemplateScope } from '../../model/structured-template-liveness.orphan-calls.mjs';
 import { withBoundSourceCallReturns } from '../bound-static-primary-storage/bound-source-access.authored-alternate.mjs';
@@ -880,41 +883,32 @@ function applyGlobalVariableDomainInference(statements, declarationSources, ctx)
     return signature && definition ? { type: definition.returnType, abi: signature.result } : {};
   };
 
+  let presetTypes;
   const presetContract = (node) => {
     const name = getIdentifierName(unwrapParens(node));
-
     const valueRef = name ? ctx.galaxyConstToPreset.get(name) : undefined;
-
     if (!name || !valueRef) return {};
 
-    const libraries = [
-      { id: ctx.libId, elements: ctx.elements },
-
-      ...(ctx.nativeLibrary ? [ctx.nativeLibrary] : []),
-
-      ...(ctx.dependencyLibraries?.values() ?? []),
-    ];
-
-    for (const library of libraries)
-      for (const element of Object.values(library.elements ?? {})) {
-        if (element.type !== 'Preset') continue;
-
-        const preset = element;
-
-        if (
-          !preset.baseType ||
-          !(preset.values ?? []).some(
-            (ref) =>
-              ref.id === valueRef.id &&
-              (ref.library ?? preset.library ?? library.id) === (valueRef.library ?? ctx.libId),
-          )
-        )
-          continue;
-
-        return { type: { type: preset.baseType }, abi: symbolGalaxyTypes.get(name) };
-      }
-
-    return {};
+    if (!presetTypes) {
+      presetTypes = new Map();
+      const libraries = [
+        { id: ctx.libId, elements: ctx.elements },
+        ...(ctx.nativeLibrary ? [ctx.nativeLibrary] : []),
+        ...(ctx.dependencyLibraries?.values() ?? []),
+      ];
+      for (const library of libraries)
+        for (const preset of Object.values(library.elements ?? {})) {
+          if (preset.type !== 'Preset' || !preset.baseType) continue;
+          for (const ref of preset.values ?? []) {
+            const owner = ref.library ?? preset.library ?? library.id;
+            let types = presetTypes.get(owner);
+            if (!types) presetTypes.set(owner, (types = new Map()));
+            if (!types.has(ref.id)) types.set(ref.id, preset.baseType);
+          }
+        }
+    }
+    const type = presetTypes.get(valueRef.library ?? ctx.libId)?.get(valueRef.id);
+    return type ? { type: { type }, abi: symbolGalaxyTypes.get(name) } : {};
   };
 
   for (const statement of statements) {
@@ -1210,6 +1204,7 @@ export function convertGalaxyToTriggerLibrary(galaxySource, headerSource, option
   deriveNativeTypeMapping(
     options.nativeLibrary,
     options.semanticDeclarations ?? options.galaxyDeclarations,
+    (declaration) => findVerifiedProgramDocument(program, declaration),
   );
 
   const session = new RecoverySession(program, [
@@ -1277,7 +1272,14 @@ function reportConversionProgress(options, phase, completed, total, elements) {
   try {
     withIsolatedGalaxyToTriggerIds(() =>
       withIsolatedNamingIndexes(() =>
-        options.onProgress({ phase, completed, total, elements: Object.keys(elements).length }),
+        options.onProgress({
+          phase,
+          completed,
+          total,
+          ...(options.includeProgressElementCount !== false
+            ? { elements: Object.keys(elements).length }
+            : {}),
+        }),
       ),
     );
   } catch {
@@ -1426,7 +1428,7 @@ function convertGalaxyToTriggerLibraryBody(galaxySource, headerSource, options) 
     }
   }
 
-  // Global var map: galaxy identifier → {id, library}; seeded with cross-library vars
+  // Global var map: galaxy identifier ā†’ {id, library}; seeded with cross-library vars
 
   const globalVarByGalaxyName = new Map(options.crossLibVars ?? []);
 
@@ -2179,7 +2181,7 @@ function convertGalaxyToTriggerLibraryBody(galaxySource, headerSource, options) 
 
     // A map has no owning library wrapper, but authored/generated Galaxy can
 
-    // still carry a historical `lib…_gs_` spelling.  It is linkage syntax, not
+    // still carry a historical `libā€¦_gs_` spelling.  It is linkage syntax, not
 
     // the editor-visible structure name.  Keep non-map library namespaces
 
@@ -2356,7 +2358,7 @@ function convertGalaxyToTriggerLibraryBody(galaxySource, headerSource, options) 
         continue;
       }
 
-      // Trigger handle (lib{LIB}_gt_{NAME}) → skip, resolved via body function
+      // Trigger handle (lib{LIB}_gt_{NAME}) ā†’ skip, resolved via body function
     }
 
     // User function forward declaration: returnType lib{LIB}_gf_{NAME}(params...) or gf_{NAME}(params...)
@@ -2400,7 +2402,7 @@ function convertGalaxyToTriggerLibraryBody(galaxySource, headerSource, options) 
 
         const paramGalaxyName = p.name?.name ?? '';
 
-        // ParamDef names are stored WITHOUT the lp_ prefix — T2G re-adds it.
+        // ParamDef names are stored WITHOUT the lp_ prefix ā€” T2G re-adds it.
 
         // Keeping the prefix here produces lp_lp_* body references (mismatch
 
@@ -2635,7 +2637,7 @@ function convertGalaxyToTriggerLibraryBody(galaxySource, headerSource, options) 
     );
   }
 
-  // Map trigger handle galaxy name → TriggerJson for event injection in second pass
+  // Map trigger handle galaxy name ā†’ TriggerJson for event injection in second pass
 
   applyLocalPresetParamInference(
     topLevelStatements,
@@ -2753,15 +2755,21 @@ function convertGalaxyToTriggerLibraryBody(galaxySource, headerSource, options) 
 
   const triggerByHandleName = new Map();
 
-  const buildTriggerByGalaxyName = () =>
-    new Map([
-      ...dependencyTriggerRefs,
-
-      ...[...triggerByHandleName.entries()].map(([name, t]) => [
-        name,
-        { type: 'Trigger', library: libId, id: t.id },
-      ]),
-    ]);
+  let triggerReferences;
+  const buildTriggerByGalaxyName = () => {
+    if (!triggerReferences) {
+      triggerReferences = new Map(dependencyTriggerRefs);
+      for (const [name, trigger] of triggerByHandleName)
+        triggerReferences.set(name, { type: 'Trigger', library: libId, id: trigger.id });
+    }
+    return triggerReferences;
+  };
+  const registerTriggerHandle = (name, trigger) => {
+    // Completing a reserved trigger changes its body but usually keeps its
+    // identity. Rebuild the snapshot if an alias starts resolving elsewhere.
+    if (triggerByHandleName.get(name)?.id !== trigger.id) triggerReferences = undefined;
+    triggerByHandleName.set(name, trigger);
+  };
 
   // The generator emits Global Functions before any trigger, and a trigger may
 
@@ -2803,11 +2811,11 @@ function convertGalaxyToTriggerLibraryBody(galaxySource, headerSource, options) 
 
     elements[id] = handle;
 
-    triggerByHandleName.set(funcName.slice(0, -5), handle);
+    registerTriggerHandle(funcName.slice(0, -5), handle);
 
-    triggerByHandleName.set(`${libraryPrefix(libId)}gt_${triggerName}`, handle);
+    registerTriggerHandle(`${libraryPrefix(libId)}gt_${triggerName}`, handle);
 
-    triggerByHandleName.set(`gt_${triggerName}`, handle);
+    registerTriggerHandle(`gt_${triggerName}`, handle);
   }
 
   // ---- Pass 1: trigger body functions ----
@@ -2927,7 +2935,7 @@ function convertGalaxyToTriggerLibraryBody(galaxySource, headerSource, options) 
       !shouldSkipAuthoredSectionDeclaration(stmt, libId),
   );
 
-  const bodyProgressStride = Math.max(1, Math.floor(bodyDeclarations.length / 100));
+  const bodyProgressStride = Math.max(1, Math.ceil(bodyDeclarations.length / 100));
 
   for (let bodyIndex = 0; bodyIndex < bodyDeclarations.length; bodyIndex++) {
     const stmt = bodyDeclarations[bodyIndex];
@@ -2977,11 +2985,11 @@ function convertGalaxyToTriggerLibraryBody(galaxySource, headerSource, options) 
 
         elements[trigger.id] = trigger;
 
-        triggerByHandleName.set(funcName.slice(0, -5), trigger);
+        registerTriggerHandle(funcName.slice(0, -5), trigger);
 
-        triggerByHandleName.set(`${libraryPrefix(libId)}gt_${triggerName}`, trigger);
+        registerTriggerHandle(`${libraryPrefix(libId)}gt_${triggerName}`, trigger);
 
-        triggerByHandleName.set(`gt_${triggerName}`, trigger);
+        registerTriggerHandle(`gt_${triggerName}`, trigger);
       }
 
       continue;
@@ -3180,11 +3188,11 @@ function convertGalaxyToTriggerLibraryBody(galaxySource, headerSource, options) 
     sourceInitializerWeave.proof.retainedSourceInitializer = retainedSourceInitializer;
   reportConversionProgress(options, 'initialization', 1, 1, elements);
 
-  // ---- Pass 2: trigger init functions → recover events ----
+  // ---- Pass 2: trigger init functions ā†’ recover events ----
 
   const eventDeclarations = bodyDeclarations.filter((stmt) => generatedInit(stmt.name?.name ?? ''));
 
-  const eventProgressStride = Math.max(1, Math.floor(eventDeclarations.length / 100));
+  const eventProgressStride = Math.max(1, Math.ceil(eventDeclarations.length / 100));
 
   for (let eventIndex = 0; eventIndex < eventDeclarations.length; eventIndex++) {
     const stmt = eventDeclarations[eventIndex];
@@ -3240,7 +3248,10 @@ function convertGalaxyToTriggerLibraryBody(galaxySource, headerSource, options) 
 
       crossLibFuncDefs: options.crossLibFuncDefs,
 
-      constants: constants.scope([...(fd.parameters ?? []), ...(fd.body?.statements ?? [])]),
+      constants: constants.scopeWithSharedGlobals([
+        ...(fd.parameters ?? []),
+        ...(fd.body?.statements ?? []),
+      ]),
       sourceText: galaxySource.__sourceText,
     };
 
@@ -3403,7 +3414,7 @@ function convertGalaxyToTriggerLibraryBody(galaxySource, headerSource, options) 
     for (const parameterId of parameterIds) delete elements[parameterId];
   }
 
-  // Drop speculative Param/FunctionCall elements no parent references —
+  // Drop speculative Param/FunctionCall elements no parent references ā€”
 
   // serializing them produces editor 'Orphaned trigger parameter/function
 
@@ -3450,15 +3461,15 @@ function convertGalaxyToTriggerLibraryBody(galaxySource, headerSource, options) 
 
   bindLoadedStatementTemplates(elements, libId, options.nativeLibrary, options.dependencyLibraries);
 
-  pruneUnreachableElements(elements, libId);
+  const initialPrune = pruneUnreachableElements(elements, libId);
 
   const objectValueLibraries = new Map(options.dependencyLibraries ?? []);
   if (options.nativeLibrary)
     objectValueLibraries.set(options.nativeLibrary.id, options.nativeLibrary);
-  reifyEditorObjectReferenceParams(elements, libId, objectValueLibraries);
-  pruneUnboundDeclarations(elements, libId);
-
-  pruneUnreachableElements(elements, libId);
+  const reified = reifyEditorObjectReferenceParams(elements, libId, objectValueLibraries);
+  const declarationsRemoved = pruneUnboundDeclarations(elements, libId);
+  if (initialPrune.removedIds.length || reified.records.length || declarationsRemoved)
+    pruneUnreachableElements(elements, libId);
 
   const requiredInitPrototypes = ownedTriggerInitPrototypes(elements, libId, triggerInitFuncName);
 

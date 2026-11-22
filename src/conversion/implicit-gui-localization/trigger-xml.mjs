@@ -373,15 +373,14 @@ function serializeTriggerLibraryPreservingSource(inputLibrary) {
   return output;
 }
 
-export function serializeTriggerLibraryCanonical(inputLibrary) {
-  const library = normalizeTriggerLibrary(inputLibrary);
+export function serializeTriggerLibraryCanonical(library) {
   const libraryId = String(library.id ?? '');
   if (!/^[A-Za-z0-9_]+$/u.test(libraryId)) {
     throw new TypeError('Trigger library id must be an ASCII identifier');
   }
-  const elements = Object.values(library.elements ?? {}).sort((left, right) =>
-    elementKey(left).localeCompare(elementKey(right)),
-  );
+  const elements = Object.values(library.elements ?? {})
+    .map((element) => ({ element, key: elementKey(element) }))
+    .sort((left, right) => left.key.localeCompare(right.key));
   const rootRefs = (library.items ?? []).map((item) => ({
     type: item.type,
     library: item.library ?? libraryId,
@@ -391,7 +390,7 @@ export function serializeTriggerLibraryCanonical(inputLibrary) {
   // declares <Library Id="...">. Emitting the wrapper for a map produces a
   // document the editor reads as a stray library instead of as the map's own
   // triggers, which is why such a map fails to open.
-  const implicit = inputLibrary.implicit === true;
+  const implicit = library.implicit === true;
   implicitLibraryScope = implicit ? libraryId : undefined;
   try {
     // Keeping every XML line in one giant array is disproportionately costly:
@@ -419,7 +418,7 @@ export function serializeTriggerLibraryCanonical(inputLibrary) {
     for (const ref of rootRefs)
       for (const line of refTag('Item', ref, libraryId, '      ')) writeLine(line);
     writeLine('    </Root>');
-    for (const element of elements) {
+    for (const { element } of elements) {
       const id = String(element.id ?? '');
       const typeName = String(element.type ?? '');
       if (!id || !typeName) continue;

@@ -24,6 +24,7 @@ export interface Artifact {
   id: string;
   title: string;
   kind: 'script' | 'markup' | 'report' | 'archive';
+  draft?: boolean;
 }
 export interface DocumentPreview {
   name: string;
@@ -42,6 +43,8 @@ export interface JobSnapshot {
   exitCode?: number;
   output?: string;
   artifacts: Artifact[];
+  recoveredArchive?: Artifact;
+  recoveredMarkup?: Artifact;
   result?: unknown;
   request?: RecoveryRequest;
   progress?: { percent: number; stage: string };

@@ -1245,13 +1245,17 @@ function generatedGraphRefersToLocal(roots, local, ctx) {
 function generatedScriptMentions(roots, names, ctx) {
   if (!names.length) return false;
 
-  const pattern = new RegExp(`(?<![\\w])(?:${names.join('|')})(?![\\w])`, 'u');
+  const pattern = iteratorPattern(names);
 
   return generatedGraphSome(
     roots,
     ctx,
-    (record) => typeof record['scriptCode'] === 'string' && pattern.test(record['scriptCode']),
+    (record) => typeof record.scriptCode === 'string' && pattern.test(record.scriptCode),
   );
+}
+
+function iteratorPattern(names) {
+  return new RegExp(`(?<![\\w])(?:${names.join('|')})(?![\\w])`, 'u');
 }
 
 function iteratorSpellings(names, ctx) {
@@ -1319,8 +1323,10 @@ function removeCapturedLoopLocal(local, roots, ctx) {
 
   // complete output library for every generated helper.
 
-  if (generatedGraphRefersToLocal(roots, local, ctx)) return;
+  if (!generatedGraphRefersToLocal(roots, local, ctx)) retireCapturedLoopLocal(local, ctx);
+}
 
+function retireCapturedLoopLocal(local, ctx) {
   deferLocalRetirement(local.id, ctx);
 
   ctx.localVarByGalaxyName.delete(local.name);
@@ -1754,7 +1760,10 @@ export function tryBuildWaitForConditionWithMaxFromStmtSequence(stmts, index, su
   const names = new Set([timerVarName]);
 
   if (
-    syntaxMentionsAny(statements, names, new Set([stmts[index], s1, declaration])) ||
+    functionSyntaxIndex(statements).mentionsOutside(
+      names,
+      new Set([stmts[index], s1, declaration]),
+    ) ||
     syntaxMentionsAny(
       [negExpr, waitCall.tExpr, waitCall.timeTypeExpr, right.right],
       names,
@@ -2025,7 +2034,10 @@ export function tryBuildSwitchFromStmtSequence(stmts, index, subFuncTypeRef, ctx
   if (
     !declared ||
     declared.initializer ||
-    syntaxMentionsAny(full, new Set([switchVarName]), new Set([stmts[index], s1, declared])) ||
+    functionSyntaxIndex(full).mentionsOutside(
+      new Set([switchVarName]),
+      new Set([stmts[index], s1, declared]),
+    ) ||
     syntaxMentionsAny(
       [...chain.cases.flatMap((entry) => entry.bodyStmts), ...chain.defaultStmts],
       new Set([switchVarName]),
@@ -2066,8 +2078,7 @@ export function tryBuildSwitchFromStmtSequence(stmts, index, subFuncTypeRef, ctx
     );
 
     if (
-      !syntaxMentionsAny(
-        statements,
+      !functionSyntaxIndex(statements).mentionsOutside(
         new Set([switchVarName]),
         new Set([stmts[index], s1, declaration]),
       )
@@ -3334,6 +3345,47 @@ function loadedAutoSequenceTemplates(ctx) {
   return indexed;
 }
 
+const functionSyntaxIndexes = new WeakMap();
+export function functionSyntaxIndex(statements) {
+  let index = functionSyntaxIndexes.get(statements);
+  if (index) return index;
+  const declarations = new Map();
+  for (const stmt of statements) {
+    if (stmt.kind === 141 && !declarations.has(stmt.name?.name))
+      declarations.set(stmt.name?.name, stmt);
+  }
+  const uses = new Map();
+  const pending = statements.map((node) => ({ node, parent: undefined }));
+  while (pending.length) {
+    const path = pending.pop();
+    const node = path.node;
+    if (!node || typeof node !== 'object') continue;
+    if (node.kind === 113) {
+      let paths = uses.get(node.name);
+      if (!paths) uses.set(node.name, (paths = []));
+      paths.push(path);
+    }
+    for (const child of syntaxChildren(node)) pending.push({ node: child, parent: path });
+  }
+  index = {
+    declarations,
+    mentionsOutside(names, excluded) {
+      for (const name of names) {
+        for (const occurrence of uses.get(name) ?? []) {
+          // Use the actual traversal path. Synthetic statements can share nodes
+          // or carry parser parent pointers from a different syntax view.
+          let path = occurrence;
+          while (path && !excluded.has(path.node)) path = path.parent;
+          if (!path) return true;
+        }
+      }
+      return false;
+    },
+  };
+  functionSyntaxIndexes.set(statements, index);
+  return index;
+}
+
 function syntaxMentionsAny(nodes, names, excluded) {
   const pending = [...nodes];
 
@@ -3354,12 +3406,10 @@ function bindPromotedAutoParameters(template, bindings, ctx) {
   for (const [auto, parameter] of template.promotedAutos ?? []) {
     const name = getIdentifierName(bindings.autos.get(auto));
 
-    const declaration = name
-      ? ctx.structuredFunctionStatements?.find(
-          (node) =>
-            node.kind === 141 /* SyntaxKind.VariableDeclaration */ && node.name?.name === name,
-        )
-      : undefined;
+    const declaration =
+      name && ctx.structuredFunctionStatements
+        ? functionSyntaxIndex(ctx.structuredFunctionStatements).declarations.get(name)
+        : undefined;
 
     if (
       !declaration?.initializer ||
@@ -3398,8 +3448,8 @@ function privateGeneratedAutoLocals(nodes, bindings, ctx, promoted) {
 
     const variable = id ? ctx.elements[id] : undefined;
 
-    const declaration = ctx.structuredFunctionStatements.find(
-      (node) => node.kind === 141 /* SyntaxKind.VariableDeclaration */ && node.name?.name === name,
+    const declaration = functionSyntaxIndex(ctx.structuredFunctionStatements).declarations.get(
+      name,
     );
 
     if (
@@ -3425,7 +3475,10 @@ function privateGeneratedAutoLocals(nodes, bindings, ctx, promoted) {
   if (syntaxMentionsAny([...bindings.parameters.values()], names, new Set())) return undefined;
 
   if (
-    syntaxMentionsAny(ctx.structuredFunctionStatements, names, new Set([...nodes, ...declarations]))
+    functionSyntaxIndex(ctx.structuredFunctionStatements).mentionsOutside(
+      names,
+      new Set([...nodes, ...declarations]),
+    )
   )
     return undefined;
 
@@ -3602,8 +3655,6 @@ export function tryBuildLoadedAutoTemplateSequence(stmts, index, subFuncTypeRef,
 
   if (!firstName || !extractAutoVarName(firstName)) return undefined;
 
-  const remaining = stmts.slice(index);
-
   const libraries = loadedTemplateLibraries(ctx);
 
   // Pick Each Player (`#AUTOVAR(var)`) and For Each Player (`#PARAM(var)`) expand to
@@ -3621,14 +3672,15 @@ export function tryBuildLoadedAutoTemplateSequence(stmts, index, subFuncTypeRef,
   for (const template of loadedAutoSequenceTemplates(ctx)) {
     const matched = matchTemplatePrefix(
       template,
-      remaining,
+      stmts,
       ctx.returnType === 'bool' ? { kind: 67 /* SyntaxKind.TrueKeyword */ } : undefined,
+      index,
     );
 
     if (!matched?.consumed || !bindPromotedAutoParameters(template, matched.bindings, ctx))
       continue;
 
-    const nodes = remaining.slice(0, matched.consumed);
+    const nodes = stmts.slice(index, index + matched.consumed);
 
     if (
       !templateMakesProgress(nodes, matched.bindings) ||
@@ -3720,13 +3772,28 @@ export function tryBuildLoadedAutoTemplateSequence(stmts, index, subFuncTypeRef,
 
     const autos = [...matched.bindings.autos.values()].map((node) => node.name);
 
-    if (generatedScriptMentions(generatedRoots, iteratorSpellings(autos, ctx), ctx)) {
+    const spellings = iteratorSpellings(autos, ctx);
+    const pattern = spellings.length ? iteratorPattern(spellings) : undefined;
+    const referencedLocals = new Set();
+    const scriptMentionsAuto = generatedGraphSome(generatedRoots, ctx, (record) => {
+      if (
+        record.type === 'Variable' &&
+        (record.library === undefined || record.library === ctx.libId)
+      )
+        referencedLocals.add(record.id);
+      return (
+        pattern !== undefined &&
+        typeof record.scriptCode === 'string' &&
+        pattern.test(record.scriptCode)
+      );
+    });
+    if (scriptMentionsAuto) {
       releaseAutoCallId(claimedId);
-
       return undefined;
     }
-
-    for (const local of privateLocals) removeCapturedLoopLocal(local, generatedRoots, ctx);
+    for (const local of privateLocals) {
+      if (!referencedLocals.has(local.id)) retireCapturedLoopLocal(local, ctx);
+    }
 
     return { ref, consumed: matched.consumed };
   }
@@ -3735,19 +3802,17 @@ export function tryBuildLoadedAutoTemplateSequence(stmts, index, subFuncTypeRef,
 }
 
 export function tryBuildLoadedStatementTemplateSequence(stmts, index, subFuncTypeRef, ctx) {
-  const remaining = stmts.slice(index);
-
   const libraries = loadedTemplateLibraries(ctx);
 
   for (const template of loadedStatementSequenceTemplates(ctx)) {
     const defaultReturn =
       ctx.returnType === 'bool' ? { kind: 67 /* SyntaxKind.TrueKeyword */ } : undefined;
 
-    const matched = matchTemplatePrefix(template, remaining, defaultReturn);
+    const matched = matchTemplatePrefix(template, stmts, defaultReturn, index);
 
     if (!matched?.consumed) continue;
 
-    const nodes = remaining.slice(0, matched.consumed);
+    const nodes = stmts.slice(index, index + matched.consumed);
 
     if (
       !templateMakesProgress(nodes, matched.bindings) ||
@@ -4111,7 +4176,9 @@ export function commentActionsBetween(stmts, ctx, role) {
   )
     return [];
 
-  const siblings = Array.from(block.statements ?? []);
+  const siblings = block.statements ?? [];
+  let siblingIndex = 0;
+  let statementPositions;
 
   const lineStart = (offset) => text.lastIndexOf('\n', offset - 1) + 1;
 
@@ -4145,9 +4212,23 @@ export function commentActionsBetween(stmts, ctx, role) {
 
     const offset = block.pos + match.index + match[1].length;
 
-    const next = siblings.find((statement) => statement.pos > offset);
+    while (siblingIndex < siblings.length && !(siblings[siblingIndex].pos > offset)) siblingIndex++;
+    const next = siblings[siblingIndex];
 
-    const before = next === undefined ? (lastInList ? stmts.length : -1) : stmts.indexOf(next);
+    if (next && stmts !== siblings && !statementPositions) {
+      statementPositions = new Map();
+      for (const [position, stmt] of stmts.entries()) {
+        if (!statementPositions.has(stmt)) statementPositions.set(stmt, position);
+      }
+    }
+    const before =
+      next === undefined
+        ? lastInList
+          ? stmts.length
+          : -1
+        : stmts === siblings
+          ? siblingIndex
+          : (statementPositions.get(next) ?? -1);
 
     if (before < 0) continue;
 

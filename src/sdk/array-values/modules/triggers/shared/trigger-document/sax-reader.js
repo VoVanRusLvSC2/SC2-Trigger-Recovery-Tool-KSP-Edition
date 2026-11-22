@@ -1,4 +1,4 @@
-import sax from "sax";
+import sax from "../../../../../../vendor/sax/lib/sax.js";
 import { serializeTriggerLibraryCanonical } from "../../../../../../conversion/implicit-gui-localization/trigger-xml.js";
 import { xmlTree } from "./lossless-xml.js";
 import { parseTriggerStrings, applyTriggerStringsByType } from "./trigger-strings.js";
@@ -56,6 +56,74 @@ function normalizeXml(xml, root) {
   const embedded = root.children.filter((node) => node.tag === "Library");
   return `<TriggerData><Library Id="${id}">` + direct.map((node) => xml.slice(node.start, node.end)).join("") + "</Library>" + embedded.map((node) => xml.slice(node.start, node.end)).join("") + "</TriggerData>";
 }
+const ELEMENT_FLAGS = {
+  FlagNative: "Native",
+  FlagAction: "Action",
+  FlagCall: "Call",
+  FlagEvent: "Event",
+  Template: "Template",
+  FlagCustomScript: "CustomScript",
+  FlagOperator: "Operator",
+  FlagInline: "Inline",
+  FlagCustomAI: "CustomAI",
+  FlagSubFunctions: "SubFunctions",
+  FlagAllowBreak: "AllowBreak",
+  FlagHidden: "Hidden",
+  FlagNoScriptPrefix: "NoScriptPrefix",
+  Deprecated: "Deprecated",
+  Internal: "Internal",
+  FlagRestricted: "Restricted",
+  FlagCreateThread: "CreateThread",
+  FlagCondition: "Condition",
+  NotYetImplemented: "NotYetImplemented"
+};
+
+const KNOWN_ELEMENT_FIELDS = /* @__PURE__ */ new Set([
+  "Identifier",
+  "Disabled",
+  "InitOff",
+  "Grammar",
+  "ScriptCode",
+  "ExpressionText",
+  "Comment",
+  "InitFunc",
+  "Value",
+  "ReturnType",
+  "VariableType",
+  "ParameterType",
+  "FunctionDef",
+  "ParameterDef",
+  "Preset",
+  "PresetExtends",
+  "ValueElement",
+  "ValuePreset",
+  "ExpressionParam",
+  "ValueParam",
+  "StructMember",
+  "Default",
+  "Event",
+  "Condition",
+  "Variable",
+  "FunctionCall",
+  "Action",
+  "Parameter",
+  "SubFunctionType",
+  "Item",
+  "InitialValue",
+  "Array",
+  "BaseType",
+  "ValueType",
+  "ExpressionType",
+  "ExpressionCode",
+  "ValueId",
+  "ValueTypeInfo",
+  "CustomType",
+  "ValueGameType",
+  "TypeElement",
+  "Constant",
+  "ArraySize"
+]);
+
 function freshEl(type, id, lib) {
   return {
     type,
@@ -229,7 +297,7 @@ function finalize(b) {
       return void 0;
   }
 }
-function parseTriggerXmlSync(xmlContent) {
+function parseTriggerXmlSync(xmlContent, { retainSource = true } = {}) {
   const originalRoot = xmlTree(xmlContent);
   const xml = normalizeXml(xmlContent, originalRoot);
   const parser = sax.parser(true, { trim: false, normalize: false });
@@ -320,29 +388,8 @@ function parseTriggerXmlSync(xmlContent) {
       childTag = name;
       childIsRef = !!(attrs.Id ?? attrs.id);
       inPTContainer = name === "ReturnType" || name === "VariableType" || name === "ParameterType";
-      const FLAG = {
-        FlagNative: "Native",
-        FlagAction: "Action",
-        FlagCall: "Call",
-        FlagEvent: "Event",
-        Template: "Template",
-        FlagCustomScript: "CustomScript",
-        FlagOperator: "Operator",
-        FlagInline: "Inline",
-        FlagCustomAI: "CustomAI",
-        FlagSubFunctions: "SubFunctions",
-        FlagAllowBreak: "AllowBreak",
-        FlagHidden: "Hidden",
-        FlagNoScriptPrefix: "NoScriptPrefix",
-        Deprecated: "Deprecated",
-        Internal: "Internal",
-        FlagRestricted: "Restricted",
-        FlagCreateThread: "CreateThread",
-        FlagCondition: "Condition",
-        NotYetImplemented: "NotYetImplemented"
-      };
-      if (FLAG[name]) {
-        el.flags.push(FLAG[name]);
+      if (ELEMENT_FLAGS[name]) {
+        el.flags.push(ELEMENT_FLAGS[name]);
         return;
       }
       if (name === "Disabled") {
@@ -413,52 +460,7 @@ function parseTriggerXmlSync(xmlContent) {
         el.section = attrs.Value ?? attrs.value ?? "";
         return;
       }
-      const knownDirect = /* @__PURE__ */ new Set([
-        "Identifier",
-        "Disabled",
-        "InitOff",
-        "Grammar",
-        "ScriptCode",
-        "ExpressionText",
-        "Comment",
-        "InitFunc",
-        "Value",
-        "ReturnType",
-        "VariableType",
-        "ParameterType",
-        "FunctionDef",
-        "ParameterDef",
-        "Preset",
-        "PresetExtends",
-        "ValueElement",
-        "ValuePreset",
-        "ExpressionParam",
-        "ValueParam",
-        "StructMember",
-        "Default",
-        "Event",
-        "Condition",
-        "Variable",
-        "FunctionCall",
-        "Action",
-        "Parameter",
-        "SubFunctionType",
-        "Item",
-        "InitialValue",
-        "Array",
-        "BaseType",
-        "ValueType",
-        "ExpressionType",
-        "ExpressionCode",
-        "ValueId",
-        "ValueTypeInfo",
-        "CustomType",
-        "ValueGameType",
-        "TypeElement",
-        "Constant",
-        "ArraySize"
-      ]);
-      if (!knownDirect.has(name)) {
+      if (!KNOWN_ELEMENT_FIELDS.has(name)) {
         const rawAttributes = {};
         for (const [key, value] of Object.entries(attrs)) {
           if (typeof value === "string") rawAttributes[key] = value;
@@ -693,7 +695,9 @@ function parseTriggerXmlSync(xmlContent) {
       if (!node) continue;
       raw = "<TriggerData>" + xmlContent.slice(node.start, node.end) + "</TriggerData>";
     }
-    library.xmlSource = { raw, canonical: serializeTriggerLibraryCanonical(library) };
+    if (retainSource) library.xmlSource = { raw, canonical: serializeTriggerLibraryCanonical(library) };
+    else if (!/^[A-Za-z0-9_]+$/u.test(String(library.id ?? '')))
+      throw new TypeError('Trigger library id must be an ASCII identifier');
   }
   return libraryMap;
 }

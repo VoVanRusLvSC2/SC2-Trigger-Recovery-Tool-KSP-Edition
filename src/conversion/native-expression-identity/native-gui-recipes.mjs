@@ -55,7 +55,15 @@ export function analyzeNativeGuiFacts(sources, externalSources = []) {
       parents.set(n, p);
     });
   }
-  for (const f of functions.values()) walk(f.body, (n) => functionOf.set(n, f));
+  const unitGroupLocals = new Map();
+  for (const f of functions.values()) {
+    const locals = new Set();
+    walk(f.body, (n) => {
+      functionOf.set(n, f);
+      if (n.kind === 141 && n.type?.kind === 104) locals.add(id(n.name));
+    });
+    if (locals.size) unitGroupLocals.set(f, locals);
+  }
   const calls = all.filter((n) => n.kind === 121),
     units = new Set(),
     players = new Set(),
@@ -76,11 +84,7 @@ export function analyzeNativeGuiFacts(sources, externalSources = []) {
     'UnitGroupClear',
     'UnitGroupHasUnit',
   ]);
-  for (const f of functions.values()) {
-    const locals = new Set();
-    walk(f.body, (n) => {
-      if (n.kind === 141 && n.type?.kind === 104) locals.add(id(n.name));
-    });
+  for (const [f, locals] of unitGroupLocals) {
     // A group passed to an unknown function could be rebound through a reference.
     const escaped = new Set();
     walk(f.body, (n) => {

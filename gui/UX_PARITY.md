@@ -10,7 +10,7 @@ This is a behavioral port, not a redistribution of its private source or game as
 | Hierarchy | Raw XML nesting, truncated child lists | Resolve Root/Item references, scope IDs by Library, preserve order, show cycles and missing references, keyboard navigation and node count |
 | Search | Find next only; closes after a match | Live literal search, result snippets and line numbers, Previous/Next/Clear/Close, Ctrl+F and F3/Shift+F3 |
 | Code panes | Plain unnumbered read-only text | Synchronized line gutters, visible-line syntax coloring, stable selection and line counts |
-| Save / Export | Standalone XML / map download, respectively | SAVE TRIGGERS obtains the separate recovered map; EXPORT FILE exports standalone Triggers XML |
+| Save / Export | Standalone XML / map download, respectively | INSERT TRIGGERS INTO MAP downloads a copy with embedded triggers. EXPORT FILE exports standalone Triggers XML. |
 | Local libraries | Read-only dependency JSON | Add, enable, remove local dependency search roots; show actual resolved dependencies |
 | Information | JSON-first modal | Generation status and issues, live activity, optional detailed evidence, OK |
 | Windows | Modal only; no backdrop dismissal | Search and hierarchy stay open while inspecting code; movable headers, Escape, explicit Close; settings dismisses on its backdrop |

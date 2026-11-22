@@ -11,6 +11,8 @@ import { createGuiCallTypeResolver } from './gui-call-contract.mjs';
 // remains raw. No generic code text, user function, Native or stub is allowed.
 const key = (r, owner) => JSON.stringify([r.library ?? owner, r.type, r.id]);
 const values = (l) => Object.values(l?.elements ?? {});
+const hasExpression = (element) =>
+  element.expressionText !== undefined || element.expressionParams?.length;
 const numeric = (t) => t === 'int' || t === 'fixed';
 const declared = (p, type) => (!p.valueType || p.valueType.type === type ? type : undefined);
 export const remainderType = (a, b) =>
@@ -29,16 +31,35 @@ export function validateGuiExpressionMarkers(ownedLibraries, externalLibraries =
   for (const [id, l] of all)
     for (const e of values(l)) {
       const k = key(e, id);
-      if (index.has(k) && index.get(k) !== e)
+      const previous = index.get(k);
+      if (previous && previous !== e)
         issues.push({ code: 'DUPLICATE_ELEMENT_IDENTITY', identity: k });
       else index.set(k, e);
     }
+  const ownedElements = [...owned].map(([id, library]) => ({
+    id,
+    library,
+    elements: values(library),
+  }));
+  // Untyped code markers still fail, and the duplicate audit above always
+  // runs. The reference census is only used by expressions with slots.
+  if (!ownedElements.some(({ elements }) => elements.some(hasExpression))) {
+    for (const { id, elements } of ownedElements)
+      for (const p of elements)
+        if (p.expressionCode !== undefined)
+          issues.push({
+            code: 'UNPROVEN_GUI_EXPRESSION_MARKER',
+            owner: key(p, id),
+            id: p.id,
+            marker: p.expressionCode,
+          });
+    return { valid: issues.length === 0, validMarkers, expressions, issues };
+  }
   const resolve = (r, owner) =>
     r && typeof r.id === 'string' && typeof r.type === 'string'
       ? index.get(key(r, owner))
       : undefined;
-  const refs = [],
-    usageByIdentity = new Map();
+  const usageByIdentity = new Map();
   function visit(v, owner, source, path) {
     if (!v || typeof v !== 'object') return;
     if (Array.isArray(v)) {
@@ -48,7 +69,6 @@ export function validateGuiExpressionMarkers(ownedLibraries, externalLibraries =
     if (v.type && v.id) {
       const identity = key(v, owner),
         use = { identity, source, path };
-      refs.push(use);
       const uses = usageByIdentity.get(identity) ?? [];
       uses.push(use);
       usageByIdentity.set(identity, uses);
@@ -57,11 +77,14 @@ export function validateGuiExpressionMarkers(ownedLibraries, externalLibraries =
     for (const [k, x] of Object.entries(v))
       if (!['parent', 'xmlSource', 'rawXml'].includes(k)) visit(x, owner, source, path + '.' + k);
   }
-  for (const [id, l] of owned) {
-    for (const e of values(l))
+  for (const { id, library, elements } of ownedElements) {
+    for (const e of elements) {
+      const source = key(e, id);
       for (const [k, v] of Object.entries(e))
-        if (k !== 'parent' && k !== 'xmlSource' && k !== 'rawXml') visit(v, id, key(e, id), k);
-    if (l.rootRefs ?? l.items) visit(l.rootRefs ?? l.items, id, 'library:' + id, 'rootRefs');
+        if (k !== 'parent' && k !== 'xmlSource' && k !== 'rawXml') visit(v, id, source, k);
+    }
+    if (library.rootRefs ?? library.items)
+      visit(library.rootRefs ?? library.items, id, 'library:' + id, 'rootRefs');
   }
   const forms = [
     'value',
@@ -166,9 +189,9 @@ export function validateGuiExpressionMarkers(ownedLibraries, externalLibraries =
     }
     return undefined;
   }
-  for (const [id, l] of owned)
-    for (const p of values(l))
-      if (p.expressionText !== undefined || p.expressionParams?.length) {
+  for (const { id, elements } of ownedElements)
+    for (const p of elements)
+      if (hasExpression(p)) {
         const fail = (code) =>
           issues.push({
             code,
@@ -271,8 +294,8 @@ export function validateGuiExpressionMarkers(ownedLibraries, externalLibraries =
         }
       }
   // A dangling/foreign/shadowed marker is never exempted from the raw gate.
-  for (const [id, l] of owned)
-    for (const p of values(l))
+  for (const { id, elements } of ownedElements)
+    for (const p of elements)
       if (p.expressionCode !== undefined && !validMarkers.has(key(p, id)))
         issues.push({
           code: 'UNPROVEN_GUI_EXPRESSION_MARKER',

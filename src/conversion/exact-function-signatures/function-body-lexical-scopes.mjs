@@ -7,9 +7,13 @@ export function isolateFunctionBodyLexicalScopes(ast, functionLocals) {
   const records = [];
   for (const fn of ast.statements) {
     if (fn.kind !== K.FunctionDeclaration || !fn.body || !fn.symbol) continue;
-    const foreign = [...fn.symbol.members.values()].some((symbol) =>
-      symbol.declarations.some((d) => d.kind === K.ParameterDeclaration && d.parent !== fn),
-    );
+    let foreign = false;
+    for (const symbol of fn.symbol.members.values()) {
+      if (symbol.declarations.some((d) => d.kind === K.ParameterDeclaration && d.parent !== fn)) {
+        foreign = true;
+        break;
+      }
+    }
     if (!foreign) continue;
     const own = functionLocals.get(fn);
     if (!own) throw Error('FUNCTION_BODY_LEXICAL_TABLE_REQUIRED');

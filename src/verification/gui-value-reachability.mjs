@@ -20,15 +20,14 @@ function graph(xml, implicitOwner) {
       .map((n) => ({ owner: n.attributes.Id, nodes: n.children })),
   ];
   const definitions = new Map(),
-    roots = [],
+    pending = [],
     owners = new Set();
-  const references = (node, owner, out = []) => {
+  const references = (node, owner, out) => {
     if (node.tag === 'Library' || node.tag === 'Element')
       throw Error('GUI_NESTED_DEFINITION_UNSUPPORTED');
     const { Type: type, Id: id, Library: library } = node.attributes;
     if (type && id) out.push(key(library ?? owner, type, id));
     for (const child of node.children) references(child, owner, out);
-    return out;
   };
   for (const { owner, nodes } of scopes) {
     if (!nodes.length) continue;
@@ -36,35 +35,36 @@ function graph(xml, implicitOwner) {
     owners.add(owner);
     for (const node of nodes) {
       if (node.tag !== 'Element') {
-        roots.push(...references(node, owner));
+        references(node, owner, pending);
         continue;
       }
       const { Type: type, Id: id } = node.attributes;
       if (!type || !id) throw Error('GUI_TYPED_ELEMENT_IDENTITY_REQUIRED');
       const k = key(owner, type, id);
       if (definitions.has(k)) throw Error('GUI_TYPED_ELEMENT_DUPLICATED');
-      const edges = node.children.flatMap((child) => references(child, owner));
+      const edges = node.children.length ? [] : undefined;
+      for (const child of node.children) references(child, owner, edges);
       definitions.set(k, {
         library: owner,
         type,
         id,
         edges,
-        sourceSha256: sha(xml.slice(node.start, node.end)),
+        start: node.start,
+        end: node.end,
+        reachable: false,
       });
       // Definitions may have defaults and implementation values even when no
       // visible tree Item refers to them. This pass only checks transient values.
-      if (!transient.has(type)) roots.push(k);
+      if (!transient.has(type)) pending.push(k);
     }
   }
-  const reachable = new Set(),
-    pending = [...roots];
   for (let i = 0; i < pending.length; i++) {
-    const k = pending[i];
-    if (reachable.has(k)) continue;
-    reachable.add(k);
-    pending.push(...(definitions.get(k)?.edges ?? []));
+    const definition = definitions.get(pending[i]);
+    if (!definition || definition.reachable) continue;
+    definition.reachable = true;
+    for (const edge of definition.edges ?? []) pending.push(edge);
   }
-  return { definitions, reachable };
+  return definitions;
 }
 
 /** Necessary, read-only gate: a new detached value is discarded by Editor.
@@ -78,13 +78,21 @@ export function auditGuiValueReachability({ xml, existingXml = '', implicitLibra
   const issues = [],
     preservedOrphans = [];
   let checked = 0;
-  for (const [k, element] of after.definitions) {
+  for (const [k, element] of after) {
     if (!transient.has(element.type)) continue;
     checked++;
-    if (after.reachable.has(k)) continue;
-    const { edges, ...record } = element;
-    const original = before?.definitions.get(k);
-    if (original && !before.reachable.has(k) && original.sourceSha256 === element.sourceSha256)
+    if (element.reachable) continue;
+    const { library, type, id, start, end } = element;
+    // Only detached values appear in evidence or require comparison with a
+    // pre-existing detached definition. The reachability walk is unchanged.
+    const sourceSha256 = sha(xml.slice(start, end));
+    const record = { library, type, id, sourceSha256 };
+    const original = before?.get(k);
+    if (
+      original &&
+      !original.reachable &&
+      sha(existingXml.slice(original.start, original.end)) === sourceSha256
+    )
       preservedOrphans.push(record);
     else issues.push({ ...record, reason: 'NEW_UNREACHABLE_GUI_VALUE' });
   }

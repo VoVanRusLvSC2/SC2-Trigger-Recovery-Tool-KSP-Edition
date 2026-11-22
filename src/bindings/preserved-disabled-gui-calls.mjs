@@ -1,6 +1,16 @@
 // An incomplete disabled source call may be retained as editable GUI. Never
 // grant this exemption to changed nodes or to any enabled structural path.
 export function collectPreservedDisabledGuiCalls(libraries, original) {
+  // A preserved exemption needs both an old element and a disabled ancestor.
+  // Enabled calls still go through the ordinary role and formal checks.
+  if (
+    original.size === 0 ||
+    (libraries instanceof Map &&
+      ![...libraries.values()].some((lib) =>
+        Object.values(lib.elements ?? {}).some((element) => element.disabled === true),
+      ))
+  )
+    return { isPreservedDisabledCall: () => false };
   const key = (r, owner) => JSON.stringify([r.library ?? owner, r.type, r.id]);
   const elements = new Map(),
     old = new Map(),
@@ -42,7 +52,8 @@ export function collectPreservedDisabledGuiCalls(libraries, original) {
     const unchanged =
       state.unchanged &&
       old.has(state.id) &&
-      JSON.stringify(entry.e) === JSON.stringify(old.get(state.id));
+      (entry.e === old.get(state.id) ||
+        JSON.stringify(entry.e) === JSON.stringify(old.get(state.id)));
     const visit = JSON.stringify([state.id, disabled, unchanged]);
     if (seen.has(visit)) continue;
     seen.add(visit);

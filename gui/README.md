@@ -24,8 +24,12 @@ server; closing the browser tab alone does not stop an active recovery.
    markup appear immediately. Opening a map never starts recovery.
 2. **GENERATE TRIGGERS** runs automatic recovery with a separately named output.
    SC2 and the unchanged strict benchmark are discovered automatically.
-3. **SAVE TRIGGERS** downloads the separately generated map. It is enabled once
-   a candidate exists. The original map is never overwritten.
+3. **INSERT TRIGGERS INTO MAP** downloads a separate map containing the embedded
+   Triggers. **INSERT TRIGGERS INTO MOD** does the same for a mod. The original
+   package is never overwritten.
+   If recovery stops during validation, **DOWNLOAD DRAFT** saves a packed draft
+   with embedded triggers. If only the recovered XML is available, use
+   **DOWNLOAD TRIGGERS XML**.
 4. **EXPORT FILE** exports complete standalone Triggers XML with a file-name
    prompt. It is available as soon as markup is loaded.
 

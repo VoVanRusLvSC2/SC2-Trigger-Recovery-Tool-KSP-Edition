@@ -1,5 +1,6 @@
 import * as previous from './candidate-alternate-3.mjs';
 import { auditGuiRoleUse } from '../preserved-disabled-calls/gui-role-use.context-edges.comments.mjs';
+import { withRoleDependencyScope } from '../implicit-gui-localization/role-dependency-scope.mjs';
 export {
   createTriggerConversionContext,
   triggerConversionBounds,
@@ -20,9 +21,11 @@ function preflight(xml, input, existingXml = '') {
   return proof;
 }
 export async function convertGalaxyToTriggers(input, signal) {
-  const result = await previous.convertGalaxyToTriggers(input, signal);
-  const proof = preflight(result.output.triggerData, input, input.existingTriggerData ?? '');
-  return { ...result, guiRoleUse: proof };
+  return withRoleDependencyScope(async () => {
+    const result = await previous.convertGalaxyToTriggers(input, signal);
+    const proof = preflight(result.output.triggerData, input, input.existingTriggerData ?? '');
+    return { ...result, guiRoleUse: proof };
+  });
 }
 export async function convertTriggersToGalaxy(xml, input, signal) {
   // Forward conversion preserves authored return contracts; it must still

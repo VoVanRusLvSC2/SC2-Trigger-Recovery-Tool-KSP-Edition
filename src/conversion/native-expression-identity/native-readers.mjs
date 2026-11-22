@@ -13,6 +13,27 @@ export function bindZeroArgumentNativeReaders(
   dependencies,
   funcNames,
 ) {
+  const readers = [];
+  for (const parameter of Object.values(elements)) {
+    if (
+      parameter.type !== 'Param' ||
+      !parameter.scriptCode ||
+      parameter.functionCall ||
+      parameter.variable ||
+      parameter.preset ||
+      parameter.valueElement ||
+      parameter.expressionCode
+    )
+      continue;
+    const match = /^([A-Za-z][A-Za-z0-9_]*)\s*\(\s*\)$/u.exec(parameter.scriptCode.trim());
+    if (!match) continue;
+    const name = match[1];
+    const own = funcNames?.get(name);
+    if (own && (own.library ?? libId) === libId && !own.unresolvedGuiBinding) continue;
+    readers.push({ parameter, name });
+  }
+  if (!readers.length) return [];
+  const wanted = new Set(readers.map(({ name }) => name));
   const libraries = new Map(dependencies ?? []);
   if (nativeLibrary) libraries.set(nativeLibrary.id, nativeLibrary);
 
@@ -32,7 +53,7 @@ export function bindZeroArgumentNativeReaders(
           f.returnType?.type
         ) {
           const name = f.identifier ?? f.name;
-          if (!/^[A-Za-z][A-Za-z0-9_]*$/u.test(name ?? '')) continue;
+          if (!wanted.has(name)) continue;
 
           const list = index.get(name) ?? [];
           list.push({ f, l });
@@ -41,49 +62,34 @@ export function bindZeroArgumentNativeReaders(
 
   const changes = [];
 
-  for (const p of Object.values(elements))
-    if (
-      p.type === 'Param' &&
-      p.scriptCode &&
-      !p.functionCall &&
-      !p.variable &&
-      !p.preset &&
-      !p.valueElement &&
-      !p.expressionCode
-    ) {
-      const m = /^([A-Za-z][A-Za-z0-9_]*)\s*\(\s*\)$/u.exec(p.scriptCode.trim());
-      if (!m) continue;
+  for (const { parameter: p, name } of readers) {
+    const matches = (index.get(name) ?? []).filter(
+      ({ f }) => f.returnType.type === p.valueType?.type,
+    );
+    if (matches.length !== 1) continue;
 
-      const own = funcNames?.get(m[1]);
-      if (own && (own.library ?? libId) === libId && !own.unresolvedGuiBinding) continue;
+    const { f, l } = matches[0],
+      id = generateId();
 
-      const matches = (index.get(m[1]) ?? []).filter(
-        ({ f }) => f.returnType.type === p.valueType?.type,
-      );
-      if (matches.length !== 1) continue;
+    elements[id] = {
+      type: 'FunctionCall',
+      library: libId,
+      id,
+      functionDef: { type: 'FunctionDef', library: l.id, id: f.id },
+    };
 
-      const { f, l } = matches[0],
-        id = generateId();
+    p.functionCall = { type: 'FunctionCall', library: libId, id };
+    delete p.scriptCode;
 
-      elements[id] = {
-        type: 'FunctionCall',
-        library: libId,
-        id,
-        functionDef: { type: 'FunctionDef', library: l.id, id: f.id },
-      };
-
-      p.functionCall = { type: 'FunctionCall', library: libId, id };
-      delete p.scriptCode;
-
-      changes.push({
-        parameter: p.id,
-        name: m[1],
-        loadedLibrary: l.id,
-        loadedDefinition: f.id,
-        returnType: f.returnType.type,
-        exactSymbolPreserved: true,
-      });
-    }
+    changes.push({
+      parameter: p.id,
+      name,
+      loadedLibrary: l.id,
+      loadedDefinition: f.id,
+      returnType: f.returnType.type,
+      exactSymbolPreserved: true,
+    });
+  }
 
   return changes;
 }

@@ -2,10 +2,13 @@ import { collectPreservedDisabledGuiCalls } from '../../bindings/preserved-disab
 import { qualifySourceNominalReturnRoles } from '../source-nominal-return-roles/retained-nominal-gui-interfaces.replay.mjs';
 import { collectGuiEventContexts } from '../event-comment-edges/gui-event-context-edges.comments.mjs';
 import declarationProfile from '../../verification/gui-declaration-abi.nominal-qualified.json' with { type: 'json' };
-import { createHash } from 'node:crypto';
 import { parseTriggerXmlSync } from '../implicit-gui-localization/sax-reader-alternate-3.js';
+import { roleDependency } from '../implicit-gui-localization/role-dependency-scope.mjs';
 import { createGuiRoleCatalog } from '../../bindings/gui-role-catalog.standard-schema.strict.mjs';
-import { readOwnedGuiLibraries as read } from '../implicit-gui-localization/read-owned-gui-libraries-alternate.mjs';
+import { readOnlyOwnedGuiLibraries as read } from '../implicit-gui-localization/read-owned-gui-libraries-alternate.mjs';
+import { readRecoveryModel, recoveryTextSha256 } from '../../utilities/recovery-parse-scope.mjs';
+
+const parseRoleDependency = (xml) => parseTriggerXmlSync(xml, { retainSource: false });
 
 /** Validate newly emitted return carriers through the same role catalog used
  * for formal/event queries. Unchanged authored GUI remains source-owned. */
@@ -21,7 +24,7 @@ export function auditGuiRoleUse({
     ownerInputs = new Map();
   for (const dependency of dependencyLibraries) {
     const input = dependency.triggerData ?? '',
-      parsed = parseTriggerXmlSync(input);
+      parsed = roleDependency(input) ?? readRecoveryModel(input, parseRoleDependency);
     for (const [id, lib] of parsed) {
       if (libs.has(id)) {
         if (ownerInputs.get(id) !== input) throw Error('AMBIGUOUS_GUI_ROLE_DEPENDENCY');
@@ -33,7 +36,12 @@ export function auditGuiRoleUse({
     }
   }
   const authored = read(xml, implicitLibraryId),
-    old = existingXml ? read(existingXml, implicitLibraryId) : new Map();
+    old =
+      existingXml === xml
+        ? authored
+        : existingXml
+          ? read(existingXml, implicitLibraryId)
+          : new Map();
   for (const [id, lib] of authored) {
     if (libs.has(id)) throw Error('GUI_ROLE_AUTHORED_OWNER_COLLISION');
     libs.set(id, lib);
@@ -47,7 +55,7 @@ export function auditGuiRoleUse({
   );
   let qualifiedSourceReturns = 0;
   const disabledSource = collectPreservedDisabledGuiCalls(authored, old);
-  const catalog = createGuiRoleCatalog(libs, { trustedOwners }),
+  const catalog = createGuiRoleCatalog(libs, { trustedOwners, observedRoles: ['return'] }),
     contexts = collectGuiEventContexts(authored, catalog),
     issues = [...contexts.issues];
   let checked = 0,
@@ -55,12 +63,25 @@ export function auditGuiRoleUse({
     callsChecked = 0,
     preservedDisabledCalls = 0;
   const declarationProfileActive = dependencyLibraries.some(
-    (d) =>
-      createHash('sha256')
-        .update(d.triggerData ?? '')
-        .digest('hex') === declarationProfile.metadata.sha256,
+    (d) => recoveryTextSha256(d.triggerData ?? '') === declarationProfile.metadata.sha256,
   );
   const key = (ref, owner) => JSON.stringify([ref.library ?? owner, ref.type, ref.id]);
+  const formalContracts = new WeakMap();
+  function contractFor(definition, functionOwner) {
+    let byOwner = formalContracts.get(definition);
+    if (!byOwner) formalContracts.set(definition, (byOwner = new Map()));
+    let contract = byOwner.get(functionOwner);
+    if (!contract) {
+      const formals = (definition.parameters ?? []).map((ref) => ({
+        ref,
+        key: key(ref, functionOwner),
+        formal: catalog.resolve(ref, functionOwner, 'ParamDef'),
+      }));
+      contract = { formals, keys: new Set(formals.map((formal) => formal.key)) };
+      byOwner.set(functionOwner, contract);
+    }
+    return contract;
+  }
   for (const [owner, lib] of authored)
     for (const e of Object.values(lib.elements ?? {})) {
       if (e.type !== 'FunctionCall') continue;
@@ -72,10 +93,11 @@ export function auditGuiRoleUse({
         issues.push({ library: owner, id: e.id, reason: 'FUNCTION_DEFINITION_OWNER_UNRESOLVED' });
         continue;
       }
-      const functionOwner = definition.library ?? e.functionDef.library ?? owner,
-        formals = new Set((definition.parameters ?? []).map((r) => key(r, functionOwner))),
-        counts = new Map();
-      for (const ref of e.parameters ?? []) {
+      const functionOwner = definition.library ?? e.functionDef.library ?? owner;
+      const contract = contractFor(definition, functionOwner);
+      const parameters = e.parameters ?? [];
+      const counts = parameters.length ? new Map() : undefined;
+      for (const ref of parameters) {
         const param = catalog.resolve(ref, owner, 'Param');
         if (!param?.parameterDef) {
           issues.push({
@@ -88,7 +110,7 @@ export function auditGuiRoleUse({
         }
         const formalKey = key(param.parameterDef, param.library ?? owner);
         counts.set(formalKey, (counts.get(formalKey) ?? 0) + 1);
-        if (!formals.has(formalKey))
+        if (!contract.keys.has(formalKey))
           issues.push({
             library: owner,
             id: e.id,
@@ -97,9 +119,8 @@ export function auditGuiRoleUse({
             reason: 'CALL_PARAMETER_OWNER_MISMATCH',
           });
       }
-      for (const ref of definition.parameters ?? []) {
-        const formal = catalog.resolve(ref, functionOwner, 'ParamDef'),
-          count = counts.get(key(ref, functionOwner)) ?? 0;
+      for (const { ref, key: formalKey, formal } of contract.formals) {
+        const count = counts?.get(formalKey) ?? 0;
         if (!formal) {
           issues.push({
             library: owner,

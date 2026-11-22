@@ -15,32 +15,21 @@ export function parseTriggerStrings(content) {
         // '=' is localized content. In particular, the editor distinguishes an
         // empty Param/Value from a one-space Param/Value when generating Galaxy.
         const line = rawLine.trimStart();
-        if (!line.trim() || line.startsWith('#'))
+        if (!line || line.startsWith('#'))
             continue;
-        const qualifiedValue = line.match(/^Param\/Value\/lib_(.+)_([A-Fa-f0-9]+)=(.*)$/);
-        if (qualifiedValue) {
-            const [, libId, elementId, value] = qualifiedValue;
-            names.set(`ParamValue:${libId}_${elementId}`, value);
-            continue;
-        }
-        const rootValue = line.match(/^Param\/Value\/([A-Fa-f0-9]+)=(.*)$/);
-        if (rootValue) {
-            const [, elementId, value] = rootValue;
-            names.set(`ParamValue:Root:${elementId}`, value);
+        if (line.startsWith('Param/Value/')) {
+            const valueMatch = /^Param\/Value\/(?:lib_(.+)_)?([A-Fa-f0-9]+)=(.*)$/.exec(line);
+            if (valueMatch) {
+                const [, libId, elementId, value] = valueMatch;
+                names.set(`ParamValue:${libId === undefined ? 'Root:' : libId + '_'}${elementId}`, value);
+            }
             continue;
         }
-        // Format: Type/Name/lib_{Library}_{Id}=Name (element names)
-        const match = line.match(/^(FunctionDef|ParamDef|PresetValue|Preset|Variable|Trigger|Category|Label|SubFuncType|Structure|CustomScript)\/(Name|Grammar)\/lib_([A-Za-z0-9_]+)_([A-Fa-f0-9]+)=(.*)$/);
+        // Named strings can use a qualified library key or a map-root key.
+        const match = /^(FunctionDef|ParamDef|PresetValue|Preset|Variable|Trigger|Category|Label|SubFuncType|Structure|CustomScript)\/(Name|Grammar)\/(?:lib_([A-Za-z0-9_]+)_)?([A-Fa-f0-9]+)=(.*)$/.exec(line);
         if (match) {
             const [, type, field, libId, elementId, name] = match;
-            names.set(`${field === 'Grammar' ? 'Grammar:' : ''}${type}:${libId}_${elementId}`, name.trim());
-            continue;
-        }
-        // Root-only SC2Map format: Type/Name/{Id}=Name
-        const rootMatch = line.match(/^(FunctionDef|ParamDef|PresetValue|Preset|Variable|Trigger|Category|Label|SubFuncType|Structure|CustomScript)\/(Name|Grammar)\/([A-Fa-f0-9]+)=(.*)$/);
-        if (rootMatch) {
-            const [, type, field, elementId, name] = rootMatch;
-            names.set(`${field === 'Grammar' ? 'Grammar:' : ''}${type}:Root:${elementId}`, name.trim());
+            names.set(`${field === 'Grammar' ? 'Grammar:' : ''}${type}:${libId === undefined ? 'Root:' : libId + '_'}${elementId}`, name.trim());
             continue;
         }
         // Format: Library/Name/{LibraryId}=Name (library-level name)
@@ -86,7 +75,12 @@ export function applyTriggerStrings(libraryId, elements, strings) {
 }
 export function applyTriggerStringsByType(libraryId, elementsByType, strings) {
     for (const [type, typeMap] of Object.entries(elementsByType)) {
-        for (const [id, el] of Object.entries(typeMap)) {
+        const scopedPrefix = `${type}:${libraryId}_`;
+        const rootPrefix = `${type}:Root:`;
+        const scopedGrammar = `Grammar:${scopedPrefix}`;
+        const rootGrammar = `Grammar:${rootPrefix}`;
+        for (const id of Object.keys(typeMap)) {
+            const el = typeMap[id];
             if (type === 'Param') {
                 const valueKey = `ParamValue:${libraryId}_${id}`;
                 const rootValueKey = `ParamValue:Root:${id}`;
@@ -96,13 +90,14 @@ export function applyTriggerStringsByType(libraryId, elementsByType, strings) {
                     el.localizedValue = strings.get(rootValueKey);
             }
             // Keep authored identifiers independent of localized labels.
-            const key = `${type}:${libraryId}_${id}`;
-            const grammar = strings.get(`Grammar:${key}`) ?? strings.get(`Grammar:${type}:Root:${id}`);
-            if (el.grammar === undefined && grammar !== undefined) {
-                el.grammar = grammar;
-                el.grammarSource = 'strings';
+            if (el.grammar === undefined) {
+                const grammar = strings.get(scopedGrammar + id) ?? strings.get(rootGrammar + id);
+                if (grammar !== undefined) {
+                    el.grammar = grammar;
+                    el.grammarSource = 'strings';
+                }
             }
-            const localized = strings.get(key) ?? strings.get(`${type}:Root:${id}`);
+            const localized = strings.get(scopedPrefix + id) ?? strings.get(rootPrefix + id);
             if (localized) {
                 el.displayName = localized;
                 el.name ??= localized;

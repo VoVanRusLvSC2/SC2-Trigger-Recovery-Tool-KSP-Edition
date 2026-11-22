@@ -134,7 +134,9 @@ export function createNativeGuiSourceInterfaces({
 
   for (const dep of dependencyLibraries) {
     const digest = sha(dep.triggerData);
-    for (const [owner, library] of readOwnedGuiLibraries(dep.triggerData)) {
+    for (const [owner, library] of readOwnedGuiLibraries(dep.triggerData, 'Map', {
+      retainSource: false,
+    })) {
       if (isEmptyDependencyRoot(owner, library)) continue;
       assert(
         !loadedDigests.has(owner) || loadedDigests.get(owner) === digest,

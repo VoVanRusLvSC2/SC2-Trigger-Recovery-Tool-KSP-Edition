@@ -1,3 +1,4 @@
+import { indexGuiXmlElements } from '../../utilities/index-gui-xml-elements.mjs';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { xmlTree } from '../../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js';
@@ -16,11 +17,30 @@ function index(root, implicit) {
   const result = new Map();
   for (const group of groups(root)) {
     const library = owner(group, implicit);
-    for (const e of group.children.filter((n) => n.tag === 'Element')) {
-      const key = JSON.stringify([library, e.attributes.Type, e.attributes.Id]);
-      assert(!result.has(key), 'ARRAY_BOUND_DUPLICATE_TYPED_ID');
-      result.set(key, e);
+    const { byType, duplicate } = indexGuiXmlElements(group);
+    assert(!duplicate, 'ARRAY_BOUND_DUPLICATE_TYPED_ID');
+    const previous = result.get(library);
+    if (!previous) {
+      result.set(library, byType);
+      continue;
     }
+    // XML groups can name the same owner. Their typed identities must still
+    // be disjoint, and merging them must not modify the shared XML index.
+    const combined = new Map(previous);
+    for (const [type, entries] of byType) {
+      const existing = combined.get(type);
+      if (!existing) {
+        combined.set(type, entries);
+        continue;
+      }
+      const merged = new Map(existing);
+      for (const [id, node] of entries) {
+        assert(!merged.has(id), 'ARRAY_BOUND_DUPLICATE_TYPED_ID');
+        merged.set(id, node);
+      }
+      combined.set(type, merged);
+    }
+    result.set(library, combined);
   }
   return result;
 }
@@ -57,10 +77,8 @@ export function repairGeneratedSingletonArrays({
   for (const group of groups(root)) {
     const library = owner(group, implicitLibraryId),
       dimensions = [];
-    for (const e of group.children.filter(
-      (n) => n.tag === 'Element' && n.attributes.Type === 'Variable',
-    )) {
-      const old = prior.get(JSON.stringify([library, 'Variable', e.attributes.Id])),
+    for (const e of indexGuiXmlElements(group).byType.get('Variable')?.values() ?? []) {
+      const old = prior.get(library)?.get('Variable')?.get(e.attributes.Id),
         seen = new Set();
       for (const a of arrays(e)) {
         assert(!seen.has(a.attributes.Dim), 'ARRAY_BOUND_DUPLICATE_DIMENSION');
@@ -99,14 +117,18 @@ export function repairGeneratedSingletonArrays({
       },
     };
   const forbidden = sourceNames(sources),
-    usedIds = new Set([...current.values()].map((e) => e.attributes.Id)),
+    usedIds = new Set(),
     edits = [],
     records = [],
     constants = [];
+  for (const byType of current.values()) {
+    for (const entries of byType.values()) {
+      for (const id of entries.keys()) usedIds.add(id);
+    }
+  }
   for (const { group, library, dimensions } of plans) {
     const libraryScoped = group.tag === 'Library' || child(group, 'Standard') !== undefined;
-    const elements = group.children.filter((n) => n.tag === 'Element'),
-      by = new Map(elements.map((e) => [JSON.stringify([e.attributes.Type, e.attributes.Id]), e]));
+    const { entries: elements, byType } = indexGuiXmlElements(group);
     const localIds = new Set(
       elements
         .filter((e) => ['Structure', 'Trigger', 'FunctionDef'].includes(e.attributes.Type))
@@ -122,7 +144,7 @@ export function repairGeneratedSingletonArrays({
       const key = JSON.stringify([ref.attributes.Type, ref.attributes.Id]);
       if (seen.has(key)) continue;
       seen.add(key);
-      const target = by.get(key);
+      const target = byType.get(ref.attributes.Type)?.get(ref.attributes.Id);
       if (!target || child(target, 'Disabled')) continue;
       if (target.attributes.Type === 'Variable') reachable.add(target.attributes.Id);
       if (target.attributes.Type === 'Category') pending.push(...target.children);
@@ -138,7 +160,7 @@ export function repairGeneratedSingletonArrays({
       if (!eligible(e)) return false;
       const ref = child(e, 'Value');
       if (!ref || (ref.attributes.Library && ref.attributes.Library !== library)) return false;
-      const p = by.get(JSON.stringify(['Param', ref.attributes.Id]));
+      const p = byType.get('Param')?.get(ref.attributes.Id);
       return (
         p &&
         p.children.length === 2 &&

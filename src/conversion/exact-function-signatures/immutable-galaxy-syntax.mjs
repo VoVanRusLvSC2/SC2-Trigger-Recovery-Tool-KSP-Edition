@@ -12,7 +12,11 @@ function freezeTree(root) {
     const value = pending.pop();
     if (!value || typeof value !== 'object' || seen.has(value)) continue;
     seen.add(value);
-    for (const [key, child] of Object.entries(value)) if (key !== 'parent') pending.push(child);
+    for (const key of Object.keys(value)) {
+      if (key === 'parent') continue;
+      const child = value[key];
+      if (child && typeof child === 'object') pending.push(child);
+    }
     Object.freeze(value);
   }
   return root;

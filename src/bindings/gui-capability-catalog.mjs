@@ -3,38 +3,46 @@
 export function createGuiCapabilityCatalog(entries) {
   const libraries = new Map(),
     elements = new Map(),
-    byOwner = new Map(),
+    capabilityElements = [],
     issues = [];
-  // IDs are local to a library and element kind. A name or ID alone is unsafe.
-  const key = (owner, type, id) => JSON.stringify([owner, type, id]);
+  // IDs are local to a library and element kind.
   for (const [owner, library] of entries) {
     if (libraries.has(owner)) {
       if (libraries.get(owner) !== library) issues.push({ kind: 'AMBIGUOUS_LIBRARY_OWNER', owner });
       continue;
     }
     libraries.set(owner, library);
-    const seen = new Set();
-    for (const element of [
-      ...Object.values(library.elements ?? {}),
-      ...Object.values(library.elementsByType ?? {}).flatMap(Object.values),
-    ]) {
-      if (seen.has(element)) continue;
-      seen.add(element);
-      const k = key(owner, element.type, element.id),
-        rows = elements.get(k) ?? [];
-      rows.push(element);
-      elements.set(k, rows);
-      if (rows.length > 1)
-        issues.push({
-          kind: 'AMBIGUOUS_TYPED_GUI_ELEMENT',
-          owner,
-          type: element.type,
-          id: element.id,
-        });
-      if (element.library !== undefined && element.library !== owner)
-        issues.push({ kind: 'GUI_OWNER_MISMATCH', owner, type: element.type, id: element.id });
-    }
-    byOwner.set(owner, [...seen]);
+    const byType = new Map();
+    elements.set(owner, byType);
+    const conflictingElements = new Set();
+    for (const group of [library.elements ?? {}, ...Object.values(library.elementsByType ?? {})])
+      for (const element of Object.values(group)) {
+        let byId = byType.get(element.type);
+        if (!byId) byType.set(element.type, (byId = new Map()));
+        const previous = byId.get(element.id);
+        // The ordinary typed index repeats the same objects as the flat
+        // index. Keep an identity set only for the ambiguous definitions.
+        if (previous === element || (previous === null && conflictingElements.has(element)))
+          continue;
+        if (
+          (element.type === 'ParamDef' && element.paramType?.type === 'struct') ||
+          (element.type === 'FunctionDef' && element.flags?.includes('SubFunctions'))
+        )
+          capabilityElements.push([owner, element]);
+        if (byId.has(element.id)) {
+          if (previous !== null) conflictingElements.add(previous);
+          conflictingElements.add(element);
+          byId.set(element.id, null);
+          issues.push({
+            kind: 'AMBIGUOUS_TYPED_GUI_ELEMENT',
+            owner,
+            type: element.type,
+            id: element.id,
+          });
+        } else byId.set(element.id, element);
+        if (element.library !== undefined && element.library !== owner)
+          issues.push({ kind: 'GUI_OWNER_MISMATCH', owner, type: element.type, id: element.id });
+      }
   }
   const invalidOwners = new Set(
     issues.filter((i) => i.kind === 'AMBIGUOUS_LIBRARY_OWNER').map((i) => i.owner),
@@ -45,51 +53,55 @@ export function createGuiCapabilityCatalog(entries) {
       return undefined;
     const library = ref.library ?? owner;
     if (invalidOwners.has(library)) return undefined;
-    const rows = elements.get(key(library, expectedType, ref.id));
-    return rows?.length === 1 && (rows[0].library === undefined || rows[0].library === library)
-      ? rows[0]
+    const element = elements.get(library)?.get(expectedType)?.get(ref.id);
+    return element && (element.library === undefined || element.library === library)
+      ? element
       : undefined;
   }
   // These are catalog capabilities, not proof that a runtime event can be
   // rewritten. Call sites still need to establish the target and argument ABI.
   const eventContainers = [],
     structureFormals = [];
-  for (const [owner, owned] of byOwner)
-    for (const e of owned) {
-      if (resolve({ type: e.type, id: e.id, library: owner }, owner) !== e) continue;
-      if (e.type === 'ParamDef' && e.paramType?.type === 'struct') {
-        const structure = resolve(e.paramType.typeElement, owner, 'Structure');
-        structureFormals.push({
-          owner,
-          formal: e,
-          structure,
-          status: structure ? 'RESOLVED' : 'UNRESOLVED_STRUCTURE_OWNER',
-        });
-      }
-      if (
-        e.type !== 'FunctionDef' ||
-        !e.flags?.includes('Action') ||
-        !e.flags.includes('SubFunctions') ||
-        e.flags.includes('Native') ||
-        e.disabled ||
-        (e.returnType && e.returnType.type !== 'void')
-      )
-        continue;
-      const roles = (e.subFunctionTypes ?? []).map((ref) => resolve(ref, owner, 'SubFuncType'));
-      if (!roles.length || roles.some((r) => !r?.isEvent)) continue;
-      const parameters = (e.parameters ?? []).map((ref) => resolve(ref, owner, 'ParamDef'));
-      eventContainers.push({
+  for (const [owner, e] of capabilityElements) {
+    if (
+      elements.get(owner).get(e.type).get(e.id) !== e ||
+      invalidOwners.has(owner) ||
+      (e.library !== undefined && e.library !== owner)
+    )
+      continue;
+    if (e.type === 'ParamDef' && e.paramType?.type === 'struct') {
+      const structure = resolve(e.paramType.typeElement, owner, 'Structure');
+      structureFormals.push({
         owner,
-        definition: e,
-        roles,
-        parameters,
-        implicitTarget: parameters.length === 0,
-        bodiless:
-          !e.scriptCode && !e.expressionCode && !e.actions?.length && !e.localVariables?.length,
-        allParametersResolved: parameters.every(Boolean),
-        explicitTargetProved: false,
+        formal: e,
+        structure,
+        status: structure ? 'RESOLVED' : 'UNRESOLVED_STRUCTURE_OWNER',
       });
     }
+    if (
+      e.type !== 'FunctionDef' ||
+      !e.flags?.includes('Action') ||
+      !e.flags.includes('SubFunctions') ||
+      e.flags.includes('Native') ||
+      e.disabled ||
+      (e.returnType && e.returnType.type !== 'void')
+    )
+      continue;
+    const roles = (e.subFunctionTypes ?? []).map((ref) => resolve(ref, owner, 'SubFuncType'));
+    if (!roles.length || roles.some((r) => !r?.isEvent)) continue;
+    const parameters = (e.parameters ?? []).map((ref) => resolve(ref, owner, 'ParamDef'));
+    eventContainers.push({
+      owner,
+      definition: e,
+      roles,
+      parameters,
+      implicitTarget: parameters.length === 0,
+      bodiless:
+        !e.scriptCode && !e.expressionCode && !e.actions?.length && !e.localVariables?.length,
+      allParametersResolved: parameters.every(Boolean),
+      explicitTargetProved: false,
+    });
+  }
   return Object.freeze({
     issues: Object.freeze(issues),
     resolve,
