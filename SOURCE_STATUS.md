@@ -15,6 +15,9 @@ game metadata. Historical corpus acceptance levels are unchanged.
 - **11 additional full modules** have matching retained-source algorithm ASTs,
   recorded in [separate provenance](scripts/retained-sources.json). No historical
   missing-destination pin is claimed for them.
+  Version 3.1.0 records four later parser or reference-validation updates in
+  the two manifests. Each entry keeps its earlier published fingerprint and
+  pins the exact bytes in the current release.
 - **3 component restorations** have narrower evidence: nondecimal literal
   transport, legacy loop helpers and explicit historical test-policy construction.
   See [component provenance](scripts/recovered-components.json). The loop module

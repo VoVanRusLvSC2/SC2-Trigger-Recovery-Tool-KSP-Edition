@@ -1,6 +1,6 @@
 {
   "date": "2026-11-14",
-  "basis": "Historical byte-level SHA-256 pins establish the original recovered sources. Specifier-only relocations preserve algorithm ASTs except explicitly described postRecoveryChanges, whose original recovery hashes remain recorded.",
+  "basis": "Historical byte-level SHA-256 pins establish the original recovered sources. Specifier-only relocations preserve algorithm ASTs except explicitly described postRecoveryChanges, whose original recovery hashes remain recorded. For entries with a release update, AST and original-byte hashes describe the pre-update provenance, and the published byte hash describes the current file.",
   "scope": "Source provenance and integrity only; converter execution and map equivalence remain unqualified.",
   "files": [
     {
@@ -216,7 +216,7 @@
     {
       "file": "src/utilities/read-authored-trigger-document.mjs",
       "originalSha256": "0a98d14523f73055b3b5301e27be65829ae4719fee3ba95ad80b439514bb7b04",
-      "publishedSha256": "3174520ccb7cc10b45557e038a70e85d6d75a6d6117b9988d9a915bc89732938",
+      "publishedSha256": "aeff7776892114e185c902cf1b5165a236cfce016d83150b15063947cd04add5",
       "algorithmAstSha256": "dddfb7c3807845fb4ef5d1bec3d7736851548aca5ea83f1e1a1384ba36a3511e",
       "recoveredPublishedSha256": "3d4a43bbadcd4c9cf0e616d587f707c5e0626c6b5a5ab7b04507e97598d559e6",
       "recoveryAlgorithmAstSha256": "30fe75dc5c775e11c85e05303b42599c9df9d8b9d3317c17c05d0295f5453431",
@@ -224,6 +224,11 @@
         "reason": "Delegate explicit SDK module loading to the portable runtime; authored CST, byte preservation, scope inventory and reference-audit bodies remain unchanged.",
         "invariantBodyAstSha256": "f869bb8e0ce6bf22881dc09ad688f371bf1d07784cf08ea9d1a58f4defdc1dd6",
         "verification": "scripts/check-authored-runtime.mjs"
+      },
+      "releaseUpdate": {
+        "version": "3.1.0",
+        "previousPublishedSha256": "3174520ccb7cc10b45557e038a70e85d6d75a6d6117b9988d9a915bc89732938",
+        "reason": "Reuse the parsed native catalog inside a recovery job when using the local SDK."
       }
     },
     {
@@ -343,8 +348,13 @@
     {
       "file": "src/sdk/array-values/modules/triggers/shared/trigger-document/sax-reader.js",
       "originalSha256": "01fea70ed0cea2e3e8882417608f97f5768097cab920818a7a92708912a7faa9",
-      "publishedSha256": "b46c2fb3ece60ce368b79d21e369c4fefd85c539d36b77c9fd43264116da68ae",
-      "algorithmAstSha256": "4ebafda845d21edcf34af425e3cda2d5b6979859859d6940d9eca70756a598e2"
+      "publishedSha256": "137b048f741f12c751e4b9ce678bfaaf21e250e1c8f64241455cb69238ff9b8b",
+      "algorithmAstSha256": "4ebafda845d21edcf34af425e3cda2d5b6979859859d6940d9eca70756a598e2",
+      "releaseUpdate": {
+        "version": "3.1.0",
+        "previousPublishedSha256": "b46c2fb3ece60ce368b79d21e369c4fefd85c539d36b77c9fd43264116da68ae",
+        "reason": "Reuse static field lookups and allow read-only consumers to skip retaining a second XML representation."
+      }
     },
     {
       "file": "src/sdk/production-preparation/modules/triggers/services/galaxy-conversion/internal/attributes-recovery.js",

@@ -1,6 +1,6 @@
 {
   "date": "2026-11-14",
-  "basis": "Retained full module bodies with specifier relocation and formatting only. No historical destination pin claimed.",
+  "basis": "Retained full module bodies with specifier relocation and formatting only. No historical destination pin claimed. For entries with a release update, AST and original-byte hashes describe the pre-update provenance, and the published byte hash describes the current file.",
   "scope": "Source provenance; runtime integration and map equivalence separately unqualified.",
   "files": [
     {
@@ -28,8 +28,13 @@
       "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/conversion-model.js",
       "sourceOrigin": "retained src/sdk/core/modules/triggers/services/galaxy-conversion/internal/conversion-model.js",
       "originalSha256": "78954357ab9531354b6495cf6e28d04099bd6ed495ea3bd18315a6ce311ace3f",
-      "publishedSha256": "78954357ab9531354b6495cf6e28d04099bd6ed495ea3bd18315a6ce311ace3f",
-      "algorithmAstSha256": "0311345a1e2e66bc52a5c5aa1f8abaadd813291e065a1a0a0afcb51a30bb706a"
+      "publishedSha256": "08168611205b0128d398c5c44ffbb5c975473c61be2d3e075c44f20d0f4b03fd",
+      "algorithmAstSha256": "0311345a1e2e66bc52a5c5aa1f8abaadd813291e065a1a0a0afcb51a30bb706a",
+      "releaseUpdate": {
+        "version": "3.1.0",
+        "previousPublishedSha256": "78954357ab9531354b6495cf6e28d04099bd6ed495ea3bd18315a6ce311ace3f",
+        "reason": "Index library lookups and reuse traversal storage during reference validation."
+      }
     },
     {
       "file": "src/sdk/array-values/modules/triggers/services/galaxy-conversion/internal/dependency-functions.js",
@@ -63,8 +68,13 @@
       "file": "src/ast/authored-xml-parser.mjs",
       "sourceOrigin": "Retained corrected authored XML graph/738aa3fd7188-sax-reader.mjs",
       "originalSha256": "0d826bab68d1e4a53e54b2f859e3462d357c8f809786759acfb98150322fe90a",
-      "publishedSha256": "8b4c211c8977c7a876f56dc799b30f88c9e8169293caab01912a74b26d75ba4b",
-      "algorithmAstSha256": "bdcb131c830279dbdc30e2d6a9ac0e8f7a90efd9028bd4a1d94751c89dc9b4eb"
+      "publishedSha256": "e39943f733dd4ec271eeb8003270eedc1a24e59b169d83ed3a273320fb4e9c99",
+      "algorithmAstSha256": "bdcb131c830279dbdc30e2d6a9ac0e8f7a90efd9028bd4a1d94751c89dc9b4eb",
+      "releaseUpdate": {
+        "version": "3.1.0",
+        "previousPublishedSha256": "8b4c211c8977c7a876f56dc799b30f88c9e8169293caab01912a74b26d75ba4b",
+        "reason": "Reuse static element flag and field lookups during strict authored XML parsing."
+      }
     },
     {
       "file": "src/ast/authored-xml-writer.mjs",
