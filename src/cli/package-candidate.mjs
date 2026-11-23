@@ -141,17 +141,24 @@ export async function updateMapCandidate(
   }
 }
 
-export async function writeTriggerDraft(row, directory, triggerData) {
+export async function writeTriggerDraft(row, directory, triggerData, localizedStrings = []) {
   assert.equal(path.basename(row.name), row.name, 'Draft name must be a filename');
   await fs.mkdir(directory);
   const components = path.join(directory, 'components');
   await fs.mkdir(components);
-  const bytes = Buffer.from(triggerData);
-  await fs.writeFile(path.join(components, 'Triggers'), bytes, { flag: 'wx' });
+  const edits = [];
+  for (const { path: name, text } of [
+    { path: 'Triggers', text: triggerData },
+    ...localizedStrings,
+  ]) {
+    const file = path.join(components, ...safeComponentPath(name).split('/'));
+    await fs.mkdir(path.dirname(file), { recursive: true });
+    const bytes = Buffer.from(text);
+    await fs.writeFile(file, bytes, { flag: 'wx' });
+    edits.push({ path: name, sha256: sha(bytes), bytes: bytes.length });
+  }
   const candidate = path.join(directory, 'DRAFT-' + row.name);
-  const verification = await updateMapCandidate(row, candidate, directory, [
-    { path: 'Triggers', sha256: sha(bytes), bytes: bytes.length },
-  ]);
+  const verification = await updateMapCandidate(row, candidate, directory, edits);
   return { candidate, verification };
 }
 

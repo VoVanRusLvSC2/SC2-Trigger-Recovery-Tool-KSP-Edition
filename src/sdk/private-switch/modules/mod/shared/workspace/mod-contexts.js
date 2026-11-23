@@ -107,7 +107,7 @@ async function statOf(target) {
     }
 }
 export function createSc2ModContexts(options) {
-    const manager = new ModContextManager(options.sources, options.hostFolder, options.addOns);
+    const manager = new ModContextManager(options.sources, options.hostFolder, options.addOns, options.publishedDependencies);
     /** One catalog per resolved chain, shared by every context over it. */
     const catalogs = new WeakMap();
     /** Each resolved chain's strings, a locale at a time, shared by every context over it. */

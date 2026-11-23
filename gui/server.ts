@@ -101,7 +101,7 @@ async function collectArtifacts(output: string) {
       withAttributes: variant.mode === 'with-attribute-recovery',
       draft: report?.status === 'FAILED' || report?.originalUnchanged !== true,
     }));
-  if (report?.status === 'FAILED') {
+  if (report?.status === 'FAILED' || report?.status === 'PARTIAL_DEPENDENCY_RECOVERY') {
     for (const candidate of [
       ...variants.map((variant) => variant?.packedCandidate),
       report.packedCandidate,
@@ -129,8 +129,9 @@ async function collectArtifacts(output: string) {
         item.isFile() &&
         (/\.(galaxy|sc2map|sc2mod)$/i.test(item.name) ||
           item.name === 'Triggers' ||
+          item.name === 'ORIGINAL_AUTHORED_TRIGGERS.xml' ||
           item.name === 'preparation.json' ||
-          /^(RESULT|PREVIEW_REPORT|SOURCE_DIAGNOSTICS|ATTRIBUTE.*|MANIFEST|STRICT_BENCHMARK)\.json$/i.test(
+          /^(RESULT|PREVIEW_REPORT|SOURCE_(?:DIAGNOSTICS|REPAIR)|DECLARATION_DIFF|AUTHORED_DEPENDENCY_SCOPE|DEPENDENCY_WARNINGS|ATTRIBUTE.*|MANIFEST|STRICT_BENCHMARK)\.json$/i.test(
             item.name,
           ))
       ) {

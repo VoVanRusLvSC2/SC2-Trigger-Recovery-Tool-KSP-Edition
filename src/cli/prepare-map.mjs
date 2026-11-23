@@ -1,5 +1,5 @@
-/** Build the worker's hash-bound observation from a real map and installed SC2.
- * The original archive is read-only; unresolved dependencies/includes fail closed. */
+/** Build a hash-bound observation of a map and its installed dependencies.
+ * Missing map dependencies are recorded for a separate draft recovery. */
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import assert from 'node:assert/strict';
@@ -18,13 +18,19 @@ import { attributeUseInGalaxy } from '../verification/attribute-use-evidence.mjs
 import { normalizeLibraryRoots } from '../libraries/local-roots.mjs';
 import { BoundedLocalModSources } from '../libraries/extensions/bounded-local-mod-sources.mjs';
 import { modLibraryUnits } from './mod-library-units.mjs';
+import { repairLegacyGalaxyCopy } from './repair-legacy-galaxy-copy.mjs';
+import {
+  findPublishedBindings,
+  publishedSourceOptions,
+  verifyPublishedBindings,
+} from './published-dependencies.mjs';
 
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const save = (file, data) => fs.writeFile(file, JSON.stringify(data, null, 2) + '\n');
 const require = createRequire(import.meta.url);
 const isTriggerInput = (name) =>
   /^(?:MapScript|LibMap_h|ai[0-9a-f]{8})\.galaxy$/iu.test(name) ||
-  /^(?:Triggers|CustomAI|Attributes)$/iu.test(name) ||
+  /^(?:Triggers|CustomAI|Attributes|DocumentInfo)$/iu.test(name) ||
   /^[a-z]{4}\.SC2Data\/LocalizedData\/(?:TriggerStrings|GameStrings)\.txt$/iu.test(name);
 
 export function loadTriggerWorkspace() {
@@ -46,10 +52,12 @@ export async function prepareMap({
   attributeIndex,
   recoverAttributes = true,
   libraryRoots = [],
+  repairGalaxyCopy = false,
   blizzardLibraries,
   onProgress = () => {},
 }) {
   assert.equal(typeof recoverAttributes, 'boolean', 'Invalid attribute recovery option');
+  const libraryInputs = libraryRoots;
   libraryRoots = await normalizeLibraryRoots(libraryRoots);
   original = await fs.realpath(original);
   assert(!(installation && resourceSnapshot), 'Choose either --sc2 or --resources');
@@ -99,6 +107,12 @@ export async function prepareMap({
   }
   // Exclusive creation prevents mixing a previous map's observations with this run.
   await fs.mkdir(output);
+  let sourceRepair;
+  if (repairGalaxyCopy) {
+    assert(documentKind === 'map' && !sourceDirectory, 'Galaxy repair requires a packed .SC2Map');
+    sourceRepair = await repairLegacyGalaxyCopy(original, output, path.resolve(mpq));
+    original = sourceRepair.archive;
+  }
   const pkg = path.join(output, 'package');
   await fs.mkdir(pkg);
   onProgress({ stage: 'Reading package', percent: 1 });
@@ -177,24 +191,40 @@ export async function prepareMap({
   const originalSha256 = sourceDirectory ? sha(await fs.readFile(original)) : reader.archiveSha256;
   onProgress({ stage: 'Loading SC2 metadata', percent: 11 });
 
+  const readExtracted = (name) => {
+    const entry = entries.find((item) => item.path.toLowerCase() === name.toLowerCase());
+    return entry ? fs.readFile(path.join(pkg, ...entry.path.split('/')), 'utf8') : '';
+  };
+  const bindings =
+    documentKind === 'map'
+      ? await findPublishedBindings({
+          xml: await readExtracted('DocumentInfo'),
+          script: await readExtracted('MapScript.galaxy'),
+          original: sourcePath,
+          libraryRoots,
+          libraryInputs,
+          installation,
+        })
+      : [];
+  const sources = new BoundedLocalModSources({
+    installationDirectory: installation,
+    ...(documentKind === 'map'
+      ? publishedSourceOptions(bindings, libraryRoots)
+      : {
+          sources: libraryRoots.map((folder) => ({ type: 'mods', path: folder, priority: -100 })),
+        }),
+    ...(publicResources
+      ? {
+          documentsDirectory: path.join(installation, '.unused-user-data'),
+          battleNetCacheDirectory: path.join(installation, '.unused-bnet-cache'),
+          sc2MapsCacheDirectory: path.join(installation, '.unused-map-cache'),
+        }
+      : {}),
+  });
   const session = new MapSession({
     installation,
     blizzardLibraries,
-    ...(libraryRoots.length || publicResources
-      ? {
-          sources: new BoundedLocalModSources({
-            installationDirectory: installation,
-            ...(publicResources
-              ? {
-                  documentsDirectory: path.join(installation, '.unused-user-data'),
-                  battleNetCacheDirectory: path.join(installation, '.unused-bnet-cache'),
-                  sc2MapsCacheDirectory: path.join(installation, '.unused-map-cache'),
-                }
-              : {}),
-            sources: libraryRoots.map((p) => ({ type: 'mods', path: p, priority: -100 })),
-          }),
-        }
-      : {}),
+    sources,
     sourceIdentityFile,
     maxAstEntries: 0,
     maxAstBytes: 0,
@@ -214,7 +244,11 @@ export async function prepareMap({
     const { readTriggerDependencies, readTriggerDeclarations } = await loadTriggerWorkspace();
     const beforeBuild = await session.installationStamp();
     blizzardLibraries?.confirmBuild(beforeBuild);
-    const context = await session.open({ schemaVersion: 1, target: original });
+    const context = await session.open(
+      { schemaVersion: 1, target: original },
+      { allowUnresolved: documentKind === 'map' },
+    );
+    await verifyPublishedBindings(sources, context.layers, bindings);
     const primary = context.layers.at(-1);
     const libraryUnits =
       documentKind === 'mod' ? modLibraryUnits(entries.map((entry) => entry.path)) : [];
@@ -259,10 +293,16 @@ export async function prepareMap({
       xmlTree,
       blizzardLibraries?.classifyPreparedDocument.bind(blizzardLibraries),
     );
+    const dependencyWarnings = {
+      substitutions: bindings,
+      packages: [...new Set(context.unresolved ?? [])],
+      includes: [],
+    };
     const prepared = {
       schema: 1,
       documentKind,
       libraryUnits,
+      ...(sourceRepair ? { sourceRepair } : {}),
       id: originalSha256.slice(0, 16),
       name: path.basename(original),
       status: 'READY_STANDARD_SOURCE_INPUT',
@@ -284,6 +324,7 @@ export async function prepareMap({
           }
         : {}),
       actualChain: context.layers,
+      dependencyWarnings,
       omittedEmptyDependencyDocuments: omitted,
       declarationInputs: [],
       dependencyInputs: [],
@@ -354,6 +395,18 @@ export async function prepareMap({
           found = await context.locate(candidate);
           if (found) break;
         }
+        if (!found && documentKind === 'map') {
+          const owner = /^Lib([a-z0-9]+)(?:_h)?$/iu.exec(path.posix.basename(name))?.[1];
+          const symbols = owner
+            ? [
+                ...new Set(
+                  source.text.match(new RegExp(`\\blib${owner}_[A-Za-z0-9_]+`, 'giu')) ?? [],
+                ),
+              ]
+            : [];
+          dependencyWarnings.includes.push({ from: source.fileName, include: name, symbols });
+          continue;
+        }
         assert(found, 'Unresolved actual Galaxy include: ' + name);
         prepared.includeEvidence.push({
           from: source.fileName,
@@ -393,6 +446,12 @@ export async function prepareMap({
         'Dynamic or external code and data-driven behavior are not proven',
       ],
     };
+    const warned =
+      bindings.length || dependencyWarnings.packages.length || dependencyWarnings.includes.length;
+    if (warned) {
+      await save(path.join(output, 'DEPENDENCY_WARNINGS.json'), dependencyWarnings);
+      console.log(JSON.stringify({ type: 'dependency-warnings', ...dependencyWarnings }));
+    }
     await session.verifyDependencyFiles();
     await verifyComponentSource(sourcePackage);
     assert.equal(await session.installationStamp(), beforeBuild, 'SC2 changed during preparation');

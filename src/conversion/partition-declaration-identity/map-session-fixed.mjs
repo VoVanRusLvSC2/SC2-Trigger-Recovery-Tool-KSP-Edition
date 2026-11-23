@@ -66,7 +66,7 @@ export class MapSession {
   assertOpen() {
     if (this.closed) throw Error('Map session is already disposed');
   }
-  async open(request) {
+  async open(request, { allowUnresolved = false } = {}) {
     this.assertOpen();
     const start = performance.now();
     const context = await this.sources.openModContext(request);
@@ -79,9 +79,9 @@ export class MapSession {
       layers: context.layers,
       unresolved: context.unresolved ?? [],
     });
-    // A map opened with omitted dependencies is not a valid conversion baseline.
-    // Refuse before the first Trigger/variable lowering, including resource-only mods.
-    if (context.unresolved?.length) {
+    // A strict conversion requires the full closure. Preparation may retain
+    // missing dependencies for the separate unverified map draft.
+    if (context.unresolved?.length && !allowUnresolved) {
       const error = Error('Unresolved dependency closure: ' + JSON.stringify(context.unresolved));
       error.code = 'SC2_DEPENDENCY_CLOSURE_UNRESOLVED';
       error.context = { target: request.target, unresolved: context.unresolved };

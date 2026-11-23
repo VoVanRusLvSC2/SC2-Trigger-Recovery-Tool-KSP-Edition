@@ -6,7 +6,7 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { spawn } from 'node:child_process';
 
-const usage = `SC2 Trigger Recovery KSP 3.1.1
+const usage = `SC2 Trigger Recovery KSP 3.1.3
 Usage:
   trigger-recovery recover <map.SC2Map> (--sc2 <installation> | --resources <snapshot>) --out <new-directory>
   trigger-recovery prepare <map.SC2Map> (--sc2 <installation> | --resources <snapshot>) --out <new-directory>
@@ -18,6 +18,7 @@ Optional: --mpq <mpqcli.exe>, --benchmark <pinned-distribution>, --full-gui
 Additional local dependency locations: --library <SC2-package-or-folder> (repeatable).
 Use --download-resources <new-directory> on recover to download the snapshot first.
 For recover/prepare: --attribute-index <verified-header-index.json>, --no-attribute-recovery
+For a supported generated SC1 backend: --repair-galaxy-copy
 Attribute recovery is enabled by default; disabling it preserves existing Attributes bytes.
 The default preserves authored script and GUI structure. Originals stay unchanged.
 Outputs are candidates with explicit offline evidence, not Editor/gameplay acceptance.
@@ -39,6 +40,7 @@ export async function runTriggerRecovery(args, { retainedLibraries, publishTrigg
         library: { type: 'string', multiple: true },
         'attribute-index': { type: 'string' },
         'full-gui': { type: 'boolean' },
+        'repair-galaxy-copy': { type: 'boolean' },
         'no-attribute-recovery': { type: 'boolean' },
         help: { type: 'boolean', short: 'h' },
       },
@@ -139,6 +141,7 @@ export async function runTriggerRecovery(args, { retainedLibraries, publishTrigg
           attributeIndex: values['attribute-index'],
           recoverAttributes: !values['no-attribute-recovery'],
           libraryRoots: values.library,
+          repairGalaxyCopy: values['repair-galaxy-copy'],
           blizzardLibraries,
           onProgress: (event) => console.log(JSON.stringify({ type: 'progress', ...event })),
         });
@@ -156,14 +159,21 @@ export async function runTriggerRecovery(args, { retainedLibraries, publishTrigg
       if (command !== 'prepare') {
         const job = JSON.parse(await fs.readFile(jobFile, 'utf8'));
         const config = JSON.parse(await fs.readFile(job.config, 'utf8'));
-        if (config.resourceSnapshot && !values.benchmark && job.documentKind !== 'mod') {
+        const snapshotMap = config.resourceSnapshot && job.documentKind === 'map';
+        let incompleteSnapshotMap = false;
+        if (snapshotMap && values.benchmark) {
+          const prepared = JSON.parse(await fs.readFile(job.preparationResult, 'utf8'));
+          const warnings = prepared.dependencyWarnings;
+          incompleteSnapshotMap = !!(warnings?.packages.length || warnings?.includes.length);
+        }
+        if (snapshotMap && (!values.benchmark || incompleteSnapshotMap)) {
           const { recoverPublicSnapshot } = await import('./src/cli/recover-public-snapshot.mjs');
           console.log(
             'Public snapshot mode: diagnostic only, no benchmark PASS or Editor verification.',
           );
           const result = await recoverPublicSnapshot(jobFile);
           console.log(JSON.stringify(result));
-          process.exitCode = 1;
+          if (result.status !== 'PARTIAL_DEPENDENCY_RECOVERY') process.exitCode = 1;
         } else if (blizzardLibraries) {
           const { convertMapJob } = await import('./src/cli/convert.mjs');
           blizzardLibraries.beginVerification();

@@ -17,6 +17,7 @@ let loadedMap = '';
 let recoveryNotice = '';
 let sourceFiles: DocumentPreview['sourceFiles'] = [];
 let inspectingMap = false;
+let canRepairGalaxyCopy = false;
 let automaticDefaults: Record<string, string> = {};
 let suggestedOutput = '';
 let configuredAdapter = '';
@@ -67,6 +68,7 @@ function metrics(target: 'markup' | 'source', text: string) {
 async function inspectMap(file: string) {
   if (!file) return;
   loadedMap = '';
+  canRepairGalaxyCopy = false;
   inspectingMap = true;
   if (snapshot) render(snapshot);
   notice('Reading original archive...');
@@ -82,6 +84,7 @@ async function inspectMap(file: string) {
     sourceFile.hidden = sourceFiles.length < 2;
     sourceFile.title = sourceFiles[0]?.path ?? 'No Galaxy source';
     recoveryNotice = value.recoveryNotice ?? '';
+    canRepairGalaxyCopy = value.canRepairGalaxyCopy === true;
     metrics('markup', value.markup);
     loadedMap = value.name;
     element('selectedFile').textContent = value.name;
@@ -220,6 +223,9 @@ function render(state: JobSnapshot) {
       (id === 'generate' &&
         (!loadedMap || loadedMap !== element<HTMLInputElement>('field-input').value));
   element('generate').title = recoveryNotice;
+  const repair = element<HTMLButtonElement>('repairGalaxyCopy');
+  repair.hidden = !canRepairGalaxyCopy;
+  repair.disabled = active || opening || inspectingMap || !loadedMap;
   element<HTMLFieldSetElement>('settings').disabled = active;
   element<HTMLButtonElement>('cancel').disabled = !active && !opening;
   const insert = element<HTMLButtonElement>('insertTriggers');
@@ -270,6 +276,12 @@ function render(state: JobSnapshot) {
       | {
           status?: string;
           error?: string;
+          warning?: string;
+          dependencyWarnings?: {
+            substitutions?: { reference: string; file: string }[];
+            packages?: string[];
+            includes?: { from: string; include: string; symbols: string[] }[];
+          };
           benchmark?: { passed?: boolean };
           variants?: { status?: string; candidate?: string; benchmark?: { passed?: boolean } }[];
         }
@@ -300,6 +312,27 @@ function render(state: JobSnapshot) {
         error.textContent = report.error.split('\n')[0]!;
         element('verdict').append(error);
         notice(error.textContent);
+      }
+      const warnings = report.dependencyWarnings;
+      if (warnings) {
+        const lines = [
+          ...(warnings.substitutions ?? []).map(({ reference, file }) => reference + ' → ' + file),
+          ...(warnings.packages ?? []).map((name) => 'Unavailable dependency: ' + name),
+          ...(warnings.includes ?? []).map(
+            ({ from, include, symbols }) =>
+              from +
+              ' · missing include ' +
+              include +
+              (symbols.length ? ' · ' + symbols.join(', ') : ''),
+          ),
+        ];
+        for (const line of lines) {
+          const warning = document.createElement('p');
+          warning.textContent = line;
+          element('verdict').append(warning);
+        }
+        if (lines.length)
+          notice(report.warning ?? 'Local dependency substitutes used. See GEN INFO.');
       }
     }
   }
@@ -364,7 +397,7 @@ function showTree() {
 }
 // Settings never starts work. Only the main toolbar action can run recovery.
 element<HTMLFormElement>('recovery').onsubmit = (event) => event.preventDefault();
-element('generate').onclick = async () => {
+async function startRecovery(repairGalaxyCopy = false) {
   if (!loadedMap || inspectingMap || opening) return;
   const form = element<HTMLFormElement>('recovery');
   if (!form.checkValidity()) {
@@ -386,6 +419,7 @@ element('generate').onclick = async () => {
         fields,
         fullGui: element<HTMLInputElement>('fullGui').checked,
         recoverAttributes: element<HTMLInputElement>('recoverAttributes').checked,
+        ...(repairGalaxyCopy ? { repairGalaxyCopy } : {}),
         libraryRoots: settingsView.libraryRoots(),
       }),
     );
@@ -393,7 +427,9 @@ element('generate').onclick = async () => {
   } catch (error) {
     fail(error);
   }
-};
+}
+element('generate').onclick = () => void startRecovery();
+element('repairGalaxyCopy').onclick = () => void startRecovery(true);
 element('openFile').onclick = async () => {
   if (opening) return;
   opening = true;
@@ -455,8 +491,12 @@ element<HTMLFormElement>('exportForm').onsubmit = (event) => {
     notice('Enter a file name without path separators.');
     return;
   }
-  download(new Blob([originalMarkupText], { type: 'application/xml' }), name);
+  const text = originalMarkupText;
   element<HTMLDialogElement>('exportDialog').close();
+  element<HTMLButtonElement>('exportFile').focus();
+  requestAnimationFrame(() => {
+    setTimeout(() => download(new Blob([text], { type: 'application/xml' }), name), 0);
+  });
 };
 element('cancel').onclick = () => {
   if (opening) {

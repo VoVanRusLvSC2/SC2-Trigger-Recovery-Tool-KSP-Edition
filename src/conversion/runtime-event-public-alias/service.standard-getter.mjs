@@ -4658,6 +4658,7 @@ async function convertGalaxyDocumentToTriggers(input, signal) {
         nativeLibrary,
         allLibraries,
         derived: documentDependencies(reconstructed, allLibraries, embeddedLibraries),
+        embeddedLibraryIds: embeddedLibraries,
       }).startupLibraryIds,
     ];
 

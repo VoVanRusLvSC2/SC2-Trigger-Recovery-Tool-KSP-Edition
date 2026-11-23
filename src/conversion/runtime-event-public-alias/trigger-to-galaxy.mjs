@@ -3334,6 +3334,7 @@ function convertTriggerLibraryToGalaxyBody(
     nativeLibrary,
     allLibraries,
     derived: documentDependencies(library, allLibraries, embedded),
+    embeddedLibraryIds: embedded,
   });
   const depLibIds = startupPlan.guiLibraryIds;
 

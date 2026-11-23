@@ -17,6 +17,7 @@ import { mergeLibrary, mergeStringTable, assertNoNewRawGui } from './mod-documen
 import { auditNativeCustomScriptLayout } from '../verification/native-custom-script-layout.mjs';
 import { readConversionJob } from './job-input.mjs';
 import { assertPreparedLibraryRoots } from '../libraries/local-roots.mjs';
+import { xmlTree } from '../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js';
 
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const json = async (file) => JSON.parse(await fs.readFile(file, 'utf8'));
@@ -30,7 +31,7 @@ const context = createTriggerConversionContext({
   maxDependencyCacheEntries: 0,
   maxDependencyCacheSourceBytes: 0,
 });
-let sourceProof;
+let sourceProof, draft;
 try {
   await fs.mkdir(row.job, { recursive: true });
 
@@ -133,6 +134,8 @@ try {
   const primary = primaryLocalizedTable(tables);
   result.primaryLocale = primary.locale;
   const originalXml = await component('Triggers');
+  if (originalXml?.trim() && xmlTree(originalXml).tag === 'TriggerData')
+    draft = { xml: originalXml, entries: config.entries };
   let markup = originalXml;
   const options = new Map();
   const oracle = process.env.SC2_TRIGGER_BENCHMARK_ROOT ? await openPinnedUserOracle() : undefined;
@@ -185,7 +188,14 @@ try {
     };
     // The map archive contains the source checkpoint for incremental edits.
     // Re-emission from the final packed GUI is checked independently below.
-    if (map && markup)
+    if (
+      markup &&
+      (map ||
+        (row.guiRecoveryMode !== 'full-gui' &&
+          xmlTree(markup).children.some(
+            (node) => node.tag === 'Library' && node.attributes.Id === unit.libraryId,
+          )))
+    )
       input.sourceCheckpoint = {
         xmlSha256: sha(markup),
         stringsSha256: sha(primary.triggerStrings),
@@ -366,6 +376,25 @@ try {
     await save(path.join(row.job, 'DECLARATION_DIFF.json'), error.declarationDelta);
   process.exitCode = 1;
   result.error = String(error.stack ?? error);
+  if (!result.packedCandidate && draft) {
+    try {
+      assert.equal(await hash(row.archive), row.archiveSha256);
+      await fs.writeFile(path.join(row.job, 'Triggers'), draft.xml, { flag: 'wx' });
+      const directory = path.join(row.job, 'DRAFT');
+      await fs.mkdir(directory);
+      const packed = await writePackageCandidate(
+        { ...row, name: 'DRAFT-' + row.name },
+        directory,
+        new Map(),
+        draft.entries,
+      );
+      assert.equal(packed.sha256, row.archiveSha256);
+      result.packedCandidate = packed.candidate;
+      result.draftTriggerSource = 'original-authored';
+    } catch (draftError) {
+      result.draftPackingError = String(draftError.message ?? draftError);
+    }
+  }
   console.error(result.error);
 } finally {
   context.clear();

@@ -18,6 +18,7 @@ export interface RecoveryRequest {
   fields: Record<string, string>;
   fullGui: boolean;
   recoverAttributes?: boolean;
+  repairGalaxyCopy?: boolean;
   libraryRoots?: string[];
 }
 export interface Artifact {
@@ -35,6 +36,7 @@ export interface DocumentPreview {
   sourceFiles: { path: string; text: string }[];
   /** A recovery attempt is available; this is not a conversion or benchmark verdict. */
   canRecover: boolean;
+  canRepairGalaxyCopy?: boolean;
   recoveryNotice?: string;
 }
 export interface JobSnapshot {

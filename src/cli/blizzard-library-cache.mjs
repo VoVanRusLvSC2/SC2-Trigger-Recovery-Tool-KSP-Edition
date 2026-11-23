@@ -3,6 +3,10 @@ import { Worker } from 'node:worker_threads';
 import { readOwnedGuiLibraries } from '../verification/read-owned-gui-libraries.mjs';
 import { recoveryTextSha256 as sha } from '../utilities/recovery-parse-scope.mjs';
 import { blizzardPackageIndex } from './blizzard-package-index.mjs';
+import {
+  verifiedStockOwnersByLocalizedDocument,
+  verifiedStockOwnersByXml,
+} from './verified-blizzard-library-facts.mjs';
 
 const stockPackage = /^(?:mods|campaigns)\/[^/]+\.sc2(?:mod|campaign)(?:\/|$)/iu;
 const libraryFile =
@@ -118,7 +122,7 @@ export class BlizzardLibraryCache {
   }
 
   catalogOwners(digest, xml) {
-    const previous = this.#owners.get(digest);
+    const previous = verifiedStockOwnersByXml.get(digest) ?? this.#owners.get(digest);
     if (previous) return previous;
     const owners = [...readOwnedGuiLibraries(xml, 'Map', { retainSource: false }).keys()];
     if (this.#owners.size >= 128) this.#owners.delete(this.#owners.keys().next().value);
@@ -127,6 +131,7 @@ export class BlizzardLibraryCache {
   }
 
   classifyInstalledDocument(digest, classify) {
+    if (verifiedStockOwnersByXml.has(digest)) return false;
     const entry = this.#emptyDocuments.get(digest);
     if (entry) return entry.installed;
     const installed = classify();
@@ -138,7 +143,10 @@ export class BlizzardLibraryCache {
 
   classifyPreparedDocument(document, classify) {
     const { triggerData } = document;
-    const entry = triggerData.isWellFormed() && this.#emptyDocuments.get(sha(triggerData));
+    if (!triggerData.isWellFormed()) return classify();
+    const digest = sha(triggerData);
+    if (verifiedStockOwnersByXml.has(digest)) return false;
+    const entry = this.#emptyDocuments.get(digest);
     if (!entry) return classify();
     // Preparation and authority use different XML readers.
     return (entry.prepared ??= classify());
@@ -208,10 +216,15 @@ export class BlizzardLibraryCache {
   mountedOwners(document) {
     const strings = document.triggerStrings ?? '';
     if (!strings.isWellFormed() || !document.triggerData.isWellFormed()) return;
-    const stockKey = JSON.stringify([document.sourcePath, sha(document.triggerData)]);
-    const key = JSON.stringify([stockKey, sha(strings)]);
+    const digest = sha(document.triggerData),
+      stringsDigest = sha(strings);
+    const stockKey = documentKey(document.sourcePath, digest);
+    const key = JSON.stringify([stockKey, stringsDigest]);
+    const installed = verifiedStockOwnersByLocalizedDocument.get(
+      JSON.stringify([document.sourcePath, digest, stringsDigest]),
+    );
     return {
-      owners: this.#validatedMountedOwners.get(key),
+      owners: installed ?? this.#validatedMountedOwners.get(key),
       remember: (owners) => {
         if (this.#pendingMountedOwners.size < 128 && owners.length <= 2048)
           this.#pendingMountedOwners.set(key, { stockKey, owners });

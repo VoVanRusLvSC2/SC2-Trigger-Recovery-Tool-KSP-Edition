@@ -117,15 +117,22 @@ function dependencyRef(ref) {
     return { name: depName(normalized), ref: normalized };
 }
 /** The `file:` dependency references of a DocumentInfo. */
-function docInfoDepRefs(xml) {
+function docInfoDepRefs(xml, publishedDependencies) {
     const out = [];
-    for (const m of xml.matchAll(/<Value>([^<]+)<\/Value>/g)) {
+    const dependencies = publishedDependencies &&
+        xml.match(/<Dependencies(?:\s[^>]*)?>([\s\S]*?)<\/Dependencies>/iu)?.[1];
+    const hasPublished = dependencies && /<Value>\s*bnet:[^<]+\/\d+\.\d+\/\d+\s*<\/Value>/iu.test(dependencies);
+    for (const m of (hasPublished ? dependencies : xml).matchAll(/<Value>([^<]+)<\/Value>/g)) {
         const val = m[1]?.trim();
         if (!val)
             continue;
         const idx = val.lastIndexOf('file:');
         if (idx !== -1)
             out.push(dependencyRef(val.slice(idx + 5)));
+        else if (hasPublished && /^bnet:.+\/\d+\.\d+\/\d+$/iu.test(val)) {
+            const local = publishedDependencies.get(val);
+            out.push(local ? dependencyRef(local) : { name: val, missingPublication: true });
+        }
     }
     return out;
 }
@@ -161,10 +168,11 @@ export class ModContextManager {
     /** A host folder as a content source, packed packages in it read as folders. */
     hostFolder, 
     /** Sources the editor loads whatever is open (wizard folders): a layer of every chain. */
-    addOnSources = () => new Map()) {
+    addOnSources = () => new Map(), publishedDependencies) {
         this.contentSources = contentSources;
         this.hostFolder = hostFolder;
         this.addOnSources = addOnSources;
+        this.publishedDependencies = publishedDependencies;
     }
     /** The file system over the current content sources; rebuilt, dropping every cache, when they change. */
     environment() {
@@ -347,8 +355,9 @@ export class ModContextManager {
                 const candidate = `${parent}${name}`;
                 return (await env.vfs.exists(candidate).catch(() => false)) ? candidate : undefined;
             };
-            for (const { name, ref, implicit } of await this.readDepRefs(env, vfsPath)) {
-                const resolved = (await env.resolver.resolve(ref)) ?? (await env.resolver.resolve(name)) ?? (await sibling(name));
+            for (const { name, ref, implicit, missingPublication } of await this.readDepRefs(env, vfsPath)) {
+                const resolved = missingPublication ? undefined :
+                    (await env.resolver.resolve(ref)) ?? (await env.resolver.resolve(name)) ?? (await sibling(name));
                 if (!resolved) {
                     if (!unresolved.includes(name))
                         unresolved.push(name);
@@ -404,7 +413,7 @@ export class ModContextManager {
         const base = vfsPath.replace(/\/+$/, '');
         const declared = [];
         try {
-            declared.push(...docInfoDepRefs(await env.vfs.getText(`${base}/DocumentInfo`)));
+            declared.push(...docInfoDepRefs(await env.vfs.getText(`${base}/DocumentInfo`), this.publishedDependencies));
         }
         catch {
             /* no DocumentInfo */

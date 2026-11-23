@@ -11,6 +11,10 @@ import {
 import { createUnverifiedPreviewMap } from './unverified-preview-map.mjs';
 import { xmlTree } from '../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js';
 import { verifyComponentSource } from './sc2-package.mjs';
+import {
+  hasMissingDependencies,
+  recoverWithMissingDependencies,
+} from './recover-incomplete-dependencies.mjs';
 
 const sha = (value) => createHash('sha256').update(value).digest('hex');
 const readJson = async (file) => JSON.parse(await readFile(file, 'utf8'));
@@ -45,6 +49,12 @@ export async function recoverPublicSnapshot(jobFile) {
     'Snapshot manifest changed',
   );
   assert.equal(sha(await readFile(row.original)), row.originalSha256, 'Original map changed');
+  if (hasMissingDependencies(prepared.dependencyWarnings)) {
+    await mkdir(row.job, { recursive: true });
+    const report = await recoverWithMissingDependencies({ row, prepared, cfg });
+    await writeJson(path.join(row.job, 'RESULT.json'), report);
+    return report;
+  }
   const originalGui = cfg.entries.find(
     (item) => item.path.replaceAll('\\', '/').toLowerCase() === 'triggers',
   );

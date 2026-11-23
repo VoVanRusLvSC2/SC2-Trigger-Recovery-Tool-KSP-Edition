@@ -50,22 +50,25 @@ export async function preloadBlizzardLibraries(sources, libraries, isIdle) {
         if (empty) continue;
         if (!(await idle())) return;
         const verifiedOwners = libraries.catalogOwners(sha256, triggerData);
-        if (!(await idle())) return;
-        const { document: authored } = await readAuthoredTriggerDocument(
-          triggerData,
-          undefined,
-          document.triggerStrings ?? '',
-          { retainSource: false },
-        );
-        if (!isIdle()) return;
-        const owners = [...authored.libraries.keys()];
-        if (
-          owners.length !== verifiedOwners.length ||
-          owners.some((id, index) => id !== verifiedOwners[index])
-        )
-          return;
-        libraries.mountedOwners(document)?.remember(owners);
-        libraries.confirmMountedOwners([{ path: sourcePath, sha256 }]);
+        const cached = libraries.mountedOwners(document);
+        if (!cached?.owners) {
+          if (!(await idle())) return;
+          const { document: authored } = await readAuthoredTriggerDocument(
+            triggerData,
+            undefined,
+            document.triggerStrings ?? '',
+            { retainSource: false },
+          );
+          if (!isIdle()) return;
+          const owners = [...authored.libraries.keys()];
+          if (
+            owners.length !== verifiedOwners.length ||
+            owners.some((id, index) => id !== verifiedOwners[index])
+          )
+            return;
+          cached?.remember(owners);
+          libraries.confirmMountedOwners([{ path: sourcePath, sha256 }]);
+        }
         metadata.push({ fileName: sourcePath, text: triggerData, sha256 });
       }
       if (await idle())

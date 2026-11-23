@@ -132,6 +132,13 @@ import { getTypeName as triggerAliasTypeName } from '../conversion/native-expres
 import { verifiedDependencyAiInputs } from '../utilities/verified-dependency-ai.mjs';
 
 import { createVariantAnalysisCache } from '../utilities/variant-analysis-cache.mjs';
+import { selectAuthoredDependencyDocuments } from './authored-dependency-documents.mjs';
+import { publishedSourceOptions, verifyPublishedBindings } from './published-dependencies.mjs';
+import {
+  hasMissingDependencies,
+  onlyExplicitLibraries,
+  recoverWithMissingDependencies,
+} from './recover-incomplete-dependencies.mjs';
 
 import { recoverLocalizedExternalGui } from '../conversion/implicit-gui-localization/localized-external-key-retention.mjs';
 
@@ -248,6 +255,8 @@ export async function convertMapJob(
     conversionContext,
     sourceSyntax,
     recoveredMarkup,
+    originalDraftMarkup,
+    dependencyFallbackInputs,
     initializerAnalysis,
     canPackTriggerDraft = false,
     stage = 'VERIFY_INPUTS';
@@ -259,6 +268,8 @@ export async function convertMapJob(
     stage = s;
     console.log(JSON.stringify({ id: row.id, stage }));
   };
+  const progress = (stage, percent) =>
+    console.log(JSON.stringify({ type: 'progress', stage, percent }));
 
   function assertDiagnostics(r) {
     const errors = (r.diagnostics ?? r.fidelity?.diagnostics ?? []).filter(
@@ -295,7 +306,18 @@ export async function convertMapJob(
       cfg = await read(row.config);
     const { verifyComponentSource } = await import('./sc2-package.mjs');
     await verifyComponentSource(prepared.sourcePackage);
+    if (prepared.sourceRepair) result.sourceRepair = prepared.sourceRepair;
     assertPreparedLibraryRoots(cfg, prepared);
+    const dependencyWarnings = prepared.dependencyWarnings;
+    if (hasMissingDependencies(dependencyWarnings)) {
+      Object.assign(result, await recoverWithMissingDependencies({ row, prepared, cfg }));
+      return;
+    }
+    const publicationBindings = dependencyWarnings?.substitutions ?? [];
+    if (publicationBindings.length) {
+      result.dependencyWarnings = dependencyWarnings;
+      dependencyFallbackInputs = { row, prepared, cfg };
+    }
     const benchmarkRoot = benchmark ?? process.env.SC2_TRIGGER_BENCHMARK_ROOT;
     const pinnedBenchmark = benchmarkRoot
       ? await openPinnedUserOracle({ root: benchmarkRoot })
@@ -345,12 +367,13 @@ export async function convertMapJob(
       }
     }
 
-    const sources = folders.length
-      ? new BoundedLocalModSources({
-          installationDirectory: cfg.installation,
-          sources: folders.map((p) => ({ type: 'mods', path: p, priority: -100 })),
-        })
-      : undefined;
+    const sources =
+      folders.length || dependencyWarnings
+        ? new BoundedLocalModSources({
+            installationDirectory: cfg.installation,
+            ...publishedSourceOptions(publicationBindings, folders),
+          })
+        : undefined;
 
     session = new MapSession({
       installation: cfg.installation,
@@ -390,6 +413,7 @@ export async function convertMapJob(
     }
 
     enter('BIND_LOCALIZED_DEPENDENCY_ABI');
+    progress('Binding installed library metadata', 27);
     const rawDependencyLibraries = libraries.map(({ sourcePath, triggerData }) => ({
       sourcePath,
       triggerData,
@@ -410,6 +434,8 @@ export async function convertMapJob(
 
     if (mounted.status === 'rejected') throw mounted.reason;
     const context = mounted.value;
+    if (publicationBindings.length)
+      await verifyPublishedBindings(sources, context.layers, publicationBindings);
 
     assert(
       context.layers.every((l) => l.sourceId === 'host' || l.sourceId.startsWith('local:')),
@@ -423,6 +449,7 @@ export async function convertMapJob(
       prepared.actualChain.map((l) => l.sourcePath),
       'Mounted dependency chain changed',
     );
+    progress('Verifying installed library contents', 31);
     const installedGuiCatalogs = await authenticateInstalledGuiCatalogs({
       context,
       dependencyLibraries: rawDependencyLibraries,
@@ -971,20 +998,61 @@ export async function convertMapJob(
     let forward;
     if (originalTriggerXml?.trim() && !authoredInventory.effectivelyEmpty) {
       enter('COMPLETE_OR_PRESERVE_ORIGINAL_GUI');
+      progress('Checking authored triggers against Galaxy', 36);
+      originalDraftMarkup = originalTriggerXml;
       const sourceCheckpoint = {
         xmlSha256: sha(originalTriggerXml),
         stringsSha256: sha(primary.triggerStrings ?? ''),
         galaxySha256: sha(script),
         galaxy: script,
       };
-      forward = await convertGalaxyToTriggers({
-        ...common,
+      const authoredInput = {
         existingTriggerData: originalTriggerXml,
         sourceCheckpoint,
         script,
         header: ownHeader,
         onProgress: reportProgress,
-      });
+      };
+      let selection;
+      if (!additionalScripts.length && !common.customAiScripts.length && !usesAttributes) {
+        try {
+          selection = selectAuthoredDependencyDocuments({
+            libraries,
+            authority: installedGuiCatalogs.verifiedCASCCatalogAuthority,
+            prepared,
+            originalXml: originalTriggerXml,
+            script: joined(script, ownHeader),
+            declarations: conversionDeclarations,
+          });
+        } catch {
+          // The ordinary conversion reports any malformed or unfamiliar input.
+        }
+      }
+      if (selection) {
+        let reason;
+        try {
+          const candidate = await convertGalaxyToTriggers({
+            ...common,
+            ...authoredInput,
+            dependencyLibraries: selection.documents,
+          });
+          assertDiagnostics(candidate);
+          assert.equal(candidate.incremental?.mode, 'UNCHANGED');
+          assert.equal(sha(candidate.output.triggerData), sourceCheckpoint.xmlSha256);
+          assert.equal(sha(candidate.output.triggerStrings ?? ''), sourceCheckpoint.stringsSha256);
+          forward = candidate;
+          common.dependencyLibraries = selection.documents;
+        } catch (error) {
+          reason = error.message;
+        }
+        await save(path.join(job, 'AUTHORED_DEPENDENCY_SCOPE.json'), {
+          used: !!forward,
+          omittedModelOwners: selection.omittedOwners,
+          verifiedFullInstalledClosure: true,
+          ...(reason ? { fallback: reason } : {}),
+        });
+      }
+      forward ??= await convertGalaxyToTriggers({ ...common, ...authoredInput });
     } else {
       enter('GENERATE_FRESH_TRIGGERS');
 
@@ -1372,25 +1440,39 @@ export async function convertMapJob(
     assert(forward.output.triggerData);
     // Retain explicit original library startup demand without adding runtime code.
     // A complete native export and unchanged whole-program proof remain required.
+    progress('Checking trigger library startup order', 66);
     let libraryDemand;
     try {
       await initializerAnalysis?.ready();
-      const metadata = compilerMetadata;
-      const plan = planCompilerLibraryAutoload({
-        root: { fileName: 'MapScript.galaxy', text: script, sha256: sha(script) },
-        metadata,
-        declarations: conversionDeclarations.map((f) => ({ ...f, sha256: sha(f.text) })),
-        includeEvidence: prepared.includeEvidence,
-        gui: forward.output.triggerData,
-        analyzeInitializers:
-          blizzardLibraries &&
-          ((analyze) =>
-            blizzardLibraries.compilerInitializers(
-              metadata,
-              installedGuiCatalogs.verifiedCASCCatalogAuthority,
-              analyze,
-            )),
-      });
+      const autoload = (metadata) =>
+        planCompilerLibraryAutoload({
+          root: { fileName: 'MapScript.galaxy', text: script, sha256: sha(script) },
+          metadata,
+          declarations: conversionDeclarations.map((f) => ({ ...f, sha256: sha(f.text) })),
+          includeEvidence: prepared.includeEvidence,
+          gui: forward.output.triggerData,
+          analyzeInitializers:
+            blizzardLibraries &&
+            ((analyze) =>
+              blizzardLibraries.compilerInitializers(
+                metadata,
+                installedGuiCatalogs.verifiedCASCCatalogAuthority,
+                analyze,
+              )),
+        });
+      let metadata = compilerMetadata;
+      let plan;
+      if (common.dependencyLibraries !== libraries) {
+        const needed = new Set(common.dependencyLibraries.map((document) => document.sourcePath));
+        const selected = compilerMetadata.filter((document) => needed.has(document.fileName));
+        try {
+          plan = autoload(selected);
+          metadata = selected;
+        } catch {
+          // Resolve unusual names against the authenticated full catalog.
+        }
+      }
+      plan ??= autoload(metadata);
       libraryDemand = retainSourceLibraryCompilerDemand(forward.output.triggerData, {
         plan,
         metadata,
@@ -1468,6 +1550,7 @@ export async function convertMapJob(
       (!!forward.output.customAi &&
         originalCustomAi.trim() === forward.output.customAi.document.trim());
 
+    progress('Rebuilding Galaxy from recovered triggers', 70);
     const baseline = await convertTriggersToGalaxy(recoveredMarkup, {
       ...common,
       ...forward.output.generationOptions,
@@ -1537,7 +1620,7 @@ export async function convertMapJob(
         console.log(
           JSON.stringify({
             type: 'progress',
-            stage: 'Building and verifying candidate',
+            stage: 'Preparing trigger files for the map',
             percent: 72,
           }),
         );
@@ -1858,6 +1941,7 @@ export async function convertMapJob(
         packedCandidates.set(mode, candidate);
 
         originalArchiveBytes = undefined;
+        progress('Reading and verifying the packed map', 75);
         const packedBytes = verifiedArchive?.bytes ?? (await readFile(candidate));
         const packedInputSha256 = verifiedArchive?.sha256 ?? sha(packedBytes);
         const reader = await openMpqReader(packedBytes, {
@@ -1967,6 +2051,7 @@ export async function convertMapJob(
             attributeDocumentContext,
             packedAttributes === undefined ? undefined : readAttributes(packedAttributes),
           );
+        progress('Rebuilding Galaxy from the packed map', 78);
         const generated = await convertTriggersToGalaxy(packedXml, {
           ...common,
           ...out.generationOptions,
@@ -2040,6 +2125,7 @@ export async function convertMapJob(
 
         const expandedGenerated = expandLocalScripts(galaxy, packedAi, session.parseGalaxy);
 
+        progress('Validating Galaxy against library types', 82);
         const {
           languageCheck: typed,
           interfaces: catalogInterfaces,
@@ -2142,6 +2228,7 @@ export async function convertMapJob(
         );
         assert(attributeSchemaDocument, 'Native attribute schema absent');
         const attributeContract = await auditAttributeRecovery({
+          benchmarkRoot,
           referenceModel: modeAttributeModel,
           candidateXml: packedAttributes,
           referenceOrigin: attributeModel
@@ -2239,6 +2326,7 @@ export async function convertMapJob(
             : null,
 
           staticEquivalent:
+            publicationBindings.length === 0 &&
             benchmarkPassed &&
             comparison.equivalent &&
             profile.equivalent &&
@@ -2250,6 +2338,7 @@ export async function convertMapJob(
           editorVerified: false,
           comparedActualEditorExport: false,
           status:
+            publicationBindings.length === 0 &&
             benchmarkPassed &&
             comparison.equivalent &&
             profile.equivalent &&
@@ -2328,6 +2417,46 @@ export async function convertMapJob(
     result.failedStage = stage;
     result.errorContext = e.context ?? null;
     result.nominalGuiReplay = e.nominalGuiReplay ?? null;
+    if (stage === 'COMPLETE_OR_PRESERVE_ORIGINAL_GUI' && dependencyFallbackInputs) {
+      const reference = e.context?.reference;
+      const bindings = result.dependencyWarnings.substitutions;
+      const localMatch =
+        e.context?.conversionCode === 'UNRESOLVED_REFERENCE' && reference?.library
+          ? bindings.find(({ libraryIds }) => libraryIds.includes(reference.library.toLowerCase()))
+          : undefined;
+      const missingMapScope =
+        e.message.includes('Requested library is absent from a nonempty multi-library document') &&
+        originalDraftMarkup &&
+        onlyExplicitLibraries(originalDraftMarkup);
+      if (localMatch || missingMapScope) {
+        try {
+          const fallback = localMatch
+            ? {
+                kind: 'LOCAL_LIBRARY_GUI_REFERENCE_MISSING',
+                reference,
+                publication: localMatch.reference,
+                message: `Local library lacks GUI ${reference.type} ${reference.library}:${reference.id}. Rebuilt draft from available Galaxy.`,
+              }
+            : {
+                kind: 'AUTHORED_MAP_SCOPE_MISSING',
+                message:
+                  'The original GUI contains only explicit libraries. Rebuilt the map triggers from Galaxy and saved the authored GUI separately.',
+              };
+          const draft = await recoverWithMissingDependencies({
+            ...dependencyFallbackInputs,
+            fallback,
+          });
+          if (draft.status === 'PARTIAL_DEPENDENCY_RECOVERY') {
+            delete result.error;
+            Object.assign(result, draft);
+            return;
+          }
+        } catch (fallbackError) {
+          result.dependencyFallbackError = fallbackError.message;
+        }
+      }
+    }
+    if (e.declarationDelta) await save(path.join(job, 'DECLARATION_DIFF.json'), e.declarationDelta);
     if (e.unverifiedGuiSnapshot && e.context?.conversionCode === 'GUI_BINDING_INCOMPLETE') {
       try {
         const preview = path.join(job, 'UNVERIFIED_PREVIEW');
@@ -2429,9 +2558,12 @@ export async function convertMapJob(
         process.exitCode = 1;
       }
     }
-    if (result.status === 'FAILED' && recoveredMarkup) {
+    const draftMarkup =
+      recoveredMarkup ??
+      (stage === 'COMPLETE_OR_PRESERVE_ORIGINAL_GUI' ? originalDraftMarkup : undefined);
+    if (result.status === 'FAILED' && draftMarkup) {
       try {
-        await writeFile(path.join(job, 'Triggers'), recoveredMarkup, { flag: 'wx' });
+        await writeFile(path.join(job, 'Triggers'), draftMarkup, { flag: 'wx' });
       } catch (error) {
         console.error('Could not save recovered Triggers XML: ' + error.message);
       }
@@ -2441,15 +2573,12 @@ export async function convertMapJob(
         !result.unverifiedPreview?.draftMap?.path
       ) {
         try {
-          assert.equal(
-            xmlTree(recoveredMarkup).tag,
-            'TriggerData',
-            'Invalid recovered Triggers root',
-          );
+          assert.equal(xmlTree(draftMarkup).tag, 'TriggerData', 'Invalid recovered Triggers root');
           const draftDirectory = path.join(job, 'DRAFT');
-          const draft = await writeTriggerDraft(row, draftDirectory, recoveredMarkup);
+          const draft = await writeTriggerDraft(row, draftDirectory, draftMarkup);
           await save(path.join(draftDirectory, 'PACKAGE_VERIFICATION.json'), draft.verification);
           result.packedCandidate = draft.candidate;
+          if (!recoveredMarkup) result.draftTriggerSource = 'original-authored';
           console.error('Unverified draft map saved: ' + draft.candidate);
         } catch (error) {
           result.draftPackingError = error.message;

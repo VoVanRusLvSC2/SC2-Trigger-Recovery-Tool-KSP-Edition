@@ -117,7 +117,7 @@ export function createSourceMapStartupDependencies(source, context) {
 
 export function resolveSourceMapStartupPlan(
   capability,
-  { library, nativeLibrary, allLibraries, derived = [] },
+  { library, nativeLibrary, allLibraries, derived = [], embeddedLibraryIds = [] },
 ) {
   if (capability === undefined)
     return { guiLibraryIds: derived, startupLibraryIds: derived, sourceOnly: [] };
@@ -149,7 +149,7 @@ export function resolveSourceMapStartupPlan(
   }
   for (const id of derived)
     assert(
-      id === nativeLibrary.id || guiLibraryIds.includes(id),
+      id === nativeLibrary.id || guiLibraryIds.includes(id) || embeddedLibraryIds.includes(id),
       'SOURCE_MAP_STARTUP_OMITS_GUI_DEPENDENCY:' + id,
     );
   return { guiLibraryIds, startupLibraryIds: ids, sourceOnly };

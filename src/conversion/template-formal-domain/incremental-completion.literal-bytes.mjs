@@ -336,13 +336,32 @@ export function createAutomaticCompletion(c) {
     }
     // Nonfunction definitions (globals, structures, includes) cannot silently be
     // swallowed by a function-only transaction. Preserve or reject them explicitly.
-    assert(
-      isDeepStrictEqual(
-        beforeAst.statements.filter((n) => n.kind !== 142).map(syntaxShape),
-        desiredAst.statements.filter((n) => n.kind !== 142).map(syntaxShape),
-      ),
-      'Changes to globals/includes/structures require a separate declaration transaction',
-    );
+    const declarations = (tree) => tree.statements.filter((node) => node.kind !== 142);
+    const beforeDeclarations = declarations(beforeAst),
+      desiredDeclarations = declarations(desiredAst);
+    if (
+      !isDeepStrictEqual(beforeDeclarations.map(syntaxShape), desiredDeclarations.map(syntaxShape))
+    ) {
+      const index = beforeDeclarations.findIndex(
+        (node, at) =>
+          at >= desiredDeclarations.length ||
+          !isDeepStrictEqual(syntaxShape(node), syntaxShape(desiredDeclarations[at])),
+      );
+      const at = index === -1 ? beforeDeclarations.length : index;
+      const describe = (node) => (node ? printNode(node).slice(0, 500) : null);
+      throw Object.assign(
+        new Error(
+          'Changes to globals/includes/structures require a separate declaration transaction',
+        ),
+        {
+          declarationDelta: {
+            index: at,
+            before: describe(beforeDeclarations[at]),
+            after: describe(desiredDeclarations[at]),
+          },
+        },
+      );
+    }
     for (const name of before.keys())
       assert(desired.has(name), 'Function deletion requires explicit reference migration: ' + name);
     // The SDK's namespace scope is synchronous. Keep every naming/lowering/XML

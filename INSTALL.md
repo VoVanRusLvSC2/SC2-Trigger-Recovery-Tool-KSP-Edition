@@ -45,7 +45,8 @@ The output contains `job.json`, hash-bound preparation inputs, and
 `candidates/recovered/RESULT.json`. Candidate maps are under the variant directory
 shown in that result. `GENERATED` means the candidate was assembled; inspect the
 variant verdict. `REVIEW_REQUIRED_EDITOR_PENDING` is not an equivalence PASS.
-Errors return a nonzero process exit code. Unresolved dependencies are refused.
+Errors return a nonzero process exit code. If a map has missing dependencies,
+recovery can return a separate draft and an explicit warning.
 
 The default mode preserves existing authored GUI, folders and script. `--full-gui`
 requests the separate expanded recovery mode; it does not permit fabricated

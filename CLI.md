@@ -73,8 +73,12 @@ It supplies:
 The extracted package and original MapScript must match it. Root declaration and
 include closure must be available; missing input is an error or review case.
 `trigger-recovery prepare` creates these artifacts without running conversion.
-It verifies the original archive, dependency chain and complete actual include
-closure, refuses existing output directories, and never edits the input map.
+It verifies the original archive and available include closure, refuses existing
+output directories, and never edits the input map. Use repeatable `--library`
+to supply a local analogue for a Battle.net dependency. Local matches and
+missing packages, includes and symbols are recorded in `DEPENDENCY_WARNINGS.json`.
+If recovery can write inspectable markup with missing dependencies, it reports
+`PARTIAL_DEPENDENCY_RECOVERY` and attempts to pack a separate `DRAFT-*.SC2Map`.
 The automatic archive preparation currently supports packed `.SC2Map` inputs.
 
 An optional attribute index contains exact source-archive matches and header
@@ -141,8 +145,9 @@ Use repeatable `--library <SC2-package-or-folder>` on `recover` or `prepare`.
 Package files and unpacked package directories register their parent as a search
 root; ordinary directories are used directly. Preparation and conversion use the
 same SDK resolver and dependency identity checks. Only referenced packages are
-loaded. Missing dependencies still fail closed; standalone Galaxy files are not
-injected as invented bindings. This is the CLI equivalent of GUI **LIBRARIES**.
+loaded. If a map dependency stays unavailable, the worker can recover a draft
+from the available inputs and reports the unresolved references. This is the
+CLI equivalent of GUI **LIBRARIES**.
 
 ## Mod archives and component folders
 

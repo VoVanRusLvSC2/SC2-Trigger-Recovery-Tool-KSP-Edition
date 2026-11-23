@@ -24,6 +24,8 @@ server; closing the browser tab alone does not stop an active recovery.
    markup appear immediately. Opening a map never starts recovery.
 2. **GENERATE TRIGGERS** runs automatic recovery with a separately named output.
    SC2 and the unchanged strict benchmark are discovered automatically.
+   If **REPAIR GALAXY IN COPY** appears, it applies a recognized syntax repair
+   to a separate copy and starts recovery from that copy. The original is kept.
 3. **INSERT TRIGGERS INTO MAP** downloads a separate map containing the embedded
    Triggers. **INSERT TRIGGERS INTO MOD** does the same for a mod. The original
    package is never overwritten.
@@ -40,6 +42,8 @@ The percentage estimates completed processing stages, not remaining time. 100%
 means processing finished; the verdict still determines PASS or REVIEW. Failures
 retain their last percentage and show the reason in the footer. Source parser errors
 include a file/line/column and a separate `SOURCE_DIAGNOSTICS.json` artifact.
+The repair log `SOURCE_REPAIR.json` lists each changed Galaxy component. A
+declaration conflict can include `DECLARATION_DIFF.json` with the first change.
 
 ## Settings
 
@@ -80,8 +84,16 @@ Enable/disable and Remove update the paths used by the next recovery. The CLI
 counterpart is repeatable `--library <package-or-folder>`. Preparation and
 conversion use the same SDK package locations and dependency identity checks.
 Only packages actually referenced by the map are loaded; an unrelated Galaxy
-file is not invented as a dependency or a GUI definition. The actual prepared
-chain remains available in the dialog. Missing dependencies remain failures.
+file is not invented as a dependency or a GUI definition. Battle.net references
+can use local counterparts. The chosen paths and hashes are recorded alongside
+the loaded library IDs. A different or ambiguous counterpart can leave a
+dependency unresolved.
+
+If a map dependency remains missing, recovery attempts the available triggers.
+**GEN INFO** lists the missing package, include and observed symbols, and
+**DOWNLOAD DRAFT** saves the inspection copy when one can be packed. The
+original Galaxy remains in the draft. A diagnostic GUI can contain unresolved
+actions, and Editor compilation is pending.
 
 ## File picker
 

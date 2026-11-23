@@ -14,6 +14,50 @@
   --edge: #285f4b;
   --orange: #ff9c25;
   --background-opacity: 0.87;
+  scrollbar-color: #7fdcc7 #0b1d1a;
+}
+@supports selector(::-webkit-scrollbar) {
+  :root {
+    scrollbar-color: auto;
+  }
+  ::-webkit-scrollbar {
+    width: 13px;
+    height: 13px;
+  }
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: #071413;
+    box-shadow: inset 0 0 0 1px #214942;
+  }
+  ::-webkit-scrollbar-thumb {
+    border: 2px solid #0a2925;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #24786b, #a0fff0 46%, #4ebaa8 63%, #226459);
+    box-shadow:
+      inset 0 0 4px #dafff4,
+      0 0 7px #4effd398;
+  }
+  ::-webkit-scrollbar-thumb:horizontal {
+    background: linear-gradient(180deg, #24786b, #a0fff0 46%, #4ebaa8 63%, #226459);
+  }
+  ::-webkit-scrollbar-thumb:hover,
+  ::-webkit-scrollbar-thumb:active {
+    border-color: #c48232;
+    box-shadow:
+      inset 0 0 4px #e6ffec,
+      0 0 8px #ffad526e;
+  }
+}
+@media (forced-colors: active) {
+  :root {
+    scrollbar-color: auto;
+  }
+  ::-webkit-scrollbar,
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-thumb,
+  ::-webkit-scrollbar-corner {
+    all: revert;
+  }
 }
 * {
   box-sizing: border-box;
@@ -291,8 +335,6 @@ textarea {
   tab-size: 4;
   white-space: pre;
   overflow: auto;
-  scrollbar-color: #62caa2 #07140c;
-  scrollbar-width: auto;
 }
 textarea::placeholder {
   color: #547864;
@@ -325,7 +367,6 @@ dialog {
   color: #b9dfca;
   width: min(900px, 90vw);
   max-height: 90dvh;
-  scrollbar-color: #62caa2 #07140c;
 }
 dialog::backdrop {
   background: #000b;

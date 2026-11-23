@@ -306,6 +306,7 @@ export class Sc2DesktopContentSources {
             // The cache last: it holds no package by name, only the archives a replay names.
             sources: () => this.storages([...this.extraStorages.keys(), ...PACKAGE_SOURCE_IDS, this.cache.root.id]),
             addOns: () => this.storages(this.wizardSourceIds),
+            publishedDependencies: this.options.publishedDependencies,
             packageIndex: (layer) => this.locals.get(layer.sourceId)?.packageIndex?.(layer.sourcePath),
             // A path below the installation that is no file there is a member of the game's CASC.
             storagePathOf: hostPath => {

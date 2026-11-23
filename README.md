@@ -2,7 +2,7 @@
 
 **A reworked Trigger Revizer implementation, developed together with Vise.**
 
-> **Windows 3.1.1: Installed-SC2 and Standalone installers.** See [Install and run](INSTALL.md), [build instructions](BUILDING.md), [source status](SOURCE_STATUS.md) and [remaining qualification](ROADMAP.md). Node and runtime dependencies are bundled. Choose installed game metadata or a public snapshot downloaded by Standalone setup.
+> **Windows 3.1.3: Installed-SC2 and Standalone installers.** See [Install and run](INSTALL.md), [build instructions](BUILDING.md), [source status](SOURCE_STATUS.md) and [remaining qualification](ROADMAP.md). Node and runtime dependencies are bundled. Choose installed game metadata or a public snapshot downloaded by Standalone setup.
 
 **Trigger Revizer KSP** is a StarCraft II (SC2) trigger recovery project. It reconstructs editable GUI trigger markup (`Triggers` XML) from Galaxy source such as `MapScript.galaxy`, and completes missing or changed sections of an existing trigger tree.
 
@@ -10,7 +10,16 @@ The conversion core works with SC2 map and mod components (`.SC2Map` and `.SC2Mo
 
 Start with the [converter architecture](ARCHITECTURE.md), [103 recorded strict-pass map records](maps/verified.md) and [222 historical acceptance records](maps/previously-accepted.md). See [integration status](#integration-status) before trying to build this source publication.
 
-## Version 3.1.1
+## Version 3.1.3
+
+Battle.net dependencies can use matching local packages. If a map dependency
+remains unavailable, recovery attempts the available triggers, records missing
+packages and symbols in GEN INFO, and offers a downloadable draft when it can
+pack one. Drafts preserve the original Galaxy and require Editor review.
+
+Installed-SC2 checks the installed dependency closure using fresh hashes. For unchanged authored GUI with resolved source references, recovery builds models only for the libraries the map uses and retains the full catalog for independent Galaxy validation.
+
+Recovery preserves map-owned libraries during startup analysis and can save validated archive drafts with the original authored triggers when completion fails. Supported SC1-generated Galaxy syntax can be repaired in a separate copy. The browser reports individual library, packing and verification stages.
 
 Installed-SC2 looks up library files directly in the CASC index and prepares the default Blizzard libraries while the browser interface opens. Recovery reuses verified library analysis and prepares NativeLib and library initializers in parallel when needed.
 
@@ -18,7 +27,7 @@ The GUI offers **DOWNLOAD TRIGGERS XML** as soon as recovery produces the XML. *
 
 Both Windows installers, the Start menu shortcut and the browser tab use the original blue Trigger Revize KSP icon.
 
-[Download the Windows installers](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/tag/v3.1.1). Use **Installed-SC2** with the game or **Standalone** without it. Standalone checks the packed GUI with the same strict benchmark and records the public metadata revision. Its results remain in REVIEW pending matching Editor data.
+The [Windows installers](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/tag/v3.1.3) offer **Installed-SC2** with the game and **Standalone** without it. Standalone checks the packed GUI with the same strict benchmark and records the public metadata revision. Its results remain in REVIEW pending matching Editor data.
 
 To launch the Windows app, double-click **`Open Recovery.cmd`** in the folder
 where you installed the app or extracted the portable ZIP. It opens the local

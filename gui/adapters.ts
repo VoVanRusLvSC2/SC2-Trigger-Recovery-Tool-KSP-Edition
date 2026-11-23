@@ -64,6 +64,15 @@ const sc2: BackendAdapter = {
         source: sourceFiles[0]?.text ?? '',
         sourceFiles,
         canRecover: true,
+        ...(info.isFile() && /\.sc2map$/iu.test(input) && reader.find('SC1Backend.galaxy')
+          ? {
+              canRepairGalaxyCopy: await (
+                await import(
+                  new URL('../../src/cli/repair-legacy-galaxy-copy.mjs', import.meta.url).href
+                )
+              ).hasRepairableLegacyGalaxy(reader),
+            }
+          : {}),
         ...(!sourceFiles.length
           ? {
               recoveryNotice:
@@ -117,7 +126,7 @@ const sc2: BackendAdapter = {
       },
     ],
   },
-  command({ fields, fullGui, recoverAttributes, libraryRoots }, root) {
+  command({ fields, fullGui, recoverAttributes, libraryRoots, repairGalaxyCopy }, root) {
     if (!/\.sc2(map|mod)$/i.test(fields.input ?? ''))
       throw Error('Recovery requires a .SC2Map or .SC2Mod package.');
     const args = [
@@ -134,6 +143,7 @@ const sc2: BackendAdapter = {
     if (fields.benchmark?.trim()) args.push('--benchmark', fields.benchmark);
     if (fields.attributeIndex?.trim()) args.push('--attribute-index', fields.attributeIndex);
     if (fullGui) args.push('--full-gui');
+    if (repairGalaxyCopy) args.push('--repair-galaxy-copy');
     if (recoverAttributes === false) args.push('--no-attribute-recovery');
     for (const directory of libraryRoots ?? []) args.push('--library', directory);
     return args;
@@ -147,6 +157,8 @@ export function selectAdapter(request: RecoveryRequest): BackendAdapter {
     throw Error('Invalid recovery request.');
   if (request.recoverAttributes !== undefined && typeof request.recoverAttributes !== 'boolean')
     throw Error('Invalid attribute recovery option.');
+  if (request.repairGalaxyCopy !== undefined && typeof request.repairGalaxyCopy !== 'boolean')
+    throw Error('Invalid Galaxy repair option.');
   if (
     request.libraryRoots !== undefined &&
     (!Array.isArray(request.libraryRoots) ||

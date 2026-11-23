@@ -11,6 +11,8 @@ import {
 } from '../src/cli/sc2-package.mjs';
 import { createHash } from 'node:crypto';
 import { updateMapCandidate, writeTriggerDraft } from '../src/cli/package-candidate.mjs';
+import { findPublishedBindings, verifyPublishedFiles } from '../src/cli/published-dependencies.mjs';
+import { omitMissingIncludes } from '../src/cli/recover-incomplete-dependencies.mjs';
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 assert.equal(
   safeComponentPath('enUS.SC2Data\\LocalizedData\\GameStrings.txt'),
@@ -21,6 +23,38 @@ for (const name of ['../out', '/absolute', 'C:\\out', 'a//b', 'a/./b', 'a/../b',
 const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'trigger-preparation-'));
 const original = path.join(temporary, 'original.SC2Map');
 await fs.writeFile(original, 'not an archive');
+const library = path.join(temporary, 'OfflineCopy.SC2Mod');
+await fs.mkdir(path.join(library, 'Base.SC2Data'), { recursive: true });
+const libraryScript = path.join(library, 'Base.SC2Data', 'LibA1B2C3D4.galaxy');
+await fs.writeFile(libraryScript, 'void libA1B2C3D4_InitLib() {}');
+const reference = 'bnet:Published Test Mod/1.0/123456';
+const dependencyXml = `<DocInfo><Dependencies><Value>${reference}</Value></Dependencies></DocInfo>`;
+const includeScript = 'include "TriggerLibs/NativeLib"\r\ninclude "LibA1B2C3D4"\r\nvoid F() {}';
+const inputs = {
+  xml: dependencyXml,
+  script: includeScript,
+  original,
+  libraryRoots: [],
+  installation: temporary,
+};
+assert.deepEqual(await findPublishedBindings(inputs), []);
+const [binding] = await findPublishedBindings({ ...inputs, libraryInputs: [library] });
+assert.equal(binding.reference, reference);
+assert.equal(binding.match, 'EXPLICIT_LOCAL_PACKAGE');
+assert.deepEqual(binding.libraryIds, ['a1b2c3d4']);
+const [automaticallyNamed] = await findPublishedBindings({
+  ...inputs,
+  xml: dependencyXml.replace('Published Test Mod', 'OfflineCopy'),
+});
+assert.equal(automaticallyNamed.match, 'LOCAL_PACKAGE_NAME');
+await verifyPublishedFiles([binding]);
+await fs.appendFile(libraryScript, '\nvoid Changed() {}');
+await assert.rejects(verifyPublishedFiles([binding]), /Local dependency changed/);
+const analysisScript = omitMissingIncludes(includeScript, 'MapScript.galaxy', {
+  includes: [{ from: 'MapScript.galaxy', include: 'LibA1B2C3D4' }],
+});
+assert.equal(analysisScript.length, includeScript.length);
+assert.match(analysisScript, /^include "TriggerLibs\/NativeLib"\r\n +\r\nvoid F\(\) \{\}$/u);
 await assert.rejects(
   prepareMap({ original, installation: temporary, output: temporary, mpq: original }),
   /contain original|protected/,
