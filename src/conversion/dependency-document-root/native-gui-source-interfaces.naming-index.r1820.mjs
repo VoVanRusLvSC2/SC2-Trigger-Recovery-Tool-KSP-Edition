@@ -206,6 +206,12 @@ export function createNativeGuiSourceInterfaces({
     stockClosure ? analyzeStockCatalogs(stockClosure, part, analyze) : analyze();
   const { libraries, loadedDigests } = load('libraries', () => readCatalogLibraries(dependencies));
   const origins = new Map();
+  const digestsByPath = new Map();
+  for (const { sourcePath, digest } of dependencies) {
+    const digests = digestsByPath.get(sourcePath) ?? new Set();
+    digests.add(digest);
+    digestsByPath.set(sourcePath, digests);
+  }
 
   for (const pin of catalogPins) {
     assert(
@@ -216,14 +222,11 @@ export function createNativeGuiSourceInterfaces({
         /^[a-f0-9]{64}$/.test(pin.sha256),
       'NATIVE_GUI_CASC_PIN_REQUIRED',
     );
-    const matches = dependencyLibraries.filter((d) => d.sourcePath === pin.path);
-    assert(matches.length > 0, 'NATIVE_GUI_DEPENDENCY_PATH_NOT_UNIQUE');
-    const xml = matches[0].triggerData;
-    assert(
-      matches.every((d) => d.triggerData === xml),
-      'NATIVE_GUI_DEPENDENCY_PATH_NOT_UNIQUE',
-    );
-    assert.equal(sha(xml), pin.sha256, 'NATIVE_GUI_CATALOG_PIN_MISMATCH');
+    // The package-local path "Triggers" can be mounted by several campaigns.
+    // CASC authentication binds the corresponding library to its content digest.
+    const digests = digestsByPath.get(pin.path);
+    assert(digests, 'NATIVE_GUI_DEPENDENCY_PATH_MISSING');
+    assert(digests.has(pin.sha256), 'NATIVE_GUI_CATALOG_PIN_MISMATCH');
     assert(
       libraries.has(pin.libraryId) && loadedDigests.get(pin.libraryId) === pin.sha256,
       'NATIVE_GUI_PIN_LIBRARY_MISSING',

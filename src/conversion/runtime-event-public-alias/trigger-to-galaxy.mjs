@@ -5,6 +5,11 @@ import {
   threadedBodyName,
 } from '../exact-function-signatures/initializer-origins.local-array-entry.qualified.mjs';
 import { resolveSourceMapStartupPlan } from '../root-startup-function-roles/source-map-startup-plan.owned-modes.mjs';
+import {
+  sourceIncludePrefix,
+  sourceIncludePrefixIndex,
+  verifiedIncludePrefixForLibrary,
+} from '../exact-function-signatures/preserved-source-includes.exact-inputs.mjs';
 import { shouldEmitExplicitStructureInitializer } from '../../libraries/gui/explicit-structure-initializer.mjs';
 import { parameterScriptName } from '../../bindings/parameter-script-name.mjs';
 
@@ -3401,6 +3406,16 @@ function convertTriggerLibraryToGalaxyBody(
       nativeLibrary === undefined ||
       referencedLibraries(library).has(nativeLibrary.id));
 
+  const authoredScripts = orderedCustomScripts(library);
+  const prefix = verifiedIncludePrefixForLibrary(
+    generation[sourceIncludePrefix],
+    library,
+    authoredScripts,
+  );
+  const customScripts = prefix
+    ? authoredScripts.filter((script) => script.id !== prefix.id)
+    : authoredScripts;
+
   statements.push(
     createIncludeStatement(librariesStage ? 'TriggerLibs/NativeLib' : 'TriggerLibs/natives'),
   );
@@ -3427,6 +3442,12 @@ function convertTriggerLibraryToGalaxyBody(
   });
 
   if (!emptyImplicitMap) statements.push(createIncludeStatement(`Lib${library.id}_h`));
+  if (prefix)
+    statements.splice(
+      sourceIncludePrefixIndex(prefix, statements),
+      0,
+      ...prefix.paths.map(createIncludeStatement),
+    );
 
   // Boilerplate part 1: InitLibraries + InitVariables (before triggers)
 
@@ -3448,8 +3469,6 @@ function convertTriggerLibraryToGalaxyBody(
         librariesStage,
       ),
     );
-
-  const customScripts = orderedCustomScripts(library);
 
   for (const custom of customScripts) {
     if (!custom.scriptCode) continue;

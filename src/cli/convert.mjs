@@ -256,6 +256,7 @@ export async function convertMapJob(
     sourceSyntax,
     recoveredMarkup,
     originalDraftMarkup,
+    draftLocalization = [],
     dependencyFallbackInputs,
     initializerAnalysis,
     canPackTriggerDraft = false,
@@ -1424,6 +1425,32 @@ export async function convertMapJob(
       }
     }
     recoveredMarkup = forward.output?.triggerData;
+    const labels = forward.output.recoveredGuiLabels;
+    if (labels?.length)
+      draftLocalization = (localized.length ? localized : [{ locale }]).flatMap((table) => {
+        const original = table.triggerStrings ?? '';
+        const keys = new Set(
+          original
+            .replace(/^\uFEFF/u, '')
+            .split(/\r?\n/u)
+            .map((line) => line.split('=')[0]),
+        );
+        const extra = labels
+          .filter(({ key }) => !keys.has(key))
+          .map(({ key, name }) => key + '=' + name);
+        return extra.length
+          ? [
+              {
+                path: table.locale + '.SC2Data/LocalizedData/TriggerStrings.txt',
+                text:
+                  original +
+                  (original && !original.endsWith('\n') ? '\n' : '') +
+                  extra.join('\n') +
+                  '\n',
+              },
+            ]
+          : [];
+      });
     await writeLosslessJsonEvidence(path.join(job, 'GUI_RECOVERY_POLICY_PROOF.json'), {
       guiRecovery: forward.guiRecovery,
       incremental: forward.incremental,
@@ -1683,6 +1710,15 @@ export async function convertMapJob(
               raw + (raw && !raw.endsWith('\n') ? '\n' : '') + extra.join('\n') + '\n',
             );
           }
+        for (const { path: name, text } of draftLocalization) {
+          const file = localResourcePath(name, conversion);
+          await mkdir(path.dirname(file), { recursive: true });
+          try {
+            await writeFile(file, text, { flag: 'wx' });
+          } catch (error) {
+            if (error.code !== 'EEXIST') throw error;
+          }
+        }
 
         const aiFiles = baseline.output.customAiScripts ?? [];
 
@@ -2575,7 +2611,12 @@ export async function convertMapJob(
         try {
           assert.equal(xmlTree(draftMarkup).tag, 'TriggerData', 'Invalid recovered Triggers root');
           const draftDirectory = path.join(job, 'DRAFT');
-          const draft = await writeTriggerDraft(row, draftDirectory, draftMarkup);
+          const draft = await writeTriggerDraft(
+            row,
+            draftDirectory,
+            draftMarkup,
+            draftLocalization,
+          );
           await save(path.join(draftDirectory, 'PACKAGE_VERIFICATION.json'), draft.verification);
           result.packedCandidate = draft.candidate;
           if (!recoveredMarkup) result.draftTriggerSource = 'original-authored';

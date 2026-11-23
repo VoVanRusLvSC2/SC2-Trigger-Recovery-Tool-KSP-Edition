@@ -54,22 +54,26 @@ export function verifyOwnedTriggerStorageTransfer({
       list.push(node);
       emitted.set(node.name.name, list);
     }
-  for (const [library, document] of guiLibraries)
-    for (const element of Object.values(document.elements))
-      if (element.type === 'Trigger') {
-        assert(
-          element.identifier !== undefined || element.name !== undefined,
-          'GUI_TRIGGER_SCRIPT_NAME_REQUIRES_LOCALIZATION',
-        );
-        const owner = { library: element.library ?? library, type: 'Trigger', id: element.id };
-        assert(owner.id);
-        const name = withImplicitLibrary(implicitLibraryId, () =>
-            triggerHandleName(owner.library, element),
-          ),
-          list = owners.get(name) ?? [];
-        list.push(owner);
-        owners.set(name, list);
-      }
+  const editsOwnedFiles = beforeFiles.some(
+    (file) => after.get(logicalSourcePath(file.originalPath ?? file.fileName))?.text !== file.text,
+  );
+  if (editsOwnedFiles)
+    for (const [library, document] of guiLibraries)
+      for (const element of Object.values(document.elements))
+        if (element.type === 'Trigger') {
+          assert(
+            element.identifier !== undefined || element.name !== undefined,
+            'GUI_TRIGGER_SCRIPT_NAME_REQUIRES_LOCALIZATION',
+          );
+          const owner = { library: element.library ?? library, type: 'Trigger', id: element.id };
+          assert(owner.id);
+          const name = withImplicitLibrary(implicitLibraryId, () =>
+              triggerHandleName(owner.library, element),
+            ),
+            list = owners.get(name) ?? [];
+          list.push(owner);
+          owners.set(name, list);
+        }
   for (const before of beforeFiles) {
     const fileName = logicalSourcePath(before.originalPath ?? before.fileName),
       candidate = after.get(fileName);

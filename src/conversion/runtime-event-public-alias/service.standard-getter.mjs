@@ -636,6 +636,7 @@ function generationOptions(input) {
     ...(input.sourceMapStartupDependencies !== undefined
       ? { sourceMapStartupDependencies: input.sourceMapStartupDependencies }
       : {}),
+    ...(input[sourceIncludePrefix] ? { [sourceIncludePrefix]: input[sourceIncludePrefix] } : {}),
   };
 }
 
@@ -5342,3 +5343,4 @@ export const triggerConversionBounds = Object.freeze({
 
   maxLibraryElements: MAX_LIBRARY_ELEMENTS,
 });
+import { sourceIncludePrefix } from '../exact-function-signatures/preserved-source-includes.exact-inputs.mjs';

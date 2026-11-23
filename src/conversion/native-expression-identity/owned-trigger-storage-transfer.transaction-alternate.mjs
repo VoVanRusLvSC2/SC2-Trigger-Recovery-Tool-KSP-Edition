@@ -37,22 +37,6 @@ export function transferOwnedTriggerStorage({
     rows.push(node);
     rootDeclarations.set(node.name.name, rows);
   }
-  for (const [library, document] of guiLibraries)
-    for (const element of Object.values(document.elements)) {
-      if (element.type !== 'Trigger') continue;
-      assert(
-        element.identifier !== undefined || element.name !== undefined,
-        'GUI_TRIGGER_SCRIPT_NAME_REQUIRES_LOCALIZATION',
-      );
-      const owner = { library: element.library ?? library, type: 'Trigger', id: element.id };
-      assert(owner.id, 'GUI_TRIGGER_STORAGE_OWNER_ID_REQUIRED');
-      const name = withImplicitLibrary(implicitLibraryId, () =>
-          triggerHandleName(owner.library, element),
-        ),
-        rows = guiOwners.get(name) ?? [];
-      rows.push(owner);
-      guiOwners.set(name, rows);
-    }
   for (const file of owned) {
     const fileName = logicalSourcePath(file.originalPath ?? file.fileName);
     if (!reached.has(fileName)) continue;
@@ -62,6 +46,25 @@ export function transferOwnedTriggerStorage({
       providers.set(node.name.name, rows);
     }
   }
+  // With disjoint declaration names, no GUI handle can own source storage.
+  // The independent compilation and byte checks still qualify the no-op.
+  if ([...providers.keys()].some((name) => rootDeclarations.has(name)))
+    for (const [library, document] of guiLibraries)
+      for (const element of Object.values(document.elements)) {
+        if (element.type !== 'Trigger') continue;
+        assert(
+          element.identifier !== undefined || element.name !== undefined,
+          'GUI_TRIGGER_SCRIPT_NAME_REQUIRES_LOCALIZATION',
+        );
+        const owner = { library: element.library ?? library, type: 'Trigger', id: element.id };
+        assert(owner.id, 'GUI_TRIGGER_STORAGE_OWNER_ID_REQUIRED');
+        const name = withImplicitLibrary(implicitLibraryId, () =>
+            triggerHandleName(owner.library, element),
+          ),
+          rows = guiOwners.get(name) ?? [];
+        rows.push(owner);
+        guiOwners.set(name, rows);
+      }
   const byFile = new Map(),
     records = [];
   for (const [name, owners] of guiOwners) {

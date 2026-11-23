@@ -13,6 +13,11 @@ import {
   threadedBodyName,
 } from '../exact-function-signatures/initializer-origins.local-array-entry.qualified.mjs';
 import { reconcileAuthoredStructureIdentifiers } from '../exact-function-signatures/authored-structure-identifiers.issued.mjs';
+import {
+  assertRuntimeIdentifiersEmitted,
+  prepareRuntimeIdentifierProbe,
+  reconcileAuthoredRuntimeIdentifiers,
+} from '../exact-function-signatures/authored-runtime-identifiers.mjs';
 import { printableLiteralSourceView } from '../exact-function-signatures/source-literal-inputs.mjs';
 import { literalByteSyntaxShape } from '../exact-function-signatures/literal-byte-syntax-shape.mjs';
 // Incremental AST lowering. Existing XML is edited by ranges, never reserialized
@@ -319,9 +324,77 @@ export function createAutomaticCompletion(c) {
         'Structure identity emission failed',
       );
     }
-    const generated = functions(parse(forward.output.script));
+    let emittedAst = parse(forward.output.script);
+    let runtimeIdentifiers;
+    if (sourceCheckpoint?.galaxy === galaxy) {
+      const probe = prepareRuntimeIdentifierProbe({
+        xml,
+        sourceAst: desiredAst,
+        emittedAst,
+        library: authored,
+        model: c.model,
+      });
+      if (probe) {
+        const withHeader = (ast, header) =>
+          header ? { statements: [...parse(header).statements, ...ast.statements] } : ast;
+        const withOrigins = (data) => ({
+          ...opts,
+          [authoredInitializerOrigins]: createAuthoredInitializerOrigins({
+            xml: data,
+            xmlTree,
+            libraryId,
+            sources: [
+              { fileName: 'primary.galaxy', text: galaxy },
+              { fileName: 'primary-header.galaxy', text: opts.header ?? '' },
+              ...(opts.additionalScripts ?? []),
+            ],
+          }),
+        });
+        try {
+          const sourceWithHeader = withHeader(desiredAst, opts.header);
+          const probed = await emitExisting(probe.xml, withOrigins(probe.xml));
+          assert(
+            !probed.diagnostics?.some((record) => record.severity === 'error'),
+            'Anonymous authored GUI could not be inspected',
+          );
+          const tx = reconcileAuthoredRuntimeIdentifiers({
+            xml,
+            sourceAst: sourceWithHeader,
+            emittedAst: withHeader(emittedAst, forward.output.header),
+            probe,
+            probeAst: withHeader(parse(probed.output.script), probed.output.header),
+            syntaxShape: legacyShape,
+          });
+          runtimeIdentifiers = tx.proof;
+          if (tx.xml !== xml) {
+            const renamedOptions = withOrigins(tx.xml);
+            const renamed = await emitExisting(tx.xml, renamedOptions);
+            assert(
+              !renamed.diagnostics?.some((record) => record.severity === 'error'),
+              'Renamed authored GUI could not be emitted',
+            );
+            const renamedAst = parse(renamed.output.script);
+            assertRuntimeIdentifiersEmitted(
+              tx.proof,
+              sourceWithHeader,
+              withHeader(renamedAst, renamed.output.header),
+              legacyShape,
+            );
+            existing = (await c.readAuthoredTriggerDocument(tx.xml, c.sdk, strings)).document;
+            authored = existing.libraries.get(libraryId);
+            xml = tx.xml;
+            sourceCheckpoint = { ...sourceCheckpoint, xmlSha256: sha(xml) };
+            opts[authoredInitializerOrigins] = renamedOptions[authoredInitializerOrigins];
+            emittedAst = renamedAst;
+          }
+        } catch (error) {
+          runtimeIdentifiers = { ...runtimeIdentifiers, records: [], refused: error.message };
+        }
+      }
+    }
+    const generated = functions(emittedAst);
     times.baselineEmission = performance.now() - t;
-    let beforeAst = parse(forward.output.script),
+    let beforeAst = emittedAst,
       before = generated;
     if (sourceCheckpoint) {
       assert.equal(sourceCheckpoint.xmlSha256, sha(xml), 'Checkpoint XML mismatch');
@@ -779,7 +852,9 @@ export function createAutomaticCompletion(c) {
       return {
         ...delta,
         mode:
-          contextualGetters.proof.records.length || templateBindings.records.length
+          contextualGetters.proof.records.length ||
+          templateBindings.records.length ||
+          runtimeIdentifiers?.records.length
             ? 'SOURCE_METADATA_ONLY'
             : selectorIdentity.proof.records.length
               ? structureIdentity.proof.records.length
@@ -793,6 +868,7 @@ export function createAutomaticCompletion(c) {
           templateBindings,
           attributeSelectors: selectorIdentity.proof,
           structureIdentity: structureIdentity.proof,
+          ...(runtimeIdentifiers ? { runtimeIdentifiers } : {}),
         },
         generationOptions: { [authoredInitializerOrigins]: opts[authoredInitializerOrigins] },
       };
@@ -874,6 +950,7 @@ export function createAutomaticCompletion(c) {
         templateBindings,
         attributeSelectors: selectorIdentity.proof,
         structureIdentity: structureIdentity.proof,
+        ...(runtimeIdentifiers ? { runtimeIdentifiers } : {}),
         unchangedElementsByteExact: unchanged,
         originalElements: values.length,
         addedElements: newKeys.size,

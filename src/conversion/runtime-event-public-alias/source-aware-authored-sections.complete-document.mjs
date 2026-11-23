@@ -27,6 +27,8 @@ import { logicalSourcePath } from '../../model/source-ownership.mjs';
 import { resolveGuiRecoveryPolicy } from '../../model/gui-recovery-policy.source-includes.mjs';
 import { verifyAuthoredCodePolicy } from '../partition-declaration-identity/authored-code-preservation.missing-descriptions.mjs';
 import {
+  restoreOwnedSourceIncludePrefix,
+  sourceIncludePrefix,
   withPreservedSourceIncludes,
   verifyPreservedSourceIncludes,
 } from '../exact-function-signatures/preserved-source-includes.exact-inputs.mjs';
@@ -53,6 +55,39 @@ function declarationsWithSources(declarations, files) {
     }
   }
   return output;
+}
+
+function withRecoveredGuiNames(result, input, includePrefix) {
+  const identifiers = result.incremental?.proof?.runtimeIdentifiers?.records ?? [];
+  if (!identifiers.length && !includePrefix) return result;
+  const names = identifiers.flatMap(({ type, id, identifier, parameters }) => [
+    { type, id, name: identifier },
+    ...(parameters ?? []).map((p) => ({
+      type: 'ParamDef',
+      id: p.id,
+      name: p.identifier.slice(3),
+    })),
+  ]);
+  if (includePrefix)
+    names.push({ type: 'CustomScript', id: includePrefix.id, name: 'Source includes' });
+  const scope = input.documentKind === 'map' ? '' : 'lib_' + input.libraryId + '_';
+  const original = result.output.triggerStrings ?? '';
+  const keys = new Set(
+    original
+      .replace(/^\uFEFF/u, '')
+      .split(/\r?\n/u)
+      .map((s) => s.split('=')[0]),
+  );
+  let strings = original;
+  const recoveredGuiLabels = [];
+  for (const { type, id, name } of names) {
+    const key = `${type}/Name/${scope}${id}`;
+    if (keys.has(key)) continue;
+    strings += (strings && !strings.endsWith('\n') ? '\n' : '') + key + '=' + name + '\n';
+    keys.add(key);
+    recoveredGuiLabels.push({ key, name });
+  }
+  return { ...result, output: { ...result.output, triggerStrings: strings, recoveredGuiLabels } };
 }
 
 export function createSourceAwareConversion(engine, xmlTree) {
@@ -111,7 +146,7 @@ export function createSourceAwareConversion(engine, xmlTree) {
                     : input.galaxyDeclarations,
                 };
                 const initializerRecords = [];
-                const result = await withAuthoredInitializerOrigins(
+                let result = await withAuthoredInitializerOrigins(
                   initializerOrigins,
                   input.existingTriggerData ?? '',
                   xmlTree,
@@ -150,6 +185,61 @@ export function createSourceAwareConversion(engine, xmlTree) {
                   'string',
                   'CONVERTER_TRIGGER_OUTPUT_REQUIRED',
                 );
+                let emittedIncludes, restoredIncludePrefix;
+                if (plan.length) {
+                  const emit = async (output) => {
+                    const forward = await engine.convertTriggersToGalaxy(
+                      output.triggerData,
+                      {
+                        ...prepared,
+                        ...output.generationOptions,
+                        triggerStrings: output.triggerStrings,
+                        ...(output.customAi ? { customAi: output.customAi } : {}),
+                      },
+                      signal,
+                    );
+                    assert(
+                      !forward.diagnostics?.some((d) => d.severity === 'error'),
+                      'PRESERVED_SOURCE_FORWARD_FAILED',
+                    );
+                    return [forward.output.header, forward.output.script]
+                      .filter(Boolean)
+                      .join('\n');
+                  };
+                  emittedIncludes = await emit(result.output);
+                  const prefix = restoreOwnedSourceIncludePrefix({
+                    input,
+                    files,
+                    plan,
+                    xml: result.output.triggerData,
+                    emitted: emittedIncludes,
+                    xmlTree,
+                  });
+                  if (prefix) {
+                    const output = {
+                      ...result.output,
+                      triggerData: prefix.xml,
+                      generationOptions: {
+                        ...result.output.generationOptions,
+                        [sourceIncludePrefix]: prefix.token,
+                        [authoredInitializerOrigins]: createAuthoredInitializerOrigins({
+                          xml: prefix.xml,
+                          xmlTree,
+                          libraryId: input.libraryId ?? 'Map',
+                          sources: [
+                            { fileName: 'primary.galaxy', text: input.script ?? '' },
+                            { fileName: 'primary-header.galaxy', text: input.header ?? '' },
+                            ...files,
+                          ],
+                        }),
+                      },
+                    };
+                    emittedIncludes = await emit(output);
+                    restoredIncludePrefix = prefix.token;
+                    result = { ...result, output };
+                  }
+                }
+                result = withRecoveredGuiNames(result, input, restoredIncludePrefix);
                 const nominalGuiReplay = replayRetainedNominalInterfaces(
                   result.output.triggerData,
                   input.libraryId ?? 'Map',
@@ -187,28 +277,9 @@ export function createSourceAwareConversion(engine, xmlTree) {
                     throw error;
                   }
                 })();
+                const sourceIncludes = verifyPreservedSourceIncludes(plan, emittedIncludes);
+                if (restoredIncludePrefix) sourceIncludes.restoredPrefix = restoredIncludePrefix;
                 const preserved = policy.preserveAuthoredCode ? files : [];
-                let sourceIncludes = { required: [], preserved: true };
-                if (plan.length) {
-                  const forward = await engine.convertTriggersToGalaxy(
-                    result.output.triggerData,
-                    {
-                      ...prepared,
-                      ...result.output.generationOptions,
-                      triggerStrings: result.output.triggerStrings,
-                      ...(result.output.customAi ? { customAi: result.output.customAi } : {}),
-                    },
-                    signal,
-                  );
-                  assert(
-                    !forward.diagnostics?.some((d) => d.severity === 'error'),
-                    'PRESERVED_SOURCE_FORWARD_FAILED',
-                  );
-                  sourceIncludes = verifyPreservedSourceIncludes(
-                    plan,
-                    [forward.output.header, forward.output.script].filter(Boolean).join('\n'),
-                  );
-                }
                 // This is an explicit packing instruction, not evidence that an archive was
                 // already written or that its logic passed the independent benchmark.
                 return {

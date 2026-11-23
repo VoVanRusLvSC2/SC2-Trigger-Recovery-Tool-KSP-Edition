@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { xmlTree } from '../../sdk/array-values/modules/triggers/shared/trigger-document/lossless-xml.js';
 export function patchUniqueIdentifier(xml, { type, id, stem }) {
   assert(
-    /^(Variable|FunctionDef|Trigger)$/u.test(type) &&
+    /^(Variable|FunctionDef|ParamDef|Trigger)$/u.test(type) &&
       /^[A-Fa-f0-9]{8}$/u.test(id) &&
       /^[A-Za-z_][A-Za-z0-9_]*$/u.test(stem),
   );

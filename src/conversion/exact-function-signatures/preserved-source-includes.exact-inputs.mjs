@@ -6,6 +6,8 @@ import { logicalSourcePath, partitionDeclarationViews } from '../../model/source
 import { removeAlreadyLoadedOwnedIncludes } from './owned-include-closure.mjs';
 
 const context = new AsyncLocalStorage();
+const includePrefixes = new WeakMap();
+export const sourceIncludePrefix = Symbol('verified owned source include prefix');
 const require = createRequire(
   new URL(
     new URL(
@@ -120,9 +122,7 @@ export function isPreservedSourceIncludeElement(element) {
   return true;
 }
 
-export function isPreservedSourceIncludeXml(fragment) {
-  const scope = context.getStore();
-  if (!scope?.active || !scope.plan.length) return false;
+function includeOnlyGuiCode(fragment) {
   let code = '',
     fields = 0,
     depth = 0,
@@ -146,7 +146,16 @@ export function isPreservedSourceIncludeXml(fragment) {
     if (capture) code += text;
   };
   parser.write(fragment).close();
-  return fields === 1 && !native && isPreservedSourceIncludeElement({ type, scriptCode: code });
+  if (fields === 1 && !native && type === 'CustomScript') return code;
+}
+
+export function isPreservedSourceIncludeXml(fragment) {
+  const scope = context.getStore();
+  if (!scope?.active || !scope.plan.length) return false;
+  return isPreservedSourceIncludeElement({
+    type: 'CustomScript',
+    scriptCode: includeOnlyGuiCode(fragment),
+  });
 }
 
 export function verifyPreservedSourceIncludes(plan, emitted) {
@@ -161,4 +170,140 @@ export function verifyPreservedSourceIncludes(plan, emitted) {
     'PRESERVED_SOURCE_INCLUDE_SEQUENCE_CHANGED',
   );
   return { required: plan.map((entry) => ({ ...entry })), preserved: true };
+}
+
+const sameSequence = (left, right) =>
+  left.length === right.length && left.every((value, index) => value === right[index]);
+
+/** Recover an owned include block in the source preamble when the regenerated
+ * program has preserved the rest of the verified include sequence. */
+export function restoreOwnedSourceIncludePrefix({ input, files, plan, xml, emitted, xmlTree }) {
+  if (!files.length || input.documentKind !== 'map' || !input.existingTriggerData?.trim()) return;
+  const rootSource = [input.header, input.script].filter(Boolean).join('\n');
+  const tree = parseImmutableGalaxySyntax(rootSource, 'MapScript.galaxy');
+  const owned = new Map(
+    files.map((file) => [sourceKey(file.originalPath ?? file.fileName), file.sha256]),
+  );
+  const blocks = [];
+  let block;
+  for (const [index, node] of tree.statements.entries()) {
+    if (node.kind !== 136) break;
+    const path = node.path.value ?? node.path.text.replace(/^"|"$/gu, '');
+    if (!/^[A-Za-z0-9_./ -]+$/u.test(path)) break;
+    const entry = plan[index];
+    if (!entry || entry.key !== sourceKey(path)) break;
+    if (owned.get(entry.key) !== entry.sha256) {
+      block = undefined;
+      continue;
+    }
+    if (!block) {
+      block = { start: index, entries: [] };
+      blocks.push(block);
+    }
+    block.entries.push(entry);
+  }
+  if (!blocks.length) return;
+  const actual = includes(emitted).map(sourceKey);
+  const required = plan.map((entry) => entry.key);
+  const requiredKeys = new Set(required);
+  const observed = actual.filter((key) => requiredKeys.has(key));
+  if (sameSequence(observed, required)) return;
+  const eligible = blocks.filter(({ start, entries }) => {
+    const expected = entries.map((entry) => entry.key);
+    const keys = new Set(expected);
+    const remaining = [...required.slice(0, start), ...required.slice(start + entries.length)];
+    if (keys.size !== expected.length || remaining.some((key) => keys.has(key))) return false;
+    const restored = observed.filter((key) => keys.has(key));
+    return (
+      (!restored.length || sameSequence(restored, expected)) &&
+      sameSequence(
+        observed.filter((key) => !keys.has(key)),
+        remaining,
+      )
+    );
+  });
+  if (eligible.length !== 1) return;
+  const [{ start, entries: prefix }] = eligible;
+  const after = plan[start - 1]?.key;
+  const existing = observed.includes(prefix[0].key);
+
+  const document = xmlTree(xml);
+  if (document.tag !== 'TriggerData') return;
+  const roots = document.children.filter((node) => node.tag === 'Root');
+  if (roots.length !== 1 || roots[0].selfClosing) return;
+  const root = roots[0];
+  const paths = prefix.map(({ path }) => path);
+  let id;
+  if (existing) {
+    const itemIds = new Set(
+      root.children
+        .filter((node) => node.tag === 'Item' && node.attributes.Type === 'CustomScript')
+        .map((node) => node.attributes.Id),
+    );
+    const matching = document.children.filter((node) => {
+      if (
+        node.tag !== 'Element' ||
+        node.attributes.Type !== 'CustomScript' ||
+        !itemIds.has(node.attributes.Id)
+      )
+        return false;
+      const code = includeOnlyGuiCode(xml.slice(node.start, node.end));
+      if (!code) return false;
+      const written = includes(code, true);
+      return written?.length === paths.length && written.every((path, i) => path === paths[i]);
+    });
+    if (matching.length !== 1) return;
+    id = matching[0].attributes.Id;
+  } else {
+    const taken = new Set(document.children.map((node) => node.attributes.Id));
+    id = prefix[0].sha256.slice(0, 8).toUpperCase();
+    while (taken.has(id))
+      id = ((Number.parseInt(id, 16) + 1) >>> 0).toString(16).padStart(8, '0').toUpperCase();
+    const code = paths.map((path) => `include &quot;${path}&quot;`).join('\n');
+    xml =
+      xml.slice(0, root.openEnd) +
+      `\n<Item Type="CustomScript" Id="${id}"/>` +
+      xml.slice(root.openEnd, root.end) +
+      `\n<Element Type="CustomScript" Id="${id}"><ScriptCode>${code}</ScriptCode></Element>` +
+      xml.slice(root.end);
+  }
+  const token = Object.freeze({
+    kind: 'VERIFIED_OWNED_SOURCE_INCLUDE_PREFIX',
+    entries: prefix.map((entry) => ({ ...entry })),
+    id,
+    ...(after ? { after } : {}),
+  });
+  includePrefixes.set(token, {
+    library: input.libraryId ?? 'Map',
+    id,
+    paths,
+    after,
+  });
+  return {
+    xml,
+    token,
+  };
+}
+
+export function verifiedIncludePrefixForLibrary(token, library, customScripts) {
+  if (!token) return;
+  const prefix = includePrefixes.get(token);
+  assert(prefix, 'UNTRUSTED_SOURCE_INCLUDE_PREFIX');
+  if (prefix.library !== library.id || !library.implicit) return;
+  const entry = customScripts.find((script) => script.id === prefix.id);
+  assert(
+    entry && !entry.initFunc && !entry.flags?.length && entry.expressionCode === undefined,
+    'SOURCE_INCLUDE_PREFIX_GUI_ITEM_CHANGED',
+  );
+  assert.deepEqual(includes(entry.scriptCode, true), prefix.paths, 'SOURCE_INCLUDE_PREFIX_CHANGED');
+  return prefix;
+}
+
+export function sourceIncludePrefixIndex(prefix, statements) {
+  if (!prefix.after) return 0;
+  const anchors = statements.flatMap((node, index) =>
+    node.kind === 136 && sourceKey(node.path.value) === prefix.after ? [index] : [],
+  );
+  assert.equal(anchors.length, 1, 'SOURCE_INCLUDE_PREFIX_ANCHOR_NOT_UNIQUE');
+  return anchors[0] + 1;
 }
