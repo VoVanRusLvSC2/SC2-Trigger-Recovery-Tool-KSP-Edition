@@ -2,7 +2,12 @@ import { createVerifiedConversionProgram } from '../exact-function-signatures/ve
 import { capturePartitionStartupOwnership } from '../../model/partition-startup-ownership.mjs';
 import { withSourcePartitionAuthoredScope } from '../partition-declaration-identity/source-partition-authored-scope.mjs';
 import { rememberRoleDependency } from '../implicit-gui-localization/role-dependency-scope.mjs';
-import { recoveryTextSha256 } from '../../utilities/recovery-parse-scope.mjs';
+import {
+  isRecoveryParseScopeActive,
+  readRecoveryModel,
+  recoveryTextSha256,
+} from '../../utilities/recovery-parse-scope.mjs';
+import { parseImmutableGalaxySyntax } from '../../model/read-immutable-galaxy-syntax.mjs';
 import { isRetainedNominalInterfaceElement } from '../source-nominal-return-roles/retained-nominal-gui-interfaces.replay.mjs';
 import { finalizeLocalRetirements } from '../../model/deferred-local-retirement.linear.mjs';
 import { pruneUnreachableElements as finalPruneLocals } from '../../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/g2t-prune.js';
@@ -716,8 +721,11 @@ function validateGalaxyOutput(
 function modelDeclarations(libraries, primaryId, supplied = []) {
   const signatures = new Map(),
     explicit = new Set();
+  const parseDeclarations = isRecoveryParseScopeActive()
+    ? parseImmutableGalaxySyntax
+    : parseSharedGalaxySource;
   for (const file of supplied) {
-    const source = parseSharedGalaxySource(file.text, file.fileName ?? 'Lib.galaxy');
+    const source = parseDeclarations(file.text, file.fileName ?? 'Lib.galaxy');
     for (const declaration of source.statements)
       if (declaration.kind === SyntaxKind.FunctionDeclaration) explicit.add(declaration.name.name);
   }
@@ -2187,6 +2195,10 @@ function provenance(direction) {
   };
 }
 
+function parseForwardPrimaryDocument(xml, [libraryId, documentKind]) {
+  return parsePrimaryDocument(xml, libraryId, documentKind);
+}
+
 export async function convertTriggersToGalaxy(primaryText, rawInput, signal) {
   throwIfAborted(signal);
 
@@ -2210,7 +2222,12 @@ export async function convertTriggersToGalaxy(primaryText, rawInput, signal) {
 
   boundedString(input.gameStrings, 'gameStrings', MAX_DEPENDENCY_BYTES);
 
-  const primaryParsed = parsePrimaryDocument(primary, input.libraryId ?? 'Map', input.documentKind);
+  const libraryIdentifier = input.libraryId ?? 'Map';
+  const identity = [libraryIdentifier, input.documentKind === 'map' ? 'map' : undefined];
+  const primaryParsed =
+    typeof libraryIdentifier === 'string' && primary.length <= 2 * 1024 ** 2
+      ? readRecoveryModel(primary, parseForwardPrimaryDocument, identity, true)
+      : parseForwardPrimaryDocument(primary, identity);
 
   const libraryId = primaryLibraryId(primaryParsed, input.libraryId);
 
@@ -2329,6 +2346,8 @@ export async function convertTriggersToGalaxy(primaryText, rawInput, signal) {
     libraryId,
     [...validationDeclarations, ...customAiDeclarations],
     input.strictSymbols,
+    'Lib',
+    isRecoveryParseScopeActive(),
   );
 
   const diagnostics = [...layerDiagnostics(layers), ...validation.diagnostics];

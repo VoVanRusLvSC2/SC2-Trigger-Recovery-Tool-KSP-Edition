@@ -1,6 +1,6 @@
 # From source snapshot to a working converter
 
-**Windows 3.1.0 is published in two editions. Broader map and Editor qualification is ongoing.**
+**Windows 3.1.1 is published in two editions. Broader map and Editor qualification is ongoing.**
 
 The recovery pipeline is implemented in the published source, and earlier artifacts have recorded map results. A clone with the documented pinned runtime and verified inputs can run the component API and prepared-job worker. The goal of this plan is a reproducible working release with a clear supported scope, useful diagnostics and a small, explicit list of remaining bugs. Silent changes to map behavior are not an acceptable beta limitation.
 

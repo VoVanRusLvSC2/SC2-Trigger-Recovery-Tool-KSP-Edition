@@ -112,6 +112,21 @@ try {
     readRecoveryModel(xml, parse),
     readRecoveryModel(xml, (text) => ({ text })),
   );
+  let modelParses = 0;
+  const parseMutable = () => {
+    modelParses++;
+    return new Map([['Map', { displayName: 'Authored' }]]);
+  };
+  const firstModel = readRecoveryModel(xml, parseMutable, 'Map', true);
+  firstModel.get('Map').displayName = 'First locale';
+  const secondModel = readRecoveryModel(xml, parseMutable, 'Map', true);
+  assert.equal(secondModel.get('Map').displayName, 'Authored');
+  secondModel.get('Map').displayName = 'Second locale';
+  assert.equal(
+    readRecoveryModel(xml, parseMutable, 'Map', true).get('Map').displayName,
+    'Authored',
+  );
+  assert.equal(modelParses, 1);
   const large = 'x'.repeat(13 * 1024 ** 2);
   const smallModel = readRecoveryModel(xml, parse);
   const largeModel = readRecoveryModel(large, parse, 'Map');

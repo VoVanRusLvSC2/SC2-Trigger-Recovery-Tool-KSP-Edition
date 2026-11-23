@@ -2,7 +2,7 @@
 
 ## Windows x64 application
 
-Choose one Windows x64 installer from the [3.1.0 release](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/tag/v3.1.0).
+Choose the Windows x64 installer for your edition. Published installers are on the [releases page](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases).
 
 | Installer | Metadata used for recovery |
 | --- | --- |
@@ -30,6 +30,9 @@ Choose a `.SC2Map` or `.SC2Mod` archive or component folder, then select
 automatically and suggests a new output folder beside the map.
 Original maps are read-only. Recovery runs once in the background and writes
 progress, a candidate map and evidence under the chosen output directory.
+Installed-SC2 prepares standard libraries when the browser interface starts.
+DOWNLOAD TRIGGERS XML becomes available as soon as recovery has produced the
+XML. INSERT TRIGGERS INTO MAP becomes available when archive checks finish.
 
 Command line:
 

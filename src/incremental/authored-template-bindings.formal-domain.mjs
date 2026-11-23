@@ -196,13 +196,20 @@ export function reconcileAuthoredTemplateBindings({
   const matcher = deriveNativeLoopTemplateMatcher(nativeLibrary, { macros }),
     before = functions(source),
     current = functions(generated);
-  const nativeElements = Object.values(nativeLibrary.elements),
-    byType = (type, id) => nativeElements.find((e) => e.type === type && e.id === id);
-  const definitions = new Map(
-    nativeElements.filter((e) => e.type === 'FunctionDef').map((e) => [e.id, e]),
-  );
+  const definitions = new Map();
+  const formalTypes = new Map([
+    ['ParamDef', new Map()],
+    ['SubFuncType', new Map()],
+  ]);
+  for (const element of Object.values(nativeLibrary.elements)) {
+    if (element.type === 'FunctionDef') definitions.set(element.id, element);
+    const elements = formalTypes.get(element.type);
+    if (elements && !elements.has(element.id)) elements.set(element.id, element);
+  }
+  const byType = (type, id) => formalTypes.get(type).get(id);
   const domains = new Map();
-  for (const d of definitions.values()) {
+  const domainOf = (d) => {
+    if (domains.has(d.id)) return domains.get(d.id);
     const params = (d.parameters ?? []).map((r) =>
         (r.library ?? nativeLibrary.id) === nativeLibrary.id ? byType('ParamDef', r.id) : undefined,
       ),
@@ -211,40 +218,46 @@ export function reconcileAuthoredTemplateBindings({
           ? byType('SubFuncType', r.id)
           : undefined,
       );
+    let domain;
     if (
-      [...params, ...roles].some((e) => !e || typeof name(e) !== 'string') ||
-      new Set(params.map(name)).size !== params.length ||
-      new Set(roles.map(name)).size !== roles.length
+      [...params, ...roles].every((e) => e && typeof name(e) === 'string') &&
+      new Set(params.map(name)).size === params.length &&
+      new Set(roles.map(name)).size === roles.length
     )
-      continue;
-    domains.set(d.id, {
-      flags: (d.flags ?? [])
-        .filter((f) =>
-          [
-            'Action',
-            'SubFunctions',
-            'AllowBreak',
-            'AllowContinue',
-            'Call',
-            'Event',
-            'Operator',
-            'Native',
-            'CreateThread',
-          ].includes(f),
-        )
-        .sort(),
-      parameters: params.map((p) => [name(p), abi(p)]).sort(([a], [b]) => a.localeCompare(b)),
-      roles: roles
-        .map((p) => [name(p), !!p.isAction, !!p.isEvent, !!p.isCondition])
-        .sort(([a], [b]) => a.localeCompare(b)),
-    });
-  }
-  const compatible = (a, b) =>
-    !!a &&
-    !!b &&
-    domains.has(a.id) &&
-    domains.has(b.id) &&
-    isDeepStrictEqual(domains.get(a.id), domains.get(b.id));
+      domain = {
+        flags: (d.flags ?? [])
+          .filter((f) =>
+            [
+              'Action',
+              'SubFunctions',
+              'AllowBreak',
+              'AllowContinue',
+              'Call',
+              'Event',
+              'Operator',
+              'Native',
+              'CreateThread',
+            ].includes(f),
+          )
+          .sort(),
+        parameters: params.map((p) => [name(p), abi(p)]).sort(([a], [b]) => a.localeCompare(b)),
+        roles: roles
+          .map((p) => [name(p), !!p.isAction, !!p.isEvent, !!p.isCondition])
+          .sort(([a], [b]) => a.localeCompare(b)),
+      };
+    domains.set(d.id, domain);
+    return domain;
+  };
+  const compatible = (a, b) => {
+    if (!a || !b) return false;
+    const left = domainOf(a);
+    return left !== undefined && isDeepStrictEqual(left, domainOf(b));
+  };
+  const captured = new WeakMap();
+  const capturesOf = (match) => {
+    if (!captured.has(match)) captured.set(match, captures(match));
+    return captured.get(match);
+  };
   const edits = new Map();
   function replaceId(node, oldId, newId) {
     if (oldId === newId) return;
@@ -279,14 +292,14 @@ export function reconcileAuthoredTemplateBindings({
     // owner only from a unique exact parameter+body correspondence to a current
     // emitted template. Never infer correspondence from order or API names.
     for (const candidate of sourceCalls.anonymous) {
-      const wanted = captures(candidate);
+      const wanted = capturesOf(candidate);
       const competing = sourceCalls.anonymous.filter(
         (m) =>
-          isDeepStrictEqual(captures(m), wanted) &&
+          isDeepStrictEqual(capturesOf(m), wanted) &&
           compatible(definitions.get(m.templateId), definitions.get(candidate.templateId)),
       );
       const sameCaptures = [...emittedCalls].filter(
-        ([id, rows]) => rows.length === 1 && isDeepStrictEqual(captures(rows[0]), wanted),
+        ([id, rows]) => rows.length === 1 && isDeepStrictEqual(capturesOf(rows[0]), wanted),
       );
       const matching = sameCaptures.filter(
         ([id, rows]) =>
@@ -342,7 +355,7 @@ export function reconcileAuthoredTemplateBindings({
         actual?.length !== 1 ||
         actual[0].templateId !== old?.id ||
         !target ||
-        !isDeepStrictEqual(captures(expected), captures(actual[0])) ||
+        !isDeepStrictEqual(capturesOf(expected), capturesOf(actual[0])) ||
         uses.get(k) !== 1 ||
         ownerUses.get(k)?.size !== 1
       ) {

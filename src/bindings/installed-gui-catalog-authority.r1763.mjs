@@ -50,6 +50,8 @@ export async function authenticateInstalledGuiCatalogs({
   expectedDependencyLayers,
   expectedBuildInfoSha256,
   readBuildInfo,
+  catalogOwners,
+  classifyInstalledDocument,
 }) {
   assert(
     Array.isArray(dependencyLibraries) && dependencyLibraries.length <= 2048,
@@ -123,10 +125,10 @@ export async function authenticateInstalledGuiCatalogs({
     assert(new Set(files.map(canonical)).size === files.length, 'GUI_CATALOG_FILE_CASE_AMBIGUOUS');
     return files;
   };
-  const text = async (layer, file) => {
+  const text = async (layer, file, layerReads) => {
     const bytes = Buffer.from(await context.read(layer.id, file, 64 * 1024 ** 2));
     assert(bytes.length <= 64 * 1024 ** 2, 'GUI_CATALOG_READ_BOUND');
-    reads.push({
+    layerReads.push({
       layerId: layer.id,
       sourceId: layer.sourceId,
       role: layer.role,
@@ -142,17 +144,19 @@ export async function authenticateInstalledGuiCatalogs({
     // exact-byte witness to a differently encoded installed document.
     return new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes);
   };
-  const add = async (layer, file) =>
-    actual.push({ sourcePath: file, triggerData: await text(layer, file), layer });
-  for (const layer of layers) {
-    const own = (await listed(layer, 'Triggers')).filter((file) => canonical(file) === 'triggers');
-    if (layer.role !== 'primary' && own.length) await add(layer, own[0]);
+  const readLayer = async (layer) => {
+    const layerReads = [],
+      documents = [];
+    const add = async (file) =>
+      documents.push({ sourcePath: file, triggerData: await text(layer, file, layerReads), layer });
+    const own = (await listed(layer, 'Triggers')).find((file) => canonical(file) === 'triggers');
+    if (layer.role !== 'primary' && own) await add(own);
     const listPath = 'Base.SC2Data/TriggerLibs/LibraryList.xml';
     const lists = (await listed(layer, listPath)).filter(
       (file) => canonical(file) === canonical(listPath),
     );
-    if (!lists.length) continue;
-    const tree = xmlTree(await text(layer, lists[0]));
+    if (!lists.length) return { documents, layerReads };
+    const tree = xmlTree(await text(layer, lists[0], layerReads));
     assert.equal(tree.tag, 'TriggerData', 'GUI_CATALOG_LIBRARY_LIST_ROOT');
     const externals = [];
     const visit = (node) => {
@@ -179,10 +183,30 @@ export async function authenticateInstalledGuiCatalogs({
         .map((ext) => files.find((file) => canonical(file) === canonical(base + ext)))
         .find(Boolean);
       assert(file, 'GUI_CATALOG_LISTED_SOURCE_MISSING:' + base);
-      await add(layer, file);
+      await add(file);
+    }
+    return { documents, layerReads };
+  };
+  // Read a few independent layers at once, while preserving evidence order
+  // and letting all active reads finish before the caller disposes the mount.
+  const concurrentLayers = 4;
+  for (let i = 0; i < layers.length; i += concurrentLayers) {
+    const batch = await Promise.allSettled(layers.slice(i, i + concurrentLayers).map(readLayer));
+    for (const result of batch) {
+      if (result.status === 'rejected') throw result.reason;
+      actual.push(...result.value.documents);
+      reads.push(...result.value.layerReads);
     }
   }
-  const filtered = removeEmptyDependencyDocuments(actual, xmlTree);
+  const filtered = removeEmptyDependencyDocuments(
+    actual,
+    xmlTree,
+    classifyInstalledDocument &&
+      ((document, classify) =>
+        document.layer.sourceId === 'local:casc' && document.layer.role === 'dependency'
+          ? classifyInstalledDocument(sha(document.triggerData), classify)
+          : classify()),
+  );
   const emptyKey = (row) => [row.index, canonical(row.sourcePath), row.sha256, row.bytes];
   assert.deepEqual(
     filtered.omitted.map(emptyKey),
@@ -198,18 +222,25 @@ export async function authenticateInstalledGuiCatalogs({
   for (let i = 0; i < filtered.retained.length; i++) {
     const installed = filtered.retained[i],
       prepared = dependencyLibraries[i];
+    const installedSha256 = sha(installed.triggerData);
     assert.deepEqual(
-      [canonical(installed.sourcePath), sha(installed.triggerData)],
-      [canonical(prepared.sourcePath), sha(prepared.triggerData)],
+      [canonical(installed.sourcePath), installedSha256],
+      [
+        canonical(prepared.sourcePath),
+        installed.triggerData === prepared.triggerData
+          ? installedSha256
+          : sha(prepared.triggerData),
+      ],
       'GUI_CATALOG_PREPARED_CLOSURE_CHANGED',
     );
     if (installed.layer.sourceId !== 'local:casc' || installed.layer.role !== 'dependency')
       continue;
-    for (const libraryId of readOwnedGuiLibraries(installed.triggerData, 'Map', {
-      retainSource: false,
-    }).keys()) {
+    const owners =
+      catalogOwners?.(installedSha256, installed.triggerData) ??
+      readOwnedGuiLibraries(installed.triggerData, 'Map', { retainSource: false }).keys();
+    for (const libraryId of owners) {
       if (libraryId === 'Map') continue;
-      files.push({ libraryId, path: prepared.sourcePath, sha256: sha(installed.triggerData) });
+      files.push({ libraryId, path: prepared.sourcePath, sha256: installedSha256 });
     }
   }
   assert.equal(

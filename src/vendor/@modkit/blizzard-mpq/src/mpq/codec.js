@@ -1270,6 +1270,24 @@ export async function openMpqReader(input, options) {
       const entry = entryAt(live(), byId, String(path).replaceAll('\\', '/'))
       return entry === undefined ? undefined : listed(entry)
     },
+    storedEntry(id) {
+      const current = live()
+      if (current.recovery || current.header.repaired) return undefined
+      const entry = entryAt(current, byId, id)
+      if (!entry) return undefined
+      const { block, path } = entry
+      assertReadable(block, path)
+      if (block.size > maxEntryBytes || block.archivedSize > maxEntryBytes + ARCHIVED_OVERHEAD_BYTES)
+        throw new RangeError(`MPQ entry exceeds the buffer budget: ${path}`)
+      return {
+        offset: current.header.offset + block.offset,
+        length: block.archivedSize,
+        size: block.size,
+        flags: block.flags,
+        sectorShift: current.header.sectorShift,
+        key: entryKey(block, path),
+      }
+    },
     async read(id, readSignal) {
       readSignal?.throwIfAborted()
       const current = live()

@@ -10,6 +10,8 @@ import {
   packComponentSnapshot,
 } from '../src/cli/sc2-package.mjs';
 import { createHash } from 'node:crypto';
+import { updateMapCandidate, writeTriggerDraft } from '../src/cli/package-candidate.mjs';
+const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 assert.equal(
   safeComponentPath('enUS.SC2Data\\LocalizedData\\GameStrings.txt'),
   'enUS.SC2Data/LocalizedData/GameStrings.txt',
@@ -75,6 +77,88 @@ if (process.platform === 'win32') {
   assert.deepEqual(Buffer.from(await packed.read(packed.find(entry.path).id)), source);
   packed.dispose();
   await verifyComponentSource(observation);
+
+  const map = path.join(temporary, 'map.SC2Map');
+  const mpq = path.resolve(import.meta.dirname, '../.runtime/tools/mpqcli.exe');
+  const sourceComponents = path.join(temporary, 'map-components');
+  await fs.mkdir(sourceComponents);
+  const originalTrigger = Buffer.from('<TriggerData><Root/></TriggerData>');
+  const assets = [
+    ['MapScript.galaxy', Buffer.from('void InitMap() {}')],
+    ['Triggers', originalTrigger],
+    ['texture.dds', Buffer.from('untouched texture bytes'.repeat(256))],
+  ];
+  for (const [name, bytes] of assets) await fs.writeFile(path.join(sourceComponents, name), bytes);
+  await packComponentSnapshot(
+    mpq,
+    sourceComponents,
+    map,
+    assets.map(([name, bytes]) => ({ path: name, sha256: sha(bytes) })),
+  );
+  const originalMap = await fs.readFile(map);
+  const row = { archive: map, archiveSha256: sha(originalMap), mpq };
+  for (const edit of [false, true]) {
+    const directory = path.join(temporary, edit ? 'edited' : 'identical');
+    await fs.mkdir(path.join(directory, 'components'), { recursive: true });
+    const triggers = edit
+      ? Buffer.from('<TriggerData><!-- change --><Root/></TriggerData>')
+      : originalTrigger;
+    await fs.writeFile(path.join(directory, 'components/Triggers'), triggers);
+    const target = path.join(directory, 'result.SC2Map');
+    let packed;
+    const proof = await updateMapCandidate(
+      edit ? row : { ...row, mpq: path.join(temporary, 'unused.exe') },
+      target,
+      directory,
+      [{ path: 'Triggers', sha256: sha(triggers), bytes: triggers.length }],
+      {
+        sourceBytes: originalMap,
+        onVerifiedArchive: (archive) => {
+          packed = archive;
+        },
+      },
+    );
+    assert.equal(packed.sha256, proof.archiveSha256);
+    assert.deepEqual(packed.bytes, await fs.readFile(target));
+    assert.equal(
+      proof.verification,
+      edit ? 'STORED_OR_DECODED_PAYLOAD_EQUALITY' : 'EXACT_ARCHIVE_COPY',
+    );
+    assert.deepEqual(proof.writtenComponents, edit ? ['Triggers'] : []);
+    assert.equal(proof.unchangedPayloads, 2);
+    if (!edit) assert.deepEqual(await fs.readFile(target), originalMap);
+    else {
+      assert.equal(proof.unchangedStored, 2);
+      assert.equal(proof.decodedFallbacks, 0);
+      const verified = await openSc2Package(target);
+      try {
+        assert.deepEqual(Buffer.from(await verified.read(verified.find('Triggers').id)), triggers);
+        assert.deepEqual(
+          Buffer.from(await verified.read(verified.find('texture.dds').id)),
+          assets[2][1],
+        );
+      } finally {
+        verified.dispose();
+      }
+    }
+  }
+  const draftXml = '<TriggerData><!-- draft --><Root/></TriggerData>';
+  const draft = await writeTriggerDraft(
+    { ...row, name: 'map.SC2Map' },
+    path.join(temporary, 'draft'),
+    draftXml,
+  );
+  assert.deepEqual(draft.verification.writtenComponents, ['Triggers']);
+  const draftReader = await openSc2Package(draft.candidate);
+  try {
+    assert.equal(
+      Buffer.from(await draftReader.read(draftReader.find('Triggers').id)).toString('utf8'),
+      draftXml,
+    );
+  } finally {
+    draftReader.dispose();
+  }
+  assert.deepEqual(await fs.readFile(map), originalMap);
 }
 await fs.writeFile(component, 'changed');
 await assert.rejects(verifyComponentSource(observation), /Source component changed/);

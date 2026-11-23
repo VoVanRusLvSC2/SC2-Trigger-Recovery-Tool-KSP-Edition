@@ -1,7 +1,7 @@
 import { arrayValuesSdkRoot } from '../../sdk/runtime.mjs';
 // The same three metadata-binding stages, with one source-document parse per
 // locale. Only small final ABI candidate facts survive that locale's scan.
-// No parsed cache, retained cross-call state or dependency archive writes.
+// The installed reader may reuse authenticated scope facts for stock catalogs.
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -34,26 +34,28 @@ const sha = (b) => createHash('sha256').update(b).digest('hex');
 const sdk = arrayValuesSdkRoot;
 const limits = { maxArchiveBytes: 1024 ** 3, maxEntries: 100000, maxEntryBytes: 256 * 1024 ** 2 };
 
-export async function bindLocalizedDependencyAbi(prepared, documents, declarations) {
+export async function bindLocalizedDependencyAbi(prepared, documents, declarations, libraryCache) {
+  const mods = prepared.actualMods ?? [];
   const declared = new Map(),
     conflicts = new Set();
-  for (const source of declarations) {
-    const ast = parseGalaxySource(source.text, source.fileName);
-    if (ast.parseDiagnostics.length) continue;
-    for (const n of ast.statements)
-      if (n.kind === 141 && n.name?.name) {
-        const { baseType, sizes } = unwrapArrayType(n.type),
-          type = getTypeName(baseType),
-          key = JSON.stringify([type, sizes.length]);
-        const prior = declared.get(n.name.name);
-        if (prior && prior.key !== key) conflicts.add(n.name.name);
-        declared.set(n.name.name, { key, type, dimensions: sizes.length });
-      }
-  }
-  // Keep the original independent declaration conflict/type validators. This
-  // optimization concerns repeated GUI XML parsing, not type inference policy.
-  const abi = collectAbiSignatures(declarations),
-    structAbi = collectStructAbi(declarations);
+  if (mods.length)
+    for (const source of declarations) {
+      const ast = parseGalaxySource(source.text, source.fileName);
+      if (ast.parseDiagnostics.length) continue;
+      for (const n of ast.statements)
+        if (n.kind === 141 && n.name?.name) {
+          const { baseType, sizes } = unwrapArrayType(n.type),
+            type = getTypeName(baseType),
+            key = JSON.stringify([type, sizes.length]);
+          const prior = declared.get(n.name.name);
+          if (prior && prior.key !== key) conflicts.add(n.name.name);
+          declared.set(n.name.name, { key, type, dimensions: sizes.length });
+        }
+    }
+  // Compile locale ABI indexes only for physical mods with candidate aliases.
+  // Every mounted document still passes the scope and duplicate-owner checks.
+  const abi = mods.length ? collectAbiSignatures(declarations) : undefined,
+    structAbi = mods.length ? collectStructAbi(declarations) : undefined;
   const out = documents.map((d) => ({ ...d })),
     variableChanges = [],
     callChanges = [],
@@ -73,20 +75,29 @@ export async function bindLocalizedDependencyAbi(prepared, documents, declaratio
     work[kind]++;
     return (await readAuthoredTriggerDocument(xml, sdk, strings, options)).document;
   };
-  const mods = prepared.actualMods ?? [];
   const retainSource = mods.length > 0;
   const mountedLibraries = new Map();
   const mountedDocuments = new Map();
   for (const d of documents) {
-    const parsed = await parse(d.triggerData, d.triggerStrings ?? '', 'mountedDocumentParses', {
-      retainSource,
-    });
-    for (const lib of parsed.libraries.values())
-      if (lib.id !== 'Map') {
-        const prior = mountedLibraries.get(lib.id);
+    const cached = retainSource ? undefined : libraryCache?.mountedOwners(d);
+    let parsed,
+      owners = cached?.owners;
+    if (owners) {
+      work.mountedDocumentCacheHits = (work.mountedDocumentCacheHits ?? 0) + 1;
+      work.persistentCache = true;
+    } else {
+      parsed = await parse(d.triggerData, d.triggerStrings ?? '', 'mountedDocumentParses', {
+        retainSource,
+      });
+      owners = [...parsed.libraries.keys()];
+      cached?.remember(owners);
+    }
+    for (const id of owners)
+      if (id !== 'Map') {
+        const prior = mountedDocuments.get(id);
         if (prior) {
-          let left = prior,
-            right = lib;
+          let left = mountedLibraries.get(id),
+            right = parsed?.libraries.get(id);
           if (!retainSource) {
             // Duplicate owners need the original lossless comparison, including
             // the raw XML. Most jobs have one document per dependency owner.
@@ -97,22 +108,22 @@ export async function bindLocalizedDependencyAbi(prepared, documents, declaratio
                   source.triggerStrings ?? '',
                   'mountedDocumentParses',
                 )
-              ).libraries.get(lib.id);
-            left = await full(mountedDocuments.get(lib.id));
+              ).libraries.get(id);
+            left = await full(prior);
             right = await full(d);
           }
           assert(
             JSON.stringify(left) === JSON.stringify(right),
-            'Ambiguous mounted library ID ' + lib.id,
+            'Ambiguous mounted library ID ' + id,
           );
         }
-        mountedLibraries.set(lib.id, lib);
-        mountedDocuments.set(lib.id, d);
+        if (retainSource) mountedLibraries.set(id, parsed.libraries.get(id));
+        mountedDocuments.set(id, d);
       }
   }
   const nativeTypes = mountedLibraries.get('Ntve');
   if (nativeTypes && retainSource) deriveNativeTypeMapping(nativeTypes, declarations);
-  const documentHashes = documents.map((d) => sha(d.triggerData));
+  const documentHashes = retainSource ? documents.map((d) => sha(d.triggerData)) : [];
   const facts = [];
   for (const mod of mods) {
     const bytes = await readFile(mod.destination);

@@ -22,6 +22,7 @@ const preview = path.join(job, 'UNVERIFIED_PREVIEW');
 await mkdir(locale, { recursive: true });
 await mkdir(preview, { recursive: true });
 await writeFile(path.join(input, 'MapScript.galaxy'), 'void InitMap() {}\n');
+await writeFile(path.join(input, 'texture.dds'), 'original texture');
 await writeFile(path.join(locale, 'GameStrings.txt'), 'Old/Key=Original\n');
 await writeFile(path.join(locale, 'TriggerStrings.txt'), 'Trigger/Name/OLD=Old name\n');
 const original = path.join(temp, 'original.SC2Map');
@@ -33,7 +34,10 @@ const limits = { maxArchiveBytes: 1024 ** 3, maxEntries: 100000, maxEntryBytes: 
 const reader = await openMpqReader(originalBytes, limits);
 const entries = [];
 for (const entry of reader.entries)
-  entries.push({ path: entry.path, sha256: sha(Buffer.from(await reader.read(entry.id))) });
+  entries.push({
+    path: entry.path,
+    ...(entry.path === 'texture.dds' ? {} : { sha256: sha(await reader.read(entry.id)) }),
+  });
 reader.dispose();
 const config = path.join(temp, 'config.json');
 await writeFile(config, JSON.stringify({ entries }));
@@ -58,6 +62,7 @@ const packed = await openMpqReader(await readFile(draft.path), limits);
 const content = async (name) =>
   Buffer.from(await packed.read(packed.find(name).id)).toString('utf8');
 assert.equal(await content('MapScript.galaxy'), 'void InitMap() {}\n');
+assert.equal(await content('texture.dds'), 'original texture');
 assert.equal(await content('Triggers'), triggerData);
 assert.match(
   await content('enUS.SC2Data/LocalizedData/TriggerStrings.txt'),

@@ -19,8 +19,12 @@ const defaults = await discoverDefaults(root);
 const token = randomBytes(32).toString('hex');
 const preferences = createPreferenceStore();
 const limit = 2 * 1024 * 1024;
+const triggerXmlTitle = 'candidates/recovered/generated/Triggers';
+const triggerXmlId = 'recovered-triggers';
 let state: JobSnapshot = { phase: 'idle', log: '', artifacts: [] };
 let worker: ChildProcess | undefined;
+let retainedWorker: ChildProcess | undefined;
+let retainedInstallation: string | undefined;
 let starting = false;
 let inspecting = false;
 let artifacts = new Map<string, string>();
@@ -33,6 +37,12 @@ const log = (chunk: string) => {
     if (line.startsWith('trigger-recovery: ')) state.error = line.slice(18);
     try {
       const event = JSON.parse(line);
+      if (event.type === 'triggers-ready' && state.phase === 'running' && state.output) {
+        const ready: Artifact = { id: triggerXmlId, title: triggerXmlTitle, kind: 'markup' };
+        artifacts.set(ready.id, path.join(state.output, triggerXmlTitle));
+        state.recoveredMarkup = ready;
+        state.artifacts = [ready];
+      }
       if (
         event.type === 'progress' &&
         Number.isFinite(event.percent) &&
@@ -55,7 +65,7 @@ const log = (chunk: string) => {
 async function collectArtifacts(output: string) {
   output = await fs.realpath(output);
   const found: Artifact[] = [];
-  artifacts = new Map();
+  const collected = new Map<string, string>();
   try {
     state.result = JSON.parse(
       await fs.readFile(path.join(output, 'candidates/recovered/RESULT.json'), 'utf8'),
@@ -136,8 +146,8 @@ async function collectArtifacts(output: string) {
             : item.name === 'Triggers'
               ? 'markup'
               : 'report';
-        const id = String(found.length);
-        artifacts.set(id, file);
+        const id = title === triggerXmlTitle ? triggerXmlId : String(found.length);
+        collected.set(id, file);
         const artifact = {
           id,
           title,
@@ -150,6 +160,7 @@ async function collectArtifacts(output: string) {
     }
   }
   await visit(output, 0);
+  artifacts = collected;
   state.artifacts = found;
   const preferred = reportedCandidates.find(
     ({ file, withAttributes, draft }) => !draft && withAttributes && candidates.has(file),
@@ -162,7 +173,31 @@ async function collectArtifacts(output: string) {
       /^candidates\/recovered\/[^/]+\/components\/Triggers$/u.test(artifact.title),
     ) ??
     found.find((artifact) => artifact.title === 'candidates/recovered/Triggers') ??
-    found.find((artifact) => artifact.title === 'candidates/recovered/UNVERIFIED_PREVIEW/Triggers');
+    found.find(
+      (artifact) => artifact.title === 'candidates/recovered/UNVERIFIED_PREVIEW/Triggers',
+    ) ??
+    found.find((artifact) => artifact.title === triggerXmlTitle);
+}
+
+function recoveryWorker(installation: string) {
+  const directory = path.resolve(installation);
+  const key = process.platform === 'win32' ? directory.toLowerCase() : directory;
+  if (retainedWorker?.connected && retainedInstallation === key) return retainedWorker;
+  if (retainedWorker?.connected) retainedWorker.disconnect();
+  const processWorker = spawn(
+    process.execPath,
+    [path.join(root, 'src', 'cli', 'desktop-recovery-worker.mjs')],
+    { cwd: root, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe', 'ipc'] },
+  );
+  retainedWorker = processWorker;
+  retainedInstallation = key;
+  processWorker.stdout!.resume();
+  processWorker.stderr!.resume();
+  processWorker.on('error', () => {});
+  processWorker.once('close', () => {
+    if (retainedWorker === processWorker) retainedWorker = undefined;
+  });
+  return processWorker;
 }
 
 async function startJob(request: RecoveryRequest) {
@@ -200,21 +235,37 @@ async function startJob(request: RecoveryRequest) {
       request,
       progress: { percent: 0, stage: 'Starting recovery' },
     };
-    worker = spawn(process.execPath, args, {
-      cwd: root,
-      windowsHide: true,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
-    worker.stdout!.setEncoding('utf8').on('data', log);
-    worker.stderr!.setEncoding('utf8').on('data', log);
-    worker.once('error', (error) => log(error.message + '\n'));
-    worker.once('close', async (code) => {
+    const installedMap = args.includes('--sc2') && /\.sc2map$/iu.test(request.fields.input ?? '');
+    const jobWorker = installedMap
+      ? recoveryWorker(request.fields.installation!)
+      : spawn(process.execPath, args, {
+          cwd: root,
+          windowsHide: true,
+          stdio: ['ignore', 'pipe', 'pipe'],
+        });
+    worker = jobWorker;
+    jobWorker.stdout!.setEncoding('utf8').on('data', log);
+    jobWorker.stderr!.setEncoding('utf8').on('data', log);
+    const onError = (error: Error) => log(error.message + '\n');
+    const onDone = (message: unknown) => {
+      const done = message as { type?: string; code?: number } | null;
+      if (done?.type === 'recovery-done' && Number.isInteger(done.code)) void finish(done.code!);
+    };
+    let finalizing = false;
+    const finish = async (code: number | null) => {
+      if (finalizing) return;
+      finalizing = true;
+      jobWorker.off('error', onError);
+      jobWorker.off('close', finish);
+      jobWorker.off('message', onDone);
       const cancelled = state.phase === 'cancelled';
       try {
         await collectArtifacts(output);
       } catch (error) {
         log(String(error) + '\n');
       }
+      jobWorker.stdout!.off('data', log);
+      jobWorker.stderr!.off('data', log);
       state.exitCode = code ?? 1;
       state.phase = cancelled ? 'cancelled' : code === 0 ? 'finished' : 'failed';
       if (code === 0 && !cancelled) state.progress = { percent: 100, stage: 'Complete' };
@@ -229,7 +280,20 @@ async function startJob(request: RecoveryRequest) {
       }
       log(`\nProcess exit code: ${code}. Inspect evidence; completion is not Editor acceptance.\n`);
       worker = undefined;
-    });
+    };
+    jobWorker.once('error', onError);
+    jobWorker.once('close', finish);
+    if (installedMap) {
+      jobWorker.on('message', onDone);
+      jobWorker.send(
+        { type: 'recover', args: args.slice(1), installation: request.fields.installation },
+        (error) => {
+          if (!error) return;
+          onError(error);
+          void finish(1);
+        },
+      );
+    }
   } finally {
     starting = false;
   }
@@ -237,17 +301,19 @@ async function startJob(request: RecoveryRequest) {
 
 async function cancelJob() {
   if (!worker || state.phase !== 'running') return;
+  const cancelledWorker = worker;
+  if (retainedWorker === cancelledWorker) retainedWorker = undefined;
   state.phase = 'cancelled';
   // Cancel the CLI's complete process tree, including its converter child.
   if (process.platform === 'win32') {
     await new Promise<void>((resolve, reject) => {
-      const child = spawn('taskkill.exe', ['/PID', String(worker!.pid), '/T', '/F'], {
+      const child = spawn('taskkill.exe', ['/PID', String(cancelledWorker.pid), '/T', '/F'], {
         windowsHide: true,
       });
       child.once('error', reject);
       child.once('close', () => resolve());
     });
-  } else worker.kill('SIGTERM');
+  } else cancelledWorker.kill('SIGTERM');
 }
 
 async function body(req: http.IncomingMessage) {
@@ -428,9 +494,21 @@ const server = http.createServer(async (req, res) => {
     json(res, { error: (error as Error).message }, 400);
   }
 });
+server.once('close', () => {
+  if (retainedWorker?.connected) retainedWorker.disconnect();
+});
 server.listen(0, '127.0.0.1', () => {
   const url = 'http://127.0.0.1:' + (server.address() as import('node:net').AddressInfo).port;
   console.log('Recovery GUI: ' + url);
+  if (
+    defaults.installation &&
+    defaults.installation !== path.join(root, '.runtime', 'public-resources')
+  ) {
+    recoveryWorker(defaults.installation).send(
+      { type: 'preload', installation: defaults.installation },
+      () => {},
+    );
+  }
   if (!process.argv.includes('--no-open') && process.platform === 'win32') {
     const browser = spawn('explorer.exe', [url], { windowsHide: true });
     browser.once('error', (error) => console.error('Open the URL manually: ' + error.message));

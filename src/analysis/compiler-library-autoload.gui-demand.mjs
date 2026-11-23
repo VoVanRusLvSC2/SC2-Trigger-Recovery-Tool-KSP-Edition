@@ -56,6 +56,36 @@ function bootstrap(ast) {
   assert.equal(new Set(calls).size, calls.length, 'DUPLICATE_LIBRARY_INITIALIZER');
   return calls;
 }
+
+export function libraryInitializers(metadata) {
+  const libraries = new Map(),
+    owners = new Map();
+  let native;
+  for (const file of metadata) {
+    checked(file);
+    for (const [id, lib] of parseTriggerXmlSync(file.text)) {
+      assert(!libraries.has(id), 'AMBIGUOUS_BOOTSTRAP_LIBRARY_ID');
+      libraries.set(id, lib);
+      owners.set(id, { fileName: file.fileName, sha256: file.sha256 });
+      if (/(?:^|\/)nativelib\.triggerlib$/iu.test(logicalSourcePath(file.fileName))) {
+        assert(!native, 'AMBIGUOUS_NATIVE_LIBRARY');
+        native = lib;
+      }
+    }
+  }
+  assert(native, 'NATIVE_LIBRARY_IDENTITY_REQUIRED');
+  return withNamingIndexes(() => {
+    const candidates = new Map();
+    for (const [id, lib] of libraries) {
+      const name = libraryInitializationNames(lib, native, libraries).library;
+      const list = candidates.get(name) ?? [];
+      list.push({ id, metadata: owners.get(id) });
+      candidates.set(name, list);
+    }
+    return { nativeId: native.id, candidates };
+  });
+}
+
 export function planCompilerLibraryAutoload({
   root,
   observedRoot,
@@ -63,6 +93,7 @@ export function planCompilerLibraryAutoload({
   declarations,
   includeEvidence,
   gui,
+  analyzeInitializers,
 }) {
   checked(root);
   if (observedRoot) checked(observedRoot);
@@ -80,133 +111,108 @@ export function planCompilerLibraryAutoload({
     walk(tree);
   }
   const retainedGuiBindings = [];
-  const libraries = new Map(),
-    owners = new Map();
-  let native;
-  for (const file of metadata) {
-    checked(file);
-    for (const [id, lib] of parseTriggerXmlSync(file.text)) {
-      assert(!libraries.has(id), 'AMBIGUOUS_BOOTSTRAP_LIBRARY_ID');
-      libraries.set(id, lib);
-      owners.set(id, file);
-      if (/(?:^|\/)nativelib\.triggerlib$/iu.test(logicalSourcePath(file.fileName))) {
-        assert(!native, 'AMBIGUOUS_NATIVE_LIBRARY');
-        native = lib;
-      }
-    }
-  }
-  assert(native, 'NATIVE_LIBRARY_IDENTITY_REQUIRED');
+  const analyze = () => libraryInitializers(metadata);
+  const { nativeId, candidates } = analyzeInitializers ? analyzeInitializers(analyze) : analyze();
   const doc = parse(root),
     observed = observedRoot && parse(observedRoot);
   const parsed = [];
   try {
-    return withNamingIndexes(() => {
-      const required = bootstrap(doc.ast),
-        already = observed ? bootstrap(observed.ast) : [];
-      assert(
-        already.every((name) => required.includes(name)),
-        'UNEXPECTED_OBSERVED_LIBRARY_INITIALIZER',
-      );
-      assert.deepEqual(
-        already,
-        required.filter((name) => already.includes(name)),
-        'OBSERVED_LIBRARY_ORDER_CHANGED',
-      );
-      const includes = doc.ast.statements
-        .filter((n) => n.kind === K.IncludeStatement)
-        .map((n) => ({
-          value: readStringLiteralValue(n.path.text)?.bytes.toString('utf8'),
-          start: n.pos,
-          end: n.end,
-        }));
-      const candidates = new Map();
-      for (const [id, lib] of libraries) {
-        const name = libraryInitializationNames(lib, native, libraries).library;
-        const list = candidates.get(name) ?? [];
-        list.push({ id, lib, metadata: owners.get(id) });
-        candidates.set(name, list);
-      }
-      const demands = [];
-      for (const symbol of required) {
-        const matches = candidates.get(symbol) ?? [];
-        assert.equal(matches.length, 1, 'BOOTSTRAP_CALL_LIBRARY_NOT_UNIQUE:' + symbol);
-        const match = matches[0];
-        if (match.id === native.id || already.includes(symbol)) continue;
-        if (guiBindings.has(match.id)) {
-          retainedGuiBindings.push({
-            id: match.id,
-            initializer: symbol,
-            actualEditorExportRequired: true,
-          });
-          continue;
-        }
-        const stem = canonical(match.metadata.fileName).replace(/\.(?:sc2lib|triggerlib)$/u, '');
-        const paths = includes.filter(
-          (i) => i.value && canonical(i.value.replace(/\.galaxy$/iu, '')) === stem,
-        );
-        assert.equal(paths.length, 1, 'ORIGINAL_LIBRARY_INCLUDE_NOT_UNIQUE:' + symbol);
-        const include = paths[0];
-        const edges = includeEvidence.filter(
-          (e) =>
-            canonical(e.from) === canonical(root.fileName) &&
-            canonical(e.include.replace(/\.galaxy$/iu, '')) ===
-              canonical(include.value.replace(/\.galaxy$/iu, '')),
-        );
-        const identities = new Set(edges.map((e) => logicalSourcePath(e.path) + '\0' + e.layerId));
-        assert.equal(identities.size, 1, 'LIBRARY_INCLUDE_RESOLUTION_NOT_UNIQUE');
-        assert(edges[0]?.layerId, 'LIBRARY_INCLUDE_LAYER_REQUIRED');
-        const files = declarations.filter(
-          (f) => canonical(f.fileName) === canonical(edges[0].path),
-        );
-        assert.equal(files.length, 1, 'LIBRARY_SOURCE_FILE_NOT_UNIQUE');
-        const source = checked(files[0]);
-        const d = parse(source);
-        parsed.push(d);
-        const bodies = d.ast.statements.filter(
-          (n) => n.kind === K.FunctionDeclaration && n.name.name === symbol && n.body,
-        );
-        assert.equal(bodies.length, 1, 'LIBRARY_SOURCE_INITIALIZER_NOT_UNIQUE');
-        const fn = bodies[0];
-        assert.equal(fn.parameters.length, 0);
-        assert.equal(fn.type.kind, K.VoidKeyword, 'LIBRARY_INITIALIZER_NOT_VOID');
-        demands.push({
+    const required = bootstrap(doc.ast),
+      already = observed ? bootstrap(observed.ast) : [];
+    assert(
+      already.every((name) => required.includes(name)),
+      'UNEXPECTED_OBSERVED_LIBRARY_INITIALIZER',
+    );
+    assert.deepEqual(
+      already,
+      required.filter((name) => already.includes(name)),
+      'OBSERVED_LIBRARY_ORDER_CHANGED',
+    );
+    const includes = doc.ast.statements
+      .filter((n) => n.kind === K.IncludeStatement)
+      .map((n) => ({
+        value: readStringLiteralValue(n.path.text)?.bytes.toString('utf8'),
+        start: n.pos,
+        end: n.end,
+      }));
+    const demands = [];
+    for (const symbol of required) {
+      const matches = candidates.get(symbol) ?? [];
+      assert.equal(matches.length, 1, 'BOOTSTRAP_CALL_LIBRARY_NOT_UNIQUE:' + symbol);
+      const match = matches[0];
+      if (match.id === nativeId || already.includes(symbol)) continue;
+      if (guiBindings.has(match.id)) {
+        retainedGuiBindings.push({
           id: match.id,
-          includePath: include.value.replace(/\.galaxy$/iu, ''),
           initializer: symbol,
-          sourceOrder: required.indexOf(symbol),
-          metadata: { fileName: match.metadata.fileName, sha256: match.metadata.sha256 },
-          source: {
-            fileName: source.fileName,
-            sha256: source.sha256,
-            declarationStart: fn.pos,
-            declarationEnd: fn.end,
-            declarationSha256: sha(source.text.slice(fn.pos, fn.end)),
-          },
-          include: {
-            start: include.start,
-            end: include.end,
-            path: edges[0].path,
-            layerId: edges[0].layerId,
-          },
+          actualEditorExportRequired: true,
         });
+        continue;
       }
-      return {
-        kind: 'ORIGINAL_COMPILER_LIBRARY_AUTOLOAD_DEMAND',
-        root: { fileName: root.fileName, sha256: root.sha256 },
-        observedRoot: observedRoot
-          ? { fileName: observedRoot.fileName, sha256: observedRoot.sha256 }
-          : undefined,
-        required,
-        observed: already,
-        demands,
-        retainedGuiBindings,
-        ...(gui === undefined ? {} : { guiSha256: sha(gui) }),
-        newRuntimeFunctions: 0,
-        newNative: 0,
-        semanticEquivalenceProved: false,
-        accepted: false,
-      };
-    });
+      const stem = canonical(match.metadata.fileName).replace(/\.(?:sc2lib|triggerlib)$/u, '');
+      const paths = includes.filter(
+        (i) => i.value && canonical(i.value.replace(/\.galaxy$/iu, '')) === stem,
+      );
+      assert.equal(paths.length, 1, 'ORIGINAL_LIBRARY_INCLUDE_NOT_UNIQUE:' + symbol);
+      const include = paths[0];
+      const edges = includeEvidence.filter(
+        (e) =>
+          canonical(e.from) === canonical(root.fileName) &&
+          canonical(e.include.replace(/\.galaxy$/iu, '')) ===
+            canonical(include.value.replace(/\.galaxy$/iu, '')),
+      );
+      const identities = new Set(edges.map((e) => logicalSourcePath(e.path) + '\0' + e.layerId));
+      assert.equal(identities.size, 1, 'LIBRARY_INCLUDE_RESOLUTION_NOT_UNIQUE');
+      assert(edges[0]?.layerId, 'LIBRARY_INCLUDE_LAYER_REQUIRED');
+      const files = declarations.filter((f) => canonical(f.fileName) === canonical(edges[0].path));
+      assert.equal(files.length, 1, 'LIBRARY_SOURCE_FILE_NOT_UNIQUE');
+      const source = checked(files[0]);
+      const d = parse(source);
+      parsed.push(d);
+      const bodies = d.ast.statements.filter(
+        (n) => n.kind === K.FunctionDeclaration && n.name.name === symbol && n.body,
+      );
+      assert.equal(bodies.length, 1, 'LIBRARY_SOURCE_INITIALIZER_NOT_UNIQUE');
+      const fn = bodies[0];
+      assert.equal(fn.parameters.length, 0);
+      assert.equal(fn.type.kind, K.VoidKeyword, 'LIBRARY_INITIALIZER_NOT_VOID');
+      demands.push({
+        id: match.id,
+        includePath: include.value.replace(/\.galaxy$/iu, ''),
+        initializer: symbol,
+        sourceOrder: required.indexOf(symbol),
+        metadata: { fileName: match.metadata.fileName, sha256: match.metadata.sha256 },
+        source: {
+          fileName: source.fileName,
+          sha256: source.sha256,
+          declarationStart: fn.pos,
+          declarationEnd: fn.end,
+          declarationSha256: sha(source.text.slice(fn.pos, fn.end)),
+        },
+        include: {
+          start: include.start,
+          end: include.end,
+          path: edges[0].path,
+          layerId: edges[0].layerId,
+        },
+      });
+    }
+    return {
+      kind: 'ORIGINAL_COMPILER_LIBRARY_AUTOLOAD_DEMAND',
+      root: { fileName: root.fileName, sha256: root.sha256 },
+      observedRoot: observedRoot
+        ? { fileName: observedRoot.fileName, sha256: observedRoot.sha256 }
+        : undefined,
+      required,
+      observed: already,
+      demands,
+      retainedGuiBindings,
+      ...(gui === undefined ? {} : { guiSha256: sha(gui) }),
+      newRuntimeFunctions: 0,
+      newNative: 0,
+      semanticEquivalenceProved: false,
+      accepted: false,
+    };
   } finally {
     doc.dispose();
     observed?.dispose();

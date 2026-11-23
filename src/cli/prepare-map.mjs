@@ -22,6 +22,19 @@ import { modLibraryUnits } from './mod-library-units.mjs';
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const save = (file, data) => fs.writeFile(file, JSON.stringify(data, null, 2) + '\n');
 const require = createRequire(import.meta.url);
+const isTriggerInput = (name) =>
+  /^(?:MapScript|LibMap_h|ai[0-9a-f]{8})\.galaxy$/iu.test(name) ||
+  /^(?:Triggers|CustomAI|Attributes)$/iu.test(name) ||
+  /^[a-z]{4}\.SC2Data\/LocalizedData\/(?:TriggerStrings|GameStrings)\.txt$/iu.test(name);
+
+export function loadTriggerWorkspace() {
+  // This adapter path is pinned by the runtime revision and exercised by the release smoke.
+  const workspace = new URL(
+    '../workspace/mod-libraries.js',
+    pathToFileURL(require.resolve('@modkit/blizzard-starcraft2/triggers/conversion')),
+  );
+  return import(workspace.href);
+}
 
 export async function prepareMap({
   original,
@@ -33,6 +46,7 @@ export async function prepareMap({
   attributeIndex,
   recoverAttributes = true,
   libraryRoots = [],
+  blizzardLibraries,
   onProgress = () => {},
 }) {
   assert.equal(typeof recoverAttributes, 'boolean', 'Invalid attribute recovery option');
@@ -95,22 +109,52 @@ export async function prepareMap({
   });
   const entries = [],
     names = new Set();
+  const deferred = new Map();
+  const writeComponent = async (entry, payload) => {
+    assert.equal(payload.length, entry.bytes, 'Prepared component size differs: ' + entry.path);
+    const file = path.join(pkg, ...entry.path.split('/'));
+    await fs.mkdir(path.dirname(file), { recursive: true });
+    await fs.writeFile(file, payload, { flag: 'wx' });
+    entry.sha256 = sha(payload);
+  };
+  const writeDeferredComponent = async (name, payload) => {
+    const key = name.replaceAll('\\', '/').toLowerCase();
+    const entry = deferred.get(key);
+    if (entry) {
+      await writeComponent(entry, payload);
+      deferred.delete(key);
+    }
+  };
+  const selectiveMap =
+    documentKind === 'map' &&
+    !sourceDirectory &&
+    !publicResources &&
+    !reader.recovered &&
+    !reader.headerRepaired;
   let total = 0;
   let reportedPercent = -1;
   try {
-    for (const entry of reader.entries) {
+    for (const [index, entry] of reader.entries.entries()) {
       const name = safeComponentPath(entry.path),
         canonical = name.toLowerCase();
       assert(!names.has(canonical), 'Ambiguous case-insensitive component: ' + name);
       names.add(canonical);
+      if (selectiveMap && !isTriggerInput(name)) {
+        assert(entry.size <= 256 * 1024 ** 2, 'Map component exceeds preparation budget');
+        total += entry.size;
+        assert(total <= 4 * 1024 ** 3, 'Expanded map exceeds preparation budget');
+        const record = { path: name, bytes: entry.size };
+        entries.push(record);
+        deferred.set(canonical, record);
+        continue;
+      }
       const payload = Buffer.from(await reader.read(entry.id));
       total += payload.length;
       assert(total <= 4 * 1024 ** 3, 'Expanded map exceeds preparation budget');
-      const file = path.join(pkg, ...name.split('/'));
-      await fs.mkdir(path.dirname(file), { recursive: true });
-      await fs.writeFile(file, payload, { flag: 'wx' });
-      entries.push({ path: name, sha256: sha(payload), bytes: payload.length });
-      const percent = 1 + Math.floor((9 * entries.length) / reader.entries.length);
+      const record = { path: name, bytes: payload.length };
+      await writeComponent(record, payload);
+      entries.push(record);
+      const percent = 1 + Math.floor((9 * (index + 1)) / reader.entries.length);
       if (percent !== reportedPercent) {
         reportedPercent = percent;
         onProgress({ stage: 'Reading package', percent });
@@ -135,6 +179,7 @@ export async function prepareMap({
 
   const session = new MapSession({
     installation,
+    blizzardLibraries,
     ...(libraryRoots.length || publicResources
       ? {
           sources: new BoundedLocalModSources({
@@ -166,14 +211,9 @@ export async function prepareMap({
     return { path: file, sha256: digest, bytes: Buffer.byteLength(text), sourceLabel: label };
   };
   try {
-    // This adapter path is pinned by the public runtime revision and exercised by
-    // the real-archive release smoke, rather than guessed from a newer workspace.
-    const workspace = new URL(
-      '../workspace/mod-libraries.js',
-      pathToFileURL(require.resolve('@modkit/blizzard-starcraft2/triggers/conversion')),
-    );
-    const { readTriggerDependencies, readTriggerDeclarations } = await import(workspace.href);
+    const { readTriggerDependencies, readTriggerDeclarations } = await loadTriggerWorkspace();
     const beforeBuild = await session.installationStamp();
+    blizzardLibraries?.confirmBuild(beforeBuild);
     const context = await session.open({ schemaVersion: 1, target: original });
     const primary = context.layers.at(-1);
     const libraryUnits =
@@ -198,13 +238,26 @@ export async function prepareMap({
       documentKind === 'map'
         ? primarySources[0].bytes
         : Buffer.from(primarySources.map((source) => source.text).join('\n'));
-    const declarations = await readTriggerDeclarations(context, {
-      sources: primarySources.map((source) => source.text),
-    });
+    const objects = deferred.get('objects');
+    if (objects && primarySources[0].text.includes('DoodadFromId'))
+      await writeDeferredComponent(
+        objects.path,
+        await session.readPrimary(context, primary.id, objects.path, 256 * 1024 ** 2),
+      );
+    // Both readers use the same mounted closure and neither changes it.
+    // Drain the reads before disposing it, even if one fails.
+    const [declarationRead, dependencyRead] = await Promise.allSettled([
+      readTriggerDeclarations(context, { sources: primarySources.map((source) => source.text) }),
+      readTriggerDependencies(context),
+    ]);
+    if (declarationRead.status === 'rejected') throw declarationRead.reason;
+    const declarations = declarationRead.value;
     onProgress({ stage: 'Resolving include closure', percent: 16 });
+    if (dependencyRead.status === 'rejected') throw dependencyRead.reason;
     const { retained, omitted } = removeEmptyDependencyDocuments(
-      await readTriggerDependencies(context),
+      dependencyRead.value,
       xmlTree,
+      blizzardLibraries?.classifyPreparedDocument.bind(blizzardLibraries),
     );
     const prepared = {
       schema: 1,
@@ -219,6 +272,7 @@ export async function prepareMap({
       archiveSha256: originalSha256,
       package: pkg,
       originalScriptSha256: sha(scriptBytes),
+      ...(selectiveMap ? { selectiveMapInputs: true } : {}),
       cascBuildInfoSha256: beforeBuild,
       sourceKind: publicResources ? 'public-resource-snapshot' : 'installed-casc',
       libraryRoots,
@@ -307,9 +361,9 @@ export async function prepareMap({
           layerId: found.layerId,
           path: found.path,
         });
-        const text = new TextDecoder('utf-8', { fatal: true }).decode(
-          await context.read(found.layerId, found.path, 64 * 1024 ** 2),
-        );
+        const bytes = await context.read(found.layerId, found.path, 64 * 1024 ** 2);
+        if (found.layerId === primary.id) await writeDeferredComponent(found.path, bytes);
+        const text = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
         const next = { fileName: found.path, text },
           nextKey = sourceKey(next);
         if (!pendingKeys.has(nextKey)) {

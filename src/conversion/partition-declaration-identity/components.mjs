@@ -23,7 +23,14 @@ import { restoreAttributeGui, nativeAttributeGuiSchema } from '../../utilities/a
 import { restoreAttributeDisplayText } from '../../recovery/repairs/attribute-display-fixed.mjs';
 import { restoreExternalDisplayText } from './string-external-display-fixed.mjs';
 import { applyEditorProfile } from '../../libraries/triggers/services/editor-recovery-addon/editor-profile.mjs';
-export async function components(mode, archivePath, jobPath, session, storageSourceCapability) {
+export async function components(
+  mode,
+  archivePath,
+  jobPath,
+  session,
+  storageSourceCapability,
+  originalArchiveBytes,
+) {
   const job = path.resolve(jobPath),
     sha = (x) => createHash('sha256').update(x).digest('hex');
   const canonical = (name) => name.replaceAll('\\', '/').toLowerCase();
@@ -31,7 +38,7 @@ export async function components(mode, archivePath, jobPath, session, storageSou
     await mkdir(path.dirname(file), { recursive: true });
     await writeFile(file, bytes);
   };
-  const bytes = await readFile(archivePath);
+  const bytes = originalArchiveBytes ?? (await readFile(archivePath));
   const reader = await openMpqReader(bytes, {
     maxArchiveBytes: 512 * 1024 * 1024,
     maxEntries: 100000,

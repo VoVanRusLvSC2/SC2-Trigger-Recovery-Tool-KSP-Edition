@@ -16,7 +16,11 @@ import {
 } from '../exact-function-signatures/index-alternate-3.js';
 import { resolveGalaxyTypeAliases } from './galaxy-type-resolution.mjs';
 import { parseConversionGalaxySyntax } from '../exact-function-signatures/conversion-syntax-program.collections.mjs';
-import { hasImmutableGalaxyOrigin } from '../exact-function-signatures/immutable-galaxy-syntax.collections.mjs';
+import {
+  hasImmutableGalaxyOrigin,
+  parseImmutableGalaxySyntax,
+} from '../exact-function-signatures/immutable-galaxy-syntax.collections.mjs';
+import { isRecoveryParseScopeActive } from '../../utilities/recovery-parse-scope.mjs';
 function typeName(node) {
   if (!node) return 'unknown';
   if (node.returnType && node.typeArguments)
@@ -34,6 +38,7 @@ export function validateGalaxyPair(
   shareSyntax = false,
 ) {
   const parser = new Parser();
+  const reuse = shareSyntax && isRecoveryParseScopeActive();
   const files = [
     ...declarations.map((file) => ({ ...file, external: true })),
     ...primary.map((file) => ({ ...file, external: false })),
@@ -41,7 +46,9 @@ export function validateGalaxyPair(
   let sources = files.map((file) => {
     const parse = () => parser.parseFile(file.fileName, file.text);
     const ast = shareSyntax
-      ? parseConversionGalaxySyntax(file.text, file.fileName, parse)
+      ? parseConversionGalaxySyntax(file.text, file.fileName, () =>
+          reuse ? parseImmutableGalaxySyntax(file.text, file.fileName) : parse(),
+        )
       : parse();
     return {
       ...file,

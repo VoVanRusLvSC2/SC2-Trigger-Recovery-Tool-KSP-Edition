@@ -75,10 +75,10 @@ const canonical = (value) => value.replace(/\\/gu, '/').replace(/\/+$/u, '');
  */
 const COMPONENT = /^[^/]+\.sc2[a-z]+\//u;
 const localeAssetComponents = new WeakMap();
-function assetSpellings(files, relative, locales) {
+function assetSpellings(files, relative, locales, indexedComponents) {
     if (COMPONENT.test(relative))
         return [relative];
-    let components = localeAssetComponents.get(files);
+    let components = indexedComponents ?? localeAssetComponents.get(files);
     if (components === undefined) {
         const found = new Set();
         for (const file of files.byPath.keys()) {
@@ -216,9 +216,16 @@ export function createSc2ModContexts(options) {
                 throw new Error(`no layer '${layerId}' in this context`);
             return order[index];
         };
+        const indexes = new Map(layers.map(layer => [layer.id, options.packageIndex?.(layer)]));
         const listing = async (layerId) => (await resolved.files(vfsPathOf(layerId))).list;
         const readFile = async (layerId, filePath, maxBytes) => {
-            const bytes = await resolved.read(vfsPathOf(layerId), filePath);
+            const index = indexes.get(layerId);
+            const relative = filePath.replace(/\\/g, '/').replace(/^\/+/, '').toLowerCase();
+            const direct = index && /^[\x20-\x7e]+$/u.test(relative);
+            const file = direct ? await index.find([relative]) : undefined;
+            const bytes = direct
+                ? file === undefined ? undefined : await index.read(file)
+                : await resolved.read(vfsPathOf(layerId), filePath);
             if (bytes === undefined)
                 throw new Error(`${filePath} is not a file of ${layerId}`);
             if (bytes.byteLength > maxBytes)
@@ -260,9 +267,10 @@ export function createSc2ModContexts(options) {
             }))),
             async files(layerId, page) {
                 const limit = Math.max(1, Math.min(MAXIMUM_PAGE, Math.trunc(page.limit)));
-                const listed = await listing(layerId);
                 const prefix = page.prefix?.toLowerCase();
-                const all = prefix ? listed.filter(file => file.toLowerCase().startsWith(prefix)) : listed;
+                const direct = prefix ? await indexes.get(layerId)?.list(prefix) : undefined;
+                const listed = direct ?? await listing(layerId);
+                const all = prefix && direct === undefined ? listed.filter(file => file.toLowerCase().startsWith(prefix)) : listed;
                 const start = page.cursor === undefined ? 0 : Number(page.cursor);
                 if (!Number.isSafeInteger(start) || start < 0)
                     throw new Error('Invalid mod context cursor');
@@ -276,8 +284,16 @@ export function createSc2ModContexts(options) {
             async locate(filePath) {
                 const relative = canonical(filePath).replace(/^\/+/u, '').toLowerCase();
                 for (let index = order.length - 1; index >= 0; index -= 1) {
+                    const direct = indexes.get(layers[index].id);
+                    if (direct && /^[\x20-\x7e]+$/u.test(relative)) {
+                        const components = COMPONENT.test(relative) ? [] : await direct.localeComponents();
+                        const listed = await direct.find(assetSpellings(undefined, relative, contextLocales, components));
+                        if (listed !== undefined)
+                            return Object.freeze({ layerId: layers[index].id, path: listed });
+                        continue;
+                    }
                     const files = await resolved.files(order[index]);
-                    for (const spelling of assetSpellings(files, relative, request.locales ?? [])) {
+                    for (const spelling of assetSpellings(files, relative, contextLocales)) {
                         const listed = files.byPath.get(spelling);
                         if (listed !== undefined)
                             return Object.freeze({ layerId: layers[index].id, path: listed });

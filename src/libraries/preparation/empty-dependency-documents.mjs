@@ -3,30 +3,29 @@
  * The loader's dependency chain and resource identity are kept unchanged.
  */
 import { createHash } from 'node:crypto';
-export function removeEmptyDependencyDocuments(documents, parseXml) {
+export function isStrictlyEmpty(xml, parseXml) {
+  const tree = parseXml(xml);
+  if (tree.tag !== 'TriggerData' || Object.keys(tree.attributes).length || tree.children.length)
+    return false;
+  // Reject non-whitespace text inside the nominally empty root.
+  const raw = tree.selfClosing ? '' : xml.slice(tree.openEnd, tree.closeStart);
+  return raw.trim() === '';
+}
+
+export function removeEmptyDependencyDocuments(documents, parseXml, reuse) {
   const retained = [],
     omitted = [];
   for (const [index, document] of documents.entries()) {
-    const tree = parseXml(document.triggerData);
-    if (
-      tree.tag === 'TriggerData' &&
-      Object.keys(tree.attributes).length === 0 &&
-      tree.children.length === 0
-    ) {
-      // Reject non-whitespace text inside the nominally empty root.
-      const raw = tree.selfClosing ? '' : document.triggerData.slice(tree.openEnd, tree.closeStart);
-      if (raw.trim() === '') {
-        omitted.push({
-          index,
-          sourcePath: document.sourcePath,
-          bytes: Buffer.byteLength(document.triggerData),
-          sha256: createHash('sha256').update(document.triggerData).digest('hex'),
-          reason: 'Strictly empty TriggerData root; no library or executable element',
-        });
-        continue;
-      }
-    }
-    retained.push(document);
+    const classify = () => isStrictlyEmpty(document.triggerData, parseXml);
+    if (reuse ? reuse(document, classify) : classify()) {
+      omitted.push({
+        index,
+        sourcePath: document.sourcePath,
+        bytes: Buffer.byteLength(document.triggerData),
+        sha256: createHash('sha256').update(document.triggerData).digest('hex'),
+        reason: 'Strictly empty TriggerData root; no library or executable element',
+      });
+    } else retained.push(document);
   }
   return { retained, omitted };
 }

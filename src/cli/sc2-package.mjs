@@ -37,6 +37,8 @@ export async function openSc2Package(input, options = {}) {
       find: (name) => reader.find(name),
       read: (id) => reader.read(id),
       dispose: () => reader.dispose(),
+      recovered: reader.recovered,
+      headerRepaired: reader.headerRepaired,
       archiveSha256: createHash('sha256').update(bytes).digest('hex'),
     };
   }

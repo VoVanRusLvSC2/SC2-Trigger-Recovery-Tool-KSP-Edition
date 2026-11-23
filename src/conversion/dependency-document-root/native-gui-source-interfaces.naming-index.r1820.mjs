@@ -12,6 +12,8 @@ import { FunctionCandidateIndex } from '../native-expression-identity/function-c
 import { formalGalaxyCarrier } from '../../types/formal-galaxy-carrier.mjs';
 
 import { toGalaxyFunctionName } from '../native-expression-identity/ttg-core.js';
+import { parseImmutableGalaxySyntax } from '../../model/read-immutable-galaxy-syntax.mjs';
+import { isRecoveryParseScopeActive } from '../../utilities/recovery-parse-scope.mjs';
 
 import {
   Parser,
@@ -64,7 +66,7 @@ const fullSignature = (n) => ({
   modifiers: (n.modifiers ?? []).map((m) => m.kind).sort((a, b) => a - b),
 });
 
-const finite = (type) => {
+const isFiniteCarrier = (type) => {
   if (typeof type !== 'string') return false;
   const a = new Parser().parseFile('@catalog-type', type + ' catalogValue;');
   const n = a.statements[0];
@@ -77,6 +79,63 @@ const finite = (type) => {
   );
 };
 
+function readCatalogLibraries(dependencies) {
+  const libraries = new Map(),
+    loadedDigests = new Map();
+
+  // Every loaded dependency participates in alias refusal; only separately
+
+  // authenticated owners may contribute ABI facts or carrier witnesses.
+
+  for (const { triggerData, digest } of dependencies) {
+    for (const [owner, library] of readOwnedGuiLibraries(triggerData, 'Map', {
+      retainSource: false,
+    })) {
+      if (isEmptyDependencyRoot(owner, library)) continue;
+      assert(
+        !loadedDigests.has(owner) || loadedDigests.get(owner) === digest,
+        'NATIVE_GUI_LOADED_OWNER_AMBIGUOUS',
+      );
+      if (!libraries.has(owner)) {
+        libraries.set(owner, library);
+        loadedDigests.set(owner, digest);
+      }
+    }
+  }
+  return { libraries, loadedDigests };
+}
+
+function indexCatalogLibraries(libraries) {
+  const catalog = createGuiCapabilityCatalog(libraries);
+  assert.equal(catalog.issues.length, 0, 'NATIVE_GUI_CATALOG_AMBIGUOUS');
+  const indexed = [...libraries].map(([id, l]) => {
+    const elementsByType = {};
+    for (const e of new Set(Object.values(l.elements))) (elementsByType[e.type] ??= {})[e.id] = e;
+    return { ...l, elementsByType };
+  });
+  const index = new FunctionCandidateIndex(indexed),
+    names = new Map();
+
+  // Each owner context has its own naming index.
+  for (const [owner, lib] of libraries) {
+    const naming = {
+      library: lib,
+      libId: owner,
+      nativeLibrary: libraries.get('Ntve'),
+      allLibraries: libraries,
+      functionNameGroups: new WeakMap(),
+    };
+    for (const def of new Set(Object.values(lib.elements))) {
+      if (def.type !== 'FunctionDef') continue;
+      const name = toGalaxyFunctionName(def, naming);
+      const rows = names.get(name) ?? [];
+      rows.push({ owner, lib, def });
+      names.set(name, rows);
+    }
+  }
+  return { catalog, index, names };
+}
+
 /** Explicitly pinned, dependency-only metadata. No emitter capability and no
 
  * claim that metadata-only interfaces are declarations in authored Galaxy. */
@@ -85,6 +144,7 @@ export function createNativeGuiSourceInterfaces({
   dependencyLibraries,
   verifiedCASCCatalogAuthority,
   sourceDocuments,
+  analyzeStockCatalogs,
 }) {
   assert(
     verifiedCASCCatalogAuthority?.kind === 'VERIFIED_CASC_CATALOG_AUTHORITY' &&
@@ -98,6 +158,12 @@ export function createNativeGuiSourceInterfaces({
     Array.isArray(dependencyLibraries) && Array.isArray(catalogPins) && catalogPins.length,
     'NATIVE_GUI_CATALOG_AUTHORITY_REQUIRED',
   );
+  const carrierTypes = new Map();
+  const finite = (type) => {
+    if (typeof type !== 'string') return false;
+    if (!carrierTypes.has(type)) carrierTypes.set(type, isFiniteCarrier(type));
+    return carrierTypes.get(type);
+  };
 
   const docs = sourceDocuments.map((d) => ({
       fileName: d.fileName,
@@ -107,8 +173,11 @@ export function createNativeGuiSourceInterfaces({
     declarations = new Map(),
     requested = new Set();
 
+  const reuse = isRecoveryParseScopeActive();
   for (const d of docs) {
-    const ast = new Parser().parseFile(d.fileName, d.text);
+    const ast = reuse
+      ? parseImmutableGalaxySyntax(d.text, d.fileName)
+      : new Parser().parseFile(d.fileName, d.text);
     assert.equal(ast.parseDiagnostics.length, 0, 'SOURCE_SYNTAX_REQUIRED');
     for (const n of ast.statements)
       if (n.name?.name) {
@@ -124,30 +193,19 @@ export function createNativeGuiSourceInterfaces({
     walk(ast);
   }
 
-  const libraries = new Map(),
-    origins = new Map(),
-    loadedDigests = new Map();
-
-  // Every loaded dependency participates in alias refusal; only separately
-
-  // authenticated owners may contribute ABI facts or carrier witnesses.
-
-  for (const dep of dependencyLibraries) {
-    const digest = sha(dep.triggerData);
-    for (const [owner, library] of readOwnedGuiLibraries(dep.triggerData, 'Map', {
-      retainSource: false,
-    })) {
-      if (isEmptyDependencyRoot(owner, library)) continue;
-      assert(
-        !loadedDigests.has(owner) || loadedDigests.get(owner) === digest,
-        'NATIVE_GUI_LOADED_OWNER_AMBIGUOUS',
-      );
-      if (!libraries.has(owner)) {
-        libraries.set(owner, library);
-        loadedDigests.set(owner, digest);
-      }
-    }
-  }
+  const dependencies = dependencyLibraries.map((dep) => ({ ...dep, digest: sha(dep.triggerData) }));
+  const stockClosure =
+    analyzeStockCatalogs &&
+    dependencies.reduce((chars, dep) => chars + dep.triggerData.length, 0) <= 12 * 1024 ** 2 &&
+    dependencies.every((dep) =>
+      catalogPins.some((pin) => pin.path === dep.sourcePath && pin.sha256 === dep.digest),
+    )
+      ? JSON.stringify(dependencies.map((dep) => [dep.sourcePath, dep.digest]))
+      : undefined;
+  const load = (part, analyze) =>
+    stockClosure ? analyzeStockCatalogs(stockClosure, part, analyze) : analyze();
+  const { libraries, loadedDigests } = load('libraries', () => readCatalogLibraries(dependencies));
+  const origins = new Map();
 
   for (const pin of catalogPins) {
     assert(
@@ -183,33 +241,7 @@ export function createNativeGuiSourceInterfaces({
     });
   }
 
-  const catalog = createGuiCapabilityCatalog(libraries);
-  assert.equal(catalog.issues.length, 0, 'NATIVE_GUI_CATALOG_AMBIGUOUS');
-  const indexed = [...libraries].map(([id, l]) => {
-    const elementsByType = {};
-    for (const e of new Set(Object.values(l.elements))) (elementsByType[e.type] ??= {})[e.id] = e;
-    return { ...l, elementsByType };
-  });
-  const index = new FunctionCandidateIndex(indexed),
-    names = new Map();
-
-  // One invocation-local naming index per owner context; dependency XML and all name collisions still participate.
-  for (const [owner, lib] of libraries) {
-    const naming = {
-      library: lib,
-      libId: owner,
-      nativeLibrary: libraries.get('Ntve'),
-      allLibraries: libraries,
-      functionNameGroups: new WeakMap(),
-    };
-    for (const def of new Set(Object.values(lib.elements))) {
-      if (def.type !== 'FunctionDef') continue;
-      const name = toGalaxyFunctionName(def, naming);
-      const rows = names.get(name) ?? [];
-      rows.push({ owner, lib, def });
-      names.set(name, rows);
-    }
-  }
+  const { catalog, index, names } = load('index', () => indexCatalogLibraries(libraries));
 
   // Editor-only carriers require unanimous positional evidence from ALL real
 

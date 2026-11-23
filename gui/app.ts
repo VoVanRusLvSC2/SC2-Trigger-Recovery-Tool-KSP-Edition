@@ -224,7 +224,8 @@ function render(state: JobSnapshot) {
   element<HTMLButtonElement>('cancel').disabled = !active && !opening;
   const insert = element<HTMLButtonElement>('insertTriggers');
   insert.disabled =
-    active || state.phase === 'cancelled' || !(state.recoveredArchive || state.recoveredMarkup);
+    state.phase === 'cancelled' ||
+    (active ? !state.recoveredMarkup : !(state.recoveredArchive || state.recoveredMarkup));
   insert.textContent = state.recoveredArchive?.draft
     ? 'DOWNLOAD DRAFT'
     : !state.recoveredArchive && state.recoveredMarkup
@@ -235,7 +236,9 @@ function render(state: JobSnapshot) {
   insert.title = state.recoveredArchive?.draft
     ? 'Download the packed draft. Validation did not finish.'
     : !state.recoveredArchive && state.recoveredMarkup
-      ? 'Download the XML recovered before the failure'
+      ? state.phase === 'running'
+        ? 'Download the recovered XML while the map is being verified'
+        : 'Download the recovered XML'
       : 'Save a copy with embedded triggers';
   element<HTMLButtonElement>('exportFile').disabled =
     active || !element<HTMLTextAreaElement>('markup').value;

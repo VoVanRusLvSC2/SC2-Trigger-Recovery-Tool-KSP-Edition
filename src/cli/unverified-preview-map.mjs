@@ -87,9 +87,15 @@ export async function createUnverifiedPreviewMap({ row, preview, triggerData, na
           continue;
         const present = packed.find(name);
         assert(present, 'Original component missing from preview: ' + name);
+        let originalSha256 = entry.sha256;
+        if (originalSha256 === undefined) {
+          const source = original.find(name);
+          assert(source, 'Original component missing: ' + name);
+          originalSha256 = sha(await original.read(source.id));
+        }
         assert.equal(
           sha(Buffer.from(await packed.read(present.id))),
-          entry.sha256,
+          originalSha256,
           'Original component changed: ' + name,
         );
         preserved++;

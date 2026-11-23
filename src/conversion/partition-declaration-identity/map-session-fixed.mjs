@@ -1,5 +1,4 @@
-/** Own exactly one map operation. Dispose even on conversion/proof failure.
- * No singleton content source, disk cache, or shared state across workers. */
+/** Own exactly one map operation. Dispose even on conversion/proof failure. */
 import { createHash } from 'node:crypto';
 import { readFile, stat, readdir } from 'node:fs/promises';
 import path from 'node:path';
@@ -36,6 +35,7 @@ export class MapSession {
     installation = 'C:/Program Files (x86)/StarCraft II',
     sources,
     sourceIdentityFile,
+    blizzardLibraries,
     conversionContext,
     parser = parseGalaxySource,
     maxAstBytes = 8 * 1024 ** 2,
@@ -44,6 +44,7 @@ export class MapSession {
     this.installation = installation;
     this.sourceIdentityFile = sourceIdentityFile ?? path.join(installation, '.build.info');
     this.sources = sources ?? new Sc2DesktopContentSources({ installationDirectory: installation });
+    blizzardLibraries?.attach(this.sources);
     this.conversionContext = conversionContext ?? createTriggerConversionContext();
     this.parser = parser;
     this.contexts = new Set();

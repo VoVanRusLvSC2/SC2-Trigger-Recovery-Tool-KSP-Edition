@@ -118,7 +118,12 @@ export function createNativeEventEffectTools(FunctionCandidateIndex, deriveNativ
     }
     return { records, refused, accepted: false };
   }
-  async function createTrustedNativeEventEffects(prepared, externalSources, sdk) {
+  async function createTrustedNativeEventEffects(
+    prepared,
+    externalSources,
+    sdk,
+    precomputedNativeCatalog,
+  ) {
     const anchorUrl = new URL(
         new URL('../../libraries/gui/trusted-native-event-gui-anchor.json', import.meta.url).href,
         new URL(
@@ -133,8 +138,11 @@ export function createNativeEventEffectTools(FunctionCandidateIndex, deriveNativ
     const input = inputs[0].triggerData;
     assert.equal(input.sha256, anchor.nativeGui.sha256, 'TRUSTED_NATIVE_GUI_VERSION_CHANGED');
     const bytes = await readFile(input.path);
-    assert.equal(sha(bytes), anchor.nativeGui.sha256, 'TRUSTED_NATIVE_GUI_BYTES_CHANGED');
-    const { document, scopeProof } = await readAuthoredNativeCatalog(bytes.toString('utf8'), sdk);
+    const sha256 = sha(bytes);
+    assert.equal(sha256, anchor.nativeGui.sha256, 'TRUSTED_NATIVE_GUI_BYTES_CHANGED');
+    const { document, scopeProof } =
+      (await precomputedNativeCatalog?.(sha256)) ??
+      (await readAuthoredNativeCatalog(bytes.toString('utf8'), sdk));
     assert.equal(document.libraries.size, 1, 'TRUSTED_NATIVE_GUI_MIXED_OWNERS');
     const library = document.libraries.get('Ntve');
     assert(library, 'TRUSTED_NATIVE_GUI_SCOPE');
@@ -142,7 +150,7 @@ export function createNativeEventEffectTools(FunctionCandidateIndex, deriveNativ
     const classified = classifyNativeEventContracts({ ...library }, externalSources),
       evidence = {
         anchorSha256: sha(anchorBytes),
-        nativeGui: { path: input.path, sha256: sha(bytes) },
+        nativeGui: { path: input.path, sha256 },
         scopeProof,
         ...classified,
         semanticBasis:

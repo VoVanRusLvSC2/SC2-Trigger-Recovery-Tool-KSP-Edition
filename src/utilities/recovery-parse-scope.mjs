@@ -4,6 +4,10 @@ import { createHash } from 'node:crypto';
 const scope = new AsyncLocalStorage();
 const MAX_READ_ONLY_MODEL_CHARS = 24 * 1024 ** 2;
 
+export function isRecoveryParseScopeActive() {
+  return !!scope.getStore()?.syntax;
+}
+
 function boundedCache(maxChars, maxEntries) {
   const entries = new Map();
   let retained = 0;
@@ -37,6 +41,7 @@ export function beginRecoveryParseScope() {
     templateReplay: boundedCache(512 * 1024, 256),
     bzip2: boundedCache(24 * 1024 ** 2, 8192),
     readOnlyModels: boundedCache(12 * 1024 ** 2, 16),
+    mutableModels: boundedCache(6 * 1024 ** 2, 4),
     largeReadOnlyModel: boundedCache(MAX_READ_ONLY_MODEL_CHARS, 1),
     textDigests: boundedCache(16 * 1024 ** 2, 96),
     largeTextDigest: boundedCache(MAX_READ_ONLY_MODEL_CHARS, 1),
@@ -51,6 +56,7 @@ export function beginRecoveryParseScope() {
     state.templateReplay = undefined;
     state.bzip2 = undefined;
     state.readOnlyModels = undefined;
+    state.mutableModels = undefined;
     state.largeReadOnlyModel = undefined;
     state.textDigests = undefined;
     state.largeTextDigest = undefined;
@@ -89,17 +95,28 @@ export function decodeRecoveryBzip2(bytes, limit, signal, decode) {
   return value.slice();
 }
 
-/** The reader and its callers must treat the parsed dependency model as read-only. */
-export function readRecoveryModel(text, parse, variant = '') {
+/** Reuse an exact parsed model, with a private copy when the consumer mutates it. */
+export function readRecoveryModel(text, parse, variant = '', mutable = false) {
   const state = scope.getStore();
   if (!state?.readOnlyModels || typeof text !== 'string' || text.length > MAX_READ_ONLY_MODEL_CHARS)
     return parse(text, variant);
   if (!state.parsers.has(parse)) state.parsers.set(parse, state.parsers.size);
-  const key = JSON.stringify([state.parsers.get(parse), variant]) + text;
+  const key = JSON.stringify([state.parsers.get(parse), variant, mutable]) + text;
   // Large output maps are independently inspected by several consecutive gates.
   // Keep one such view without evicting the small dependency models.
-  const cache = key.length > 12 * 1024 ** 2 ? state.largeReadOnlyModel : state.readOnlyModels;
-  return cache(key, key.length, () => parse(text, variant));
+  const cache = mutable
+    ? state.mutableModels
+    : key.length > 12 * 1024 ** 2
+      ? state.largeReadOnlyModel
+      : state.readOnlyModels;
+  if (mutable && key.length > 6 * 1024 ** 2) return parse(text, variant);
+  let fresh;
+  const model = cache(key, key.length, () => {
+    fresh = parse(text, variant);
+    return mutable ? structuredClone(fresh) : fresh;
+  });
+  // Localization and code generation modify their own model.
+  return mutable ? (fresh ?? structuredClone(model)) : model;
 }
 
 export function parseLosslessXml(text, parse) {

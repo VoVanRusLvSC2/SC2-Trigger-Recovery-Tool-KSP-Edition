@@ -17,9 +17,12 @@ import {
   getKeywordType,
   getBinaryResultType,
   LiteralType,
+  SyntaxKind,
 } from '../exact-function-signatures/index-alternate-3.js';
 
 import { resolveGalaxyTypeAliases } from '../native-expression-identity/galaxy-type-resolution.mjs';
+import { isRecoveryParseScopeActive } from '../../utilities/recovery-parse-scope.mjs';
+import { parseImmutableGalaxySyntax } from '../../model/read-immutable-galaxy-syntax.mjs';
 
 function typeName(node) {
   if (!node) return 'unknown';
@@ -44,16 +47,27 @@ export function validateGalaxyPair(
   { nativeGuiInterfaces } = {},
 ) {
   const parser = new Parser();
+  const reuse = isRecoveryParseScopeActive();
 
-  const sources = [
+  const files = [
     ...declarations.map((file) => ({ ...file, external: true })),
     ...primary.map((file) => ({ ...file, external: false })),
-  ].map((file) => ({ ...file, ast: parser.parseFile(file.fileName, file.text) }));
+  ];
+  const parse = (file) => ({ ...file, ast: parser.parseFile(file.fileName, file.text) });
+  let sources = reuse
+    ? files.map((file) => ({ ...file, ast: parseImmutableGalaxySyntax(file.text, file.fileName) }))
+    : files.map(parse);
 
   const globals = new Map(),
     structures = new Map();
 
-  resolveGalaxyTypeAliases(sources.flatMap((source) => [...source.ast.statements]));
+  if (
+    !reuse ||
+    sources.some(({ ast }) => ast.statements.some((n) => n.kind === SyntaxKind.TypedefDeclaration))
+  ) {
+    if (reuse) sources = files.map(parse);
+    resolveGalaxyTypeAliases(sources.flatMap((source) => [...source.ast.statements]));
+  }
 
   const diagnostics = [];
 
