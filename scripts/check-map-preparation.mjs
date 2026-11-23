@@ -178,10 +178,11 @@ if (process.platform === 'win32') {
   }
   const draftXml = '<TriggerData><!-- draft --><Root/></TriggerData>';
   const draft = await writeTriggerDraft(
-    { ...row, name: 'map.SC2Map' },
+    { ...row, name: 'Карта со скриптом.SC2Map' },
     path.join(temporary, 'draft'),
     draftXml,
   );
+  assert.equal(path.basename(draft.candidate), 'DRAFT-Карта со скриптом.SC2Map');
   assert.deepEqual(draft.verification.writtenComponents, ['Triggers']);
   const draftReader = await openSc2Package(draft.candidate);
   try {

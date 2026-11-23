@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { openSc2Package, safeComponentPath } from './sc2-package.mjs';
 import { openMpqReader } from '../vendor/@modkit/blizzard-mpq/src/mpq/codec.js';
@@ -57,7 +57,7 @@ export async function updateMapCandidate(
   const source = sourceBytes ?? (await fs.readFile(row.archive));
   assert.equal(sha(source), row.archiveSha256, 'Source archive changed before packaging');
   const original = await openMpqReader(source, mapLimits);
-  let packed;
+  let packed, temporaryCandidate;
   try {
     assert(!original.recovered && !original.headerRepaired, 'Source MPQ needs repair');
     const before = payloadEntries(original);
@@ -77,9 +77,16 @@ export async function updateMapCandidate(
         writes.push(component);
     }
 
-    await fs.writeFile(candidate, source, { flag: 'wx' });
-    await addVerifiedMapComponents(row.mpq, candidate, directory, writes);
-    const output = await fs.readFile(candidate);
+    // mpqcli receives narrow argv on Windows. Keep the tool's archive name
+    // ASCII and publish the verified bytes under the requested name afterward.
+    const working =
+      writes.length && /[^\x20-\x7e]/u.test(path.basename(candidate))
+        ? path.join(directory, `mpq-${randomUUID()}.SC2Map`)
+        : candidate;
+    await fs.writeFile(working, source, { flag: 'wx' });
+    if (working !== candidate) temporaryCandidate = working;
+    await addVerifiedMapComponents(row.mpq, working, directory, writes);
+    const output = await fs.readFile(working);
     const archiveSha256 = sha(output);
     let unchangedStored = 0;
     let decodedFallbacks = 0;
@@ -121,6 +128,7 @@ export async function updateMapCandidate(
         }
       }
     }
+    if (temporaryCandidate) await fs.writeFile(candidate, output, { flag: 'wx' });
     onVerifiedArchive?.({ bytes: output, sha256: archiveSha256 });
     return {
       passed: true,
@@ -138,6 +146,7 @@ export async function updateMapCandidate(
   } finally {
     packed?.dispose();
     original.dispose();
+    if (temporaryCandidate) await fs.rm(temporaryCandidate, { force: true });
   }
 }
 
