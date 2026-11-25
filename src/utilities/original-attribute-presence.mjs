@@ -5,10 +5,10 @@ import assert from 'node:assert/strict';
 export function originalAttributePresence({
   expandedScript,
   parseGalaxy,
+  ast = parseGalaxy(expandedScript, 'original-attribute-presence.galaxy'),
   attributeModel,
   exactAttributeSource,
 }) {
-  const ast = parseGalaxy(expandedScript, 'original-attribute-presence.galaxy');
   assert(!ast.parseDiagnostics?.length, 'Original Galaxy cannot establish attribute presence');
   const names = new Set(['GameAttributeGameValue', 'GameAttributePlayerValue']),
     calls = [];

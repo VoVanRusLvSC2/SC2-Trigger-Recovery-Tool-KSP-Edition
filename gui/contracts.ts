@@ -1,4 +1,6 @@
 /** A UI capability describes a real backend, never a promised future converter. */
+export const triggerPreviewLimit = 64 * 1024 ** 2;
+
 export interface RecoveryField {
   key: string;
   label: string;
@@ -38,6 +40,19 @@ export interface DocumentPreview {
   canRecover: boolean;
   canRepairGalaxyCopy?: boolean;
   recoveryNotice?: string;
+}
+export interface AttributePreview {
+  present: boolean;
+  definitions: {
+    id: string;
+    name: string;
+    type?: string;
+    values: { id: string; name: string }[];
+  }[];
+  variants: number;
+  inferred?: boolean;
+  xml?: string;
+  error?: string;
 }
 export interface JobSnapshot {
   phase: 'idle' | 'running' | 'finished' | 'failed' | 'cancelled';

@@ -7,8 +7,13 @@ import path from 'node:path';
 import { spawn, type ChildProcess } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { adapters, selectAdapter } from './adapters.js';
-import type { JobSnapshot, RecoveryRequest, Artifact } from './contracts.js';
+import { adapters, inspectSc2Attributes, selectAdapter } from './adapters.js';
+import {
+  triggerPreviewLimit,
+  type JobSnapshot,
+  type RecoveryRequest,
+  type Artifact,
+} from './contracts.js';
 import { discoverDefaults } from './defaults.js';
 import { listFiles, filePlaces } from './files.js';
 import { createPreferenceStore } from './preferences.js';
@@ -27,6 +32,7 @@ let retainedWorker: ChildProcess | undefined;
 let retainedInstallation: string | undefined;
 let starting = false;
 let inspecting = false;
+let inspectedPackage: string | undefined;
 let artifacts = new Map<string, string>();
 let progressTail = '';
 const log = (chunk: string) => {
@@ -178,6 +184,17 @@ async function collectArtifacts(output: string) {
       (artifact) => artifact.title === 'candidates/recovered/UNVERIFIED_PREVIEW/Triggers',
     ) ??
     found.find((artifact) => artifact.title === triggerXmlTitle);
+}
+
+async function resolveArtifact(id: string) {
+  const file = artifacts.get(id);
+  if (!file || !state.output) throw Error('Unknown job artifact.');
+  const actual = await fs.realpath(file),
+    output = await fs.realpath(state.output);
+  const relative = path.relative(output, actual);
+  if (!relative || relative.startsWith('..') || path.isAbsolute(relative))
+    throw Error('Artifact escaped output.');
+  return actual;
 }
 
 function recoveryWorker(installation: string) {
@@ -417,6 +434,7 @@ const server = http.createServer(async (req, res) => {
         inspecting = true;
         try {
           const preview = await adapter.inspect(input.path);
+          inspectedPackage = preview.name;
           state = {
             phase: 'idle',
             log: 'Original archive opened read-only. No recovery job started.\n',
@@ -428,20 +446,40 @@ const server = http.createServer(async (req, res) => {
           inspecting = false;
         }
       }
+      if (req.method === 'GET' && url.pathname === '/api/attributes') {
+        const source = url.searchParams.get('source');
+        const file =
+          source === 'original'
+            ? inspectedPackage
+            : source === 'candidate' && state.recoveredArchive
+              ? await resolveArtifact(state.recoveredArchive.id)
+              : undefined;
+        if (!file) throw Error('No map copy is available.');
+        const preview = await inspectSc2Attributes(file);
+        const report = state.result as
+          | { variants?: { candidate?: string; attributeSource?: { kind?: string } }[] }
+          | undefined;
+        const inferred =
+          source === 'candidate' &&
+          Array.isArray(report?.variants) &&
+          report.variants.some(
+            (variant) =>
+              variant.candidate === file &&
+              variant.attributeSource?.kind === 'SOURCE_OBSERVED_ATTRIBUTE_DEFINITIONS',
+          );
+        return json(res, { ...preview, inferred });
+      }
       if (req.method === 'GET' && ['/api/artifact', '/api/download'].includes(url.pathname)) {
-        const file = artifacts.get(url.searchParams.get('id') ?? '');
-        if (!file) throw Error('Unknown job artifact.');
-        const actual = await fs.realpath(file),
-          output = await fs.realpath(state.output!);
-        const relative = path.relative(output, actual);
-        if (!relative || relative.startsWith('..') || path.isAbsolute(relative))
-          throw Error('Artifact escaped output.');
+        const actual = await resolveArtifact(url.searchParams.get('id') ?? '');
         const download = url.pathname === '/api/download';
-        if ((await fs.stat(actual)).size > (download ? 128 : 16) * 1024 * 1024)
+        const markup = path.basename(actual).toLowerCase() === 'triggers';
+        const rawText = markup && url.searchParams.get('format') === 'text';
+        const maxBytes = download ? 128 * 1024 ** 2 : markup ? triggerPreviewLimit : 16 * 1024 ** 2;
+        if ((await fs.stat(actual)).size > maxBytes)
           throw Error('Artifact exceeds preview limit; open it from the output folder.');
-        if (download) {
+        if (download || rawText) {
           res.writeHead(200, {
-            'Content-Type': 'application/octet-stream',
+            'Content-Type': download ? 'application/octet-stream' : 'text/plain; charset=utf-8',
             'Cache-Control': 'no-store',
           });
           const stream = createReadStream(actual);

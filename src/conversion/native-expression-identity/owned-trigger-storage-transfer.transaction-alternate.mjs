@@ -23,9 +23,10 @@ export function transferOwnedTriggerStorage({
   generatedRoot,
   guiLibraries,
   implicitLibraryId,
+  ownershipTransaction,
   ...context
 }) {
-  const original = validateCompilationGlobalOwnership(root, context);
+  const original = validateCompilationGlobalOwnership(root, context, ownershipTransaction);
   assert(original.passed, 'SOURCE_COMPILATION_STORAGE_NOT_UNIQUE:' + original.reason);
   const owned = context.ownedSources ?? [],
     reached = new Set(original.files.map((f) => f.fileName));

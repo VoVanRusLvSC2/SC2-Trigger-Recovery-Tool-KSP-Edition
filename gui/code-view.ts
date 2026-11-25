@@ -1,7 +1,7 @@
 /** Paint only visible lines. The textarea remains the real selectable document,
  * so large Galaxy files do not require a span or DOM node for every token. */
 export function createCodeViews() {
-  const views = new Map<string, (text: string) => void>();
+  const views = new Map<string, (text: string) => number>();
   for (const id of ['markup', 'source']) {
     const editor = document.getElementById(id) as HTMLTextAreaElement;
     const gutter = document.getElementById(id + 'Lines')!;
@@ -58,13 +58,14 @@ export function createCodeViews() {
     editor.addEventListener('scroll', queue);
     new ResizeObserver(queue).observe(surface);
     views.set(id, (value) => {
-      text = value.replace(/\r\n|\r/g, '\n');
+      text = value;
       offsets = [0];
       for (let at = text.indexOf('\n'); at >= 0; at = text.indexOf('\n', at + 1))
         offsets.push(at + 1);
       render();
       surface.classList.add('highlighted');
+      return offsets.length;
     });
   }
-  return (target: string, text: string) => views.get(target)?.(text);
+  return (target: string, text: string) => views.get(target)?.(text) ?? 1;
 }

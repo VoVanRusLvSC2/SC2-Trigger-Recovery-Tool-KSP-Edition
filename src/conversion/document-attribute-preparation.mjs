@@ -6,6 +6,7 @@ import { readAttributeArchiveInputs } from '../verification/attribute-archive-in
 import { describeAttributeSourcePolicy } from '../verification/attribute-source-policy.mjs';
 import { originalAttributePresence } from '../utilities/original-attribute-presence.mjs';
 import { createVerifiedDocumentAttributeContext } from '../utilities/attribute-identity-context.mjs';
+import { recoverObservedAttributes } from './observed-attribute-recovery.mjs';
 
 /**
  * Establish attribute provenance before either fresh or incremental recovery.
@@ -54,9 +55,11 @@ export async function prepareDocumentAttributes({
           model: originalModel ?? source.model,
         })
       : undefined;
+  const ast = parseGalaxy(expandedScript, 'original-attribute-presence.galaxy');
   const presence = originalAttributePresence({
     expandedScript,
     parseGalaxy,
+    ast,
     attributeModel: originalModel,
     exactAttributeSource: source,
   });
@@ -64,17 +67,24 @@ export async function prepareDocumentAttributes({
     indexPath,
     originalSha256: row.originalSha256,
     source: expandedScript,
-    ast: parseGalaxy(expandedScript, 'exact-empty-attributes.galaxy'),
+    ast,
     originalDefinitions: originalModel?.attributes.length ?? 0,
   });
-  // Queries against stock/dependency attributes do not authorize inventing own
-  // definitions. They remain visible even when the own header is exactly empty.
-  const model = originalModel ?? (source.used ? source.model : undefined);
+  const observed =
+    originalModel === undefined &&
+    !source.used &&
+    !empty.applicable &&
+    row.recoverAttributes !== false &&
+    presence.originalGalaxyCalls.length
+      ? recoverObservedAttributes(ast, localizedStrings)
+      : undefined;
+  const model = originalModel ?? (source.used ? source.model : observed?.model);
   return {
     original,
     prepared,
     originalModel,
     source,
+    observed,
     policy,
     context,
     presence,
@@ -85,13 +95,16 @@ export async function prepareDocumentAttributes({
       kind: 'SOURCE_ATTRIBUTE_PREPARATION_BEFORE_GUI',
       sourceArchiveSha256: row.originalSha256,
       originalDefinitions: originalModel?.attributes.length ?? 0,
-      recoveredDefinitions: source.used ? (source.model?.attributes.length ?? 0) : 0,
+      recoveredDefinitions: source.used
+        ? (source.model?.attributes.length ?? 0)
+        : (observed?.model.attributes.length ?? 0),
       effectiveDefinitions: model?.attributes.length ?? 0,
       sourceKind: originalModel
         ? 'ORIGINAL_DOCUMENT'
         : source.used
           ? policy.kind
-          : 'NO_VERIFIED_RECOVERY_SOURCE',
+          : (observed?.proof.kind ?? 'NO_VERIFIED_RECOVERY_SOURCE'),
+      observedDefinitions: observed?.proof,
       queriesPresent: presence.originalGalaxyCalls.length > 0,
       exactOwnHeaderEmpty: empty.applicable,
       namespaceVerified: context !== undefined,

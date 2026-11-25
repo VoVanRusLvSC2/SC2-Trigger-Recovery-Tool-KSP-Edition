@@ -3,7 +3,13 @@ import { buildHierarchy, renderHierarchy } from './hierarchy.js';
 import { createEditorSearch } from './search.js';
 import { createSettingsView } from './settings-view.js';
 import { createCodeViews } from './code-view.js';
-import type { RecoveryAdapter, JobSnapshot, Artifact, DocumentPreview } from './contracts.js';
+import type {
+  RecoveryAdapter,
+  JobSnapshot,
+  Artifact,
+  AttributePreview,
+  DocumentPreview,
+} from './contracts.js';
 
 const element = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const token = document.querySelector<HTMLMetaElement>('meta[name="session-token"]')!.content;
@@ -12,6 +18,8 @@ let snapshot: JobSnapshot;
 let shownArtifacts = '';
 let shownResult = '';
 let originalMarkupText = '';
+let markupRequest = '';
+let attributesRequest = 0;
 let opening = false;
 let loadedMap = '';
 let recoveryNotice = '';
@@ -47,12 +55,13 @@ const settingsView = createSettingsView(api, choosePath);
 const updateCodeView = createCodeViews();
 
 function metrics(target: 'markup' | 'source', text: string) {
-  element<HTMLTextAreaElement>(target).value = text;
-  element(target).dispatchEvent(new Event('documentchange'));
-  updateCodeView(target, text);
-  const lines = text ? text.split(/\r\n|\r|\n/).length - (/(?:\r\n|\r|\n)$/.test(text) ? 1 : 0) : 0;
+  const editor = element<HTMLTextAreaElement>(target);
+  editor.value = text;
+  editor.dispatchEvent(new Event('documentchange'));
+  const normalized = editor.value;
+  const count = updateCodeView(target, normalized);
+  const lines = normalized ? count - Number(normalized.endsWith('\n')) : 0;
   // The final empty editor row needs a gutter even though it is not a source line.
-  const count = text.split(/\r\n|\r|\n/).length;
   element(target + 'Lines').textContent = Array.from({ length: count }, (_, i) =>
     String(i + 1),
   ).join('\n');
@@ -68,6 +77,8 @@ function metrics(target: 'markup' | 'source', text: string) {
 async function inspectMap(file: string) {
   if (!file) return;
   loadedMap = '';
+  markupRequest = '';
+  attributesRequest++;
   canRepairGalaxyCopy = false;
   inspectingMap = true;
   if (snapshot) render(snapshot);
@@ -170,7 +181,10 @@ function configure() {
   }
 }
 async function artifactText(artifact: Artifact) {
-  return (await api<{ text: string }>('artifact?id=' + encodeURIComponent(artifact.id))).text;
+  const route = 'artifact?id=' + encodeURIComponent(artifact.id);
+  return artifact.kind === 'markup'
+    ? (await response(route + '&format=text')).text()
+    : (await api<{ text: string }>(route)).text;
 }
 async function preview(artifact: Artifact) {
   if (artifact.kind === 'archive') return downloadArtifact(artifact);
@@ -246,10 +260,14 @@ function render(state: JobSnapshot) {
         ? 'Download the recovered XML while the map is being verified'
         : 'Download the recovered XML'
       : 'Save a copy with embedded triggers';
-  element<HTMLButtonElement>('exportFile').disabled =
-    active || !element<HTMLTextAreaElement>('markup').value;
-  element<HTMLButtonElement>('treeButton').disabled =
-    active || !element<HTMLTextAreaElement>('markup').value;
+  element<HTMLButtonElement>('exportFile').disabled = active || !originalMarkupText;
+  element<HTMLButtonElement>('treeButton').disabled = active || !originalMarkupText;
+  element<HTMLButtonElement>('attributesButton').disabled = !loadedMap || inspectingMap;
+  const recovered = element<HTMLSelectElement>('attributeSource').options[1];
+  if (recovered) {
+    recovered.disabled = !state.recoveredArchive;
+    recovered.text = state.recoveredArchive?.draft ? 'Recovered draft' : 'Recovered copy';
+  }
   element<HTMLButtonElement>('infoButton').disabled = !state.request && !state.result;
   element('issueCount').textContent =
     'Issues: ' +
@@ -359,12 +377,17 @@ function render(state: JobSnapshot) {
       state.artifacts.find((a) => a.kind === 'markup' && a.title.includes('/components/')) ??
       state.artifacts.find((a) => a.kind === 'markup');
     const source = state.artifacts.find((a) => a.title === 'package/MapScript.galaxy');
-    if (markup)
+    const requestedMarkup = markup ? `${state.output}/${markup.title}` : '';
+    if (markup && requestedMarkup !== markupRequest) {
+      markupRequest = requestedMarkup;
       artifactText(markup)
         .then((text) => {
-          metrics('markup', text);
+          if (markupRequest === requestedMarkup) metrics('markup', text);
         })
-        .catch(fail);
+        .catch((error) => {
+          if (markupRequest === requestedMarkup) fail(error);
+        });
+    }
     if (source)
       artifactText(source)
         .then((text) => metrics('source', text))
@@ -394,6 +417,54 @@ function showTree() {
   renderHierarchy(element('hierarchy'), buildHierarchy(xml), element('treeCount'));
   const dialog = element<HTMLDialogElement>('treeDialog');
   if (!dialog.open) dialog.show();
+}
+async function loadAttributes() {
+  const requested = ++attributesRequest;
+  const source = element<HTMLSelectElement>('attributeSource').value;
+  const status = element('attributesStatus');
+  const definitions = element('attributeDefinitions');
+  const raw = element<HTMLDetailsElement>('attributeRaw');
+  definitions.replaceChildren();
+  raw.hidden = true;
+  raw.open = false;
+  element('attributeXml').textContent = '';
+  status.textContent = 'Reading map attributes…';
+  try {
+    const result = await api<AttributePreview>('attributes?source=' + encodeURIComponent(source));
+    if (requested !== attributesRequest) return;
+    status.textContent = !result.present
+      ? 'This map copy has no Attributes component.'
+      : result.error
+        ? 'Unable to interpret Attributes. ' + result.error
+        : `${result.definitions.length.toLocaleString()} attributes · ${result.variants.toLocaleString()} variants`;
+    if (result.inferred)
+      status.textContent +=
+        ' · Inferred from Galaxy and map strings; original lobby settings require review.';
+    for (const attribute of result.definitions) {
+      const details = document.createElement('details');
+      const summary = document.createElement('summary');
+      summary.textContent = [
+        attribute.name,
+        attribute.type,
+        attribute.name !== attribute.id ? attribute.id : '',
+      ]
+        .filter(Boolean)
+        .join(' · ');
+      details.append(summary);
+      const values = document.createElement('ul');
+      for (const value of attribute.values) {
+        const item = document.createElement('li');
+        item.textContent = value.name === value.id ? value.id : `${value.name} (${value.id})`;
+        values.append(item);
+      }
+      details.append(values);
+      definitions.append(details);
+    }
+    raw.hidden = result.xml === undefined;
+    element('attributeXml').textContent = result.xml ?? '';
+  } catch (error) {
+    if (requested === attributesRequest) status.textContent = String(error);
+  }
 }
 // Settings never starts work. Only the main toolbar action can run recovery.
 element<HTMLFormElement>('recovery').onsubmit = (event) => event.preventDefault();
@@ -461,6 +532,14 @@ element<HTMLSelectElement>('sourceFile').onchange = (event) => {
 };
 element('librariesButton').onclick = () => show('librariesDialog');
 element('infoButton').onclick = () => show('infoDialog');
+element('attributesButton').onclick = () => {
+  element<HTMLSelectElement>('attributeSource').value = snapshot?.recoveredArchive
+    ? 'candidate'
+    : 'original';
+  show('attributesDialog');
+  void loadAttributes();
+};
+element('attributeSource').onchange = () => void loadAttributes();
 element('treeButton').onclick = () => {
   try {
     showTree();

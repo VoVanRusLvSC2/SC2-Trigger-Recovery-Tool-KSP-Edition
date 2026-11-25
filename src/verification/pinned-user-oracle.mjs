@@ -16,12 +16,14 @@ export async function openPinnedUserOracle({ root = process.env.SC2_TRIGGER_BENC
   const manifest = JSON.parse(bytes.toString('utf8').replace(/^\uFEFF/u, ''));
   const verify = async () => {
     assert.equal(sha(await readFile(new URL('benchmark/MANIFEST.json', location))), manifestSha256);
-    for (const entry of manifest.files)
-      assert.equal(
-        sha(await readFile(new URL('benchmark/' + entry.path, location))),
-        entry.sha256,
-        entry.path,
+    for (let start = 0; start < manifest.files.length; start += 16) {
+      const entries = manifest.files.slice(start, start + 16);
+      const files = await Promise.all(
+        entries.map((entry) => readFile(new URL('benchmark/' + entry.path, location))),
       );
+      for (const [index, entry] of entries.entries())
+        assert.equal(sha(files[index]), entry.sha256, entry.path);
+    }
   };
   await verify();
   const oracle = await loadConversionOracle(

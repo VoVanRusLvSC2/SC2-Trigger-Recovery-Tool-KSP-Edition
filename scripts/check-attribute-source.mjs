@@ -2,6 +2,51 @@
 import assert from 'node:assert/strict';
 import { decodeAttributeDefaults } from '../src/utilities/cache-attribute-defaults.mjs';
 import { attributesFromS2mh, readOptionalS2mh } from '../src/utilities/s2mh-source.mjs';
+import { Parser } from '../src/conversion/exact-function-signatures/index-alternate-3.js';
+import { recoverObservedAttributes } from '../src/conversion/observed-attribute-recovery.mjs';
+import { compareAttributeDocuments } from '../src/conversion/exact-function-signatures/attribute-contract.mjs';
+
+const observe = (source) =>
+  recoverObservedAttributes(new Parser().parseFile('ObservedAttributes.galaxy', source), [
+    { gameStrings: 'Attribute001/Name=Mode\r\nAttribute001/Value001/Name=First choice' },
+  ]);
+const observed = observe(`
+  bool Modes() {
+    return GameAttributeGameValue("[bnet:local/0.0/12]1") == "0001"
+      && ("0002" != (GameAttributePlayerValue("[bnet:local/0.0/12]2", 1)));
+  }
+`);
+assert.equal(observed.proof.referencedDefinitionsCovered, true);
+assert.equal(observed.proof.callsCovered, 2);
+assert.deepEqual(observed.model.attributes[1], {
+  id: '2',
+  type: 'Player',
+  name: undefined,
+  defaults: [],
+  values: [{ id: '2' }],
+});
+assert.deepEqual(observed.model.variants, []);
+const draft = compareAttributeDocuments(observed.model, observed.xml, {
+  referenceOrigin: 'SOURCE_OBSERVED',
+});
+assert.equal(draft.matchesInferredDocument, true);
+assert.equal(draft.passed, false);
+assert.equal(
+  observe(`
+  bool Foreign() {
+    return GameAttributeGameValue("[bnet:local/0.0/12]1") == "0001"
+      && GameAttributeGameValue("[bnet:local/0.0/34]1") == "0002";
+  }
+`),
+  undefined,
+);
+const incomplete = observe(`
+  bool Dynamic(string selector) {
+    return GameAttributeGameValue("1") == GameAttributeGameValue(selector);
+  }
+`);
+assert.equal(incomplete.proof.referencedDefinitionsCovered, false);
+assert.equal(incomplete.proof.unresolved[0].reason, 'UNSUPPORTED_ATTRIBUTE_SELECTOR');
 
 const record = (fields) => ({
   kind: 5,

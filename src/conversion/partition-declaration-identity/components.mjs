@@ -272,18 +272,21 @@ export async function components(
         session.attributeMode === 'with-attribute-recovery'
           ? session.attributeRecoverySource
           : null;
+      const observedSource = session.observedAttributeSource;
+      const recoverySource = exactSource?.used ? exactSource : observedSource;
       const recoveredAttributeBytes =
-        !originalAttributeBytes.length && exactSource?.used
-          ? Buffer.from(exactSource.xml)
+        !originalAttributeBytes.length && recoverySource
+          ? Buffer.from(recoverySource.xml)
           : Buffer.alloc(0);
       const attributeBytes = originalAttributeBytes.length
         ? originalAttributeBytes
         : recoveredAttributeBytes;
       if (recoveredAttributeBytes.length) {
         await add('Attributes', recoveredAttributeBytes);
-        manifest.exactAttributeSource = exactSource.proof;
+        if (exactSource?.used) manifest.exactAttributeSource = recoverySource.proof;
+        else manifest.observedAttributeSource = recoverySource.proof;
         manifest.attributesPolicy =
-          exactSource.proof.attributesPolicy ??
+          recoverySource.proof.attributesPolicy ??
           'Definitions/defaults from exact original archive s2mh; other lobby variants/unknown requirements not claimed; no invented defaults';
         const versionBytes = await oldBytes('Attributes.version');
         if (versionBytes.length) assert.equal(parseVersionFile(versionBytes).typeTag, 'rtta');
@@ -298,7 +301,7 @@ export async function components(
               majorVersion: v.major,
               minorVersion: v.minor,
               patchVersion: v.patch,
-              entryCount: exactSource.model.attributes.length,
+              entryCount: recoverySource.model.attributes.length,
               timestamp: Math.floor(Date.now() / 1000),
               terminal: 1,
             }),
@@ -309,7 +312,11 @@ export async function components(
             'New candidate rtta v2 sidecar for installed Editor; native acceptance pending';
         }
       }
-      if (attributeBytes.length && session.attributeMode === 'with-attribute-recovery') {
+      if (
+        attributeBytes.length &&
+        session.attributeMode === 'with-attribute-recovery' &&
+        !observedSource
+      ) {
         const beforeGui = xml;
         let sources, context;
         try {

@@ -29,40 +29,47 @@ export function normalizePrivateThreadCaptures(
     fn(n, parent);
     forEachChild(n, (c) => walk(c, fn, n));
   };
-  function mentioned(source, name) {
-    let found = false;
-    walk(source, (n, parent) => {
-      if (
-        n.kind === K.Identifier &&
-        n.name === name &&
-        !(parent?.kind === K.PropertyAccessExpression && parent.name === n)
-      )
-        found = true;
-    });
-    return found;
-  }
-  function closed(source, name, pattern) {
-    let okay = true;
+  const uses = new WeakMap();
+  function index(source) {
+    const cached = uses.get(source);
+    if (cached) return cached;
+    const names = new Map(),
+      literals = new Set();
     for (const statement of source.statements) {
-      const allowed =
-        statement.kind === K.FunctionDeclaration &&
-        [pattern.wrapperName, pattern.callbackName].includes(statement.name.name);
+      const owner = statement.kind === K.FunctionDeclaration ? statement.name.name : undefined;
       walk(statement, (n, parent) => {
-        if (n.kind === K.StringLiteral && String(n.value).includes(name)) okay = false;
-        if (n.kind !== K.Identifier || n.name !== name) return;
+        if (n.kind === K.StringLiteral) literals.add(String(n.value));
+        if (n.kind !== K.Identifier) return;
         if (parent?.kind === K.PropertyAccessExpression && parent.name === n) return;
+        let row = names.get(n.name);
+        if (!row) names.set(n.name, (row = { unsafe: false, functions: new Set() }));
         if (statement.kind === K.VariableDeclaration && statement.name === n) return;
         if (
-          [K.VariableDeclaration, K.ParameterDeclaration, K.FunctionDeclaration].includes(
+          !owner ||
+          ([K.VariableDeclaration, K.ParameterDeclaration, K.FunctionDeclaration].includes(
             parent?.kind,
           ) &&
-          parent.name === n
+            parent.name === n)
         )
-          okay = false;
-        if (!allowed) okay = false;
+          row.unsafe = true;
+        else row.functions.add(owner);
       });
     }
-    return okay;
+    const seen = { names, literals: [...literals] };
+    uses.set(source, seen);
+    return seen;
+  }
+  function closed(source, name, pattern) {
+    const { names, literals } = index(source);
+    const row = names.get(name);
+    return (
+      !row?.unsafe &&
+      (!row ||
+        [...row.functions].every(
+          (owner) => owner === pattern.wrapperName || owner === pattern.callbackName,
+        )) &&
+      !literals.some((value) => value.includes(name))
+    );
   }
   for (const [name, a] of left) {
     const b = right.get(name);
@@ -78,8 +85,8 @@ export function normalizePrivateThreadCaptures(
       if (
         declarations[0].has(y) ||
         declarations[1].has(x) ||
-        mentioned(original, y) ||
-        mentioned(generated, x) ||
+        index(original).names.has(y) ||
+        index(generated).names.has(x) ||
         !closed(original, x, a) ||
         !closed(generated, y, b) ||
         foreignCode.some((d) => d.text.includes(x) || d.text.includes(y))

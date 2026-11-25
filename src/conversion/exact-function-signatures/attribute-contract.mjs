@@ -38,11 +38,13 @@ export function compareAttributeDocuments(
     issues = [...catalog.issues];
   const expected =
     referenceModel === undefined ? undefined : readAttributes(writeAttributes(referenceModel));
-  if (!isDeepStrictEqual(expected, candidate)) issues.push({ kind: 'ATTRIBUTE_DOCUMENT_CHANGED' });
+  const matchesReference = isDeepStrictEqual(expected, candidate);
+  if (!matchesReference) issues.push({ kind: 'ATTRIBUTE_DOCUMENT_CHANGED' });
   if (referenceModel && !['ORIGINAL', 'VERIFIED_RECOVERY'].includes(referenceOrigin))
     issues.push({ kind: 'UNVERIFIED_ATTRIBUTE_SOURCE' });
   return {
     passed: issues.length === 0,
+    ...(referenceOrigin === 'SOURCE_OBSERVED' ? { matchesInferredDocument: matchesReference } : {}),
     issues,
     referenceOrigin,
     approvedTestDefaults,

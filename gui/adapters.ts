@@ -1,6 +1,69 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import type { RecoveryAdapter, RecoveryRequest, DocumentPreview } from './contracts.js';
+import {
+  triggerPreviewLimit,
+  type AttributePreview,
+  type RecoveryAdapter,
+  type RecoveryRequest,
+  type DocumentPreview,
+} from './contracts.js';
+
+export async function inspectSc2Attributes(input: string): Promise<AttributePreview> {
+  const { openSc2Package } = await import(
+    new URL('../../src/cli/sc2-package.mjs', import.meta.url).href
+  );
+  const reader = await openSc2Package(input, { maxEntryBytes: 16 * 1024 ** 2 });
+  try {
+    const entry = reader.find('Attributes');
+    if (!entry) return { present: false, definitions: [], variants: 0 };
+    const xml = Buffer.from(await reader.read(entry.id)).toString('utf8');
+    try {
+      const { readAttributes } = await import(
+        new URL(
+          '../../src/sdk/core/modules/map/shared/format/formats/attributes.js',
+          import.meta.url,
+        ).href
+      );
+      const { localizationTable } = await import(
+        new URL('../../src/utilities/merge-localization.mjs', import.meta.url).href
+      );
+      const labels = new Map<string, string>();
+      for (const locale of ['enUS', 'ruRU']) {
+        const strings = reader.find(`${locale}.SC2Data/LocalizedData/GameStrings.txt`);
+        if (!strings) continue;
+        const text = Buffer.from(await reader.read(strings.id)).toString('utf8');
+        for (const [key, value] of localizationTable(text))
+          if (!labels.has(key)) labels.set(key, value);
+      }
+      const { attributes, variants } = readAttributes(xml) as {
+        attributes: {
+          id: string;
+          name?: string;
+          type?: string;
+          values: { id: string; name?: string }[];
+        }[];
+        variants: unknown[];
+      };
+      const name = (row: { id: string; name?: string }) =>
+        row.name ? labels.get(row.name) || row.name : row.id;
+      return {
+        present: true,
+        definitions: attributes.map((row) => ({
+          id: row.id,
+          name: name(row),
+          type: row.type,
+          values: row.values.map((value) => ({ id: value.id, name: name(value) })),
+        })),
+        variants: variants.length,
+        xml,
+      };
+    } catch (error) {
+      return { present: true, definitions: [], variants: 0, xml, error: (error as Error).message };
+    }
+  } finally {
+    reader.dispose();
+  }
+}
 
 /** New formats register their own fields and argv builder; the view stays generic. */
 export interface BackendAdapter {
@@ -23,7 +86,7 @@ const sc2: BackendAdapter = {
     const reader = await openSc2Package(input, {
       maxArchiveBytes: 1024 ** 3,
       maxEntries: 100000,
-      maxEntryBytes: 16 * 1024 ** 2,
+      maxEntryBytes: triggerPreviewLimit,
     });
     try {
       async function text(name: string): Promise<string> {

@@ -22,7 +22,7 @@ export function finalizeAttributeSelectorQuotes(triggerXml) {
     if (n.tag === 'Element' && n.attributes.Type === 'Param') {
       const p = libraries.get(owner)?.elementsByType.Param[n.attributes.Id];
       if (p && ['attributegame', 'attributeplayer'].includes(p.valueType?.type)) {
-        const data = structuredClone(p);
+        const data = { ...p };
         if (quoteAttributeSelectorScalar(data)) {
           const values = n.children.filter((c) => c.tag === 'Value'),
             types = n.children.filter((c) => c.tag === 'ValueType');
@@ -51,7 +51,7 @@ export function finalizeAttributeSelectorQuotes(triggerXml) {
   }
   walk(tree, implicit);
   const output = applyDisjointXmlPatches(triggerXml, patches),
-    parsed = parseOwnedTriggerDocument(output);
+    parsed = changes.length ? parseOwnedTriggerDocument(output) : libraries;
   for (const c of changes) {
     const p = parsed.get(c.owner)?.elementsByType.Param[c.paramId];
     assert.equal(p.value, c.after);

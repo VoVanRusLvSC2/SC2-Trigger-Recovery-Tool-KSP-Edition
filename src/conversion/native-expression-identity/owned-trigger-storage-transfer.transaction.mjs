@@ -30,12 +30,17 @@ export function verifyOwnedTriggerStorageTransfer({
   candidateRoot,
   guiLibraries,
   implicitLibraryId,
+  ownershipTransaction,
   ...context
 }) {
-  const original = validateCompilationGlobalOwnership(root, {
-    ...context,
-    ownedSources: beforeFiles,
-  });
+  const original = validateCompilationGlobalOwnership(
+    root,
+    {
+      ...context,
+      ownedSources: beforeFiles,
+    },
+    ownershipTransaction,
+  );
   assert(original.passed, 'ORIGINAL_STORAGE_OWNERSHIP_NOT_PROVED');
   const reached = new Set(original.files.map((f) => f.fileName)),
     after = new Map();
@@ -138,13 +143,18 @@ export function verifyOwnedTriggerStorageTransfer({
   const storage = validateCompilationGlobalOwnership(
     { fileName: root.fileName, text: generatedRoot },
     { ...context, ownedSources: afterFiles, externalSources },
+    ownershipTransaction,
   );
   assert(storage.passed, 'CANDIDATE_GLOBAL_STORAGE_CONFLICT:' + storage.reason);
-  const storedRootStorage = validateCompilationGlobalOwnership(candidateRoot, {
-    ...context,
-    ownedSources: afterFiles,
-    externalSources,
-  });
+  const storedRootStorage = validateCompilationGlobalOwnership(
+    candidateRoot,
+    {
+      ...context,
+      ownedSources: afterFiles,
+      externalSources,
+    },
+    ownershipTransaction,
+  );
   assert(storedRootStorage.passed, 'STORED_ROOT_STORAGE_CONFLICT');
   return {
     kind: 'INDEPENDENT_OWNED_TRIGGER_STORAGE_TRANSFER',

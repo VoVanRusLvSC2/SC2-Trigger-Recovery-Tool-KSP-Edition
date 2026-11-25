@@ -2,13 +2,25 @@
 
 **A reworked Trigger Revizer implementation, developed together with Vise.**
 
-> **Windows 3.1.4: Installed-SC2 and Standalone installers.** See [Install and run](INSTALL.md), [build instructions](BUILDING.md), [source status](SOURCE_STATUS.md) and [remaining qualification](ROADMAP.md). Node and runtime dependencies are bundled. Choose installed game metadata or a public snapshot downloaded by Standalone setup.
+> **Windows 3.1.5: Installed-SC2 and Standalone installers.** See [Install and run](INSTALL.md), [build instructions](BUILDING.md), [source status](SOURCE_STATUS.md) and [remaining qualification](ROADMAP.md). Node and runtime dependencies are bundled. Choose installed game metadata or a public snapshot downloaded by Standalone setup.
 
 **Trigger Revizer KSP** is a StarCraft II (SC2) trigger recovery project. It reconstructs editable GUI trigger markup (`Triggers` XML) from Galaxy source such as `MapScript.galaxy`, and completes missing or changed sections of an existing trigger tree.
 
 The conversion core works with SC2 map and mod components (`.SC2Map` and `.SC2Mod`), library metadata and localized strings. Its goal is to preserve program behavior and existing GUI structure. Recovery depends on the available source and supported GUI bindings; compiled Galaxy alone cannot reveal every detail of the original authoring tree.
 
 Start with the [converter architecture](ARCHITECTURE.md), [103 recorded strict-pass map records](maps/verified.md) and [222 historical acceptance records](maps/previously-accepted.md). See [integration status](#integration-status) before trying to build this source publication.
+
+## Version 3.1.5
+
+The desktop GUI previews larger Triggers XML files and adds a map attributes
+viewer for the original archive and recovered copy. Installed-SC2 can recover
+missing attribute definitions from literal Galaxy selectors and original
+GameStrings. Inferred definitions are packed with the recovered map for review.
+Original lobby defaults, variants and owner binding require independent evidence.
+
+Recovery reuses byte-identical source and trigger computations within the same
+job. The pinned benchmark still verifies all assets. Scrollbars use green
+highlights when hovered or dragged.
 
 ## Version 3.1.4
 
@@ -35,7 +47,7 @@ The GUI offers **DOWNLOAD TRIGGERS XML** as soon as recovery produces the XML. *
 
 Both Windows installers, the Start menu shortcut and the browser tab use the original blue Trigger Revize KSP icon.
 
-The [Windows installers](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/tag/v3.1.4) offer **Installed-SC2** with the game and **Standalone** without it. Standalone checks the packed GUI with the same strict benchmark and records the public metadata revision. Its results remain in REVIEW pending matching Editor data.
+The [Windows installers](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/tag/v3.1.5) offer **Installed-SC2** with the game and **Standalone** without it. Standalone checks the packed GUI with the same strict benchmark and records the public metadata revision. Its results remain in REVIEW pending matching Editor data.
 
 To launch the Windows app, double-click **`Open Recovery.cmd`** in the folder
 where you installed the app or extracted the portable ZIP. It opens the local
@@ -52,10 +64,10 @@ See [mod recovery details and limits](MOD_RECOVERY_STATUS.md).
 
 ## Accepted map records
 
-| Verification level | Archive records | Complete list |
-| --- | ---: | --- |
-| Last recorded strict MapScript pass | **103** | [Verified maps](maps/verified.md) |
-| Accepted in the earlier registry | **222** | [Previously accepted maps](maps/previously-accepted.md) |
+| Verification level                  | Archive records | Complete list                                           |
+| ----------------------------------- | --------------: | ------------------------------------------------------- |
+| Last recorded strict MapScript pass |         **103** | [Verified maps](maps/verified.md)                       |
+| Accepted in the earlier registry    |         **222** | [Previously accepted maps](maps/previously-accepted.md) |
 
 These are **325 accepted records from the main 339-record corpus**, with two explicitly different verification levels. They are not 325 new strict passes or necessarily 325 distinct publications. Original map names, archive IDs and SHA256 values are preserved in the lists and [machine-readable catalog](maps/catalog.json).
 
@@ -239,4 +251,3 @@ The reworked implementation was developed together with **Vise**. Thanks to **[h
 Development included reverse engineering and analysis of SC2 formats, Galaxy, NativeLib, GUI bindings, event ABI and actual Editor exports. [Contributors](CONTRIBUTORS.md) and [third-party notices](THIRD_PARTY_NOTICES.md) document attribution.
 
 Earlier packaged application releases remain available under [Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery/releases); they are separate from this reworked source publication.
-

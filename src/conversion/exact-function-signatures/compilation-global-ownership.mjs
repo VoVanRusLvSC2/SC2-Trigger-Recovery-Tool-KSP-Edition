@@ -8,7 +8,7 @@ const sha = (text) => createHash('sha256').update(text).digest('hex');
 
 // One compilation unit includes its preserved Galaxy files. GUI reference
 // validity alone cannot detect declarations emitted again in the root script.
-export function validateCompilationGlobalOwnership(root, context = {}) {
+function computeCompilationGlobalOwnership(root, context) {
   const owned = context.ownedSources ?? [],
     partition = partitionDeclarationViews(owned, context.externalSources ?? []);
   const base = {
@@ -74,4 +74,34 @@ export function validateCompilationGlobalOwnership(root, context = {}) {
     closure,
     globalNamesChecked: owners.size,
   };
+}
+
+/** A storage transaction asks for the same ownership proof more than once.
+ * Reuse it only for the same root, exact source texts and include evidence. */
+const transactionChecks = new WeakMap();
+const fields = ({ fileName, originalPath, text }) => [fileName, originalPath, text];
+const same = (a, b) => a.length === b.length && a.every((value, i) => value === b[i]);
+
+export function createCompilationOwnershipCheck() {
+  const token = Object.freeze({});
+  transactionChecks.set(token, []);
+  return token;
+}
+
+export function validateCompilationGlobalOwnership(root, context = {}, transaction) {
+  const checked = transactionChecks.get(transaction);
+  if (!checked) return computeCompilationGlobalOwnership(root, context);
+  const inputs = [
+    ...fields(root),
+    (context.ownedSources ?? []).length,
+    ...(context.ownedSources ?? []).flatMap(fields),
+    ...(context.externalSources ?? []).flatMap(fields),
+  ];
+  const hit = checked.find(
+    (entry) => entry.evidence === context.includeEvidence && same(entry.inputs, inputs),
+  );
+  if (hit) return hit.proof;
+  const proof = computeCompilationGlobalOwnership(root, context);
+  checked.push({ inputs, evidence: context.includeEvidence, proof });
+  return proof;
 }

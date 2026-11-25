@@ -40,6 +40,7 @@
             INSERT TRIGGERS INTO MAP</button
           ><button id="exportFile" disabled>EXPORT FILE</button
           ><button id="treeButton" disabled>VIEW TREE</button
+          ><button id="attributesButton" disabled>ATTRIBUTES</button
           ><button id="infoButton" disabled>GEN INFO</button
           ><button id="cancel" disabled>CANCEL</button>
         </nav>
@@ -153,8 +154,9 @@
               available</label
             >
             <small
-              >Preserve existing attributes and restore supported missing definitions and GUI
-              references from verified map data. Off keeps existing Attributes unchanged.</small
+              >Preserve existing attributes. Recover missing definitions from verified map data or
+              draft them from Galaxy selectors and map strings. Off keeps existing Attributes
+              unchanged.</small
             >
             <label class="check"
               ><input type="checkbox" id="fullGui" />Recover embedded Galaxy libraries in GUI</label
@@ -239,6 +241,23 @@
         children.
       </p>
       <div id="hierarchy"></div>
+    </dialog>
+    <dialog id="attributesDialog" aria-labelledby="attributesTitle">
+      <div class="dialog-heading">
+        <h2 id="attributesTitle">MAP ATTRIBUTES</h2>
+        <button data-close="attributesDialog" aria-label="Close attributes">X</button>
+      </div>
+      <label for="attributeSource">Map copy</label>
+      <select id="attributeSource">
+        <option value="original">Original</option>
+        <option value="candidate">Recovered copy</option>
+      </select>
+      <p id="attributesStatus" role="status"></p>
+      <div id="attributeDefinitions"></div>
+      <details id="attributeRaw" hidden>
+        <summary>Attributes XML</summary>
+        <pre id="attributeXml"></pre>
+      </details>
     </dialog>
     <dialog id="librariesDialog">
       <div class="dialog-heading">
