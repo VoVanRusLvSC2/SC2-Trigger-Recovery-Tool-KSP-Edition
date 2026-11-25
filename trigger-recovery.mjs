@@ -6,7 +6,7 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { spawn } from 'node:child_process';
 
-const usage = `SC2 Trigger Recovery KSP 3.1.5
+const usage = `SC2 Trigger Recovery KSP 3.1.6
 Usage:
   trigger-recovery recover <map.SC2Map> (--sc2 <installation> | --resources <snapshot>) --out <new-directory>
   trigger-recovery prepare <map.SC2Map> (--sc2 <installation> | --resources <snapshot>) --out <new-directory>
@@ -18,6 +18,7 @@ Optional: --mpq <mpqcli.exe>, --benchmark <pinned-distribution>, --full-gui
 Additional local dependency locations: --library <SC2-package-or-folder> (repeatable).
 Use --download-resources <new-directory> on recover to download the snapshot first.
 For recover/prepare: --attribute-index <verified-header-index.json>, --no-attribute-recovery
+                     --first-attribute-defaults
 For a supported generated SC1 backend: --repair-galaxy-copy
 Attribute recovery is enabled by default; disabling it preserves existing Attributes bytes.
 The default preserves authored script and GUI structure. Originals stay unchanged.
@@ -42,6 +43,7 @@ export async function runTriggerRecovery(args, { retainedLibraries, publishTrigg
         'full-gui': { type: 'boolean' },
         'repair-galaxy-copy': { type: 'boolean' },
         'no-attribute-recovery': { type: 'boolean' },
+        'first-attribute-defaults': { type: 'boolean' },
         help: { type: 'boolean', short: 'h' },
       },
     });
@@ -140,6 +142,7 @@ export async function runTriggerRecovery(args, { retainedLibraries, publishTrigg
           guiRecoveryMode: values['full-gui'] ? 'full-gui' : 'preserve-source',
           attributeIndex: values['attribute-index'],
           recoverAttributes: !values['no-attribute-recovery'],
+          firstAttributeDefaults: values['first-attribute-defaults'] === true,
           libraryRoots: values.library,
           repairGalaxyCopy: values['repair-galaxy-copy'],
           blizzardLibraries,
@@ -148,10 +151,11 @@ export async function runTriggerRecovery(args, { retainedLibraries, publishTrigg
         jobFile = result.jobFile;
         console.log(JSON.stringify(result));
       }
-      if (command === 'run' && values['no-attribute-recovery'])
-        throw Error(
-          'Set recoverAttributes in the prepared job or use recover/prepare --no-attribute-recovery',
-        );
+      if (
+        command === 'run' &&
+        (values['no-attribute-recovery'] || values['first-attribute-defaults'])
+      )
+        throw Error('Set attribute options in the prepared job or use recover/prepare');
       if (command === 'run' && values['attribute-index'])
         throw Error(
           'Set attributeIndex in the prepared job or use recover/prepare --attribute-index',

@@ -2,6 +2,8 @@
  * Fixes actual Editor exports of numeric GameAttribute*Value IDs. The linked
  * Galaxy, labels, definitions and defaults are deliberately left untouched.
  */
+import { applyDisjointXmlPatches } from './apply-disjoint-xml-patches.mjs';
+
 const decode = (s) =>
   s.replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos);/gi, (_, v) =>
     v[0] === '#'
@@ -91,13 +93,7 @@ export function quoteAttributeLiterals({ triggerXml, attributes, parseXml }) {
     for (const c of n.children) visit(c);
   }
   visit(parseXml(triggerXml));
-  let result = triggerXml,
-    end = Infinity;
-  for (const e of edits.sort((a, b) => b.start - a.start)) {
-    if (e.end > end) throw Error('Overlapping attribute literal edits');
-    result = result.slice(0, e.start) + e.text + result.slice(e.end);
-    end = e.start;
-  }
+  const result = edits.length ? applyDisjointXmlPatches(triggerXml, edits) : triggerXml;
   parseXml(result);
   return { triggerXml: result, changes };
 }

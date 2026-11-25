@@ -4,12 +4,15 @@ import { decodeAttributeDefaults } from '../src/utilities/cache-attribute-defaul
 import { attributesFromS2mh, readOptionalS2mh } from '../src/utilities/s2mh-source.mjs';
 import { Parser } from '../src/conversion/exact-function-signatures/index-alternate-3.js';
 import { recoverObservedAttributes } from '../src/conversion/observed-attribute-recovery.mjs';
+import { rebindAttributeGalaxy } from '../src/conversion/observed-attribute-binding.mjs';
 import { compareAttributeDocuments } from '../src/conversion/exact-function-signatures/attribute-contract.mjs';
 
-const observe = (source) =>
-  recoverObservedAttributes(new Parser().parseFile('ObservedAttributes.galaxy', source), [
-    { gameStrings: 'Attribute001/Name=Mode\r\nAttribute001/Value001/Name=First choice' },
-  ]);
+const observe = (source, options) =>
+  recoverObservedAttributes(
+    new Parser().parseFile('ObservedAttributes.galaxy', source),
+    [{ gameStrings: 'Attribute001/Name=Mode\r\nAttribute001/Value001/Name=First choice' }],
+    options,
+  );
 const observed = observe(`
   bool Modes() {
     return GameAttributeGameValue("[bnet:local/0.0/12]1") == "0001"
@@ -18,6 +21,22 @@ const observed = observe(`
 `);
 assert.equal(observed.proof.referencedDefinitionsCovered, true);
 assert.equal(observed.proof.callsCovered, 2);
+const localSelector = '[bnet:local/0.0/12]1';
+const foreignSelector = '[bnet:local/0.0/34]1';
+const galaxy = `void Check() {
+  string a = GameAttributeGameValue( "${localSelector}" );
+  string b = GameAttributeGameValue("${foreignSelector}");
+  string c = GameAttributePlayerValue("${localSelector}", 1);
+  string unrelated = "${localSelector}";
+}`;
+const rebound = rebindAttributeGalaxy(
+  galaxy,
+  new Map([[localSelector, { id: '1', type: 'Global' }]]),
+  (text, file) => new Parser().parseFile(file, text),
+);
+assert.equal(rebound.text, galaxy.replace(`( "${localSelector}" )`, '( "1" )'));
+assert.equal(rebound.proof.edits.length, 1);
+assert.equal(rebound.proof.byteInverseVerified, true);
 assert.deepEqual(observed.model.attributes[1], {
   id: '2',
   type: 'Player',
@@ -47,6 +66,20 @@ const incomplete = observe(`
 `);
 assert.equal(incomplete.proof.referencedDefinitionsCovered, false);
 assert.equal(incomplete.proof.unresolved[0].reason, 'UNSUPPORTED_ATTRIBUTE_SELECTOR');
+const first = observe('bool Default(){return GameAttributeGameValue("1") == "0001";}', {
+  firstDefaults: true,
+});
+assert.deepEqual(first.proof.inferredDefaults, [{ id: '1', valueId: '1' }]);
+assert.deepEqual(
+  first.model.attributes[0].defaults[0].children.map(({ name, attributes }) => [
+    name,
+    attributes.Id,
+  ]),
+  [
+    ['Slot', 'Global'],
+    ['Value', '1'],
+  ],
+);
 
 const record = (fields) => ({
   kind: 5,

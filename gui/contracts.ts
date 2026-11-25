@@ -20,6 +20,7 @@ export interface RecoveryRequest {
   fields: Record<string, string>;
   fullGui: boolean;
   recoverAttributes?: boolean;
+  firstAttributeDefaults?: boolean;
   repairGalaxyCopy?: boolean;
   libraryRoots?: string[];
 }
@@ -48,6 +49,7 @@ export interface AttributePreview {
     name: string;
     type?: string;
     values: { id: string; name: string }[];
+    defaults: { slot: string; value: string }[];
   }[];
   variants: number;
   inferred?: boolean;

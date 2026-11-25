@@ -76,7 +76,9 @@ export async function prepareDocumentAttributes({
     !empty.applicable &&
     row.recoverAttributes !== false &&
     presence.originalGalaxyCalls.length
-      ? recoverObservedAttributes(ast, localizedStrings)
+      ? recoverObservedAttributes(ast, localizedStrings, {
+          firstDefaults: row.firstAttributeDefaults === true,
+        })
       : undefined;
   const model = originalModel ?? (source.used ? source.model : observed?.model);
   return {
@@ -108,7 +110,7 @@ export async function prepareDocumentAttributes({
       queriesPresent: presence.originalGalaxyCalls.length > 0,
       exactOwnHeaderEmpty: empty.applicable,
       namespaceVerified: context !== undefined,
-      usesNewTestDefaults: policy.usesNewTestDefaults,
+      usesNewTestDefaults: policy.usesNewTestDefaults || !!observed?.proof.inferredDefaults?.length,
       guiRecoveryRequired: true,
       wholeMapAccepted: false,
       editorVerified: false,

@@ -37,6 +37,11 @@ import { restoreClosedAuthoredUnits } from '../conversion/retained-nominal-stora
 import { localResourcePath } from '../model/local-resource-path.mjs';
 import { lowerRootSnapshotReferenceActions } from '../conversion/exact-function-signatures/root-snapshot-reference-actions.mjs';
 import { prepareDocumentAttributes } from '../conversion/document-attribute-preparation.mjs';
+import { foldLegacyHelperLibrary } from '../conversion/legacy-helper-library.mjs';
+import {
+  prepareObservedAttributeBinding,
+  rebindAttributeGalaxy,
+} from '../conversion/observed-attribute-binding.mjs';
 import { authoredGuiInventory } from '../incremental/authored-gui-inventory.mjs';
 import { openPinnedUserOracle } from '../verification/pinned-user-oracle.mjs';
 import { createUnverifiedPreviewMap } from './unverified-preview-map.mjs';
@@ -1849,6 +1854,51 @@ export async function convertMapJob(
           });
           triggerXml = selectorFinal.triggerXml;
         }
+        if (/<Library Id="[1-9]\d{0,2}">/u.test(triggerXml)) {
+          const localePath = locale + '.SC2Data/LocalizedData/TriggerStrings.txt';
+          const stage = path.join(directory, 'components');
+          const current = await optional(path.join(stage, localePath));
+          const strings =
+            current ?? localized.find((item) => item.locale === locale)?.triggerStrings ?? '';
+          const helper = await foldLegacyHelperLibrary({
+            xml: triggerXml,
+            strings,
+            source: script,
+            parseXml: xmlTree,
+            parseGalaxy: session.parseGalaxy,
+            nativeSource: nativeBytes.toString('utf8'),
+          });
+          if (helper) {
+            triggerXml = helper.triggerXml;
+            const tables = new Set([
+              localePath,
+              ...manifest.components
+                .filter((item) => /\/LocalizedData\/TriggerStrings\.txt$/iu.test(item.path))
+                .map((item) => item.path),
+            ]);
+            for (const archivePath of tables) {
+              const file = path.join(stage, archivePath);
+              const text = helper.localized(
+                archivePath === localePath ? strings : ((await optional(file)) ?? ''),
+              );
+              await mkdir(path.dirname(file), { recursive: true });
+              await writeFile(file, text);
+              const entry = manifest.components.find((item) => item.path === archivePath);
+              const updated = {
+                path: archivePath,
+                bytes: Buffer.byteLength(text),
+                sha256: sha(text),
+              };
+              if (entry) Object.assign(entry, updated);
+              else manifest.components.push(updated);
+            }
+            manifest.legacyHelperLibrary = {
+              id: helper.libraryId,
+              moved: helper.moved,
+              preservedFunctions: helper.preservedFunctions,
+            };
+          }
+        }
         const triggerEntry = manifest.components.find((c) => c.path === 'Triggers');
         assert(triggerEntry);
         if (triggerXml !== stagedXml) await writeFile(triggersPath, triggerXml);
@@ -1856,6 +1906,7 @@ export async function convertMapJob(
         triggerEntry.bytes = Buffer.byteLength(triggerXml);
         await save(manifestFile, manifest);
         let storageSourceCapability;
+        let sourceStorageChanged = false;
         if (guiRecoveryMode === 'preserve-source') {
           progress('Checking Galaxy include and trigger ownership', 74);
           const storage = await prepareOwnedTriggerStorage({
@@ -1888,6 +1939,7 @@ export async function convertMapJob(
             declarations,
           });
           storageSourceCapability = storage.archiveSourceCapability;
+          sourceStorageChanged = !!storage.proof.changedFiles || !!storage.proof.movedDeclarations;
           await save(path.join(directory, 'OWNED_TRIGGER_STORAGE_TRANSFER.json'), storage.proof);
           for (const file of storage.files.filter((f) => f.storageTransfer)) {
             const archivePath = file.originalPath ?? file.fileName,
@@ -1939,14 +1991,69 @@ export async function convertMapJob(
           };
           await save(manifestFile, manifest);
         }
+        let attributeBinding;
+        let comparisonRoot = originalRoot;
+        let comparisonBaseline = baselineText;
+        if (session.observedAttributeSource) {
+          const nativeDocument = libraries.find((entry) =>
+            entry.sourcePath?.toLowerCase().endsWith('nativelib.triggerlib'),
+          );
+          assert(nativeDocument, 'Native attribute schema absent');
+          const result = sourceStorageChanged
+            ? { reason: 'ATTRIBUTE_BINDING_REQUIRES_SEPARATE_SOURCE_STORAGE_TRANSFER' }
+            : prepareObservedAttributeBinding({
+                source: script,
+                observed: session.observedAttributeSource,
+                triggerXml,
+                schema: nativeAttributeGuiSchema(nativeDocument.triggerData, xmlTree),
+                localizedStrings: localized
+                  .filter((entry) => entry.gameStrings !== undefined)
+                  .map((entry) => ({
+                    path: entry.locale + '.SC2Data/LocalizedData/GameStrings.txt',
+                    values: entry.gameStrings.split(/\r?\n/u),
+                  })),
+                parseXml: xmlTree,
+                parseGalaxy: session.parseGalaxy,
+              });
+          if (result.token) {
+            attributeBinding = result;
+            comparisonRoot = joined(result.text, ownHeader);
+            comparisonBaseline = rebindAttributeGalaxy(
+              baselineText,
+              result.bindings,
+              session.parseGalaxy,
+            ).text;
+            const galaxyPath = 'MapScript.galaxy';
+            await writeFile(path.join(directory, 'components', galaxyPath), result.text);
+            manifest.components.push({
+              path: galaxyPath,
+              bytes: Buffer.byteLength(result.text),
+              sha256: sha(result.text),
+            });
+            const { triggerXml: rebound, ...attributeGui } = result.gui;
+            await writeFile(triggersPath, rebound);
+            triggerEntry.sha256 = sha(rebound);
+            triggerEntry.bytes = Buffer.byteLength(rebound);
+            manifest.attributeGui = attributeGui;
+            await save(manifestFile, manifest);
+          }
+          await save(
+            path.join(directory, 'ATTRIBUTE_LOCAL_BINDING.json'),
+            result.proof ?? {
+              kind: 'ATTRIBUTE_LOCAL_BINDING_REQUIRES_REVIEW',
+              reason: result.reason,
+            },
+          );
+        }
         progress('Packing and verifying the map archive', 74);
         let candidate = path.join(directory, 'candidate.SC2Map');
         let verifiedArchive;
         if (
-          prepared.selectiveMapInputs &&
-          !manifest.components.some(
-            (component) => component.path.toLowerCase() === 'mapscript.galaxy',
-          )
+          attributeBinding ||
+          (prepared.selectiveMapInputs &&
+            !manifest.components.some(
+              (component) => component.path.toLowerCase() === 'mapscript.galaxy',
+            ))
         ) {
           const verification = await updateMapCandidate(
             row,
@@ -1955,6 +2062,7 @@ export async function convertMapJob(
             manifest.components,
             {
               sourceBytes: originalArchiveBytes,
+              attributeBinding: attributeBinding?.token,
               onVerifiedArchive: (archive) => {
                 verifiedArchive = archive;
               },
@@ -2181,7 +2289,7 @@ export async function convertMapJob(
         );
         // The comparison passes repeatedly visit the same declaration closure.
         session.maxAstEntries = 160;
-        const comparison = compareGalaxyText(originalRoot, galaxy, {
+        const comparison = compareGalaxyText(comparisonRoot, galaxy, {
           parseGalaxy: session.parseGalaxy,
           nativeProof,
           declarations: externalDeclarations,
@@ -2194,7 +2302,7 @@ export async function convertMapJob(
             JSON.stringify({ type: 'progress', stage: 'Running strict benchmark', percent: 90 }),
           );
           const originalProgram = expandLocalScripts(
-            originalRoot,
+            comparisonRoot,
             additionalScripts,
             session.parseGalaxy,
           );
@@ -2207,6 +2315,7 @@ export async function convertMapJob(
             manifestSha256: pinnedBenchmark.manifestSha256,
             assets: pinnedBenchmark.assets,
             originalGalaxySha256: sha(originalProgram.text),
+            ...(attributeBinding ? { sourceBeforeAttributeBindingSha256: sha(originalRoot) } : {}),
             generatedGalaxySha256: sha(expandedGenerated.text),
             passed: checkedProgram.syntaxValid && checkedProgram.exact,
             comparison: checkedProgram,
@@ -2223,7 +2332,7 @@ export async function convertMapJob(
         const benchmarkPassed = !rootBenchmark || rootBenchmark.passed;
 
         progress('Comparing packed GUI with recovered triggers', 92);
-        const profile = compareGalaxyText(baselineText, galaxy, {
+        const profile = compareGalaxyText(comparisonBaseline, galaxy, {
           parseGalaxy: session.parseGalaxy,
           nativeProof,
           declarations: externalDeclarations,
@@ -2272,7 +2381,8 @@ export async function convertMapJob(
                 ? 'SOURCE_OBSERVED'
                 : 'ABSENT',
           approvedTestDefaults:
-            describeAttributeSourcePolicy(exactAttributeSource).usesNewTestDefaults,
+            describeAttributeSourcePolicy(exactAttributeSource).usesNewTestDefaults ||
+            !!session.observedAttributeSource?.proof.inferredDefaults?.length,
           triggerXml: packedXml,
           parseXml: xmlTree,
           schema: nativeAttributeGuiSchema(attributeSchemaDocument.triggerData, xmlTree),
@@ -2281,7 +2391,7 @@ export async function convertMapJob(
               ? ['bnet:local/0.0/' + exactAttributeSource.proof.namespace]
               : [],
           originalScripts: [
-            { fileName: 'MapScript.galaxy', text: originalRoot },
+            { fileName: 'MapScript.galaxy', text: comparisonRoot },
             ...additionalScripts,
           ],
           candidateScripts: [{ fileName: 'MapScript.galaxy', text: galaxy }, ...packedAi],
@@ -2294,6 +2404,7 @@ export async function convertMapJob(
           preparedArchiveSha256: row.archiveSha256,
           packedAttributesSha256: packedAttributes === undefined ? null : sha(packedAttributes),
           originalGalaxySha256: sha(originalRoot),
+          ...(attributeBinding ? { reboundGalaxySha256: sha(comparisonRoot) } : {}),
           generatedGalaxySha256: sha(galaxy),
         });
         const legacyAttributesComplete =
@@ -2341,10 +2452,14 @@ export async function convertMapJob(
           customAiOrigin: 'Actual CustomAI read from candidate MPQ',
           packedAiProof: packedAi.map((f) => ({ fileName: f.fileName, sha256: sha(f.text) })),
           attributeGui: manifest.attributeGui,
+          legacyHelperLibrary: manifest.legacyHelperLibrary,
 
           attributesPolicy: manifest.attributesPolicy,
           attributeSource:
             manifest.exactAttributeSource ?? manifest.observedAttributeSource ?? null,
+          ...(attributeBinding
+            ? { localAttributeReferences: attributeBinding.proof.selectorCounts }
+            : {}),
           fullOriginalLobbyVerified: false,
           attributeContract: {
             path: path.join(directory, 'ATTRIBUTE_CONTRACT.json'),

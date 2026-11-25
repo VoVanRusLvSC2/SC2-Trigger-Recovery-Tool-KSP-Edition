@@ -9,6 +9,12 @@ const domains = new Map([
 const attributeId = /^[1-9]\d{0,9}$/u;
 const literal = (node) =>
   node?.kind === K.StringLiteral ? readStringLiteralValue(node.text)?.value : undefined;
+const element = (name, attributes = {}, children = []) => ({
+  name,
+  attributes,
+  children,
+  text: '',
+});
 
 function localizedDefinitions(tables) {
   const definitions = new Map();
@@ -46,13 +52,16 @@ function comparedValue(call) {
   if (token !== undefined && /^\d{4}$/u.test(token)) return token;
 }
 
-/** A recovery draft backed by the map's own code and localization. Literal
- * selectors retain their original namespace and values, including in Galaxy. */
-export function recoverObservedAttributes(ast, localizedStrings) {
+/** A recovery draft backed by the map's own code and localization. Preserve
+ * selector provenance so the packer can qualify each editor-local binding. */
+export function recoverObservedAttributes(ast, localizedStrings, { firstDefaults = false } = {}) {
   const calls = new Map();
   const unresolved = [];
   function visit(node) {
-    const type = node.kind === K.CallExpression ? domains.get(node.expression?.name) : undefined;
+    const type =
+      node.kind === K.CallExpression && node.expression?.kind === K.Identifier
+        ? domains.get(node.expression.name)
+        : undefined;
     if (type) {
       const selector = literal(node.arguments?.[0]);
       const qualified = /^\[bnet:local\/0\.0\/([1-9]\d*)\]((?:0|[1-9]\d*))$/u.exec(selector ?? '');
@@ -99,6 +108,7 @@ export function recoverObservedAttributes(ast, localizedStrings) {
   }
   const attributes = [];
   const definitions = [];
+  const inferredDefaults = [];
   for (const [id, items] of [...local].sort(([a], [b]) => Number(a) - Number(b))) {
     const types = new Set(items.flatMap((item) => [...item.types]));
     const comparedTokens = [...new Set(items.flatMap((item) => [...item.values]))].sort();
@@ -114,17 +124,26 @@ export function recoverObservedAttributes(ast, localizedStrings) {
       continue;
     }
     const type = [...types][0];
+    const ordered = [...values].sort(([a], [b]) => Number(a) - Number(b));
+    const defaultValue = firstDefaults && type === 'Global' ? ordered[0]?.[0] : undefined;
+    if (defaultValue !== undefined) inferredDefaults.push({ id, valueId: defaultValue });
     attributes.push({
       id,
       type,
       name: label?.name,
-      defaults: [],
-      values: [...values]
-        .sort(([a], [b]) => Number(a) - Number(b))
-        .map(([id, name]) => ({
-          id,
-          ...(name === undefined ? {} : { name }),
-        })),
+      defaults:
+        defaultValue === undefined
+          ? []
+          : [
+              element('Default', {}, [
+                element('Slot', { Id: 'Global' }),
+                element('Value', { Id: defaultValue }),
+              ]),
+            ],
+      values: ordered.map(([id, name]) => ({
+        id,
+        ...(name === undefined ? {} : { name }),
+      })),
     });
     definitions.push({
       id,
@@ -147,6 +166,9 @@ export function recoverObservedAttributes(ast, localizedStrings) {
       namespaceVerified: false,
       originalLobbyVerified: false,
       defaultsRecovered: false,
+      ...(inferredDefaults.length
+        ? { inferredDefaults, defaultPolicy: 'FIRST_OBSERVED_GAME_VALUE' }
+        : {}),
       variantsRecovered: false,
       referencedDefinitionsCovered: unresolved.length === 0,
       callsCovered: definitions.reduce(

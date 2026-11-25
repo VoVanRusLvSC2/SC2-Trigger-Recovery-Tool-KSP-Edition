@@ -3,6 +3,8 @@
  * Only owned literal parameters of verified native calls/comparisons are edited.
  * Localization stays in Attributes/GameStrings; no display name enters Galaxy.
  */
+import { applyDisjointXmlPatches } from './apply-disjoint-xml-patches.mjs';
+
 export function nativeAttributeGuiSchema(nativeXml, parseXml) {
   const nodes = [];
   function visit(n) {
@@ -204,14 +206,7 @@ export function restoreAttributeGui({ triggerXml, attributes, schema, parseXml }
       rewrite(v, 'attributevalue', attributeId + '|' + token, attributeId, 'value');
     }
   }
-  edits.sort((a, b) => b.start - a.start);
-  let next = triggerXml,
-    last = Infinity;
-  for (const e of edits) {
-    if (e.end > last) throw Error('Overlapping GUI edits');
-    next = next.slice(0, e.start) + e.text + next.slice(e.end);
-    last = e.start;
-  }
+  const next = edits.length ? applyDisjointXmlPatches(triggerXml, edits) : triggerXml;
   parseXml(next);
   return {
     triggerXml: next,

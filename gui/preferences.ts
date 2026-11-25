@@ -6,6 +6,7 @@ import { randomUUID } from 'node:crypto';
 
 export interface Preferences {
   recoverAttributes: boolean;
+  firstAttributeDefaults: boolean;
   fullGui: boolean;
   musicEnabled: boolean;
   musicVolume: number;
@@ -15,6 +16,7 @@ export interface Preferences {
 }
 export const preferenceDefaults: Preferences = {
   recoverAttributes: true,
+  firstAttributeDefaults: false,
   fullGui: false,
   musicEnabled: false,
   musicVolume: 0.22,
@@ -25,7 +27,12 @@ export const preferenceDefaults: Preferences = {
 export function validatePreferences(value: unknown): Preferences {
   if (!value || typeof value !== 'object') throw Error('Invalid preferences.');
   const data = { ...preferenceDefaults, ...value } as Preferences;
-  for (const key of ['recoverAttributes', 'fullGui', 'musicEnabled'] as const)
+  for (const key of [
+    'recoverAttributes',
+    'firstAttributeDefaults',
+    'fullGui',
+    'musicEnabled',
+  ] as const)
     if (typeof data[key] !== 'boolean') throw Error('Invalid preference: ' + key);
   for (const [key, min] of [
     ['musicVolume', 0],

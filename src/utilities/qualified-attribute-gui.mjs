@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { restoreAttributeGui } from './attribute-gui.mjs';
 import { restoreAttributeDisplayText } from '../recovery/repairs/attribute-display-fixed.mjs';
 import { quoteAttributeLiterals } from './attribute-literal-quotes.mjs';
+import { applyDisjointXmlPatches as patch } from './apply-disjoint-xml-patches.mjs';
 const decode = (s) =>
   s.replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos);/gi, (_, v) =>
     v[0] === '#'
@@ -26,19 +27,9 @@ function nodes(xml, parseXml) {
   visit(parseXml(xml));
   return out;
 }
-function patch(xml, edits) {
-  let end = Infinity;
-  for (const e of edits.sort((a, b) => b.start - a.start)) {
-    assert(e.end <= end, 'Overlapping owned parameter edits');
-    xml = xml.slice(0, e.start) + e.text + xml.slice(e.end);
-    end = e.start;
-  }
-  return xml;
-}
-/** The projection exists only inside this function. Runtime qualified strings
- * are restored byte-for-value before returning; display/value selectors use
- * the proven local definition. Foreign or ambiguous namespaces are untouched.
- */
+/** Build attribute captions and comparison values from the matching definition.
+ * By default the original runtime selectors are restored before returning.
+ * A map rebinding transaction can retain the editor-local projection. */
 export function restoreQualifiedAttributeGui({
   triggerXml,
   attributes,
@@ -47,6 +38,7 @@ export function restoreQualifiedAttributeGui({
   preferredLocale = 'enUS',
   parseXml,
   namespace,
+  rebindToMap = false,
 }) {
   assert(Number.isSafeInteger(namespace) && namespace > 0, 'Explicit verified namespace required');
   const els = nodes(triggerXml, parseXml),
@@ -135,6 +127,18 @@ export function restoreQualifiedAttributeGui({
     parseXml,
   });
   const quoted = quoteAttributeLiterals({ triggerXml: display.triggerXml, attributes, parseXml });
+  const qualifiedRuntimeValues = [...owned].map(([param, v]) => ({ param, ...v }));
+  if (rebindToMap)
+    return {
+      triggerXml: quoted.triggerXml,
+      changes: gui.changes,
+      displayChanges: display.changes,
+      unresolved: display.unresolved,
+      qualifiedRuntimeValues,
+      literalQuotes: quoted.changes,
+      namespace,
+      runtimeQualifiedValuesPreserved: false,
+    };
   const restoration = [];
   let restored = 0;
   for (const p of nodes(quoted.triggerXml, parseXml)) {
@@ -159,7 +163,7 @@ export function restoreQualifiedAttributeGui({
     changes: gui.changes,
     displayChanges: display.changes,
     unresolved: display.unresolved,
-    qualifiedRuntimeValues: [...owned].map(([param, v]) => ({ param, ...v })),
+    qualifiedRuntimeValues,
     literalQuotes: quoted.changes,
     namespace,
     runtimeQualifiedValuesPreserved: true,

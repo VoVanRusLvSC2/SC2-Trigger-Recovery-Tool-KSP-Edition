@@ -19,6 +19,7 @@ export function createSettingsView(
     return {
       ...preferences,
       recoverAttributes: el<HTMLInputElement>('recoverAttributes').checked,
+      firstAttributeDefaults: el<HTMLInputElement>('firstAttributeDefaults').checked,
       fullGui: el<HTMLInputElement>('fullGui').checked,
       musicEnabled: el<HTMLInputElement>('musicEnabled').checked,
       musicVolume: Number(el<HTMLInputElement>('musicVolume').value),
@@ -138,6 +139,7 @@ export function createSettingsView(
   }
   for (const key of [
     'recoverAttributes',
+    'firstAttributeDefaults',
     'fullGui',
     'musicEnabled',
     'musicVolume',
@@ -180,7 +182,12 @@ export function createSettingsView(
   return {
     async initialize() {
       preferences = await api<Preferences>('preferences');
-      for (const key of ['recoverAttributes', 'fullGui', 'musicEnabled'] as const)
+      for (const key of [
+        'recoverAttributes',
+        'firstAttributeDefaults',
+        'fullGui',
+        'musicEnabled',
+      ] as const)
         el<HTMLInputElement>(key).checked = preferences[key];
       for (const key of ['musicVolume', 'backgroundOpacity', 'musicPath'] as const)
         el<HTMLInputElement>(key).value = String(preferences[key]);

@@ -51,17 +51,23 @@ export async function prepareMap({
   guiRecoveryMode = 'preserve-source',
   attributeIndex,
   recoverAttributes = true,
+  firstAttributeDefaults = false,
   libraryRoots = [],
   repairGalaxyCopy = false,
   blizzardLibraries,
   onProgress = () => {},
 }) {
   assert.equal(typeof recoverAttributes, 'boolean', 'Invalid attribute recovery option');
+  assert.equal(typeof firstAttributeDefaults, 'boolean', 'Invalid default selection option');
   const libraryInputs = libraryRoots;
   libraryRoots = await normalizeLibraryRoots(libraryRoots);
   original = await fs.realpath(original);
   assert(!(installation && resourceSnapshot), 'Choose either --sc2 or --resources');
   const publicResources = resourceSnapshot !== undefined;
+  assert(
+    !publicResources || !firstAttributeDefaults,
+    'Filling recovered attribute defaults requires Installed-SC2',
+  );
   installation = await fs.realpath(publicResources ? resourceSnapshot : installation);
   const sourceIdentityFile = path.join(
     installation,
@@ -485,6 +491,7 @@ export async function prepareMap({
       mpq: path.resolve(mpq),
       guiRecoveryMode,
       recoverAttributes,
+      ...(firstAttributeDefaults ? { firstAttributeDefaults } : {}),
       ...(attributeIndex === undefined ? {} : { attributeIndex }),
     };
     const jobFile = path.join(output, 'job.json');

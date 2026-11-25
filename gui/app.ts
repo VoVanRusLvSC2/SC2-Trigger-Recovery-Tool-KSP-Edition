@@ -451,6 +451,15 @@ async function loadAttributes() {
         .filter(Boolean)
         .join(' · ');
       details.append(summary);
+      if (attribute.defaults.length) {
+        const defaults = document.createElement('p');
+        defaults.textContent =
+          'Default · ' +
+          attribute.defaults
+            .map(({ slot, value }) => (slot === 'Global' ? value : slot + ' · ' + value))
+            .join(', ');
+        details.append(defaults);
+      }
       const values = document.createElement('ul');
       for (const value of attribute.values) {
         const item = document.createElement('li');
@@ -490,6 +499,7 @@ async function startRecovery(repairGalaxyCopy = false) {
         fields,
         fullGui: element<HTMLInputElement>('fullGui').checked,
         recoverAttributes: element<HTMLInputElement>('recoverAttributes').checked,
+        firstAttributeDefaults: element<HTMLInputElement>('firstAttributeDefaults').checked,
         ...(repairGalaxyCopy ? { repairGalaxyCopy } : {}),
         libraryRoots: settingsView.libraryRoots(),
       }),

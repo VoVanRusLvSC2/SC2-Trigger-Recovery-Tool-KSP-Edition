@@ -30,6 +30,10 @@ export function validateConversionJob(input, jobFile) {
     input.recoverAttributes === undefined || typeof input.recoverAttributes === 'boolean',
     'Invalid recoverAttributes',
   );
+  assert(
+    input.firstAttributeDefaults === undefined || typeof input.firstAttributeDefaults === 'boolean',
+    'Invalid firstAttributeDefaults',
+  );
   const row = { ...input },
     base = path.dirname(path.resolve(jobFile));
   for (const field of ['id', 'name'])

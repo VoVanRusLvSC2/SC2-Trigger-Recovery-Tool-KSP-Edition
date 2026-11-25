@@ -41,6 +41,7 @@ export async function inspectSc2Attributes(input: string): Promise<AttributePrev
           name?: string;
           type?: string;
           values: { id: string; name?: string }[];
+          defaults: { children: { name: string; attributes: { Id?: string } }[] }[];
         }[];
         variants: unknown[];
       };
@@ -53,6 +54,13 @@ export async function inspectSc2Attributes(input: string): Promise<AttributePrev
           name: name(row),
           type: row.type,
           values: row.values.map((value) => ({ id: value.id, name: name(value) })),
+          defaults: row.defaults.flatMap(({ children }) => {
+            const slot = children.find((child) => child.name === 'Slot')?.attributes.Id;
+            const id = children.find((child) => child.name === 'Value')?.attributes.Id;
+            if (!slot || !id) return [];
+            const value = row.values.find((entry) => entry.id === id);
+            return [{ slot, value: value ? name(value) : id }];
+          }),
         })),
         variants: variants.length,
         xml,
@@ -189,7 +197,10 @@ const sc2: BackendAdapter = {
       },
     ],
   },
-  command({ fields, fullGui, recoverAttributes, libraryRoots, repairGalaxyCopy }, root) {
+  command(
+    { fields, fullGui, recoverAttributes, firstAttributeDefaults, libraryRoots, repairGalaxyCopy },
+    root,
+  ) {
     if (!/\.sc2(map|mod)$/i.test(fields.input ?? ''))
       throw Error('Recovery requires a .SC2Map or .SC2Mod package.');
     const args = [
@@ -208,6 +219,7 @@ const sc2: BackendAdapter = {
     if (fullGui) args.push('--full-gui');
     if (repairGalaxyCopy) args.push('--repair-galaxy-copy');
     if (recoverAttributes === false) args.push('--no-attribute-recovery');
+    if (firstAttributeDefaults === true) args.push('--first-attribute-defaults');
     for (const directory of libraryRoots ?? []) args.push('--library', directory);
     return args;
   },
@@ -220,6 +232,11 @@ export function selectAdapter(request: RecoveryRequest): BackendAdapter {
     throw Error('Invalid recovery request.');
   if (request.recoverAttributes !== undefined && typeof request.recoverAttributes !== 'boolean')
     throw Error('Invalid attribute recovery option.');
+  if (
+    request.firstAttributeDefaults !== undefined &&
+    typeof request.firstAttributeDefaults !== 'boolean'
+  )
+    throw Error('Invalid attribute defaults option.');
   if (request.repairGalaxyCopy !== undefined && typeof request.repairGalaxyCopy !== 'boolean')
     throw Error('Invalid Galaxy repair option.');
   if (

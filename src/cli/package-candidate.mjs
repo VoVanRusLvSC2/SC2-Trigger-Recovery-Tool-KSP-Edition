@@ -8,6 +8,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { openSc2Package, safeComponentPath } from './sc2-package.mjs';
 import { openMpqReader } from '../vendor/@modkit/blizzard-mpq/src/mpq/codec.js';
+import { verifyObservedAttributeBinding } from '../conversion/observed-attribute-binding.mjs';
 const execute = promisify(execFile);
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const metadata = /^\((?:listfile|attributes|signature)\)$/i;
@@ -52,7 +53,7 @@ export async function updateMapCandidate(
   candidate,
   directory,
   components,
-  { sourceBytes, onVerifiedArchive } = {},
+  { sourceBytes, onVerifiedArchive, attributeBinding } = {},
 ) {
   const source = sourceBytes ?? (await fs.readFile(row.archive));
   assert.equal(sha(source), row.archiveSha256, 'Source archive changed before packaging');
@@ -67,12 +68,18 @@ export async function updateMapCandidate(
     for (const component of components) {
       const name = safeComponentPath(component.path);
       const key = name.toLowerCase();
-      assert(key !== 'mapscript.galaxy', 'MapScript updates require source transfer verification');
       assert(!planned.has(key), 'Duplicate package edit: ' + name);
       const bytes = await fs.readFile(path.join(directory, 'components', ...name.split('/')));
       assert.equal(sha(bytes), component.sha256, 'Staged component changed: ' + name);
       planned.set(key, component);
       const entry = before.get(key);
+      if (key === 'mapscript.galaxy')
+        verifyObservedAttributeBinding(
+          attributeBinding,
+          await original.read(entry.id),
+          bytes,
+          components,
+        );
       if (!entry || !Buffer.from(await original.read(entry.id)).equals(bytes))
         writes.push(component);
     }
@@ -130,10 +137,12 @@ export async function updateMapCandidate(
     }
     if (temporaryCandidate) await fs.writeFile(candidate, output, { flag: 'wx' });
     onVerifiedArchive?.({ bytes: output, sha256: archiveSha256 });
+    const mapScriptUpdated = writes.some((item) => item.path.toLowerCase() === 'mapscript.galaxy');
     return {
       passed: true,
       unchangedPayloads,
-      originalGalaxyPreserved: true,
+      originalGalaxyPreserved: !mapScriptUpdated,
+      ...(mapScriptUpdated ? { verifiedLocalAttributeSourceBinding: true } : {}),
       originalAttributesPreserved,
       archiveSha256,
       componentCount: planned.size,

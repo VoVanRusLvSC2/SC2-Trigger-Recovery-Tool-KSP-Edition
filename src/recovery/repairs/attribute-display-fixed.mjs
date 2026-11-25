@@ -57,6 +57,7 @@ export function restoreAttributeDisplayText({
   const edits = [],
     changes = [],
     unresolved = [];
+  const newline = triggerXml.includes('\r\n') ? '\r\n' : '\n';
   function visit(n) {
     if (n.tag === 'Element' && n.attributes.Type === 'Param') {
       const t = n.children.find((c) => c.tag === 'ValueType'),
@@ -115,8 +116,7 @@ export function restoreAttributeDisplayText({
                 const position = Math.max(t.end, v.end),
                   indent = triggerXml
                     .slice(triggerXml.lastIndexOf('\n', t.start) + 1, t.start)
-                    .match(/^\s*/)[0],
-                  newline = triggerXml.includes('\r\n') ? '\r\n' : '\n';
+                    .match(/^\s*/)[0];
                 edits.push({ start: position, end: position, text: newline + indent + text });
               }
               changes.push({
