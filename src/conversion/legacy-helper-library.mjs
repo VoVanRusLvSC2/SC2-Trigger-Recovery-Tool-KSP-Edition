@@ -4,6 +4,7 @@ import { readLocalizedOwnedGuiLibraries } from './implicit-gui-localization/loca
 import { globalVariables } from '../sdk/array-values/modules/triggers/services/galaxy-conversion/internal/conversion-model.js';
 import { applyDisjointXmlPatches } from '../utilities/apply-disjoint-xml-patches.mjs';
 import { SyntaxKind as K, forEachChild } from './exact-function-signatures/index-alternate-3.js';
+import { applyReversibleSourceEdits } from './linear-reversible-edits/reversible-source-edits.mjs';
 
 const key = ({ Type, Id }) => Type + ':' + Id;
 const escape = (value) => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;');
@@ -57,6 +58,29 @@ export async function foldLegacyHelperLibrary({
   const startup = /voidInitLibs\(\)\{([^{}]*)\}/u.exec(compact)?.[1];
   if (!startup?.startsWith('libNtve_InitLib();') || !startup.endsWith(prefix + 'InitLib();'))
     return;
+  const startupCall = phasesInSource
+    .find((node) => node.name.name === 'InitLibs')
+    ?.body?.statements.at(-1);
+  if (
+    startupCall?.kind !== K.ExpressionStatement ||
+    startupCall.expression?.kind !== K.CallExpression ||
+    startupCall.expression.expression?.name !== prefix + 'InitLib' ||
+    startupCall.expression.arguments.length
+  )
+    return;
+  const range = source.slice(startupCall.pos, startupCall.end);
+  const callText = new RegExp(`\\b${prefix}InitLib\\s*\\(\\s*\\)\\s*;`, 'u').exec(range);
+  if (!callText) return;
+  const start = startupCall.pos + callText.index;
+  const startupSource = applyReversibleSourceEdits(source, [
+    {
+      start,
+      end: start + callText[0].length,
+      before: callText[0],
+      replacement: '',
+      role: 'remove-redundant-legacy-helper-initialization',
+    },
+  ]);
   let foreignStartupUse = false;
   function checkReferences(node) {
     if (
@@ -213,6 +237,7 @@ export async function foldLegacyHelperLibrary({
   return {
     triggerXml,
     libraryId: id,
+    startupSource,
     moved: owned.length,
     preservedFunctions: [...names.values()],
     localized(text) {

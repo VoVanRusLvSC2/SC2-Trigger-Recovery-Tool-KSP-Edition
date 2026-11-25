@@ -1799,6 +1799,7 @@ export async function convertMapJob(
         const triggersPath = path.join(directory, 'components/Triggers');
         const stagedXml = await readFile(triggersPath, 'utf8');
         let triggerXml = stagedXml;
+        let packedStartup = sourceStartupDependencies.capability;
         if (
           mode === 'with-attribute-recovery' &&
           modeAttributeModel?.attributes.length &&
@@ -1869,6 +1870,18 @@ export async function convertMapJob(
             nativeSource: nativeBytes.toString('utf8'),
           });
           if (helper) {
+            const startup = createSourceMapStartupDependencies(
+              joined(helper.startupSource.text, ownHeader),
+              {
+                preserveOwnedSources: guiRecoveryMode !== 'full-gui',
+                root: { fileName: 'MapScript.galaxy', text: helper.startupSource.text },
+                ownedSources: additionalScripts,
+                externalSources: declarations,
+                includeEvidence: prepared.includeEvidence,
+              },
+            );
+            assert(startup.capability, 'FOLDED_LIBRARY_STARTUP_NOT_PROVED');
+            packedStartup = startup.capability;
             triggerXml = helper.triggerXml;
             const tables = new Set([
               localePath,
@@ -1897,6 +1910,11 @@ export async function convertMapJob(
               moved: helper.moved,
               preservedFunctions: helper.preservedFunctions,
             };
+            await save(path.join(directory, 'LEGACY_HELPER_STARTUP_PROOF.json'), {
+              library: manifest.legacyHelperLibrary,
+              source: helper.startupSource.proof,
+              startup: startup.proof,
+            });
           }
         }
         const triggerEntry = manifest.components.find((c) => c.path === 'Triggers');
@@ -2194,6 +2212,7 @@ export async function convertMapJob(
         const generated = await convertTriggersToGalaxy(packedXml, {
           ...common,
           ...out.generationOptions,
+          sourceMapStartupDependencies: packedStartup,
           triggerStrings: primaryTrigger,
           gameStrings: primaryGame,
           localizedStrings: packedLocalized,
