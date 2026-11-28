@@ -1,6 +1,6 @@
 # TypeScript recovery interface
 
-The interface ports the desktop workflow from JavaFX Trigger Revize KSP:
+The interface follows the earlier JavaFX desktop workflow:
 two toolbar rows, Trigger Markup on the left, Galaxy Source on the right,
 a resizable divider, green frames and orange hover/selection. The browser UI
 and local bridge are TypeScript; the existing converter is the only recovery core.
@@ -56,8 +56,8 @@ it does not suppress verification or turn missing evidence into PASS.
 
 Music, volume and background opacity apply immediately. Music uses an optional
 local audio file; no game soundtrack is bundled. Preferences and enabled library
-roots are saved per user under `%APPDATA%/SC2 Trigger Recovery KSP/settings.json`
-(on other systems, `~/.config/SC2 Trigger Recovery KSP/settings.json`). They survive
+roots are saved per user under `%APPDATA%/SC2 Galaxy Trigger Recovery/settings.json`
+(on other systems, `~/.config/SC2 Galaxy Trigger Recovery/settings.json`). They survive
 server restarts and port changes. Full access is included; no private license key
 or license issuer is shipped.
 

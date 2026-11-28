@@ -5,10 +5,10 @@
   #error ReleaseDir must name the release output directory
 #endif
 #ifdef Standalone
-  #define ProductName "SC2 Trigger Recovery KSP Standalone"
+  #define ProductName "SC2 Galaxy Trigger Recovery Standalone"
   #define Edition "Standalone"
 #else
-  #define ProductName "SC2 Trigger Recovery KSP"
+  #define ProductName "SC2 Galaxy Trigger Recovery"
   #define Edition "Installed-SC2"
 #endif
 [Setup]
@@ -21,8 +21,8 @@ AppId={{12A42223-5F31-482C-BD20-DC03C98795D7}
 Uninstallable=not PortableInstall
 AppName={#ProductName}
 AppVersion={#AppRelease}
-AppPublisher=Trigger Revizer KSP contributors
-AppPublisherURL=https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition
+AppPublisher=SC2 Galaxy Trigger Recovery contributors
+AppPublisherURL=https://github.com/VoVanRusLvSC2/SC2-Galaxy-Trigger-Recovery
 DefaultDirName={localappdata}\Programs\{#ProductName}
 AllowNoIcons=yes
 DefaultGroupName={#ProductName}
@@ -31,7 +31,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 OutputDir={#ReleaseDir}
-OutputBaseFilename=SC2-Trigger-Recovery-KSP-{#AppRelease}-{#Edition}-Setup
+OutputBaseFilename=SC2-Galaxy-Trigger-Recovery-{#AppRelease}-{#Edition}-Setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern

@@ -41,7 +41,7 @@ export function resourcePath(name) {
 }
 async function get(url, fetchImpl, timeout = 120000) {
   const response = await fetchImpl(url, {
-    headers: { 'User-Agent': 'SC2-Trigger-Recovery', Accept: 'application/vnd.github+json' },
+    headers: { 'User-Agent': 'SC2-Galaxy-Trigger-Recovery', Accept: 'application/vnd.github+json' },
     signal: AbortSignal.timeout(timeout),
   });
   assert(response.ok, `Resource download failed: HTTP ${response.status}`);

@@ -5,8 +5,9 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { spawn } from 'node:child_process';
+import metadata from './package.json' with { type: 'json' };
 
-const usage = `SC2 Trigger Recovery KSP 3.1.6
+const usage = `SC2 Galaxy Trigger Recovery ${metadata.version}
 Usage:
   trigger-recovery recover <map.SC2Map> (--sc2 <installation> | --resources <snapshot>) --out <new-directory>
   trigger-recovery prepare <map.SC2Map> (--sc2 <installation> | --resources <snapshot>) --out <new-directory>

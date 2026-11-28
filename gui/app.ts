@@ -597,7 +597,7 @@ element('cancel').onclick = () => {
 element('shutdown').onclick = () => {
   api('shutdown', {})
     .then(() => {
-      document.body.textContent = 'Trigger Revize KSP stopped. You may close this tab.';
+      document.body.textContent = 'SC2 Galaxy Trigger Recovery stopped. You may close this tab.';
     })
     .catch(fail);
 };

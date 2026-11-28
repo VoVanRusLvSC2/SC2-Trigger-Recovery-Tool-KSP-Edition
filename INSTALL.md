@@ -1,8 +1,8 @@
-# Install SC2 Trigger Recovery KSP
+# Install SC2 Galaxy Trigger Recovery
 
 ## Windows x64 application
 
-Choose the Windows x64 installer for your edition. Published installers are on the [releases page](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases).
+Choose the Windows x64 installer for your edition. Published installers are on the [releases page](https://github.com/VoVanRusLvSC2/SC2-Galaxy-Trigger-Recovery/releases).
 
 | Installer | Metadata used for recovery |
 | --- | --- |
@@ -98,8 +98,8 @@ Build prerequisites: Git, Node.js 24 with npm, Python 3.10+, Windows PowerShell.
 No private `mk-revizer.zip` is needed:
 
 ```powershell
-git clone https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition.git
-cd SC2-Trigger-Recovery-Tool-KSP-Edition
+git clone https://github.com/VoVanRusLvSC2/SC2-Galaxy-Trigger-Recovery.git
+cd SC2-Galaxy-Trigger-Recovery
 npm run setup:public
 python scripts/fetch-release-tools.py
 node trigger-recovery.mjs doctor

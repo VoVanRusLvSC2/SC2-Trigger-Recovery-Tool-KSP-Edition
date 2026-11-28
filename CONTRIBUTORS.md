@@ -1,6 +1,6 @@
 # Contributors
 
-The reworked Trigger Revizer implementation was developed together with **Vise**.
+The current converter was developed together with **Vise**.
 
 | Contributor | Contribution |
 | --- | --- |

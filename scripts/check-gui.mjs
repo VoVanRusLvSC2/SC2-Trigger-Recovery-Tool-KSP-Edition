@@ -80,6 +80,28 @@ await assert.rejects(
   /Invalid preference/,
 );
 
+const legacyFile = path.join(settingsFolder, 'SC2 Trigger Recovery KSP', 'settings.json');
+const renamedFile = path.join(settingsFolder, 'SC2 Galaxy Trigger Recovery', 'settings.json');
+const legacyPreferences = { ...preferenceDefaults, fullGui: true, backgroundOpacity: 0.63 };
+await createPreferenceStore(legacyFile).write(legacyPreferences);
+const originalAppData = process.env.APPDATA;
+const originalSettingsOverride = process.env.SC2_RECOVERY_SETTINGS;
+try {
+  process.env.APPDATA = settingsFolder;
+  delete process.env.SC2_RECOVERY_SETTINGS;
+  const renamedStore = createPreferenceStore();
+  assert.deepEqual(await renamedStore.read(), legacyPreferences);
+  await renamedStore.write(preferenceDefaults);
+  assert.deepEqual(await createPreferenceStore(renamedFile).read(), preferenceDefaults);
+  assert.deepEqual(await createPreferenceStore().read(), preferenceDefaults);
+  assert.deepEqual(await createPreferenceStore(legacyFile).read(), legacyPreferences);
+} finally {
+  if (originalAppData === undefined) delete process.env.APPDATA;
+  else process.env.APPDATA = originalAppData;
+  if (originalSettingsOverride === undefined) delete process.env.SC2_RECOVERY_SETTINGS;
+  else process.env.SC2_RECOVERY_SETTINGS = originalSettingsOverride;
+}
+
 const child = spawn(process.execPath, ['gui/dist/server.js', '--no-open'], {
   cwd: root,
   windowsHide: true,
@@ -108,6 +130,7 @@ try {
   const url = await eventually(() => output.match(/http:\/\/127\.0\.0\.1:\d+/u)?.[0], 'listen');
   const home = await fetch(url);
   const html = await home.text();
+  assert(html.includes('<title>SC2 Galaxy Trigger Recovery</title>'));
   assert(home.headers.get('content-security-policy').includes("frame-ancestors 'none'"));
   const token = html.match(/name="session-token" content="([a-f0-9]+)"/u)?.[1];
   assert(token && token.length === 64);

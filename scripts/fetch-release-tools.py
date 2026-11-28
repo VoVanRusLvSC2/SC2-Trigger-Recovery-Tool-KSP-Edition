@@ -13,7 +13,7 @@ TOOLS = ROOT / ".runtime/tools"
 def fetch(url, target, digest):
     if target.is_file() and hashlib.sha256(target.read_bytes()).hexdigest() == digest:
         return
-    request = urllib.request.Request(url, headers={"User-Agent": "SC2-Trigger-Recovery-build"})
+    request = urllib.request.Request(url, headers={"User-Agent": "SC2-Galaxy-Trigger-Recovery-build"})
     with urllib.request.urlopen(request, timeout=120) as response:
         data = response.read(80 * 1024**2 + 1)
     if len(data) > 80 * 1024**2 or hashlib.sha256(data).hexdigest() != digest:
@@ -28,7 +28,7 @@ def fetch_benchmark():
     if destination.exists():
         return
     archive = TOOLS / "strict-benchmark-304.zip"
-    fetch("https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/download/runtime-tools-v1/strict-benchmark-304.zip",
+    fetch("https://github.com/VoVanRusLvSC2/SC2-Galaxy-Trigger-Recovery/releases/download/runtime-tools-v1/strict-benchmark-304.zip",
           archive, "243da2d57d2d22a1c2fd27d35c3bb616c2dd3385831f73f58507a284b3f46a8f")
     import tempfile
     with tempfile.TemporaryDirectory(dir=destination.parent) as temp:

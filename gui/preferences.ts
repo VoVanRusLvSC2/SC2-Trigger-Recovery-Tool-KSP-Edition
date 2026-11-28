@@ -53,19 +53,20 @@ export function validatePreferences(value: unknown): Preferences {
     Object.keys(preferenceDefaults).map((key) => [key, data[key as keyof Preferences]]),
   ) as unknown as Preferences;
 }
-export function createPreferenceStore(
-  file = process.env.SC2_RECOVERY_SETTINGS ??
-    path.join(
-      process.env.APPDATA || path.join(os.homedir(), '.config'),
-      'SC2 Trigger Recovery KSP',
-      'settings.json',
-    ),
-) {
+export function createPreferenceStore(file = process.env.SC2_RECOVERY_SETTINGS) {
+  const config = process.env.APPDATA || path.join(os.homedir(), '.config');
+  const legacyFile =
+    file === undefined ? path.join(config, 'SC2 Trigger Recovery KSP', 'settings.json') : undefined;
+  const settingsFile = file ?? path.join(config, 'SC2 Galaxy Trigger Recovery', 'settings.json');
   let queue = Promise.resolve();
   return {
     async read() {
       try {
-        return validatePreferences(JSON.parse(await fs.readFile(file, 'utf8')));
+        const text = await fs.readFile(settingsFile, 'utf8').catch((error) => {
+          if (error.code !== 'ENOENT' || !legacyFile) throw error;
+          return fs.readFile(legacyFile, 'utf8');
+        });
+        return validatePreferences(JSON.parse(text));
       } catch (error) {
         if ((error as NodeJS.ErrnoException).code !== 'ENOENT')
           console.error('Preferences reset: ' + (error as Error).message);
@@ -75,10 +76,10 @@ export function createPreferenceStore(
     async write(value: unknown) {
       const data = validatePreferences(value);
       const pending = queue.then(async () => {
-        await fs.mkdir(path.dirname(file), { recursive: true });
-        const temporary = file + '.' + randomUUID() + '.tmp';
+        await fs.mkdir(path.dirname(settingsFile), { recursive: true });
+        const temporary = settingsFile + '.' + randomUUID() + '.tmp';
         await fs.writeFile(temporary, JSON.stringify(data, null, 2) + '\n', { flag: 'wx' });
-        await fs.rename(temporary, file);
+        await fs.rename(temporary, settingsFile);
       });
       queue = pending.catch(() => {});
       await pending;

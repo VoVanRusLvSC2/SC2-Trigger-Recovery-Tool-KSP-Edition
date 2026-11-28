@@ -21,7 +21,7 @@ def main():
     DEST.mkdir(parents=True, exist_ok=True)
     archive = DEST / "upstream.zip"
     if not archive.is_file():
-        request = urllib.request.Request(URL, headers={"User-Agent": "SC2-Trigger-Recovery-build"})
+        request = urllib.request.Request(URL, headers={"User-Agent": "SC2-Galaxy-Trigger-Recovery-build"})
         with urllib.request.urlopen(request, timeout=120) as response:
             payload = response.read(64 * 1024**2 + 1)
         if len(payload) > 64 * 1024**2:

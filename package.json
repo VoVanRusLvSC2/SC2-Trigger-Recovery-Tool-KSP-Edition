@@ -1,8 +1,8 @@
 {
-  "name": "sc2-trigger-recovery-ksp",
+  "name": "sc2-galaxy-trigger-recovery",
   "private": true,
   "type": "module",
-  "description": "Shared-AST SC2 trigger recovery core and accepted map records",
+  "description": "Recover editable StarCraft II GUI triggers from Galaxy scripts",
   "scripts": {
     "build:gui": "tsc -p gui/tsconfig.json",
     "gui": "npm run build:gui && node gui/dist/server.js",

@@ -1,265 +1,37 @@
-# StarCraft II Galaxy to GUI Trigger Converter — KSP Edition
+# SC2 Galaxy Trigger Recovery
 
-**A reworked Trigger Revizer implementation, developed together with Vise.**
-
-> **Windows 3.1.6: Installed-SC2 and Standalone installers.** See [Install and run](INSTALL.md), [build instructions](BUILDING.md), [source status](SOURCE_STATUS.md) and [remaining qualification](ROADMAP.md). Node and runtime dependencies are bundled. Choose installed game metadata or a public snapshot downloaded by Standalone setup.
-
-**Trigger Revizer KSP** is a StarCraft II (SC2) trigger recovery project. It reconstructs editable GUI trigger markup (`Triggers` XML) from Galaxy source such as `MapScript.galaxy`, and completes missing or changed sections of an existing trigger tree.
-
-The conversion core works with SC2 map and mod components (`.SC2Map` and `.SC2Mod`), library metadata and localized strings. Its goal is to preserve program behavior and existing GUI structure. Recovery depends on the available source and supported GUI bindings; compiled Galaxy alone cannot reveal every detail of the original authoring tree.
-
-Start with the [converter architecture](ARCHITECTURE.md), [103 recorded strict-pass map records](maps/verified.md) and [222 historical acceptance records](maps/previously-accepted.md). See [integration status](#integration-status) before trying to build this source publication.
+**Galaxy to GUI trigger recovery for StarCraft II.** Convert `MapScript.galaxy` into editable `Triggers` XML for the SC2 Editor. The tool works with `.SC2Map` maps and `.SC2Mod` mods and preserves existing trigger folders and Custom Script where possible.
 
 ## Version 3.1.6
 
-Installed-SC2 links verified Galaxy selectors to recovered map attributes.
-The Attributes window displays stored defaults. An optional setting fills
-missing game defaults with the first known value on reconstructed definitions.
-Original and verified attributes retain their recorded defaults.
+[Download 3.1.6 for Windows x64](https://github.com/VoVanRusLvSC2/SC2-Galaxy-Trigger-Recovery/releases/tag/v3.1.6)
 
-Supported embedded helper libraries move into a map folder while retaining
-their function names. The Editor's generated code then avoids the legacy
-library initialization guard that failed during preparation for publication
-on Warships.
+- **Installed-SC2** uses data from your StarCraft II installation and can recover missing map lobby attributes.
+- **Standalone** downloads a pinned metadata snapshot during setup and runs without StarCraft II. Its recovered output is marked for Editor review.
 
-## Version 3.1.5
+Open **`Open Recovery.cmd`** from the installed or extracted folder. Select a map or mod and click **Generate Triggers**. For a map, **Insert Triggers Into Map** downloads a recovered copy. The interface also offers a separate Triggers XML download. [Installation and launch guide](INSTALL.md)
 
-The desktop GUI previews larger Triggers XML files and adds a map attributes
-viewer for the original archive and recovered copy. Installed-SC2 can recover
-missing attribute definitions from literal Galaxy selectors and original
-GameStrings. Inferred definitions are packed with the recovered map for review.
-Original lobby defaults, variants and owner binding require independent evidence.
+Version 3.1.6 displays stored attribute defaults and can optionally fill missing defaults in recovered game attributes with their first known value. It also restores supported embedded helper libraries as editable map functions.
 
-Recovery reuses byte-identical source and trigger computations within the same
-job. The pinned benchmark still verifies all assets. Scrollbars use green
-highlights when hovered or dragged.
-
-## Version 3.1.4
-
-In Preserve Source mode, recovery restores verified includes from the map's
-Galaxy preamble as editable Custom Script items in their original order. It
-restores missing identifiers and display labels for existing GUI functions
-and parameters when their generated code uniquely matches the source.
-Recovered labels are included in packed maps and downloadable drafts.
-
-## Version 3.1.3
-
-Battle.net dependencies can use matching local packages. If a map dependency
-remains unavailable, recovery attempts the available triggers, records missing
-packages and symbols in GEN INFO, and offers a downloadable draft when it can
-pack one. Drafts preserve the original Galaxy and require Editor review.
-
-Installed-SC2 checks the installed dependency closure using fresh hashes. For unchanged authored GUI with resolved source references, recovery builds models only for the libraries the map uses and retains the full catalog for independent Galaxy validation.
-
-Recovery preserves map-owned libraries during startup analysis and can save validated archive drafts with the original authored triggers when completion fails. Supported SC1-generated Galaxy syntax can be repaired in a separate copy. The browser reports individual library, packing and verification stages.
-
-Installed-SC2 looks up library files directly in the CASC index and prepares the default Blizzard libraries while the browser interface opens. Recovery reuses verified library analysis and prepares NativeLib and library initializers in parallel when needed.
-
-The GUI offers **DOWNLOAD TRIGGERS XML** as soon as recovery produces the XML. **INSERT TRIGGERS INTO MAP** saves the packed candidate after archive verification. A downloadable draft is available when validation fails after recovery.
-
-Both Windows installers, the Start menu shortcut and the browser tab use the original blue Trigger Revize KSP icon.
-
-The [Windows installers](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases/tag/v3.1.6) offer **Installed-SC2** with the game and **Standalone** without it. Standalone checks the packed GUI with the same strict benchmark and records the public metadata revision. Its results remain in REVIEW pending matching Editor data.
-
-To launch the Windows app, double-click **`Open Recovery.cmd`** in the folder
-where you installed the app or extracted the portable ZIP. It opens the local
-interface in your default browser. If you installed the app, you can also use its
-Start menu shortcut. [Installation and launch details](INSTALL.md)
-
-The Windows installer now includes map/mod generation from the main toolbar,
-compiler-locale selection shared by map and mod recovery, runtime defaults for
-read-only structure fields, correct empty boolean conditions, and disabled-field
-filtering. One real component mod passed the unchanged strict packed-GUI benchmark:
-81 functions and 47 declarations matched. Nine integration scenarios passed.
-This is offline verification; Editor/gameplay qualification remains separate.
-See [mod recovery details and limits](MOD_RECOVERY_STATUS.md).
-
-## Accepted map records
-
-| Verification level                  | Archive records | Complete list                                           |
-| ----------------------------------- | --------------: | ------------------------------------------------------- |
-| Last recorded strict MapScript pass |         **103** | [Verified maps](maps/verified.md)                       |
-| Accepted in the earlier registry    |         **222** | [Previously accepted maps](maps/previously-accepted.md) |
-
-These are **325 accepted records from the main 339-record corpus**, with two explicitly different verification levels. They are not 325 new strict passes or necessarily 325 distinct publications. Original map names, archive IDs and SHA256 values are preserved in the lists and [machine-readable catalog](maps/catalog.json).
-
-The last strict registry is dated **2026-10-30**. Publication and source reorganization do not constitute a new Editor run. Full gameplay, lobby and attribute acceptance is not claimed for every record.
-
-## Core capabilities
-
-The [TypeScript GUI](gui/README.md) provides adapter-based recovery, live logs,
-evidence, a library-aware trigger hierarchy, persistent settings, search and source previews without Java. Run `npm run gui`
-from a prepared source checkout. Only the SC2 backend is currently implemented.
-Both installers open the TypeScript interface.
-
-- A shared Galaxy AST for functions, types, scopes and initialization.
-- GUI binding resolution using library identity, element type, ID and ownership.
-- Reconstruction of missing markup and incremental completion of existing trees.
-- Preservation of original folders, separate Galaxy libraries and authored script in `preserve-source` mode.
-- Attribute, dependency and localized-string recovery when supported by confirmed source data.
-- Semantic safeguards for signatures, event arguments, initialization and exported program completeness.
-
-## How trigger recovery works
-
-This diagram follows the map CLI (`recover`), which accepts archives or component folders. The component API exposes
-GUI conversion and incremental completion for map or mod-library components;
-its caller supplies the components and metadata instead of invoking the archive
-preparation/packaging stages. See [API.md](API.md) and [CLI.md](CLI.md).
+## How recovery works
 
 ```mermaid
-flowchart TB
-    archive["Original .SC2Map<br/>Read-only reference"] --> inputs["Prepare hash-bound inputs<br/>Verify dependencies and include closure"]
-    game["Installed SC2 CASC or Standalone metadata<br/>and required mod dependencies"] --> inputs
-    inputs --> source["MapScript.galaxy<br/>and owned Galaxy sources"]
-    inputs --> markup["Existing Triggers XML<br/>and localized strings"]
-    inputs --> metadata["Actual dependency GUI definitions<br/>and Galaxy declarations"]
-    inputs --> attributes["Original attributes, if present"]
-    evidence["Optional verified attribute<br/>header/index evidence"] --> identity
-
-    source --> ast["Shared AST and program model<br/>Types, ownership, includes and startup"]
-    markup --> inventory["Inspect authored GUI<br/>Folders, typed identities and content"]
-    ast --> identity["Prepare attribute identity<br/>and Galaxy query provenance"]
-    attributes --> identity
-    ast --> plan["Resolve GUI bindings and presets<br/>Plan guarded source transformations"]
-    metadata --> plan
-    identity --> plan
-    inventory --> mode{"Existing GUI and source delta?"}
-    plan --> mode
-    mode -->|Absent or genuinely empty| fresh["Reconstruct a new trigger tree"]
-    mode -->|Unchanged| preserve["Retain authored XML and identities"]
-    mode -->|Supported additions or changes| incremental["Complete selected sections<br/>Preserve unaffected GUI and folders"]
-    fresh --> output["Assemble recovered components<br/>Triggers, strings and applicable attributes"]
-    preserve --> output
-    incremental --> output
-
-    output --> packed["Pack a separate candidate archive<br/>Keep the original unchanged"]
-    packed --> regenerate["Reopen packed components<br/>Regenerate Galaxy from recovered GUI"]
-    metadata --> regenerate
-    regenerate --> safeguards["Offline comparison and contract gates<br/>Program, types, startup, events,<br/>attributes and archive payloads"]
-    source --> safeguards
-    identity --> safeguards
-    safeguards --> result["Record offline verdict and evidence<br/>Static match / review / failure<br/>Editor still pending"]
-
-    result -.-> editor["Separate external qualification<br/>Editor compilation and Galaxy export"]
-    editor -.-> comparison["Compare actual Editor export<br/>with the original program"]
-    source -.-> comparison
-
-    classDef core fill:#eee6ff,stroke:#b9a0e3,color:#30204f;
-    classDef external fill:#eaf2ff,stroke:#86a9d7,color:#193858;
-    classDef attention fill:#fff3da,stroke:#d5ad5a,color:#62480b;
-    class archive,inputs,source,markup,metadata,attributes,ast,inventory,identity,plan,mode,fresh,preserve,incremental,output,packed,regenerate,safeguards core;
-    class game,evidence,editor,comparison external;
-    class result attention;
+flowchart TD
+    map["SC2 map or mod"] --> input["Galaxy, existing Triggers XML, strings and attributes"]
+    game["Installed SC2 or Standalone metadata"] --> model["Parse Galaxy and resolve library bindings"]
+    input --> model
+    model --> recovery["Restore missing GUI or update existing triggers"]
+    recovery --> xml["Editable Triggers XML"]
+    recovery --> candidate["Pack and verify a separate map or mod"]
+    candidate -.-> editor["Open and compile in StarCraft II Editor"]
 ```
 
-This is a logical data flow, not a claim that every stage uses one AST instance
-or that every Galaxy construct is representable. Attribute identity is prepared
-before GUI recovery; an attribute query alone does not authorize inventing
-map-owned definitions. The default `preserve-source` mode retains authored script
-and separate libraries; `full-gui` explicitly requests expanded reconstruction.
-The three GUI branches describe preservation-mode routing. Unknown authored
-metadata is preserved or refused; unsupported declaration changes and function
-deletions are not silently handled by replacing the whole tree.
+The original archive is read-only. Offline checks compare the recovered program and verify archive contents. Open the recovered copy in StarCraft II Editor to verify compilation. Names, comments and folders missing from all available source files may be unrecoverable.
 
-The archive worker regenerates Galaxy from the **packed** GUI and compares it
-with the original using the applicable program, type, initialization, event,
-attribute and payload contracts. Its variant verdict is
-`STATIC_MATCH_EDITOR_PENDING`, `REVIEW_REQUIRED_EDITOR_PENDING` or failure;
-the top-level `GENERATED` status only means candidate generation completed.
-The unchanged external benchmark is required where the strict attribute runtime
-contract calls for it. Dashed arrows show separate Editor qualification, which
-the offline worker does not execute. Neither candidate creation nor successful
-compilation alone proves full behavioral equivalence.
+## Documentation
 
-See [Architecture](ARCHITECTURE.md#conversion-flow) for the implementation boundaries and [integration status](#integration-status) for the current build limitations.
-
-## Source layout
-
-```text
-src/
-  cli/            Conversion entry point
-  ast/            Galaxy program model and syntax services
-  utilities/      Recovered shared source and attribute helpers
-  model/          Symbol identity and source ownership
-  analysis/       Dependency and initialization analysis
-  types/          Type inference and compatibility
-  bindings/       Galaxy-to-GUI bindings
-  gui/            GUI contracts and representation
-  conversion/     Conversion stages
-  incremental/    Existing-tree completion
-  lowering/       Guarded source transformations
-  verification/   Semantic safeguards used by the converter
-  archive/        Archive and component handling
-  libraries/      Shared library support
-  sdk/            Included SDK source modules
-  vendor/         Third-party runtime source
-trigger-recovery.mjs  User-facing map preparation/recovery CLI
-packaging/        Windows launcher and installer build
-scripts/          Public dependency setup, build and focused checks
-maps/             The 103 + 222 accepted-map lists
-ARCHITECTURE.md   Design and integration notes
-ROADMAP.md        Current blockers and working-release acceptance criteria
-CONTRIBUTORS.md   Contributors and upstream acknowledgements
-licenses/         Original third-party license notices
-```
-
-See [Architecture](ARCHITECTURE.md) for module responsibilities and entry points.
-The source tree includes focused verification scripts; full external benchmark
-distributions, map corpora, worker outputs and private run logs remain outside it.
-Built applications and their release evidence are published separately in Releases.
-
-## Integration status
-
-The public build downloads a fingerprint-pinned licensed ModKit revision and locked npm dependencies. The Windows application includes Node.js and mpqcli, and the user-facing CLI automatically prepares packed maps and component folders from the actual installed SC2 libraries. Neither a private runtime ZIP nor the author's drive layout is needed.
-
-Both API directions, six fresh/incremental conversion cases, five attribute cases and a complete real-map archive job were exercised with the public runtime. The real map retained its original Galaxy and unrelated payloads; its conservative REVIEW verdict was preserved. This is release-candidate integration evidence, not a new corpus-wide or Editor acceptance claim. The [103 + 222 registry levels](maps/catalog.json) are unchanged.
-
-The installer supports Windows 10/11 x64. Archive jobs support maps and explicit mod libraries in packed archives or component folders. Mod-specific missing-attribute recovery remains unqualified; applicable strict attribute comparisons still require verified header evidence. See [remaining work](SOURCE_STATUS.md#remaining-release-work).
-
-## Reading and formatting the source
-
-Start with the [code reading guide](ARCHITECTURE.md#code-reading-guide). Project-owned JavaScript uses two-space indentation, a 100-column formatting target and explanatory comments for ownership, incremental recovery and verification boundaries. Copied SDK/vendor source is excluded from formatting.
-
-To prepare the public dependencies and check or apply the style:
-
-```sh
-npm run setup:public
-npm run format:check
-npm run format
-```
-
-Run `npm run setup:public` before these commands on a fresh clone. The formatter is pinned in the development dependencies and lockfile.
-
-## Galaxy to GUI trigger recovery: common questions
-
-### Can MapScript.galaxy be converted back into GUI triggers?
-
-For supported constructs, this project reconstructs editable trigger markup from Galaxy using an AST and SC2 GUI library definitions. This is reverse reconstruction of trigger behavior, rather than recovery of an exact original XML file in every case. Unsupported or unproved cases still require review.
-
-### How does this differ from the StarCraft II Editor's script export?
-
-The Editor generates Galaxy from GUI triggers. Trigger Revizer tackles the reverse direction: Galaxy source to editable GUI trigger elements. Library definitions, types, ownership and initialization relationships help determine the appropriate GUI representation. See the [conversion flow](ARCHITECTURE.md#conversion-flow).
-
-### Can it complete or repair an existing Triggers tree?
-
-Incremental completion selects missing or changed authored sections and preserves unchanged sections and existing folders. It does not need to rebuild the entire GUI tree for every edit. See the [preservation rules](ARCHITECTURE.md#preservation-rules).
-
-### Will it recover original folder names, comments and all Custom Script as GUI?
-
-Original structure can be preserved when the corresponding markup is available. Names, comments and folders lost from the available sources cannot generally be inferred from Galaxy alone. The default `preserve-source` mode retains authored Custom Script and separate Galaxy libraries; translating those sections belongs to the explicit `full-gui` mode and depends on supported representations.
-
-### Does successful compilation prove the recovered map behaves identically?
-
-Compilation checks whether code is accepted; it does not prove that initialization, events, side effects or attributes are equivalent. The [map records](maps/catalog.json) distinguish recorded strict MapScript passes from historical acceptances. They do not claim complete gameplay or attribute verification for every map.
-
-### Where are the source code and download instructions?
-
-Browse [the source modules](src/), [API usage](API.md), [prepared CLI jobs](CLI.md) and [integration entry points](ARCHITECTURE.md#entry-points). Download this revision's installer or portable ZIP from [this repository's Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases). See [INSTALL.md](INSTALL.md) for public-source builds and supported scope. [Earlier packaged releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery/releases) are separate from the reworked source tree.
-
-## Contributors and reverse engineering
-
-The reworked implementation was developed together with **Vise**. Thanks to **[hometlt](https://github.com/hometlt)** for the upstream [ModKit/Blizzard libraries](https://github.com/hometlt/modkit-extensions-blizzard) used in this project.
-
-Development included reverse engineering and analysis of SC2 formats, Galaxy, NativeLib, GUI bindings, event ABI and actual Editor exports. [Contributors](CONTRIBUTORS.md) and [third-party notices](THIRD_PARTY_NOTICES.md) document attribution.
-
-Earlier packaged application releases remain available under [Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery/releases); they are separate from this reworked source publication.
+- [Architecture](ARCHITECTURE.md) and [mod recovery](MOD_RECOVERY_STATUS.md)
+- [CLI](CLI.md), [API](API.md) and [build instructions](BUILDING.md)
+- [Verified map records](maps/verified.md), [historical acceptance records](maps/previously-accepted.md) and [source provenance](SOURCE_STATUS.md)
+- [Release history](https://github.com/VoVanRusLvSC2/SC2-Galaxy-Trigger-Recovery/releases)
+- [Contributors](CONTRIBUTORS.md) and [third-party notices](THIRD_PARTY_NOTICES.md)

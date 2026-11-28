@@ -1,6 +1,6 @@
-# Trigger Revize KSP: desktop UX parity
+# Desktop workflow reference
 
-Reference: the local JavaFX application in `E:/SK2/Trigger Revize KSP`.
+Reference: the earlier local JavaFX application.
 This is a behavioral port, not a redistribution of its private source or game assets.
 
 | Area | Previous web UI | Target behavior |

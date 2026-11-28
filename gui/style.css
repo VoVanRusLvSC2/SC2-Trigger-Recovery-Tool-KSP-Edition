@@ -1,4 +1,4 @@
-/* Web reconstruction of the JavaFX layout in Trigger Revize KSP:
+/* Web interface based on the earlier JavaFX layout:
    two toolbar rows, green/orange frames and two equal code panels.
    All decorative shapes are CSS; no proprietary game textures are bundled. */
 :root {
