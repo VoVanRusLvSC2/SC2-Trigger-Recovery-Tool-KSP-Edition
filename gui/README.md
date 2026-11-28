@@ -4,7 +4,6 @@ The interface follows the earlier JavaFX desktop workflow:
 two toolbar rows, Trigger Markup on the left, Galaxy Source on the right,
 a resizable divider, green frames and orange hover/selection. The browser UI
 and local bridge are TypeScript; the existing converter is the only recovery core.
-See the [UX comparison and deliberate differences](UX_PARITY.md).
 
 ## Run
 
@@ -114,6 +113,8 @@ file access; it binds only loopback, checks Host/Origin and requires a random
 session token. The renderer has no Node or filesystem privileges.
 
 Build with `npm run build:gui`; check the bridge with `npm run verify:gui`.
+For manual UI checks, exercise picker cancellation, search wrapping, hierarchy
+expansion and rendering of large documents.
 Release staging builds and hashes the GUI; installed users need no compiler.
 Only the SC2 adapter exists. Other formats require a real backend, not a new label.
 

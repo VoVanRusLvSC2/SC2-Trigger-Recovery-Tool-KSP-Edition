@@ -15,70 +15,67 @@ Version 3.1.6 displays stored attribute defaults and can optionally fill missing
 
 ## How recovery works
 
-Read the three columns from left to right to follow map recovery from `MapScript.galaxy` to editable triggers and a recovered `.SC2Map`. Mod recovery uses the same converter for library header and body pairs. See [mod recovery](MOD_RECOVERY_STATUS.md).
+Follow the connected pipeline from `MapScript.galaxy` to editable triggers and a recovered `.SC2Map`. Mod recovery uses the same converter for library header and body pairs. See [mod recovery](MOD_RECOVERY_STATUS.md).
 
 ```mermaid
 ---
 config:
-  themeVariables:
-    fontSize: 17px
   flowchart:
     curve: linear
-    nodeSpacing: 7
-    rankSpacing: 17
-    padding: 6
-    wrappingWidth: 145
+    nodeSpacing: 24
+    rankSpacing: 22
+    padding: 10
+    wrappingWidth: 200
 ---
-flowchart LR
-    accTitle: Galaxy to SC2 map recovery
-    accDescr: Three connected columns follow Galaxy source through its AST and library bindings, editable Triggers XML, and a packed map with verification evidence.
+flowchart TB
+    accTitle: StarCraft II trigger recovery pipeline
+    accDescr: Follow a map from source preparation through Galaxy parsing, symbol and library resolution, GUI reconstruction, archive verification, and optional SC2 Editor checks.
 
-    subgraph sourceStage["1. Read Galaxy and build the AST"]
-        direction TB
-        prepare["Open a map<br/>App or recover CLI<br/>Isolate job, hash source<br/>Read Galaxy, Triggers,<br/>strings and Attributes"]
-        resources["Installed SC2 CASC<br/>or Standalone snapshot<br/>Map libraries and local mods"] --> dependencies
-        prepare --> dependencies["Resolve dependencies<br/>and nested includes"]
-        dependencies --> coverage{"Dependencies<br/>resolved?"}
-        coverage -->|Missing| partial["Partial recovery<br/>List missing packages<br/>and symbols<br/>Draft or XML if available"]
-        coverage -->|Ready| ast["Build the Galaxy AST<br/>MapScript.galaxy and owned scripts<br/>Declarations, expressions, statements"]
-        ast -->|Syntax errors| diagnostics["Report source locations<br/>SOURCE_DIAGNOSTICS.json"]
-        ast --> model["Resolve symbols and types<br/>Scopes, owners, libraries<br/>Calls, control flow,<br/>events and startup"]
-    end
+    entry["1. Open an original .SC2Map<br/>Windows app or recover CLI"] --> job["Create an isolated job<br/>Record the source map hash"]
+    job --> components["Read selected components<br/>Galaxy, Triggers XML, strings and Attributes"]
+    components --> resolve["Resolve declared dependencies<br/>and nested Galaxy includes"]
+    resources["Installed SC2 or Standalone data<br/>Map-owned libraries and matching local mods"] --> resolve
+    resolve --> coverage{"Dependencies<br/>resolved?"}
+    coverage -->|Prepared inputs| source
+    coverage -->|Missing| draft["Try partial recovery<br/>Report missing packages and symbols<br/>Offer a draft or XML when available"]
 
-    subgraph recoveryStage["2. Resolve bindings and recover triggers"]
-        direction TB
-        libraries["Library declarations<br/>and native GUI definitions"] --> binding["Bind calls and values<br/>Library and element IDs<br/>Parameters and presets"]
-        binding --> lowering["Guarded transformations<br/>for supported GUI"]
-        evidence["Attributes and localized strings<br/>Optional verified evidence"] --> attributes["Map attribute queries<br/>to matching data"]
-        lowering --> policy["Preserve Source<br/>or Full GUI"]
-        attributes --> policy
-        authored["Index Triggers XML<br/>IDs, folders, libraries<br/>and Custom Script"] --> route
-        policy --> route{"Authored GUI<br/>and source delta?"}
-        route -->|Absent or empty| fresh["Build a new<br/>trigger tree"]
-        route -->|Matches Galaxy| preserve["Retain markup<br/>and element IDs"]
-        route -->|Supported changes| update["Update affected nodes<br/>Preserve the tree"]
-        fresh --> recovered
-        preserve --> recovered
-        update --> recovered["Recovered Triggers XML,<br/>strings and applicable attributes"]
-    end
+    source["MapScript.galaxy<br/>and map-owned scripts"] --> parse["2. Build the Galaxy AST<br/>Declarations, expressions and statements"]
+    parse --> symbols["Resolve names and types<br/>Track scopes, owners and library references"]
+    parse -->|Syntax errors| diagnostics["Report source locations<br/>in SOURCE_DIAGNOSTICS.json"]
+    symbols --> program["Build the typed program model<br/>Call relationships, control flow, events and startup"]
 
-    subgraph verifyStage["3. Pack, verify and download"]
-        direction TB
-        output["Recovered components"] --> pack["Pack a separate map<br/>Verify preserved payloads"] --> rebuild["Reopen the packed map<br/>Regenerate Galaxy from<br/>packed GUI and libraries"]
-        output --> xml["Download editable<br/>Triggers XML when available"]
-        rebuild --> compare["Compare original and regenerated Galaxy<br/>Types, calls, events, startup<br/>Strict benchmark if applicable"]
-        rebuild --> contracts["Check GUI references,<br/>attributes and payloads"]
-        compare --> verdict{"Offline verdict"}
-        contracts --> verdict
-        verdict -->|Static match| match["Static checks matched<br/>Editor check pending"]
-        verdict -->|Review| review["Differences or missing proof<br/>Editor check pending"]
-        verdict -->|Failure| failure["Report diagnostics<br/>Draft if available"]
-        match --> map
-        review --> map["Recovered .SC2Map<br/>RESULT.json and evidence"]
-        map -.-> editor["SC2 Editor compile<br/>and Galaxy export<br/>Separate comparison"]
-    end
+    program --> binding
+    catalog["Resolved library declarations<br/>and native GUI definitions"] --> binding["3. Bind Galaxy to GUI<br/>Library and element IDs,<br/>parameters and presets"]
+    binding --> lowering["Apply guarded transformations<br/>for supported GUI patterns"]
+    program --> attributes
+    evidence["Attributes, localized strings<br/>and optional verified evidence"] --> attributes["Trace map attribute queries<br/>to the corresponding map data"]
+    lowering --> policy["Apply recovery policy<br/>Preserve Source or Full GUI"]
+    attributes --> policy
+    authored["Index existing Triggers XML<br/>Element IDs, folders, Custom Script and libraries"] --> route
+    policy --> route{"Authored GUI state<br/>and source changes?"}
+    route -->|Absent or empty| fresh["Build a new trigger tree"]
+    route -->|Matches Galaxy| preserve["Retain authored markup<br/>and element identities"]
+    route -->|Supported changes| complete["Update affected elements<br/>Keep the surrounding tree"]
+    fresh --> assembled["Recovered components<br/>Triggers XML, strings and applicable attributes"]
+    preserve --> assembled
+    complete --> assembled
 
-    sourceStage ==> recoveryStage ==> verifyStage
+    assembled --> pack
+    assembled --> xml["Download editable<br/>Triggers XML when available"]
+    pack["4. Pack a separate map<br/>Verify preserved archive payloads"] --> reopen["Reopen the packed map<br/>Read back its actual components"]
+    reopen --> generate["Regenerate Galaxy from packed GUI<br/>using matching library metadata"]
+    generate --> compare["Compare with original Galaxy<br/>Check types, calls, events and startup"]
+    reopen --> checks["Check GUI references,<br/>attribute bindings and archive contents"]
+    compare --> benchmark["Run the strict benchmark<br/>where applicable"]
+    benchmark --> verdict{"Offline verdict"}
+    checks --> verdict
+    verdict -->|Static match| match["Static checks matched<br/>Editor verification pending"]
+    verdict -->|Review| review["Differences or missing proof<br/>Editor verification pending"]
+    verdict -->|Failure| failure["Report diagnostics<br/>Offer a draft if available"]
+    match --> recovered["Download recovered .SC2Map<br/>Inspect RESULT.json and evidence"]
+    review --> recovered
+
+    recovered -.-> editor["Compile in StarCraft II Editor<br/>and export Editor-generated Galaxy<br/>for separate comparison"]
 
     classDef stage fill:#dce9fd,stroke:#4d6b9b,stroke-width:2px,color:#172d50;
     classDef input fill:#e7eefb,stroke:#4d6b9b,color:#172d50;
@@ -87,16 +84,13 @@ flowchart LR
     classDef review fill:#fff0d2,stroke:#aa7435,color:#593b14;
     classDef error fill:#fce4e4,stroke:#ac5858,color:#622424;
     classDef editorStep fill:#eee7fc,stroke:#7760a8,color:#3b2c5a;
-    class prepare,ast,binding,pack stage;
-    class resources,libraries,evidence,authored,output input;
-    class prepare,dependencies,coverage,model,lowering,attributes,policy,route,rebuild,compare,contracts,verdict process;
-    class fresh,preserve,update,recovered,xml,match,map output;
-    class partial,review review;
+    class entry,parse,binding,pack stage;
+    class resources,source,catalog,evidence,authored input;
+    class job,components,resolve,coverage,symbols,program,lowering,attributes,policy,route,reopen,generate,compare,checks,benchmark,verdict process;
+    class fresh,preserve,complete,assembled,xml,match,recovered output;
+    class draft,review review;
     class diagnostics,failure error;
     class editor editorStep;
-    style sourceStage fill:transparent,stroke:#94a3b8
-    style recoveryStage fill:transparent,stroke:#94a3b8
-    style verifyStage fill:transparent,stroke:#94a3b8
 ```
 
 Preserve Source retains authored Custom Script and separate libraries where possible. Full GUI also tries to reconstruct supported functions and variables from embedded Galaxy libraries. Names, comments and folder information missing from all available inputs may be unrecoverable.
