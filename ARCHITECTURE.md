@@ -30,6 +30,8 @@ rules. Its output is the same isolated candidate/evidence tree as a CLI run.
 | Start here | What to follow |
 | --- | --- |
 | [Job orchestration](src/cli/convert.mjs) | Input identity checks, source policy, fresh/incremental routing, packing and final cleanup |
+| [Packed map inputs](src/cli/packed-map-inputs.mjs) | Read the candidate's actual Triggers, localization, attributes and scripts for regeneration |
+| [Galaxy action builders](src/conversion/qualified-macro-binding/action-builders.mjs) | Shared statement and control-flow recovery with parser and library bindings supplied by each conversion profile |
 | [Source ownership](src/model/source-ownership.mjs) | Why matching text alone cannot merge library or include identities |
 | [Mutable source program](src/conversion/exact-function-signatures/galaxy-program.collections.mjs) | Per-job source documents and explicit syntax transfer/disposal |
 | [Immutable syntax views](src/model/conversion-syntax-program.collections.mjs) | Bounded parse reuse within one conversion, never persistent reuse across unrelated jobs |
