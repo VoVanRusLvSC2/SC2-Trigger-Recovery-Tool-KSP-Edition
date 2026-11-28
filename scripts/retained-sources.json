@@ -54,15 +54,25 @@
       "file": "src/utilities/attribute-gui.mjs",
       "sourceOrigin": "retained module text (f85955f9c387af859b4c5513ed4bf037c24f41cb8bf0f81ce46ae4e9082a2641)",
       "originalSha256": "f85955f9c387af859b4c5513ed4bf037c24f41cb8bf0f81ce46ae4e9082a2641",
-      "publishedSha256": "748d2589ea1c661a7d44110ffebaa39f3f13296fe83515c48c0ed0915643d800",
-      "algorithmAstSha256": "21f1b993580e8a062640e48e1b4900aadfae532f25e07e0afe8fafbe1a7e1fd0"
+      "publishedSha256": "d71b0ccb601cdd88ebfcdd48bf4cf41a2bbec63390853be00f193dc2c8ae7c17",
+      "algorithmAstSha256": "21f1b993580e8a062640e48e1b4900aadfae532f25e07e0afe8fafbe1a7e1fd0",
+      "releaseUpdate": {
+        "version": "3.1.6",
+        "previousPublishedSha256": "748d2589ea1c661a7d44110ffebaa39f3f13296fe83515c48c0ed0915643d800",
+        "reason": "Apply attribute XML edits through the shared disjoint-range patcher."
+      }
     },
     {
       "file": "src/utilities/attribute-literal-quotes.mjs",
       "sourceOrigin": "retained module text (06beeedc55d0dc3e41e4123bee4d9512ee7b434c11bc78174911b02be016bb96)",
       "originalSha256": "06beeedc55d0dc3e41e4123bee4d9512ee7b434c11bc78174911b02be016bb96",
-      "publishedSha256": "59ab3f2c351a03df139143fbe79b1ab669a28e2ba57ed19de3c0efea0f956f96",
-      "algorithmAstSha256": "3a648e2bee7e4c887c950532e979949a943abc1c163ba86067023ff5e33ad0de"
+      "publishedSha256": "defeb0b56d9b9fee2e55ff440c9decd1d8422f98dd3fbcf4448b49e00cda5820",
+      "algorithmAstSha256": "3a648e2bee7e4c887c950532e979949a943abc1c163ba86067023ff5e33ad0de",
+      "releaseUpdate": {
+        "version": "3.1.6",
+        "previousPublishedSha256": "59ab3f2c351a03df139143fbe79b1ab669a28e2ba57ed19de3c0efea0f956f96",
+        "reason": "Apply attribute XML edits through the shared disjoint-range patcher."
+      }
     },
     {
       "file": "src/ast/authored-xml-parser.mjs",

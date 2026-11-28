@@ -1,6 +1,6 @@
 # Source integration status
 
-**Windows 3.1.1 includes public-source installers, an API and a CLI.**
+The **Windows 3.1.1 integration checkpoint** included public-source installers, an API and a CLI.
 Public runtime acquisition, automatic map preparation and Windows packaging are
 implemented. See [installation](INSTALL.md) and [build instructions](BUILDING.md).
 The application bundles Node and runtime dependencies; installed SC2 supplies
@@ -17,7 +17,8 @@ game metadata. Historical corpus acceptance levels are unchanged.
   missing-destination pin is claimed for them.
   Version 3.1.0 records four later parser or reference-validation updates in
   the two manifests. Each entry keeps its earlier published fingerprint and
-  pins the exact bytes in the current release.
+  pins the exact bytes in the current release. The 3.1.5 and 3.1.6 updates
+  record four attribute-module changes with their preceding publication hashes.
 - **3 component restorations** have narrower evidence: nondecimal literal
   transport, legacy loop helpers and explicit historical test-policy construction.
   See [component provenance](scripts/recovered-components.json). The loop module

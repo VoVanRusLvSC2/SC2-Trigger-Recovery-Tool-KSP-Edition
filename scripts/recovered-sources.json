@@ -96,8 +96,13 @@
     {
       "file": "src/utilities/qualified-attribute-gui.mjs",
       "originalSha256": "34cc6b4c7f3f6c6edb6bbfc1904fe23da541f3b1e1539896ecf1468968d20423",
-      "publishedSha256": "ddb7e72c95050f201c4199f9380a575332b1d0fdbdd8a1c95e25ed4b30f4645d",
-      "algorithmAstSha256": "34131640d58173295a25f32ffd9ad9da05be9a516f3f58df418925b8f7f9f0d9"
+      "publishedSha256": "55813e9646db8290232bfd19a71114dbebcb082703df820cf1f72dbf8802ed8f",
+      "algorithmAstSha256": "34131640d58173295a25f32ffd9ad9da05be9a516f3f58df418925b8f7f9f0d9",
+      "releaseUpdate": {
+        "version": "3.1.6",
+        "previousPublishedSha256": "ddb7e72c95050f201c4199f9380a575332b1d0fdbdd8a1c95e25ed4b30f4645d",
+        "reason": "Use the shared XML patcher and support verified rebinding of qualified selectors to map-owned attributes."
+      }
     },
     {
       "file": "src/sdk/production-preparation/modules/triggers/services/galaxy-conversion/internal/localized-text-prefix.js",
@@ -336,8 +341,13 @@
     {
       "file": "src/utilities/original-attribute-presence.mjs",
       "originalSha256": "bbb6c99c7f5153883e3bddb17ec38668d3b75f0d91c08857bf0b61d1af332fc1",
-      "publishedSha256": "bd38e0e05ef3613a208fa9e0aea51196f3f64f0cc16aad356c4f7f2230aa340f",
-      "algorithmAstSha256": "7859b4f348cd96f6aff35f04132c0cf8ef36b1e08376535f2790c4abeee838ca"
+      "publishedSha256": "b34e473e746826d03e0ba9827323fb0237f4c942670a89829e5d35890e397a9c",
+      "algorithmAstSha256": "7859b4f348cd96f6aff35f04132c0cf8ef36b1e08376535f2790c4abeee838ca",
+      "releaseUpdate": {
+        "version": "3.1.5",
+        "previousPublishedSha256": "bd38e0e05ef3613a208fa9e0aea51196f3f64f0cc16aad356c4f7f2230aa340f",
+        "reason": "Reuse the supplied Galaxy AST when checking original attribute presence."
+      }
     },
     {
       "file": "src/utilities/attribute-identity.mjs",
