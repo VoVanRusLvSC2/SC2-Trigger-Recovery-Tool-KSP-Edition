@@ -1,10 +1,12 @@
-# StarCraft II Galaxy to GUI Trigger Converter — KSP Edition
+# SC2 Galaxy Trigger Recovery
 
-**A reworked Trigger Revizer implementation, developed together with Vise.**
+> Earlier development branch. See the [current project page](https://github.com/VoVanRusLvSC2/SC2-Galaxy-Trigger-Recovery) for current source and releases.
+
+**A reworked trigger recovery implementation, developed together with Vise.**
 
 > **Windows release candidate: installer, portable app and reproducible public build.** See [Install and run](INSTALL.md), [build instructions](BUILDING.md), [source status](SOURCE_STATUS.md) and [remaining qualification](ROADMAP.md). Node and runtime dependencies are bundled; game metadata comes from your installed SC2.
 
-**Trigger Revizer KSP** is a StarCraft II (SC2) trigger recovery project. It reconstructs editable GUI trigger markup (`Triggers` XML) from Galaxy source such as `MapScript.galaxy`, and completes missing or changed sections of an existing trigger tree.
+**SC2 Galaxy Trigger Recovery** is a StarCraft II (SC2) trigger recovery project. It reconstructs editable GUI trigger markup (`Triggers` XML) from Galaxy source such as `MapScript.galaxy`, and completes missing or changed sections of an existing trigger tree.
 
 The conversion core works with SC2 map and mod components (`.SC2Map` and `.SC2Mod`), library metadata and localized strings. Its goal is to preserve program behavior and existing GUI structure. Recovery depends on the available source and supported GUI bindings; compiled Galaxy alone cannot reveal every detail of the original authoring tree.
 
@@ -175,7 +177,7 @@ For supported constructs, this project reconstructs editable trigger markup from
 
 ### How does this differ from the StarCraft II Editor's script export?
 
-The Editor generates Galaxy from GUI triggers. Trigger Revizer tackles the reverse direction: Galaxy source to editable GUI trigger elements. Library definitions, types, ownership and initialization relationships help determine the appropriate GUI representation. See the [conversion flow](ARCHITECTURE.md#conversion-flow).
+The Editor generates Galaxy from GUI triggers. SC2 Galaxy Trigger Recovery tackles the reverse direction: Galaxy source to editable GUI trigger elements. Library definitions, types, ownership and initialization relationships help determine the appropriate GUI representation. See the [conversion flow](ARCHITECTURE.md#conversion-flow).
 
 ### Can it complete or repair an existing Triggers tree?
 
@@ -191,7 +193,7 @@ Compilation checks whether code is accepted; it does not prove that initializati
 
 ### Where are the source code and download instructions?
 
-Browse [the source modules](src/), [API usage](API.md), [prepared CLI jobs](CLI.md) and [integration entry points](ARCHITECTURE.md#entry-points). Download this revision's installer or portable ZIP from [this repository's Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases). See [INSTALL.md](INSTALL.md) for public-source builds and supported scope. [Earlier packaged releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery/releases) are separate from the reworked source tree.
+Browse [the source modules](src/), [API usage](API.md), [prepared CLI jobs](CLI.md) and [integration entry points](ARCHITECTURE.md#entry-points). Download this revision's installer or portable ZIP from [this repository's Releases](https://github.com/VoVanRusLvSC2/SC2-Galaxy-Trigger-Recovery/releases). See [INSTALL.md](INSTALL.md) for public-source builds and supported scope. [Earlier packaged releases](https://github.com/VoVanRusLvSC2/SC2-Galaxy-Trigger-Recovery/releases) are separate from the reworked source tree.
 
 ## Contributors and reverse engineering
 
@@ -199,4 +201,4 @@ The reworked implementation was developed together with **Vise**. Thanks to **[h
 
 Development included reverse engineering and analysis of SC2 formats, Galaxy, NativeLib, GUI bindings, event ABI and actual Editor exports. [Contributors](CONTRIBUTORS.md) and [third-party notices](THIRD_PARTY_NOTICES.md) document attribution.
 
-Earlier packaged application releases remain available under [Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery/releases); they are separate from this reworked source publication.
+Earlier packaged application releases remain available under [Releases](https://github.com/VoVanRusLvSC2/SC2-Galaxy-Trigger-Recovery/releases); they are separate from this reworked source publication.

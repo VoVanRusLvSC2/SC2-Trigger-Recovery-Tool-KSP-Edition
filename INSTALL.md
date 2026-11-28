@@ -1,9 +1,9 @@
-# Install SC2 Trigger Recovery KSP
+# Install SC2 Galaxy Trigger Recovery
 
 ## Windows x64 application
 
 Download the **3.0.0-rc.3 Setup.exe** or portable ZIP from this repository's
-[Releases](https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition/releases).
+[Releases](https://github.com/VoVanRusLvSC2/SC2-Galaxy-Trigger-Recovery/releases).
 Both contain this reworked converter, Node.js 24.14.1, the public ModKit runtime,
 mpqcli and their notices. No Node, npm, Python, Git, private archive or K: drive
 is required on the target machine. Windows 10/11 x64 is the supported target.
@@ -16,7 +16,7 @@ Install StarCraft II separately. Its actual CASC data supplies the correct GUI
 libraries and Galaxy declarations. Custom mod dependencies must also be available.
 Neither game binaries nor game data are included in this application.
 
-Open **SC2 Trigger Recovery KSP** from the Start menu, choose a packed `.SC2Map`,
+Open **SC2 Galaxy Trigger Recovery** from the Start menu, choose a packed `.SC2Map`,
 the SC2 installation and a **new** output directory, then select **GENERATE TRIGGERS**.
 The portable edition opens the same local TypeScript interface with `Open Recovery.cmd`.
 It runs in your browser on a loopback address; Java is not required. Use the **X** button to stop the local server. See the [GUI guide](gui/README.md).
@@ -59,8 +59,8 @@ Build prerequisites: Git, Node.js 24 with npm, Python 3.10+, Windows PowerShell.
 No private `mk-revizer.zip` is needed:
 
 ```powershell
-git clone https://github.com/VoVanRusLvSC2/SC2-Trigger-Recovery-Tool-KSP-Edition.git
-cd SC2-Trigger-Recovery-Tool-KSP-Edition
+git clone https://github.com/VoVanRusLvSC2/SC2-Galaxy-Trigger-Recovery.git
+cd SC2-Galaxy-Trigger-Recovery
 npm run setup:public
 python scripts/fetch-release-tools.py
 node trigger-recovery.mjs doctor

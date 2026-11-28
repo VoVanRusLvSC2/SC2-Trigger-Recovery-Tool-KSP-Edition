@@ -1,6 +1,6 @@
 # TypeScript recovery interface
 
-The TypeScript interface follows the original JavaFX Trigger Revize KSP layout:
+The TypeScript interface follows the earlier JavaFX layout:
 two toolbar rows, **Trigger Markup** on the left, **Galaxy Source** on the right,
 a resizable divider, green frames and orange hover/selection. It is not a Java
 runtime wrapper. Decorative frames are recreated in CSS; the distribution does
