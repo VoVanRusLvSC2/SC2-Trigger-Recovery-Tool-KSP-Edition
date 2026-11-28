@@ -10,8 +10,12 @@ import urllib.request
 import zipfile
 
 REVISION = "d4218ef890064108384e8b871081a02acaa86c87"
-SHA256 = "c42d209f5191a0075baedf4859b77bc11e49efb82dfbd399bddb5101b8965072"
-URL = f"https://codeload.github.com/hometlt/modkit-extensions-blizzard/zip/{REVISION}"
+UPSTREAM_ARCHIVE_SHA256 = "c42d209f5191a0075baedf4859b77bc11e49efb82dfbd399bddb5101b8965072"
+SHA256 = "98c8e35c8065fb5ec74133f2ed99d6592bfe75870791f98cd699025e8ab09632"
+URL = (
+    "https://github.com/VoVanRusLvSC2/SC2-Galaxy-Trigger-Recovery/"
+    "releases/download/runtime-tools-v1/modkit-runtime-d4218ef.zip"
+)
 ROOT = Path(__file__).resolve().parent.parent
 DEST = ROOT / ".runtime/public-upstream"
 PACKAGES = ["starcraft2", "casc", "mpq", "blizzard-common-formats"]
@@ -19,7 +23,7 @@ PACKAGES = ["starcraft2", "casc", "mpq", "blizzard-common-formats"]
 
 def main():
     DEST.mkdir(parents=True, exist_ok=True)
-    archive = DEST / "upstream.zip"
+    archive = DEST / "runtime-source.zip"
     if not archive.is_file():
         request = urllib.request.Request(URL, headers={"User-Agent": "SC2-Galaxy-Trigger-Recovery-build"})
         with urllib.request.urlopen(request, timeout=120) as response:
@@ -69,7 +73,8 @@ def main():
         file.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf8")
     (DEST / "source-receipt.json").write_text(json.dumps({
         "repository": "https://github.com/hometlt/modkit-extensions-blizzard",
-        "revision": REVISION, "archiveSha256": SHA256, "files": count,
+        "revision": REVISION, "upstreamArchiveSha256": UPSTREAM_ARCHIVE_SHA256,
+        "archiveUrl": URL, "archiveSha256": SHA256, "files": count,
         "manifestAdaptation": "workspace/file dependency references to pinned root package identities; no source edits",
     }, indent=2) + "\n", encoding="utf8")
     print(f"Verified licensed public ModKit source: {REVISION}; {count} files")
